@@ -1,7 +1,5 @@
 [deploy]
 startCommand = "python3 main_app.py"
-healthcheckPath = "/health"
-healthcheckTimeout = 100
 restartPolicyType = "always"
 
 [env]
