@@ -1,0 +1,44 @@
+# === Web & App Core ===
+Flask==3.0.0
+Flask-Babel>=3.1.0
+Flask-Session==0.5.0
+Flask-WTF
+Flask-Limiter
+Werkzeug
+
+# === Daten & ORM ===
+SQLAlchemy==2.0.23
+redis
+pytz
+python-dateutil
+ics
+
+# === Discord & Bots ===
+discord.py==2.3.2
+tlgbotfwk
+
+# === Lokalisierung & Übersetzung ===
+deepl
+libretranslatepy
+
+# === Bild & Datei-Verarbeitung ===
+pillow
+
+# === Tasks & Zeitplanung ===
+apscheduler
+
+# === Netzwerk & API ===
+requests==2.31.0
+
+# === Umgebung & Sicherheit ===
+python-dotenv==1.0.0
+
+# === Deployment ===
+gunicorn
+
+# === Entwicklung & Tests ===
+black>=23.0.0
+flake8>=3.9.0
+isort>=5.0.0
+autoflake>=1.4
+pytest>=7.0.0
