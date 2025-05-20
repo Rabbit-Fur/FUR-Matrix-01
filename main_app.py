@@ -6,7 +6,8 @@ import signal
 import sys
 import threading
 from dotenv import load_dotenv
-
+# ➕ Healthcheck-Route für Railway
+from flask import Response
 from bot.bot_main import main as start_discord_bot, is_ready
 from env_helpers import get_env_str, get_env_bool
 from init_db_core import init_db
@@ -88,3 +89,8 @@ if __name__ == "__main__":
         print("🛑 Manuell unterbrochen.")
     except Exception as e:
         log_error("Main", e)
+
+
+@web.app.route("/health")
+def healthcheck():
+    return Response("ok", status=200)
