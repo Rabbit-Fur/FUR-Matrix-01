@@ -1,12 +1,28 @@
+"""
+auto_fixer.py – Automatisches Code-Fixing-Tool für Python-Projekte
+
+Formatiert Python-Dateien gemäß PEP8, entfernt ungenutzte Imports und Variablen, 
+wendet Black und Isort an, und unterstützt grundlegende eigene Regex-basierte Fixes.
+
+Tools: flake8 (Check), black, isort, autoflake (müssen installiert sein).
+"""
+
 import os
 import re
 import subprocess
 from pathlib import Path
+from typing import List, Set
 
-PROJECT_DIR = Path(__file__).resolve().parent
-IGNORED_DIRS = {"venv", ".venv", "__pycache__", "migrations"}
+PROJECT_DIR: Path = Path(__file__).resolve().parent
+IGNORED_DIRS: Set[str] = {"venv", ".venv", "__pycache__", "migrations"}
 
-def fix_file(filepath):
+def fix_file(filepath: Path) -> None:
+    """
+    Wendet Basis-Fixes für Leerzeilen und Kommentare an einer Python-Datei an.
+
+    Args:
+        filepath (Path): Pfad zur Python-Datei.
+    """
     try:
         with open(filepath, "r", encoding="utf-8") as f:
             lines = f.readlines()
@@ -14,7 +30,7 @@ def fix_file(filepath):
         print(f"❌ Fehler beim Lesen von {filepath}: {e}")
         return
 
-    new_lines = []
+    new_lines: List[str] = []
     for i, line in enumerate(lines):
         # E302/E305: Leerzeile vor Funktionen/Klassen
         if re.match(r"^def |^class ", line) and (i == 0 or lines[i - 1].strip()):
@@ -40,8 +56,11 @@ def fix_file(filepath):
     except OSError as e:
         print(f"❌ Fehler beim Schreiben in {filepath}: {e}")
 
-
-def run_flake8_and_fix():
+def run_flake8_and_fix() -> None:
+    """
+    Sucht alle Python-Dateien im Projekt und wendet Basis-Fixes an,
+    danach werden black und isort ausgeführt.
+    """
     py_files = [
         file for file in PROJECT_DIR.rglob("*.py")
         if not any(part in IGNORED_DIRS for part in file.parts)
@@ -60,9 +79,10 @@ def run_flake8_and_fix():
     except FileNotFoundError as e:
         print(f"❌ Werkzeug nicht gefunden (black/isort): {e}")
 
-
-def fix_unused_imports():
-    """Autoflake: entferne ungenutzte Imports & Variablen."""
+def fix_unused_imports() -> None:
+    """
+    Entfernt ungenutzte Importe & Variablen mit autoflake.
+    """
     print("🧹 Entferne ungenutzte Importe mit autoflake...")
     try:
         subprocess.run(
@@ -72,7 +92,6 @@ def fix_unused_imports():
         )
     except FileNotFoundError:
         print("❌ 'autoflake' ist nicht installiert. Bitte via pip installieren: pip install autoflake")
-
 
 if __name__ == "__main__":
     try:
