@@ -1,9 +1,12 @@
 """
-main_app.py – Sauberer Einstieg für FUR-System (Web & Discord-Bot)
+main_app.py – Einstiegspunkt für das FUR-System (Web & Discord-Bot)
+Korrigierte Imports und sys.path-Fix für jede Python-Umgebung.
 """
 
-import os
 import sys
+import os
+sys.path.append(os.path.dirname(__file__))
+
 import logging
 import threading
 import locale
@@ -16,7 +19,7 @@ from utils.env_helpers import get_env_str, get_env_bool, get_env_int
 from init_db_core import init_db
 from utils.github_service import fetch_repo_info
 
-# 🌍 Locale setzen
+# 🌍 Locale setzen (am besten immer UTF-8 für moderne Deployments)
 try:
     locale.setlocale(locale.LC_ALL, "en_US.UTF-8")
 except locale.Error:
@@ -85,7 +88,7 @@ if __name__ == "__main__":
         log_error("Main", e)
         raise
 
-# ➕ Healthcheck für Railway
+# ➕ Healthcheck für Railway/CI/Monitoring
 from flask import Response
 @app.route("/health")
 def healthcheck():
