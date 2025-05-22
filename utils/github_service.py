@@ -10,7 +10,6 @@ import base64
 import requests
 from typing import Optional
 
-# API-Konstanten aus .env, niemals hardcoden!
 GITHUB_API = "https://api.github.com"
 REPO = os.getenv("REPO_GITHUB")
 TOKEN = os.getenv("TOKEN_GITHUB")
@@ -22,6 +21,29 @@ HEADERS = {
     "Authorization": f"token {TOKEN}",
     "Accept": "application/vnd.github.v3+json"
 }
+
+def fetch_repo_info(owner: Optional[str] = None, repo: Optional[str] = None) -> dict:
+    """
+    Holt Repo-Infos vom GitHub-API.
+    Owner/Repo können als Argument oder aus Umgebungsvariablen übergeben werden.
+
+    Args:
+        owner (str, optional): Repo-Owner (GitHub-Username/Org).
+        repo (str, optional): Repo-Name (im Format 'owner/repo').
+
+    Returns:
+        dict: JSON-Antwort von GitHub mit den Repo-Infos.
+    """
+    repo_full = repo or REPO
+    owner = owner or (repo_full.split("/")[0] if repo_full else None)
+    repo_name = repo_full.split("/")[1] if repo_full else None
+    if not (owner and repo_name and TOKEN):
+        raise RuntimeError("GITHUB_TOKEN, REPO_GITHUB (owner/repo) müssen in .env definiert sein!")
+
+    url = f"{GITHUB_API}/repos/{owner}/{repo_name}"
+    response = requests.get(url, headers=HEADERS)
+    response.raise_for_status()
+    return response.json()
 
 def commit_file(file_path: str, content: str, branch: str, commit_msg: str) -> dict:
     """
