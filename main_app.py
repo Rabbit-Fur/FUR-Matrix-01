@@ -1,6 +1,6 @@
 """
 main_app.py – Einstiegspunkt für das FUR-System (Web & Discord-Bot)
-Korrigierte Imports und sys.path-Fix für jede Python-Umgebung.
+Korrekte Pfadbehandlung, Import-Workaround, Application-Factory-Pattern.
 """
 
 import sys
@@ -15,10 +15,11 @@ import signal
 
 from dotenv import load_dotenv
 from web import create_app
+from utils.env_helpers import get_env_str, get_env_bool, get_env_int
 from init_db_core import init_db
 from utils.github_service import fetch_repo_info
 
-# 🌍 Locale setzen (am besten immer UTF-8 für moderne Deployments)
+# 🌍 Locale setzen (UTF-8 empfohlen)
 try:
     locale.setlocale(locale.LC_ALL, "en_US.UTF-8")
 except locale.Error:
@@ -61,7 +62,10 @@ def signal_handler(sig, frame):
     cleanup()
     sys.exit(0)
 
-# --- Haupt-Start ---
+# --- Application-Factory: App-Objekt (für Gunicorn/Railway!) ---
+app = create_app()
+
+# --- Main-Start für lokalen Betrieb und Zusatzdienste ---
 if __name__ == "__main__":
     try:
         init_db()
@@ -70,7 +74,14 @@ if __name__ == "__main__":
         signal.signal(signal.SIGINT, signal_handler)
         check_github_repo()
 
-        app = create_app()
+        # Discord-Bot optional starten (asynchron im Thread)
+        if get_env_bool("ENABLE_DISCORD_BOT", default=True):
+            threading.Thread(target=start_discord_bot, daemon=True).start()
+
+        port = get_env_int("PORT", required=False, default=8080)
+        debug = get_env_str("FLASK_ENV", "production").lower() != "production"
+        logging.info(f"🌐 Starte Webserver auf http://localhost:{port} (Debug={debug})")
+        app.run(host="0.0.0.0", port=port, debug=debug)
 
     except KeyboardInterrupt:
         print("🛑 Manuell unterbrochen.")
