@@ -1,26 +1,53 @@
-from datetime import datetime
+"""
+reminders.py – Discord-Cog für wiederkehrende Erinnerungen (Events, Quests etc.)
 
+Dieses Cog versendet regelmäßig Erinnerungsnachrichten an einen konfigurierbaren Kanal.
+"""
+
+from datetime import datetime
+import logging
 import discord
 from discord.ext import commands, tasks
+import os
 
+log = logging.getLogger(__name__)
 
 class Reminders(commands.Cog):
-    """Regelmäßige Erinnerungen, z. B. Events, Quests"""
+    """
+    Discord-Cog: Regelmäßige Erinnerungen für Events, Quests und mehr.
 
-    def __init__(self, bot):
+    - Nutzt Discord Tasks für zeitgesteuerte Benachrichtigungen.
+    - Channel-ID wird vorzugsweise aus Umgebungsvariable geladen.
+    """
+
+    def __init__(self, bot: commands.Bot):
         self.bot = bot
+        self.channel_id = int(os.getenv("DISCORD_CHANNEL_ID", "1365580225945014385"))
         self.reminder_loop.start()
 
     def cog_unload(self):
+        """Stoppt den Reminder-Loop beim Entladen des Cogs."""
         self.reminder_loop.cancel()
 
     @tasks.loop(minutes=60)
     async def reminder_loop(self):
+        """Task: Sendet jede Stunde eine Erinnerungsnachricht in den Channel."""
         now = datetime.utcnow().strftime("%H:%M")
-        channel = self.bot.get_channel(1365580225945014385)  # aus .env / config laden!
+        channel = self.bot.get_channel(self.channel_id)
         if channel:
-            await channel.send(f"⏰ Reminder Loop: UTC {now} – check your quests!")
+            try:
+                await channel.send(f"⏰ Reminder Loop: UTC {now} – check your quests!")
+                log.info(f"Reminder gesendet an Channel {self.channel_id} (UTC {now})")
+            except Exception as e:
+                log.error(f"Fehler beim Senden des Reminders: {e}")
+        else:
+            log.warning(f"Channel-ID {self.channel_id} nicht gefunden oder ungültig.")
 
+    @reminder_loop.before_loop
+    async def before_reminder(self):
+        """Wartet bis Bot vollständig bereit ist, bevor der Loop startet."""
+        await self.bot.wait_until_ready()
 
-async def setup(bot):
+async def setup(bot: commands.Bot):
+    """Fügt das Reminders-Cog dem Bot hinzu (discord.py 2.x-Standard)."""
     await bot.add_cog(Reminders(bot))
