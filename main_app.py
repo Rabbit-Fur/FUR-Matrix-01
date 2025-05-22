@@ -15,7 +15,6 @@ import signal
 
 from dotenv import load_dotenv
 from web import create_app
-from utils.env_helpers import get_env_str, get_env_bool, get_env_int
 from init_db_core import init_db
 from utils.github_service import fetch_repo_info
 
@@ -72,15 +71,6 @@ if __name__ == "__main__":
         check_github_repo()
 
         app = create_app()
-
-        # Discord-Bot optional starten
-        if get_env_bool("ENABLE_DISCORD_BOT", default=True):
-            threading.Thread(target=start_discord_bot, daemon=True).start()
-
-        port = get_env_int("PORT", required=False, default=8080)
-        debug = get_env_str("FLASK_ENV", "production").lower() != "production"
-        logging.info(f"🌐 Starte Webserver auf http://localhost:{port} (Debug={debug})")
-        app.run(host="0.0.0.0", port=port, debug=debug)
 
     except KeyboardInterrupt:
         print("🛑 Manuell unterbrochen.")
