@@ -1,10 +1,11 @@
 """
 web/__init__.py – Flask Application Factory
 
-Erstellt die Flask-App, lädt alle Blueprints, konfiguriert Flask-Babel für Mehrsprachigkeit,
+Erstellt die Flask-App, lädt alle Blueprints, konfiguriert Flask-Babel für Mehrsprachigkeit
 und bindet die zentrale Config-Klasse aus dem Projekt-Root ein.
 """
 
+import os
 from flask import Flask
 from flask_babel import Babel
 from config import Config
@@ -16,12 +17,17 @@ def create_app():
     Returns:
         Flask: Die fertig konfigurierte Flask-App.
     """
-    app = Flask(__name__)
-    app.config.from_object(Config)  # <- Modern, kompatibel, keine Pfadprobleme
+    # Absoluter Pfad zum Projekt-Root (da, wo auch main_app.py und templates/ liegen)
+    base_dir = os.path.abspath(os.path.dirname(os.path.dirname(__file__)))
+    template_folder = os.path.join(base_dir, "templates")
+
+    # Erzeuge die Flask-App mit explizitem Template-Ordner
+    app = Flask(__name__, template_folder=template_folder)
+    app.config.from_object(Config)
 
     # Flask-Babel für Mehrsprachigkeit (Standard: Deutsch)
     app.config.setdefault("BABEL_DEFAULT_LOCALE", "de")
-    app.config.setdefault("BABEL_TRANSLATION_DIRECTORIES", "translations")
+    app.config.setdefault("BABEL_TRANSLATION_DIRECTORIES", os.path.join(base_dir, "translations"))
     babel = Babel(app)
 
     try:
@@ -38,5 +44,10 @@ def create_app():
 
     except Exception as e:
         app.logger.error(f"Blueprint registration failed: {e}", exc_info=True)
+
+    # Debug-Ausgabe: Zeige zur Laufzeit den verwendeten Template-Ordner
+    app.logger.info(f"TEMPLATE_ROOT = {app.template_folder}")
+    if not os.path.exists(os.path.join(app.template_folder, "public/landing.html")):
+        app.logger.error("❌ landing.html nicht gefunden! Kontrolliere den Pfad.")
 
     return app

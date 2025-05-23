@@ -1,6 +1,6 @@
 """
 main_app.py – Einstiegspunkt für das FUR-System (Web & Discord-Bot)
-Korrekte Pfadbehandlung, Import-Workaround, Application-Factory-Pattern.
+Mit Debug-Modus für lokale Entwicklung und sauberem Application-Factory-Pattern.
 """
 
 import sys
@@ -79,7 +79,7 @@ if __name__ == "__main__":
             threading.Thread(target=start_discord_bot, daemon=True).start()
 
         port = get_env_int("PORT", required=False, default=8080)
-        debug = get_env_str("FLASK_ENV", "production").lower() != "production"
+        debug = True  # <--- Debug-Modus für lokale Entwicklung AKTIV
         logging.info(f"🌐 Starte Webserver auf http://localhost:{port} (Debug={debug})")
         app.run(host="0.0.0.0", port=port, debug=debug)
 
