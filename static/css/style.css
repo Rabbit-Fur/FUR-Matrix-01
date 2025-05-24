@@ -1,147 +1,190 @@
-/* === Basis === */
-body {
-  font-family: system-ui, sans-serif;
-  margin: 0;
-  background: #111;
-  color: #f0f0f0;
+/* ==========================
+   FUR SYSTEM – style.css
+   ========================== */
+
+html, body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    font-family: 'Segoe UI', Arial, sans-serif;
+    background: transparent;
+    color: #f0f0f0;
+    min-height: 100vh;
+    box-sizing: border-box;
 }
 
-.container {
-  max-width: 960px;
-  margin: 2rem auto;
-  padding: 0 1rem;
+body {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
 }
 
 header {
-  background: #222;
-  padding: 1rem;
+    background: rgba(20, 20, 30, 0.8);
+    box-shadow: 0 2px 10px rgba(0,0,0,0.8);
+    padding: 12px 0;
+    z-index: 20;
 }
 
-.nav {
-  display: flex;
-  gap: 1rem;
-  flex-wrap: wrap;
+nav.nav {
+    display: flex;
+    justify-content: center;
+    gap: 2.2rem;
+    align-items: center;
+    font-size: 1.13rem;
 }
 
-.nav a {
-  color: #f0f0f0;
-  text-decoration: none;
-  font-weight: bold;
+nav.nav a {
+    color: #ffc857;
+    text-decoration: none;
+    padding: 6px 20px;
+    border-radius: 2em;
+    transition: background 0.2s, color 0.2s;
+    font-weight: 600;
+    letter-spacing: 0.04em;
 }
 
-h1, h2, h3 {
-  color: #ffcc00;
-  margin-top: 1rem;
+nav.nav a:hover, nav.nav a.active {
+    background: #ffc857;
+    color: #232323;
 }
 
-p, ul, ol {
-  line-height: 1.6;
+nav.nav span {
+    color: #fff;
+    font-size: 1.08rem;
+    margin-left: 2rem;
 }
 
-/* === Buttons === */
-.btn {
-  background-color: #f90;
-  color: #000;
-  padding: 0.6em 1.2em;
-  border-radius: 0.3em;
-  text-decoration: none;
-  font-weight: bold;
-  display: inline-block;
-  margin: 0.5rem 0;
+main.container {
+    flex: 1;
+    width: 100%;
+    max-width: 1040px;
+    margin: 36px auto 24px auto;
+    background: rgba(30, 30, 38, 0.92);
+    box-shadow: 0 6px 32px rgba(0,0,0,0.30);
+    border-radius: 18px;
+    padding: 32px 28px 36px 28px;
+    min-height: 320px;
+    backdrop-filter: blur(2px);
+    transition: box-shadow 0.2s;
 }
 
-.btn:hover {
-  background-color: #ffa733;
+footer {
+    width: 100%;
+    background: rgba(22, 22, 32, 0.90);
+    text-align: center;
+    color: #888;
+    padding: 18px 0 10px 0;
+    font-size: 1rem;
+    border-radius: 0 0 12px 12px;
+    box-shadow: 0 -2px 20px rgba(0,0,0,0.4);
 }
 
-/* === Karten, Panels, Blöcke === */
-.panel, .card, .box {
-  background-color: #1c1c1c;
-  border-radius: 8px;
-  padding: 1rem;
-  margin-bottom: 1.5rem;
-  box-shadow: 0 0 5px rgba(255, 255, 255, 0.05);
+h1, h2, h3, h4, h5 {
+    color: #ffc857;
+    margin-top: 0;
 }
 
-/* === Tabellen === */
+a {
+    color: #80bfff;
+    transition: color 0.2s;
+}
+a:hover {
+    color: #ffc857;
+}
+
+/* Tables */
 table {
-  width: 100%;
-  border-collapse: collapse;
-  margin-bottom: 1rem;
+    width: 100%;
+    border-collapse: collapse;
+    margin: 20px 0;
+    background: rgba(40,40,56,0.97);
+    border-radius: 8px;
+    overflow: hidden;
 }
 
-table th, table td {
-  padding: 0.75rem;
-  border-bottom: 1px solid #333;
-  text-align: left;
+th, td {
+    padding: 12px 14px;
+    text-align: left;
 }
 
-table th {
-  background: #222;
-  color: #ffcc00;
+th {
+    background: #222a36;
+    color: #ffc857;
+    font-size: 1.02em;
+    border-bottom: 2px solid #ffc857;
+}
+tr:nth-child(even) {
+    background: rgba(50,50,68,0.92);
+}
+tr:hover {
+    background: #393979;
+    color: #fff;
 }
 
-/* === Formulare === */
-input[type="text"],
-input[type="password"],
-input[type="datetime-local"],
-textarea,
-select {
-  width: 100%;
-  padding: 0.6em;
-  margin: 0.4em 0;
-  border-radius: 4px;
-  border: 1px solid #555;
-  background-color: #222;
-  color: #f0f0f0;
+/* Buttons */
+button, .btn {
+    background: #ffc857;
+    color: #222;
+    border: none;
+    border-radius: 18px;
+    padding: 10px 28px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    cursor: pointer;
+    margin-top: 10px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    transition: background 0.2s, color 0.2s;
+}
+button:hover, .btn:hover {
+    background: #ffab00;
+    color: #212121;
+}
+
+/* Form Styles */
+input[type="text"], input[type="password"], input[type="email"], textarea, select {
+    background: #26263d;
+    color: #fff;
+    border: 1px solid #444;
+    border-radius: 8px;
+    padding: 10px 14px;
+    font-size: 1rem;
+    margin-bottom: 16px;
+    width: 100%;
+    box-sizing: border-box;
+    outline: none;
+    transition: border 0.15s;
+}
+input:focus, textarea:focus, select:focus {
+    border: 1.5px solid #ffc857;
 }
 
 label {
-  display: block;
-  margin-top: 1em;
-  font-weight: bold;
-  color: #ddd;
+    color: #ffc857;
+    font-weight: 500;
+    margin-bottom: 6px;
+    display: block;
 }
 
-/* === Footer === */
-footer {
-  background: #1a1a1a;
-  color: #aaa;
-  padding: 1rem;
-  text-align: center;
-  margin-top: 3rem;
+/* Responsive Design */
+@media (max-width: 700px) {
+    main.container {
+        padding: 12px 6px 20px 6px;
+        max-width: 98vw;
+        border-radius: 10px;
+    }
+    nav.nav {
+        gap: 1.0rem;
+        font-size: 1rem;
+    }
 }
 
-/* === Kalender (FullCalendar) === */
-.fc {
-  background-color: #222;
-  border-radius: 8px;
-  padding: 1rem;
+/* Extra UX */
+::-webkit-scrollbar {
+    width: 8px;
+    background: #232344;
 }
-
-.fc-event {
-  background-color: #f90;
-  border: none;
-  padding: 0.4em;
-  font-size: 0.9em;
-  color: #000;
-}
-
-/* === Sonstiges === */
-.text-center {
-  text-align: center;
-}
-
-.flex {
-  display: flex;
-  gap: 1rem;
-  flex-wrap: wrap;
-}
-
-img.flag {
-  width: 24px;
-  height: 16px;
-  border-radius: 2px;
-  margin-right: 6px;
-  vertical-align: middle;
+::-webkit-scrollbar-thumb {
+    background: #363656;
+    border-radius: 8px;
 }
