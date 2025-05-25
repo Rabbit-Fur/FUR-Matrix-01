@@ -1,0 +1,10 @@
+{% extends "layout.html" %}
+{% block title %}Member Dashboard{% endblock %}
+{% block content %}
+    <h1>Mitglieder-Übersicht</h1>
+    <ul>
+        <li><a href="{{ url_for('members.stats') }}">Meine Statistiken</a></li>
+        <li><a href="{{ url_for('members.downloads') }}">Downloads</a></li>
+        <li><a href="{{ url_for('members.settings') }}">Einstellungen</a></li>
+    </ul>
+{% endblock %}

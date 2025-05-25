@@ -1,27 +1,38 @@
+"""
+translation_auto.py – Automatisches Extrahieren und Übersetzen von UI-Texten
+
+Dieses Skript sucht in Quellcode und Templates nach allen _(...) Keys,
+übersetzt sie bei Bedarf automatisiert via OpenAI GPT (oder kopiert sie als Fallback)
+und schreibt das Ergebnis als JSON-Translation-File für Flask-Babel/i18n.
+"""
+
 import json
 import os
 import re
 from pathlib import Path
+from typing import List, Set
 import openai
 
 # === Konfiguration ===
 SOURCE_DIRS = [".", "templates"]
 TARGET_LANG = "de"
 TRANSLATION_FILE = Path(f"translations/{TARGET_LANG}.json")
-USE_GPT = True
+USE_GPT = True  # Für Tests False setzen, dann nur Kopie
 
 # === API Key setzen ===
 openai.api_key = os.getenv("OPENAI_API_KEY")
 if USE_GPT and not openai.api_key:
     raise EnvironmentError("❌ OPENAI_API_KEY ist nicht gesetzt.")
 
-
-def scan_translation_keys():
+def scan_translation_keys() -> List[str]:
     """
     Scannt alle Quellverzeichnisse nach _('Text')-Keys und gibt eine sortierte Liste zurück.
+
+    Returns:
+        List[str]: Alphabetisch sortierte Liste aller gefundenen Keys.
     """
     pattern = re.compile(r"_\(\s*['\"](.+?)['\"]\s*\)")
-    found_keys = set()
+    found_keys: Set[str] = set()
 
     for folder in SOURCE_DIRS:
         for path in Path(folder).rglob("*"):
@@ -35,10 +46,15 @@ def scan_translation_keys():
                     print(f"⚠️ Fehler beim Lesen von {path}: {e}")
     return sorted(found_keys)
 
-
 def translate_gpt(text: str) -> str:
     """
     Übersetzt einen String ins Deutsche via OpenAI GPT.
+
+    Args:
+        text (str): Zu übersetzender Text.
+
+    Returns:
+        str: Übersetzung (oder Original bei Fehler).
     """
     try:
         print(f"🌍 GPT übersetzt: '{text}'")
@@ -52,10 +68,12 @@ def translate_gpt(text: str) -> str:
         print(f"❌ GPT-Fehler bei '{text}': {e}")
         return text
 
-
-def update_translation_file(keys):
+def update_translation_file(keys: List[str]) -> None:
     """
     Aktualisiert oder erzeugt die JSON-Datei mit allen Keys.
+
+    Args:
+        keys (List[str]): Liste aller zu übersetzenden Keys.
     """
     TRANSLATION_FILE.parent.mkdir(parents=True, exist_ok=True)
     existing = {}
@@ -75,7 +93,6 @@ def update_translation_file(keys):
 
     print(f"✅ {new_count} neue Übersetzungen hinzugefügt.")
     print(f"📁 Datei gespeichert: {TRANSLATION_FILE}")
-
 
 if __name__ == "__main__":
     print("🔍 Scanne Quellverzeichnisse nach _('...') Keys ...")

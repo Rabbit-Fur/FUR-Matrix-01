@@ -1,26 +1,29 @@
-import atexit
-import locale
-import logging
-import os
-import signal
-import sys
-import threading
-from dotenv import load_dotenv
-# ➕ Healthcheck-Route für Railway
-from flask import Response
-from bot.bot_main import main as start_discord_bot, is_ready
-from env_helpers import get_env_str, get_env_bool
-from init_db_core import init_db
-from github_api import fetch_repo_info
-import bot
-import web
+"""
+main_app.py – Einstiegspunkt für das FUR-System (Web & Discord-Bot)
+Mit Debug-Modus für lokale Entwicklung und sauberem Application-Factory-Pattern.
+"""
 
-# 🌍 Locale setzen
+import sys
+import os
+sys.path.append(os.path.dirname(__file__))
+
+import logging
+import threading
+import locale
+import atexit
+import signal
+
+from dotenv import load_dotenv
+from web import create_app
+from utils.env_helpers import get_env_str, get_env_bool, get_env_int
+from init_db_core import init_db
+from utils.github_service import fetch_repo_info
+
+# 🌍 Locale setzen (UTF-8 empfohlen)
 try:
-    locale.setlocale(locale.LC_ALL, "")
     locale.setlocale(locale.LC_ALL, "en_US.UTF-8")
 except locale.Error:
-    pass
+    locale.setlocale(locale.LC_ALL, "")
 
 # 📄 .env laden
 load_dotenv()
@@ -37,41 +40,32 @@ def log_error(error_type, error):
 
 def check_github_repo():
     try:
-        repo_data = fetch_repo_info("Rabbit-Fur", "System-by-FUR")
+        repo_data = fetch_repo_info()
         logging.info(f"✅ GitHub Repo geladen: {repo_data['full_name']}")
         logging.info(f"🔗 {repo_data['html_url']}")
     except Exception as e:
         log_error("GitHub", e)
 
-def start_bot():
+def start_discord_bot():
     try:
         logging.info("🤖 Starte Discord-Bot...")
-        bot.run_bot()
+        from bot.bot_main import run_bot
+        run_bot()
     except Exception as e:
-        log_error("Bot", e)
-
-def start_web():
-    try:
-        port = int(get_env_str("PORT", default="5000"))
-        debug = get_env_str("FLASK_ENV", "production").lower() != "production"
-        logging.info(f"🌐 Starte Webserver auf http://localhost:{port} (Debug={debug})")
-        web.app.run(host="0.0.0.0", port=port, debug=debug)
-    except Exception as e:
-        log_error("Web", e)
-        raise
+        log_error("Discord-Bot", e)
 
 def cleanup():
     logging.info("🔻 Anwendung wird beendet.")
-    if hasattr(bot, "is_ready") and bot.is_ready():
-        bot.close()
-    web.app.config["SHUTTING_DOWN"] = True
 
 def signal_handler(sig, frame):
     logging.info("🛑 SIGINT empfangen. Beende Anwendung...")
-    if hasattr(bot, "is_ready") and bot.is_ready():
-        bot.close()
+    cleanup()
     sys.exit(0)
 
+# --- Application-Factory: App-Objekt (für Gunicorn/Railway!) ---
+app = create_app()
+
+# --- Main-Start für lokalen Betrieb und Zusatzdienste ---
 if __name__ == "__main__":
     try:
         init_db()
@@ -80,17 +74,23 @@ if __name__ == "__main__":
         signal.signal(signal.SIGINT, signal_handler)
         check_github_repo()
 
+        # Discord-Bot optional starten (asynchron im Thread)
         if get_env_bool("ENABLE_DISCORD_BOT", default=True):
-            threading.Thread(target=start_bot, daemon=True).start()
+            threading.Thread(target=start_discord_bot, daemon=True).start()
 
-        start_web()
+        port = get_env_int("PORT", required=False, default=8080)
+        debug = True  # <--- Debug-Modus für lokale Entwicklung AKTIV
+        logging.info(f"🌐 Starte Webserver auf http://localhost:{port} (Debug={debug})")
+        app.run(host="0.0.0.0", port=port, debug=debug)
 
     except KeyboardInterrupt:
         print("🛑 Manuell unterbrochen.")
     except Exception as e:
         log_error("Main", e)
+        raise
 
-
-@web.app.route("/health")
+# ➕ Healthcheck für Railway/CI/Monitoring
+from flask import Response
+@app.route("/health")
 def healthcheck():
     return Response("ok", status=200)

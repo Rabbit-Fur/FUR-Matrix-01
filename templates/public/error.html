@@ -1,0 +1,6 @@
+{% extends "layout.html" %}
+{% block title %}Fehler{% endblock %}
+{% block content %}
+    <h1>404 - Seite nicht gefunden</h1>
+    <a href="{{ url_for('landing') }}" class="button">Zurück zur Startseite</a>
+{% endblock %}

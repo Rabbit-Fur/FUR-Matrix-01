@@ -1,13 +1,16 @@
 {% extends "layout.html" %}
 {% block title %}Events{% endblock %}
 {% block content %}
-  <h2>{{ _('Kommende Events') }}</h2>
-  {% for event in events %}
-    <div class="panel">
-      <h3>{{ event.title }}</h3>
-      <p>{{ event.description }}</p>
-      <p>📅 {{ event.event_time }}</p>
-      <a class="btn" href="{{ url_for('public.view_event', event_id=event.id) }}">{{ _('Details') }}</a>
-    </div>
-  {% endfor %}
+    <h1>Alle Events</h1>
+    <table>
+        <tr><th>ID</th><th>Titel</th><th>Datum</th><th></th></tr>
+        {% for event in events %}
+        <tr>
+            <td>{{ event.id }}</td>
+            <td>{{ event.title }}</td>
+            <td>{{ event.date }}</td>
+            <td><a href="{{ url_for('public.view_event', event_id=event.id) }}">Details</a></td>
+        </tr>
+        {% endfor %}
+    </table>
 {% endblock %}

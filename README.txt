@@ -1,0 +1,1 @@
+Lege dein Background-Bild unter /static/img/background.jpg ab (Datei nicht enthalten, Platzhalter vorhanden).

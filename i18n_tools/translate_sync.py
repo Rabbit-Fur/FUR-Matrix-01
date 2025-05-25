@@ -1,9 +1,18 @@
+"""
+i18n_sync.py – Synchronisiert und erweitert i18n-JSON-Dateien für viele Sprachen
+
+Dieses Skript prüft alle Übersetzungsdateien gegen eine Master-Sprache,
+übersetzt fehlende Keys (z.B. mit OpenAI GPT) und erzeugt einen Report.
+Platzhalter (z.B. {name}, {count}) werden automatisch erkannt und korrekt übernommen.
+"""
+
 import os
 import re
 import json
 import argparse
 from pathlib import Path
 from collections import defaultdict
+from typing import Dict, List
 import openai
 
 # === Konfiguration ===
@@ -20,25 +29,51 @@ TARGET_LANGS = [
     "sv", "cs"
 ]
 
-# GPT-Key laden
+# === API Key laden ===
 openai.api_key = os.getenv("OPENAI_API_KEY")
 if USE_GPT and not openai.api_key:
     raise EnvironmentError("❌ OPENAI_API_KEY ist nicht gesetzt.")
 
+def extract_placeholders(text: str) -> List[str]:
+    """
+    Extrahiert alle Platzhalter (z.B. {name}) aus dem Text.
 
-def extract_placeholders(text):
+    Args:
+        text (str): Eingabetext.
+
+    Returns:
+        List[str]: Liste der Platzhalter.
+    """
     return re.findall(r"{[^{}]+}", text)
 
+def restore_placeholders(translated: str, original_placeholders: List[str]) -> str:
+    """
+    Stellt ggf. durch Übersetzung veränderte Platzhalter wieder korrekt her.
 
-def restore_placeholders(translated, original_placeholders):
+    Args:
+        translated (str): Übersetzter Text mit evtl. veränderten Platzhaltern.
+        original_placeholders (List[str]): Originalplatzhalter.
+
+    Returns:
+        str: Übersetzung mit korrigierten Platzhaltern.
+    """
     found = extract_placeholders(translated)
     for i, ph in enumerate(found):
         if i < len(original_placeholders):
             translated = translated.replace(ph, original_placeholders[i], 1)
     return translated
 
+def translate(text: str, lang: str) -> str:
+    """
+    Übersetzt einen UI-Text automatisiert via OpenAI GPT.
 
-def translate(text, lang):
+    Args:
+        text (str): Zu übersetzender Text.
+        lang (str): Ziel-Sprache (ISO 639-1).
+
+    Returns:
+        str: Übersetzter Text (Platzhalter korrekt übernommen).
+    """
     placeholders = extract_placeholders(text)
     try:
         response = openai.ChatCompletion.create(
@@ -56,8 +91,16 @@ def translate(text, lang):
         print(f"⚠️ GPT-Fehler ({lang}): {e}")
         return f"[{lang}] {text}"
 
+def load_json(path: Path) -> Dict:
+    """
+    Lädt eine JSON-Datei als Dict.
 
-def load_json(path):
+    Args:
+        path (Path): Pfad zur Datei.
+
+    Returns:
+        Dict: Geladene Daten oder leeres Dict bei Fehler.
+    """
     if not path.exists():
         return {}
     try:
@@ -67,13 +110,29 @@ def load_json(path):
         print(f"❌ Ungültige JSON-Datei: {path}")
         return {}
 
+def save_json(path: Path, data: Dict) -> None:
+    """
+    Speichert ein Dict als JSON-Datei.
 
-def save_json(path, data):
+    Args:
+        path (Path): Zieldatei.
+        data (Dict): Zu speichernde Daten.
+    """
     with open(path, "w", encoding="utf-8") as f:
         json.dump(data, f, indent=2, ensure_ascii=False)
 
+def sync_translations(dry_run: bool = False, report_only: bool = False) -> Dict[str, List[str]]:
+    """
+    Synchronisiert alle Übersetzungsdateien gegen die Master-Sprache,
+    übersetzt neue Keys falls notwendig, und erzeugt Reportdaten.
 
-def sync_translations(dry_run=False, report_only=False):
+    Args:
+        dry_run (bool, optional): Wenn True, werden keine Dateien geschrieben.
+        report_only (bool, optional): Wenn True, werden nur fehlende Keys gelistet.
+
+    Returns:
+        Dict[str, List[str]]: Reportdaten (Sprache → neue Keys).
+    """
     base_path = Path(LANG_DIR)
     master_path = base_path / f"{MASTER_LANG}.json"
     master_data = load_json(master_path)
@@ -101,8 +160,13 @@ def sync_translations(dry_run=False, report_only=False):
 
     return report
 
+def generate_report(report: Dict[str, List[str]]) -> None:
+    """
+    Erzeugt einen Markdown-Report über alle neuen/fehlenden Keys pro Sprache.
 
-def generate_report(report):
+    Args:
+        report (Dict[str, List[str]]): Reportdaten.
+    """
     lines = ["# Übersetzungs-Report\n"]
     for lang, keys in report.items():
         lines.append(f"## {lang} ({len(keys)} neu)")
@@ -110,7 +174,6 @@ def generate_report(report):
         lines.append("")
     with open(REPORT_PATH, "w", encoding="utf-8") as f:
         f.write("\n".join(lines))
-
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Synchronisiere i18n JSON-Dateien in mehrere Sprachen.")

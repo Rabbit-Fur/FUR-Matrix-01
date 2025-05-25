@@ -1,15 +1,1 @@
-{% extends "layout.html" %}
-{% block title %}Leaderboards (Admin) {% endblock %}
-{% block content %}
-  <h2>{{ _('Leaderboards verwalten') }}</h2>
-  {% for category, users in data.items() %}
-    <div class="panel">
-      <h3>{{ category }}</h3>
-      <ol>
-        {% for user in users %}
-          <li>{{ user.username }} – {{ user.score }}</li>
-        {% endfor %}
-      </ol>
-    </div>
-  {% endfor %}
-{% endblock %}
+{% extends 'layout.html' %}{% block content %}<h1>Leaderboards (Admin)</h1>{% endblock %}

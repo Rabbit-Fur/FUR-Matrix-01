@@ -1,5 +1,6 @@
-import os
+# /app/utils/env_helpers.py
 
+import os
 
 def get_env_str(var_name: str, required: bool = True, default: str | None = None) -> str | None:
     """
@@ -9,7 +10,6 @@ def get_env_str(var_name: str, required: bool = True, default: str | None = None
     if required and not value:
         raise RuntimeError(f"{var_name} muss in .env definiert sein!")
     return value
-
 
 def get_env_int(var_name: str, required: bool = True, default: int | None = None) -> int | None:
     """
@@ -25,7 +25,6 @@ def get_env_int(var_name: str, required: bool = True, default: int | None = None
     except ValueError:
         raise RuntimeError(f"{var_name} muss eine gültige Ganzzahl sein!")
 
-
 def get_env_bool(var_name: str, required: bool = True, default: bool | None = None) -> bool | None:
     """
     Liest eine Umgebungsvariable als Boolean aus ('true', '1', 'yes', 'on').
@@ -36,7 +35,6 @@ def get_env_bool(var_name: str, required: bool = True, default: bool | None = No
             raise RuntimeError(f"{var_name} muss in .env definiert sein!")
         return default
     return value.strip().lower() in {"1", "true", "yes", "on"}
-
 
 def get_env_float(var_name: str, required: bool = True, default: float | None = None) -> float | None:
     """

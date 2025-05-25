@@ -1,12 +1,16 @@
 {% extends "layout.html" %}
-{% block title %}Ruhmeshalle{% endblock %}
+{% block title %}Hall of Fame{% endblock %}
 {% block content %}
-  <h2>{{ _('Champions des Monats') }}</h2>
-  {% for entry in hof %}
-    <div class="panel">
-      <h3>{{ entry.username }} – {{ entry.month }}</h3>
-      <p>{{ entry.honor_title }}</p>
-      <img src="{{ entry.poster_url }}" alt="Champion Poster" style="max-width: 100%;">
-    </div>
-  {% endfor %}
+    <h1>Hall of Fame</h1>
+    <table>
+        <tr><th>Champion</th><th>Monat</th><th>Titel</th><th>Poster</th></tr>
+        {% for entry in hof %}
+        <tr>
+            <td>{{ entry.username }}</td>
+            <td>{{ entry.month }}</td>
+            <td>{{ entry.honor_title }}</td>
+            <td><img src="{{ entry.poster_url }}" alt="Champion-Poster" width="60"></td>
+        </tr>
+        {% endfor %}
+    </table>
 {% endblock %}
