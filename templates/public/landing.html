@@ -1,0 +1,7 @@
+{% extends "layout.html" %}
+{% block title %}{{ t("start_title") }}{% endblock %}
+{% block content %}
+  <h1>🐺 {{ t("welcome_message") }}</h1>
+  <p>{{ t("portal_intro") }}</p>
+  <a class="btn" href="{{ url_for('public.login') }}">{{ t("login_with_discord") }}</a>
+{% endblock %}

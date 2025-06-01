@@ -1,0 +1,162 @@
+{
+  "⚠️ Something went wrong": "⚠ مشکلی پیش آمد",
+  "← Back to Home": "← بازگشت به خانه",
+  "Home": "خانه",
+  "Public Dashboard": "داشبورد عمومی",
+  "Admin Dashboard": "داشبورد سرپرست",
+  "Member Dashboard": "داشبورد عضو",
+  "Events": "وقایع",
+  "Leaderboard": "صفحه اصلی",
+  "Hall of Fame": "تالار مشاهیر",
+  "Lore": "سر و صدا",
+  "Systemkontrolle, Nutzer, Einstellungen, Logs…": "کنترل سیستم ، کاربران ، تنظیمات ، سیاهههای مربوط ...",
+  "Admin Kalender": "تقویم سرپرست",
+  "Event erstellen (Admin)": "ایجاد رویداد (مدیر)",
+  "Events verwalten": "مدیریت رویدادها",
+  "Downloads": "بارگیری",
+  "Einstellungen": "تنظیمات",
+  "Diplomatie (Admin)": "دیپلماسی (مدیر)",
+  "Admin Downloads": "بارگیری های مدیر",
+  "Alle Events verwalten": "همه رویدادها را مدیریت کنید",
+  "Leaderboards (Admin)": "تابلوهای رهبر (مدیر)",
+  "Teilnehmer (Admin)": "شرکت کننده (مدیر)",
+  "Admin Einstellungen": "تنظیمات سرپرست",
+  "Admin Tools": "ابزار سرپرست",
+  "Translations Editor (Admin)": "ویرایشگر ترجمه (مدیر)",
+  "Leaderboard Übersicht (Vollansicht)": "نمای کلی رهبری (نمای کامل)",
+  "Mitglieder-Übersicht": "نمای کلی عضو",
+  "Meine Statistiken": "آمار من",
+  "Member Downloads": "بارگیری عضو",
+  "Eigene Statistiken, News, Infos…": "آمار ، اخبار ، اطلاعات ...",
+  "Persönliche Statistiken als Download.": "آمار شخصی به عنوان بارگیری.",
+  "Statistiken": "آمار",
+  "Eigene Werte und Erfolge.": "ارزش ها و موفقیت های خود.",
+  "Mitglieder-Einstellungen": "تنظیمات عضو",
+  "Member Stats": "آمار عضو",
+  "🗓️ Event Calendar": "🗓 تقویم رویداد",
+  "📥 Export to Calendar (.ics)": "📥 صادرات به تقویم (.ics)",
+  "🧾 Upcoming Events": "🧾 رویدادهای آینده",
+  "✏️": "✏",
+  "No events yet.": "هنوز هیچ رویدادی وجود ندارد.",
+  "now && eventTime": "اکنون و & زمان رویداد",
+  "Dashboard": "داشبورد",
+  "Systemstatus, Statistiken und Schnellzugriffe:": "وضعیت سیستم ، آمار و دسترسی سریع:",
+  "Alle Events": "همه وقایع",
+  "404 - Seite nicht gefunden": "404 - صفحه یافت نشد",
+  "Zurück zur Startseite": "بازگشت به صفحه اصلی",
+  "📅 All Scheduled Events": "📅 همه رویدادهای برنامه ریزی شده",
+  "📝 Title": "📝 عنوان",
+  "📄 Description": "📄 توصیف",
+  "🕒 Time": "🕒 زمان",
+  "🎭 Role": "🎭 نقش",
+  "🔁 Recurrence": "🔁 عود",
+  "⚙️ Actions": "⚙ اقدامات",
+  "ID": "شناسه",
+  "Titel": "عنوان",
+  "Datum": "تاریخ",
+  "Details": "جزئیات",
+  "Champion": "قهرمان",
+  "Monat": "ماه",
+  "Poster": "پوستر",
+  "Willkommen bei FUR MATRIX!": "به ماتریس خوش آمدید!",
+  "Dein Einstieg ins System. Alles über die Navigation oben erreichbar.": "ورود شما به سیستم. از طریق ناوبری می توان به همه چیز رسید.",
+  "Zum Dashboard": "به داشبورد",
+  "Login": "ورود",
+  "Mit Discord anmelden": "ثبت نام در Discord",
+  "Game-Lore & Hintergrund": "بازی-لور و پس زمینه",
+  "Die Geschichte der FUR-Alliance und ihrer Champions…": "داستان اتحاد Furle و قهرمانان آن ...",
+  "Rang": "درجه",
+  "User": "کاربر",
+  "Punkte": "نقطه",
+  "Zurück zur Eventliste": "بازگشت به لیست رویداد",
+  "{editor}: Editing failed": "{ویرایشگر}: ویرایش انجام نشد",
+  "{editor}: Editing failed: {e}": "{ویرایشگر}: ویرایش ناموفق بود: {e}",
+  "{text} {deprecated_message}": "{متن} {deprecated_message}",
+  "Options": "گزینه",
+  "DeprecationWarning: The command {name!r} is deprecated.{extra_message}": "DeetctionWarning: دستور {نام! R} مستهلک می شود. {extra_message}",
+  "Aborted!": "سقط کرد",
+  "Commands": "فرمان",
+  "Missing command.": "فرمان گمشده",
+  "No such command {name!r}.": "بدون دستور جستجو {نام! r}",
+  "Value must be an iterable.": "ارزش باید یک تکرار باشد.",
+  "DeprecationWarning: The {param_type} {name!r} is deprecated.{extra_message}": "DeetctionWarning: نام {param_type {{نام! R} مستهلک می شود. {extra_message}",
+  "env var: {var}": "env var: {var}",
+  "default: {default}": "پیش فرض: {پیش فرض",
+  "required": "الزام",
+  "(dynamic)": "(پویا)",
+  "%(prog)s, version %(version)s": "٪ (prog) s ، نسخه ٪ (نسخه) s",
+  "Show the version and exit.": "نسخه و خروج را نشان دهید.",
+  "Show this message and exit.": "این پیام و خروج را نشان دهید.",
+  "Error: {message}": "خطا: {پیام}",
+  "Try '{command} {option}' for help.": "برای کمک ، '{دستور} {گزینه}' را امتحان کنید.",
+  "Invalid value: {message}": "ارزش نامعتبر: {پیام}",
+  "Invalid value for {param_hint}: {message}": "مقدار نامعتبر برای {param_hint}: {پیام}",
+  "Missing argument": "استدلال گمشده",
+  "Missing option": "گزینه گمشده",
+  "Missing parameter": "پارامتر از دست رفته",
+  "Missing {param_type}": "گمشده {param_type}",
+  "Missing parameter: {param_name}": "پارامتر گمشده: {param_name}",
+  "No such option: {name}": "بدون گزینه جستجو: {نام}",
+  "unknown error": "خطای ناشناخته",
+  "Could not open file {filename!r}: {message}": "نام پرونده را باز نکرد! r}: {پیام}",
+  "Usage:": "استفاده:",
+  "Argument {name!r} takes {nargs} values.": "استدلال {نام! r} مقدار {nargs} را می گیرد.",
+  "Option {name!r} does not take a value.": "گزینه {نام! r} ارزش نمی گیرد.",
+  "Shell completion is not supported for Bash versions older than 4.4.": "تکمیل پوسته برای نسخه های Bash قدیمی تر از 4.4 پشتیبانی نمی شود.",
+  "Couldn't detect Bash version, shell completion is not supported.": "نمی توان نسخه Bash را تشخیص داد ، تکمیل پوسته پشتیبانی نمی شود.",
+  "Repeat for confirmation": "برای تأیید تکرار کنید",
+  "Error: The value you entered was invalid.": "خطا: مقداری که وارد کردید نامعتبر بود.",
+  "Error: {e.message}": "خطا: {e.message}",
+  "Error: The two entered values do not match.": "خطا: این دو مقدار وارد شده مطابقت ندارند.",
+  "Error: invalid input": "خطا: ورودی نامعتبر",
+  "Press any key to continue...": "برای ادامه ... هر کلید را فشار دهید ...",
+  "Choose from:\n\t{choices}": "انتخاب از:\n\t{انتخاب}",
+  "{value!r} is not a valid {number_type}.": "{ارزش! R} معتبر {number_type نیست.",
+  "{value} is not in the range {range}.": "{مقدار} در محدوده {محدوده نیست.",
+  "{value!r} is not a valid boolean.": "{ارزش! R} یک بولی معتبر نیست.",
+  "{value!r} is not a valid UUID.": "{ارزش! R} یک UUID معتبر نیست.",
+  "file": "پرونده",
+  "directory": "فهرست راهنما",
+  "path": "مسیر",
+  "{name} {filename!r} does not exist.": "{نام} {نام پرونده! r} وجود ندارد.",
+  "{name} {filename!r} is a file.": "{نام} {نام پرونده! R} یک پرونده است.",
+  "{name} {filename!r} is a directory.": "{نام} {نام پرونده! R} یک فهرست است.",
+  "{name} {filename!r} is not readable.": "{نام} {نام پرونده! R} قابل خواندن نیست.",
+  "{name} {filename!r} is not writable.": "{نام} {نام پرونده! R} نوشته نشده است.",
+  "{name} {filename!r} is not executable.": "{نام} {نام پرونده! R} اجرایی نیست.",
+  "This field is required.": "این قسمت درخواست شده است.",
+  "File does not have an approved extension: {extensions}": "پرونده پسوند تأیید شده ندارد: {پسوندها",
+  "File does not have an approved extension.": "پرونده پسوند تأیید شده ندارد.",
+  "show this help message and exit": "این پیام راهنما را نشان دهید و از آن خارج شوید",
+  "Invalid field name '%s'.": "نام فیلد نامعتبر \"٪ s\".",
+  "Field must be equal to %(other_name)s.": "قسمت باید برابر با ٪ (other_name) باشد.",
+  "Field must be between %(min)d and %(max)d characters long.": "Field باید شخصیت های Steue ٪ (min) d و ٪ (حداکثر) d باشد.",
+  "Number must be at least %(min)s.": "تعداد باید حداقل ٪ (دقیقه) باشد.",
+  "Number must be at most %(max)s.": "تعداد باید در ضرورت (حداکثر) باشد.",
+  "Number must be between %(min)s and %(max)s.": "تعداد باید Steue ٪ (min) و ٪ (حداکثر) باشد.",
+  "Invalid input.": "ورودی",
+  "Invalid email address.": "آدرس ایمیل نامعتبر است.",
+  "Invalid IP address.": "آدرس IP نامعتبر است.",
+  "Invalid Mac address.": "آدرس MAC نامعتبر است.",
+  "Invalid URL.": "URL نامعتبر",
+  "Invalid UUID.": "UUID نامعتبر است.",
+  "Invalid value, must be one of: %(values)s.": "ارزش نامعتبر ، باید یکی از: ٪ (مقادیر) باشد.",
+  "Invalid value, can't be any of: %(values)s.": "ارزش نامعتبر ، نمی تواند هیچ یک از: ٪ (مقادیر) باشد.",
+  "This field cannot be edited.": "این قسمت قابل ویرایش نیست.",
+  "This field is disabled and cannot have a value.": "این قسمت غیرفعال است و نمی تواند ارزش داشته باشد.",
+  "Invalid CSRF Token.": "نشانه CSRF نامعتبر است.",
+  "CSRF token missing.": "نشانه CSRF از دست رفته است.",
+  "CSRF failed.": "CSRF شکست خورد.",
+  "CSRF token expired.": "توکن CSRF منقضی شد.",
+  "Invalid Choice: could not coerce.": "انتخاب نامعتبر: نمی تواند اجبار کند.",
+  "Choices cannot be None.": "انتخاب ها نمی توانند هیچ کدام باشند.",
+  "Not a valid choice.": "یک انتخاب معتبر نیست.",
+  "Invalid choice(s): one or more data inputs could not be coerced.": "انتخاب (های) نامعتبر: یک یا چند ورودی داده را نمی توان اجبار کرد.",
+  "Not a valid datetime value.": "یک مقدار DateTime معتبر نیست.",
+  "Not a valid date value.": "یک مقدار تاریخ معتبر نیست.",
+  "Not a valid time value.": "یک مقدار زمانی معتبر نیست.",
+  "Not a valid week value.": "یک ارزش هفته معتبر نیست.",
+  "Not a valid integer value.": "یک مقدار عدد صحیح معتبر نیست.",
+  "Not a valid decimal value.": "یک مقدار اعشاری معتبر نیست.",
+  "Not a valid float value.": "یک مقدار شناور معتبر نیست."
+}

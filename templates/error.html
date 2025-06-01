@@ -1,0 +1,17 @@
+{% extends 'layout.html' %}
+
+{% block content %}
+<div class="main-content">
+  <div class="calendar-card" style="text-align: center; padding: 2rem;">
+    <h1 style="color: var(--accent);">{{ t("error_title") }}</h1>
+    <p style="font-size: 1.1rem; margin: 1rem 0;">
+      {% if error %}
+        {{ error }}
+      {% else %}
+        {{ t("error_default_message") }}
+      {% endif %}
+    </p>
+    <a href="/" class="btn btn-glow">{{ t("back_to_home") }}</a>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,15 @@
+{% extends "layout.html" %}
+{% block title %}{{ t("leaderboard_title") }}{% endblock %}
+{% block content %}
+  <h2>{{ t("top_players") }}</h2>
+  {% for category, results in leaderboard.items() %}
+    <div class="panel">
+      <h3>{{ t(category) }}</h3>
+      <ol>
+        {% for row in results %}
+          <li>{{ row.username }} – {{ row.score }}</li>
+        {% endfor %}
+      </ol>
+    </div>
+  {% endfor %}
+{% endblock %}

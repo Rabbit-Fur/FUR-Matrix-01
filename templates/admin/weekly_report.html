@@ -1,0 +1,36 @@
+
+{% extends 'admin/admin.html' %}
+
+{% block title %}Wöchentlicher Report{% endblock %}
+
+{% block content %}
+<h1>📊 Wöchentlicher Report</h1>
+
+<h2>🎯 Teilnahme letzte 7 Tage</h2>
+<table border="1" cellpadding="5">
+    <tr>
+        <th>Discord User ID</th>
+        <th>Anzahl Teilnahmen</th>
+    </tr>
+    {% for row in participation %}
+    <tr>
+        <td>{{ row.user_id }}</td>
+        <td>{{ row.count }}</td>
+    </tr>
+    {% endfor %}
+</table>
+
+<h2>🔮 Kommende Events (nächste 7 Tage)</h2>
+<table border="1" cellpadding="5">
+    <tr>
+        <th>Titel</th>
+        <th>Datum & Uhrzeit</th>
+    </tr>
+    {% for event in upcoming %}
+    <tr>
+        <td>{{ event.title }}</td>
+        <td>{{ event.event_time }}</td>
+    </tr>
+    {% endfor %}
+</table>
+{% endblock %}

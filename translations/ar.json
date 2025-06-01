@@ -1,0 +1,162 @@
+{
+  "⚠️ Something went wrong": "⚠ حدث خطأ ما",
+  "← Back to Home": "← العودة إلى المنزل",
+  "Home": "بيت",
+  "Public Dashboard": "لوحة القيادة العامة",
+  "Admin Dashboard": "لوحة معلومات المشرف",
+  "Member Dashboard": "لوحة معلومات الأعضاء",
+  "Events": "الأحداث",
+  "Leaderboard": "لوحة المتصدرين",
+  "Hall of Fame": "قاعة الشهرة",
+  "Lore": "العلم",
+  "Systemkontrolle, Nutzer, Einstellungen, Logs…": "التحكم في النظام ، المستخدمون ، الإعدادات ، السجلات ...",
+  "Admin Kalender": "تقويم المسؤول",
+  "Event erstellen (Admin)": "إنشاء حدث (مسؤول)",
+  "Events verwalten": "إدارة الأحداث",
+  "Downloads": "التنزيلات",
+  "Einstellungen": "إعدادات",
+  "Diplomatie (Admin)": "الدبلوماسية (المشرف)",
+  "Admin Downloads": "تنزيلات المسؤول",
+  "Alle Events verwalten": "إدارة جميع الأحداث",
+  "Leaderboards (Admin)": "المتصدرين (المسؤول)",
+  "Teilnehmer (Admin)": "المشارك (المسؤول)",
+  "Admin Einstellungen": "إعدادات المسؤول",
+  "Admin Tools": "أدوات المسؤول",
+  "Translations Editor (Admin)": "محرر الترجمات (المسؤول)",
+  "Leaderboard Übersicht (Vollansicht)": "نظرة عامة على لوحة المتصدرين (عرض كامل)",
+  "Mitglieder-Übersicht": "نظرة عامة على العضو",
+  "Meine Statistiken": "إحصائيات",
+  "Member Downloads": "تنزيلات الأعضاء",
+  "Eigene Statistiken, News, Infos…": "الإحصاءات الخاصة والأخبار والمعلومات ...",
+  "Persönliche Statistiken als Download.": "الإحصاءات الشخصية كما تنزيل.",
+  "Statistiken": "إحصائيات",
+  "Eigene Werte und Erfolge.": "القيم والنجاحات الخاصة.",
+  "Mitglieder-Einstellungen": "إعدادات الأعضاء",
+  "Member Stats": "احصائيات الأعضاء",
+  "🗓️ Event Calendar": "🗓 تقويم الحدث",
+  "📥 Export to Calendar (.ics)": "📥 التصدير إلى التقويم (.كس)",
+  "🧾 Upcoming Events": "🧾 الأحداث القادمة",
+  "✏️": "✏",
+  "No events yet.": "لا الأحداث حتى الآن.",
+  "now && eventTime": "الآن && وقت الحدث",
+  "Dashboard": "لوحة القيادة",
+  "Systemstatus, Statistiken und Schnellzugriffe:": "حالة النظام والإحصاءات والوصول السريع:",
+  "Alle Events": "كل الأحداث",
+  "404 - Seite nicht gefunden": "404 - الصفحة لم يتم العثور عليها",
+  "Zurück zur Startseite": "العودة إلى الصفحة الرئيسية",
+  "📅 All Scheduled Events": "📅 جميع الأحداث المجدولة",
+  "📝 Title": "📝 العنوان",
+  "📄 Description": "📄 الوصف",
+  "🕒 Time": "🕒 الوقت",
+  "🎭 Role": "🎭 الدور",
+  "🔁 Recurrence": "🔁 تكرار",
+  "⚙️ Actions": "⚙ الإجراءات",
+  "ID": "بطاقة تعريف",
+  "Titel": "عنوان",
+  "Datum": "تاريخ",
+  "Details": "تفاصيل",
+  "Champion": "بطل",
+  "Monat": "شهر",
+  "Poster": "ملصق",
+  "Willkommen bei FUR MATRIX!": "مرحبًا بك في Matrix!",
+  "Dein Einstieg ins System. Alles über die Navigation oben erreichbar.": "دخولك إلى النظام. يمكن الوصول إلى كل شيء عن طريق الملاحة.",
+  "Zum Dashboard": "إلى لوحة القيادة",
+  "Login": "تسجيل الدخول",
+  "Mit Discord anmelden": "سجل مع Discord",
+  "Game-Lore & Hintergrund": "لعبة لور والخلفية",
+  "Die Geschichte der FUR-Alliance und ihrer Champions…": "قصة تحالف فورل وأبطالها ...",
+  "Rang": "رتبة",
+  "User": "مستخدم",
+  "Punkte": "نقطة",
+  "Zurück zur Eventliste": "العودة إلى قائمة الأحداث",
+  "{editor}: Editing failed": "{محرر}: فشل التحرير",
+  "{editor}: Editing failed: {e}": "{محرر}: فشل التحرير: {e}",
+  "{text} {deprecated_message}": "{text} {deprecated_message}",
+  "Options": "خيارات",
+  "DeprecationWarning: The command {name!r} is deprecated.{extra_message}": "DelectWarning: الأمر {name! تم إهمال R}. {extra_message}",
+  "Aborted!": "مجهول!",
+  "Commands": "يأمر",
+  "Missing command.": "الأمر المفقود.",
+  "No such command {name!r}.": "لا أمر بحث {name! ص}.",
+  "Value must be an iterable.": "يجب أن تكون القيمة موثوقة.",
+  "DeprecationWarning: The {param_type} {name!r} is deprecated.{extra_message}": "DEPRECENTWARNING: {param_type} {name! تم إهمال R}. {extra_message}",
+  "env var: {var}": "ENV var: {var}",
+  "default: {default}": "الافتراضي: {default}",
+  "required": "مطلوب",
+  "(dynamic)": "(متحرك)",
+  "%(prog)s, version %(version)s": "٪ (prog) s ، الإصدار ٪ (الإصدار) s",
+  "Show the version and exit.": "إظهار الإصدار والخروج.",
+  "Show this message and exit.": "أظهر هذه الرسالة والخروج.",
+  "Error: {message}": "خطأ: {message}",
+  "Try '{command} {option}' for help.": "جرب '{command} {Option}' للمساعدة.",
+  "Invalid value: {message}": "قيمة غير صالحة: {message}",
+  "Invalid value for {param_hint}: {message}": "قيمة غير صالحة لـ {param_hint}: {message}",
+  "Missing argument": "حجة مفقودة",
+  "Missing option": "خيار مفقود",
+  "Missing parameter": "المعلمة المفقودة",
+  "Missing {param_type}": "مفقود {param_type}",
+  "Missing parameter: {param_name}": "المعلمة المفقودة: {param_name}",
+  "No such option: {name}": "لا يوجد خيار بحث: {name}",
+  "unknown error": "خطأ غير معروف",
+  "Could not open file {filename!r}: {message}": "لا يمكن فتح ملف {filename! r}: {message}",
+  "Usage:": "الاستخدام:",
+  "Argument {name!r} takes {nargs} values.": "الحجة {الاسم! r} يأخذ قيمة {nargs}.",
+  "Option {name!r} does not take a value.": "الخيار {الاسم! R} لا تأخذ قيمة.",
+  "Shell completion is not supported for Bash versions older than 4.4.": "لا يتم دعم إكمال Shell لإصدارات Bash التي تزيد عن 4.4.",
+  "Couldn't detect Bash version, shell completion is not supported.": "لا يمكن اكتشاف نسخة باش ، لا يتم دعم إكمال شل.",
+  "Repeat for confirmation": "كرر للتأكيد",
+  "Error: The value you entered was invalid.": "خطأ: كانت القيمة التي أدخلتها غير صالحة.",
+  "Error: {e.message}": "خطأ: {e.message}",
+  "Error: The two entered values do not match.": "خطأ: لا تتطابق القيمتان المدخلتان.",
+  "Error: invalid input": "خطأ: إدخال غير صالح",
+  "Press any key to continue...": "اضغط على أي مفتاح للمتابعة ...",
+  "Choose from:\n\t{choices}": "اختر من:\n\t{الخيارات}",
+  "{value!r} is not a valid {number_type}.": "{قيمة! R} ليس صحيحًا {number_type}.",
+  "{value} is not in the range {range}.": "{value} ليس في النطاق {Range}.",
+  "{value!r} is not a valid boolean.": "{قيمة! R} ليس منطقيًا صالحًا.",
+  "{value!r} is not a valid UUID.": "{قيمة! R} ليس uuid صالحًا.",
+  "file": "ملف",
+  "directory": "دليل",
+  "path": "طريق",
+  "{name} {filename!r} does not exist.": "{name} {filename! R} غير موجود.",
+  "{name} {filename!r} is a file.": "{name} {filename! R} هو ملف.",
+  "{name} {filename!r} is a directory.": "{name} {filename! R} هو دليل.",
+  "{name} {filename!r} is not readable.": "{name} {filename! R} غير قابل للقراءة.",
+  "{name} {filename!r} is not writable.": "{name} {filename! R} غير مكتوب.",
+  "{name} {filename!r} is not executable.": "{name} {filename! R} غير قابل للتنفيذ.",
+  "This field is required.": "هذا الحقل مطلوب.",
+  "File does not have an approved extension: {extensions}": "لا يحتوي الملف على امتداد معتمد: {extensions}",
+  "File does not have an approved extension.": "لا يحتوي الملف على امتداد معتمد.",
+  "show this help message and exit": "أظهر رسالة المساعدة والخروج هذه",
+  "Invalid field name '%s'.": "اسم الحقل غير صالح '٪ s'.",
+  "Field must be equal to %(other_name)s.": "يجب أن يكون الحقل يساوي ٪ (other_name) s.",
+  "Field must be between %(min)d and %(max)d characters long.": "يجب أن يكون الحقل steue ٪ (دقيقة) d و ٪ (بحد أقصى) D",
+  "Number must be at least %(min)s.": "يجب أن يكون العدد ٪ على الأقل (دقيقة).",
+  "Number must be at most %(max)s.": "يجب أن يكون الرقم في ٪ (كحد أقصى) ق.",
+  "Number must be between %(min)s and %(max)s.": "يجب أن يكون العدد ٪ (دقيقة) و ٪ (كحد أقصى) ق.",
+  "Invalid input.": "مدخل.",
+  "Invalid email address.": "عنوان بريد إلكتروني غير صالح.",
+  "Invalid IP address.": "عنوان IP غير صالح.",
+  "Invalid Mac address.": "عنوان MAC غير صالح.",
+  "Invalid URL.": "عنوان URL غير صالح.",
+  "Invalid UUID.": "uuid غير صالح.",
+  "Invalid value, must be one of: %(values)s.": "قيمة غير صالحة ، يجب أن تكون واحدة من: ٪ (القيم) s.",
+  "Invalid value, can't be any of: %(values)s.": "قيمة غير صالحة ، لا يمكن أن تكون أي من: ٪ (القيم) s.",
+  "This field cannot be edited.": "لا يمكن تحرير هذا الحقل.",
+  "This field is disabled and cannot have a value.": "تم تعطيل هذا الحقل ولا يمكن أن يكون له قيمة.",
+  "Invalid CSRF Token.": "الرمز المميز CSRF غير صالح.",
+  "CSRF token missing.": "الرمز المميز CSRF مفقود.",
+  "CSRF failed.": "فشل CSRF.",
+  "CSRF token expired.": "انتهت صلاحية الرمز المميز CSRF.",
+  "Invalid Choice: could not coerce.": "اختيار غير صالح: لا يمكن الإكراه.",
+  "Choices cannot be None.": "لا يمكن أن تكون الخيارات لا شيء.",
+  "Not a valid choice.": "ليس خيارًا صالحًا.",
+  "Invalid choice(s): one or more data inputs could not be coerced.": "خيار (خيار) غير صالح: لا يمكن إكراه واحد أو أكثر من مدخلات البيانات.",
+  "Not a valid datetime value.": "ليست قيمة DateTime صالحة.",
+  "Not a valid date value.": "ليست قيمة تاريخ صالحة.",
+  "Not a valid time value.": "ليست قيمة زمنية صالحة.",
+  "Not a valid week value.": "ليست قيمة أسبوع صالحة.",
+  "Not a valid integer value.": "ليست قيمة عدد صحيح صالحة.",
+  "Not a valid decimal value.": "ليست قيمة عشرية صالحة.",
+  "Not a valid float value.": "ليست قيمة تعويم صالحة."
+}
