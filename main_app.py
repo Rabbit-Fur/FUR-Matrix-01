@@ -1,8 +1,3 @@
-"""
-main_app.py – Einstiegspunkt für das FUR-System (Web & Discord-Bot)
-Mit Debug-Modus für lokale Entwicklung und sauberem Application-Factory-Pattern.
-"""
-
 import sys
 import os
 sys.path.append(os.path.dirname(__file__))
@@ -18,6 +13,15 @@ from web import create_app
 from utils.env_helpers import get_env_str, get_env_bool, get_env_int
 from init_db_core import init_db
 from utils.github_service import fetch_repo_info
+from fur_lang.i18n import t
+from flask import Response, session
+from dashboard.routes import dashboard
+#app.register_blueprint(dashboard)
+
+# --- Application-Factory: App-Objekt (für Gunicorn/Railway!) ---
+app = create_app()
+app.jinja_env.globals.update(t=t)
+app.jinja_env.globals.update(current_lang=lambda: session.get("lang", "de"))
 
 # 🌍 Locale setzen (UTF-8 empfohlen)
 try:
@@ -62,10 +66,6 @@ def signal_handler(sig, frame):
     cleanup()
     sys.exit(0)
 
-# --- Application-Factory: App-Objekt (für Gunicorn/Railway!) ---
-app = create_app()
-
-# --- Main-Start für lokalen Betrieb und Zusatzdienste ---
 if __name__ == "__main__":
     try:
         init_db()
@@ -74,12 +74,11 @@ if __name__ == "__main__":
         signal.signal(signal.SIGINT, signal_handler)
         check_github_repo()
 
-        # Discord-Bot optional starten (asynchron im Thread)
         if get_env_bool("ENABLE_DISCORD_BOT", default=True):
             threading.Thread(target=start_discord_bot, daemon=True).start()
 
         port = get_env_int("PORT", required=False, default=8080)
-        debug = True  # <--- Debug-Modus für lokale Entwicklung AKTIV
+        debug = True
         logging.info(f"🌐 Starte Webserver auf http://localhost:{port} (Debug={debug})")
         app.run(host="0.0.0.0", port=port, debug=debug)
 
@@ -89,8 +88,6 @@ if __name__ == "__main__":
         log_error("Main", e)
         raise
 
-# ➕ Healthcheck für Railway/CI/Monitoring
-from flask import Response
 @app.route("/health")
 def healthcheck():
     return Response("ok", status=200)

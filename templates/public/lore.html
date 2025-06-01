@@ -1,12 +1,12 @@
 {% extends "layout.html" %}
-{% block title %}Lore{% endblock %}
+{% block title %}{{ t("lore_title") }}{% endblock %}
 {% block content %}
-  <h2>{{ _('Ursprung & Geschichte') }}</h2>
-  <p>{{ _('FUR entstand aus einem gemeinsamen Ziel: Stärke, Ehre und Zusammenhalt.') }}</p>
-  <h3>{{ _('Ehrenkodex') }}</h3>
+  <h2>{{ t("lore_heading") }}</h2>
+  <p>{{ t("lore_paragraph") }}</p>
+  <h3>{{ t("honor_code") }}</h3>
   <ul>
-    <li>🛡 {{ _('Respektiere deine Verbündeten') }}</li>
-    <li>⚔ {{ _('Strebe nach Exzellenz') }}</li>
-    <li>🔥 {{ _('Verteidige unsere Ehre') }}</li>
+    <li>🛡 {{ t("respect_allies") }}</li>
+    <li>⚔ {{ t("strive_for_excellence") }}</li>
+    <li>🔥 {{ t("defend_honor") }}</li>
   </ul>
 {% endblock %}

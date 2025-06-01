@@ -1,10 +1,10 @@
 {% extends "layout.html" %}
-{% block title %}Bestenliste{% endblock %}
+{% block title %}{{ t("leaderboard_title") }}{% endblock %}
 {% block content %}
-  <h2>{{ _('Top-Spieler') }}</h2>
+  <h2>{{ t("top_players") }}</h2>
   {% for category, results in leaderboard.items() %}
     <div class="panel">
-      <h3>{{ category|capitalize }}</h3>
+      <h3>{{ t(category) }}</h3>
       <ol>
         {% for row in results %}
           <li>{{ row.username }} – {{ row.score }}</li>

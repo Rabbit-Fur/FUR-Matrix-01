@@ -1,15 +1,53 @@
 <!DOCTYPE html>
-<html lang="de">
+<html lang="{{ current_lang() }}">
 <head>
     <meta charset="UTF-8">
-    <title>{% block title %}System by FUR{% endblock %}</title>
+    <title>{% block title %}MATRIX System by FUR{% endblock %}</title>
     <style>
-        body { font-family: Arial, sans-serif; margin: 2em; background: #181a20; color: #fff; }
-        .btn { display: inline-block; padding: 0.5em 1em; background: #ff9900; color: #222; border-radius: 8px; text-decoration: none; font-weight: bold; }
-        .btn:hover { background: #ffaa33; }
+        body {
+            font-family: Arial, sans-serif;
+            margin: 2em;
+            background: #181a20;
+            color: #fff;
+        }
+        .btn {
+            display: inline-block;
+            padding: 0.5em 1em;
+            background: #ff9900;
+            color: #222;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: bold;
+        }
+        .btn:hover {
+            background: #ffaa33;
+        }
+        .lang-selector {
+            position: absolute;
+            top: 1em;
+            right: 2em;
+        }
+        select {
+            padding: 0.3em 0.6em;
+            border-radius: 5px;
+            font-weight: bold;
+        }
     </style>
 </head>
 <body>
+
+    <div class="lang-selector">
+        <form method="GET" action="{{ url_for('public.set_language') }}">
+            <select name="lang" onchange="this.form.submit()">
+                {% for lang in config['BABEL_SUPPORTED_LOCALES'] %}
+                    <option value="{{ lang }}" {% if session.get('lang') == lang %}selected{% endif %}>
+                        {{ lang.upper() }}
+                    </option>
+                {% endfor %}
+            </select>
+        </form>
+    </div>
+
     {% block content %}{% endblock %}
 </body>
 </html>

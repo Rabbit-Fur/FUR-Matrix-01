@@ -1,15 +1,19 @@
 {% extends "layout.html" %}
-{% block title %}Event Detail{% endblock %}
+{% block title %}{{ t("event_detail_title") }}{% endblock %}
 {% block content %}
   <h2>{{ event.title }}</h2>
   <p>{{ event.description }}</p>
   <p>🕓 {{ event.event_time }}</p>
   <p>🎭 {{ event.role }}</p>
 
-  <h3>{{ _('Teilnehmer') }}</h3>
+  <h3>{{ t("participants") }}</h3>
   <ul>
     {% for participant in participants %}
       <li>{{ participant.username }} {% if participant.checked_in %}✔️{% endif %}</li>
     {% endfor %}
   </ul>
 {% endblock %}
+
+<form action="{{ url_for('public.join_event', event_id=event['id']) }}" method="get">
+  <button class="btn" type="submit">{{ t('join_event') }}</button>
+</form>

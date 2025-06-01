@@ -1,0 +1,22 @@
+name: Daily Log Generator
+
+on:
+  schedule:
+    - cron: '0 20 * * *' # 22:00 MEZ = 20:00 UTC
+  workflow_dispatch:
+
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Run daily log
+        run: python daily_log_generator.py
+
+      - name: Commit log
+        run: |
+          git config --global user.email "you@example.com"
+          git config --global user.name "FUR QUM"
+          git add core/logs/
+          git commit -m "📝 Daily Log für ${{ github.run_id }}" || echo "No changes"
+          git push

@@ -31,3 +31,17 @@ def create_app():
         app.logger.warning(f"Blueprint registration failed: {e}")
 
     return app
+
+
+    from fur_lang.i18n import t, current_lang
+
+    @app.context_processor
+    def inject_i18n_functions():
+        return {'t': t, 'current_lang': current_lang}
+
+
+    @app.before_request
+    def set_language_from_request():
+        lang = request.args.get('lang')
+        if lang in app.config.get("BABEL_SUPPORTED_LOCALES", []):
+            session['lang'] = lang
