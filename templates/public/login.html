@@ -1,6 +1,18 @@
 {% extends "layout.html" %}
+<<<<<<< HEAD
 {% block title %}{{ t("login_title") }}{% endblock %}
 {% block content %}
   <h2>{{ t("login_required") }}</h2>
   <a class="btn" href="{{ url_for('public.login') }}">{{ t("login_with_discord") }}</a>
+=======
+{% block title %}Login{% endblock %}
+{% block content %}
+    <h1>Login</h1>
+    <form method="post">
+        <input type="text" name="username" placeholder="Benutzername">
+        <input type="password" name="password" placeholder="Passwort">
+        <button type="submit" class="button">Login</button>
+    </form>
+    <p><a href="#">Mit Discord anmelden</a></p>
+>>>>>>> b9da45a45805ab6a1f5377830ffb553178ced3ba
 {% endblock %}

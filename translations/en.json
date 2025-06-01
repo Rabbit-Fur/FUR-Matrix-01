@@ -1,4 +1,5 @@
 {
+<<<<<<< HEAD
   "⚠️ Something went wrong": "⚠️ Something went wrong",
   "← Back to Home": "← Back to Home",
   "Home": "Home",
@@ -187,3 +188,18 @@
   "error_default_message": "An error occurred. Please try again later.",
   "back_to_home": "← Back to Home"
 }
+=======
+  "login": "Login",
+  "dashboard": "Dashboard",
+  "logout": "Logout",
+  "username": "Username",
+  "password": "Password",
+  "submit": "Submit",
+  "event_management": "Event Management",
+  "participants": "Participants",
+  "champion": "Champion of the Month",
+  "please_log_in": "Please log in to access this area.",
+  "session_timeout": "Session timed out due to inactivity.",
+  "you_have_been_logged_out": "You have been logged out."
+}
+>>>>>>> b9da45a45805ab6a1f5377830ffb553178ced3ba

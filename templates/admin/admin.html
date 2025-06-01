@@ -1,4 +1,5 @@
 {% extends "layout.html" %}
+<<<<<<< HEAD
 {% block title %}Admin Panel{% endblock %}
 {% block content %}
   <h2>{{ _('Admin Dashboard') }}</h2>
@@ -10,4 +11,10 @@
     <a class="btn" href="{{ url_for('admin.settings') }}">{{ _('Bot-Einstellungen') }}</a>
     <a class="btn" href="{{ url_for('admin.tools') }}">{{ _('Wartung & Trigger') }}</a>
   </div>
+=======
+{% block title %}Admin-Bereich{% endblock %}
+{% block content %}
+    <h1>Admin Dashboard</h1>
+    <p>Systemkontrolle, Nutzer, Einstellungen, Logs…</p>
+>>>>>>> b9da45a45805ab6a1f5377830ffb553178ced3ba
 {% endblock %}

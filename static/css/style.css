@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /* ==========================
    FUR SYSTEM – style.css
    ========================== */
@@ -187,4 +188,66 @@ label {
 ::-webkit-scrollbar-thumb {
     background: #363656;
     border-radius: 8px;
+=======
+
+body {
+    margin: 0;
+    padding: 0;
+    min-height: 100vh;
+    font-family: Arial, sans-serif;
+    background-image: url("/static/img/background.jpg");
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
+}
+nav {
+    background: rgba(0,0,0,0.85);
+    padding: 1rem 2rem;
+    display: flex;
+    gap: 2rem;
+}
+nav a {
+    color: #fff;
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 1.2rem;
+    transition: color 0.2s;
+}
+nav a:hover {
+    color: #ffd700;
+}
+.container {
+    max-width: 1100px;
+    margin: 42px auto 0 auto;
+    background: rgba(255,255,255,0.91);
+    border-radius: 18px;
+    padding: 36px 32px 32px 32px;
+    box-shadow: 0 4px 32px rgba(0,0,0,0.15);
+}
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 12px 0;
+}
+th, td {
+    padding: 8px 12px;
+    border-bottom: 1px solid #ccc;
+}
+.button, .btn {
+    background: #3a346e;
+    color: #fff;
+    border-radius: 12px;
+    padding: 8px 28px;
+    border: none;
+    font-weight: bold;
+    font-size: 1.1rem;
+    text-decoration: none;
+    margin: 16px 0 0 0;
+    display: inline-block;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+.button:hover, .btn:hover {
+    background: #4e4ba8;
+>>>>>>> b9da45a45805ab6a1f5377830ffb553178ced3ba
 }

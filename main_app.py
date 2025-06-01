@@ -1,3 +1,11 @@
+<<<<<<< HEAD
+=======
+"""
+main_app.py – Einstiegspunkt für das FUR-System (Web & Discord-Bot)
+Mit Debug-Modus für lokale Entwicklung und sauberem Application-Factory-Pattern.
+"""
+
+>>>>>>> b9da45a45805ab6a1f5377830ffb553178ced3ba
 import sys
 import os
 sys.path.append(os.path.dirname(__file__))
@@ -13,6 +21,7 @@ from web import create_app
 from utils.env_helpers import get_env_str, get_env_bool, get_env_int
 from init_db_core import init_db
 from utils.github_service import fetch_repo_info
+<<<<<<< HEAD
 from fur_lang.i18n import t
 from flask import Response, session
 from dashboard.routes import dashboard
@@ -22,6 +31,8 @@ from dashboard.routes import dashboard
 app = create_app()
 app.jinja_env.globals.update(t=t)
 app.jinja_env.globals.update(current_lang=lambda: session.get("lang", "de"))
+=======
+>>>>>>> b9da45a45805ab6a1f5377830ffb553178ced3ba
 
 # 🌍 Locale setzen (UTF-8 empfohlen)
 try:
@@ -66,6 +77,13 @@ def signal_handler(sig, frame):
     cleanup()
     sys.exit(0)
 
+<<<<<<< HEAD
+=======
+# --- Application-Factory: App-Objekt (für Gunicorn/Railway!) ---
+app = create_app()
+
+# --- Main-Start für lokalen Betrieb und Zusatzdienste ---
+>>>>>>> b9da45a45805ab6a1f5377830ffb553178ced3ba
 if __name__ == "__main__":
     try:
         init_db()
@@ -74,11 +92,19 @@ if __name__ == "__main__":
         signal.signal(signal.SIGINT, signal_handler)
         check_github_repo()
 
+<<<<<<< HEAD
+=======
+        # Discord-Bot optional starten (asynchron im Thread)
+>>>>>>> b9da45a45805ab6a1f5377830ffb553178ced3ba
         if get_env_bool("ENABLE_DISCORD_BOT", default=True):
             threading.Thread(target=start_discord_bot, daemon=True).start()
 
         port = get_env_int("PORT", required=False, default=8080)
+<<<<<<< HEAD
         debug = True
+=======
+        debug = True  # <--- Debug-Modus für lokale Entwicklung AKTIV
+>>>>>>> b9da45a45805ab6a1f5377830ffb553178ced3ba
         logging.info(f"🌐 Starte Webserver auf http://localhost:{port} (Debug={debug})")
         app.run(host="0.0.0.0", port=port, debug=debug)
 
@@ -88,6 +114,14 @@ if __name__ == "__main__":
         log_error("Main", e)
         raise
 
+<<<<<<< HEAD
 @app.route("/health")
 def healthcheck():
     return Response("ok", status=200)
+=======
+# ➕ Healthcheck für Railway/CI/Monitoring
+from flask import Response
+@app.route("/health")
+def healthcheck():
+    return Response("ok", status=200)
+>>>>>>> b9da45a45805ab6a1f5377830ffb553178ced3ba

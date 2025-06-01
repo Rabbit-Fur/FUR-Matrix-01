@@ -1,4 +1,5 @@
 {% extends "layout.html" %}
+<<<<<<< HEAD
 {% block title %}{{ t("leaderboard_title") }}{% endblock %}
 {% block content %}
   <h2>{{ t("top_players") }}</h2>
@@ -12,4 +13,19 @@
       </ol>
     </div>
   {% endfor %}
+=======
+{% block title %}Leaderboard{% endblock %}
+{% block content %}
+    <h1>Leaderboard</h1>
+    <table>
+        <tr><th>Rang</th><th>User</th><th>Punkte</th></tr>
+        {% for row in leaderboard %}
+        <tr>
+            <td>{{ row.rank }}</td>
+            <td>{{ row.username }}</td>
+            <td>{{ row.score }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+>>>>>>> b9da45a45805ab6a1f5377830ffb553178ced3ba
 {% endblock %}

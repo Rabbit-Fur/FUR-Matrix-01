@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 {% if 'r3' in session.get('role_ids', []) or 'r4' in session.get('role_ids', []) or session.get('admin_logged_in') %}
 {% extends "layout.html" %}
 {% block title %}Member Dashboard{% endblock %}
@@ -11,3 +12,11 @@
   </div>
 {% endblock %}
 {% endif %}
+=======
+{% extends "layout.html" %}
+{% block title %}Member Dashboard{% endblock %}
+{% block content %}
+    <h1>Mitglieder-Übersicht</h1>
+    <p>Eigene Statistiken, News, Infos…</p>
+{% endblock %}
+>>>>>>> b9da45a45805ab6a1f5377830ffb553178ced3ba

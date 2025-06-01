@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 {% if 'r3' in session.get('role_ids', []) or 'r4' in session.get('role_ids', []) or session.get('admin_logged_in') %}
 {% extends "layout.html" %}
 {% block title %}{{ _('Einstellungen') }}{% endblock %}
@@ -16,3 +17,6 @@
   </form>
 {% endblock %}
 {% endif %}
+=======
+{% extends 'layout.html' %}{% block content %}<h1>Mitglieder-Einstellungen</h1>{% endblock %}
+>>>>>>> b9da45a45805ab6a1f5377830ffb553178ced3ba

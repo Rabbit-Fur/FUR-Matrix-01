@@ -8,7 +8,10 @@ import os
 from datetime import timedelta
 from dotenv import load_dotenv
 from utils.env_helpers import get_env_str, get_env_int, get_env_bool
+<<<<<<< HEAD
 from fur_lang.i18n import get_supported_languages
+=======
+>>>>>>> b9da45a45805ab6a1f5377830ffb553178ced3ba
 
 # 📍 .env Pfad dynamisch bestimmbar via ENV_FILE, sonst Fallback zu ./env
 basedir = os.path.abspath(os.path.dirname(__file__))
@@ -47,11 +50,15 @@ class Config:
     DISCORD_CLIENT_ID: str | None = get_env_str("DISCORD_CLIENT_ID", required=False)
     DISCORD_CLIENT_SECRET: str | None = get_env_str("DISCORD_CLIENT_SECRET", required=False)
     DISCORD_REDIRECT_URI: str | None = get_env_str("DISCORD_REDIRECT_URI", required=False)
+<<<<<<< HEAD
     
     #BABEL
     BABEL_DEFAULT_LOCALE = "de"
     BABEL_SUPPORTED_LOCALES = get_supported_languages()
     
+=======
+
+>>>>>>> b9da45a45805ab6a1f5377830ffb553178ced3ba
     # --- Internationalization ---
     SUPPORTED_LANGUAGES: list[str] = [
         "en", "de", "vi", "tr", "it", "cs", "es", "fr", "pl", "ru"
