@@ -63,3 +63,16 @@ def view_event():
     Öffentliche Detailansicht eines Events.
     """
     return render_template("public/view_event.html")
+
+
+@public_bp.route("/events/<int:event_id>/join")
+def join_event(event_id):
+    if "discord_user_id" not in session:
+        return redirect(url_for("public.login"))
+
+    user_id = session["discord_user_id"]
+    db = get_db()
+    db.execute("INSERT INTO event_participants (event_id, user_id) VALUES (?, ?)", (event_id, user_id))
+    db.commit()
+    flash(t("you_joined_event"), "success")
+    return redirect(url_for("public.view_event", event_id=event_id))
