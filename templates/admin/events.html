@@ -1,31 +1,37 @@
 {% extends "layout.html" %}
-{% block title %}Events verwalten{% endblock %}
+{% block title %}{{ t("Events verwalten") }}{% endblock %}
 {% block content %}
-  <h2>{{ _('Events verwalten') }}</h2>
-  <a class="btn" href="{{ url_for('admin.create_event') }}">{{ _('Neues Event erstellen') }}</a>
+  <h2>{{ t("Events verwalten") }}</h2>
+  <a class="btn" href="{{ url_for('admin.create_event') }}">{{ t("Neues Event erstellen") }}</a>
   <table>
     <thead>
       <tr>
-        <th>{{ _('Titel') }}</th>
-        <th>{{ _('Datum') }}</th>
-        <th>{{ _('Zielrolle') }}</th>
-        <th>{{ _('Aktionen') }}</th>
+        <th>{{ t("Titel") }}</th>
+        <th>{{ t("Datum") }}</th>
+        <th>{{ t("Zielrolle") }}</th>
+        <th>{{ t("Aktionen") }}</th>
       </tr>
     </thead>
     <tbody>
-      {% for event in events %}
+      {% if events is defined and events %}
+        {% for event in events %}
+          <tr>
+            <td>{{ event.title }}</td>
+            <td>{{ event.event_time }}</td>
+            <td>{{ event.role }}</td>
+            <td>
+              <a class="btn" href="{{ url_for('admin.edit_event', event_id=event.id) }}">{{ t("Bearbeiten") }}</a>
+              <form method="post" action="{{ url_for('admin.delete_event', event_id=event.id) }}" style="display:inline;">
+                <button class="btn" type="submit">{{ t("Löschen") }}</button>
+              </form>
+            </td>
+          </tr>
+        {% endfor %}
+      {% else %}
         <tr>
-          <td>{{ event.title }}</td>
-          <td>{{ event.event_time }}</td>
-          <td>{{ event.role }}</td>
-          <td>
-            <a class="btn" href="{{ url_for('admin.edit_event', event_id=event.id) }}">{{ _('Bearbeiten') }}</a>
-            <form method="post" action="{{ url_for('admin.delete_event', event_id=event.id) }}" style="display:inline;">
-              <button class="btn" type="submit">{{ _('Löschen') }}</button>
-            </form>
-          </td>
+          <td colspan="4">{{ t("Keine Events gefunden.") }}</td>
         </tr>
-      {% endfor %}
+      {% endif %}
     </tbody>
   </table>
 {% endblock %}

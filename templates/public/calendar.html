@@ -11,7 +11,7 @@
   document.addEventListener("DOMContentLoaded", function () {
     var calendar = new FullCalendar.Calendar(document.getElementById("calendar"), {
       initialView: "dayGridMonth",
-      events: {{ events_json | safe }}
+      events: {{ events_json | safe if events_json is defined else "[]" }}
     });
     calendar.render();
   });

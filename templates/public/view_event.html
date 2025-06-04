@@ -1,19 +1,33 @@
 {% extends "layout.html" %}
 {% block title %}{{ t("event_detail_title") }}{% endblock %}
 {% block content %}
-  <h2>{{ event.title }}</h2>
-  <p>{{ event.description }}</p>
-  <p>🕓 {{ event.event_time }}</p>
-  <p>🎭 {{ event.role }}</p>
+  {% set dummy_event = {'id': 1, 'title': 'FUR Mega Event', 'description': 'Platzhalter-Event', 'event_time': '2025-06-15 19:00', 'role': 'Member'} %}
+  {% set dummy_participants = [
+      {'username': 'Marcel', 'checked_in': True},
+      {'username': 'Neko', 'checked_in': False}
+  ] %}
+  {% set ev = event if event is defined and event else dummy_event %}
+  {% set part = participants if participants is defined and participants else dummy_participants %}
+
+  <h2>{{ ev.title }}</h2>
+  <p>{{ ev.description }}</p>
+  <p>🕓 {{ ev.event_time }}</p>
+  <p>🎭 {{ ev.role }}</p>
 
   <h3>{{ t("participants") }}</h3>
-  <ul>
-    {% for participant in participants %}
-      <li>{{ participant.username }} {% if participant.checked_in %}✔️{% endif %}</li>
-    {% endfor %}
-  </ul>
-{% endblock %}
+  {% if part %}
+    <ul>
+      {% for participant in part %}
+        <li>
+          {{ participant.username }} {% if participant.checked_in %}✔️{% endif %}
+        </li>
+      {% endfor %}
+    </ul>
+  {% else %}
+    <p>{{ t("No participants yet.") }}</p>
+  {% endif %}
 
-<form action="{{ url_for('public.join_event', event_id=event['id']) }}" method="get">
-  <button class="btn" type="submit">{{ t('join_event') }}</button>
-</form>
+  <form method="post" action="{{ url_for('public.join_event', event_id=ev.id) }}">
+    <button class="btn" type="submit">{{ t('join_event') }}</button>
+  </form>
+{% endblock %}

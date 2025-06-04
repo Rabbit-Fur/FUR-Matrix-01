@@ -1,18 +1,25 @@
 {% extends "layout.html" %}
-{% block title %}Teilnehmer verwalten{% endblock %}
+{% block title %}{{ t("Teilnehmer verwalten") }}{% endblock %}
 {% block content %}
-  <h2>{{ _('Teilnehmer aller Events') }}</h2>
-  {% for event_id, participant_list in participants.items() %}
-    <div class="panel">
-      <h3>{{ events[event_id].title }} ({{ events[event_id].event_time }})</h3>
-      <ul>
-        {% for p in participant_list %}
-          <li>
-            {{ p.username }} – {{ _('Check-in') }}: 
-            {% if p.checked_in %}✔️{% else %}❌{% endif %}
-          </li>
-        {% endfor %}
-      </ul>
-    </div>
-  {% endfor %}
+  <h2>{{ t("Teilnehmer aller Events") }}</h2>
+  {% if participants is defined and participants %}
+    {% for event_id, participant_list in participants.items() %}
+      <div class="panel">
+        <h3>
+          {{ events[event_id].title if events and events[event_id] and events[event_id].title is defined else t("Unbekanntes Event") }}
+          ({{ events[event_id].event_time if events and events[event_id] and events[event_id].event_time is defined else "-" }})
+        </h3>
+        <ul>
+          {% for p in participant_list %}
+            <li>
+              {{ p.username }} – {{ t("Check-in") }}:
+              {% if p.checked_in %}✔️{% else %}❌{% endif %}
+            </li>
+          {% endfor %}
+        </ul>
+      </div>
+    {% endfor %}
+  {% else %}
+    <p>{{ t("Keine Teilnehmer gefunden.") }}</p>
+  {% endif %}
 {% endblock %}

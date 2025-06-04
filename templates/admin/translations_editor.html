@@ -1,21 +1,25 @@
 {% extends "layout.html" %}
-{% block title %}Übersetzungen bearbeiten{% endblock %}
+{% block title %}{{ t("Übersetzungen bearbeiten") }}{% endblock %}
 {% block content %}
-  <h2>{{ _('Übersetzungseditor') }}</h2>
+  <h2>{{ t("Übersetzungseditor") }}</h2>
 
   <form method="post">
-    <label for="language">{{ _('Sprache wählen') }}</label>
+    <label for="language">{{ t("Sprache wählen") }}</label>
     <select id="language" name="language" onchange="this.form.submit()">
-      {% for lang in available_languages %}
-        <option value="{{ lang }}" {% if lang == selected_language %}selected{% endif %}>
-          {{ lang }}
-        </option>
-      {% endfor %}
+      {% if available_languages is defined and available_languages %}
+        {% for lang in available_languages %}
+          <option value="{{ lang }}" {% if lang == selected_language %}selected{% endif %}>
+            {{ lang }}
+          </option>
+        {% endfor %}
+      {% else %}
+        <option>{{ t("Keine Sprachen gefunden") }}</option>
+      {% endif %}
     </select>
   </form>
 
-  {% if translations %}
-    <form method="post" action="{{ url_for('admin.translations', lang=selected_language) }}">
+  {% if translations is defined and translations %}
+    <form method="post" action="{{ url_for('admin.translations_editor', lang=selected_language) }}">
       <input type="hidden" name="language" value="{{ selected_language }}">
       {% for key, value in translations.items() %}
         <div class="panel">
@@ -23,7 +27,7 @@
           <input type="text" name="translations[{{ key }}]" id="{{ key }}" value="{{ value }}">
         </div>
       {% endfor %}
-      <button type="submit" class="btn">{{ _('Speichern') }}</button>
+      <button type="submit" class="btn">{{ t("Speichern") }}</button>
     </form>
   {% endif %}
 {% endblock %}

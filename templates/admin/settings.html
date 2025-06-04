@@ -1,15 +1,19 @@
 {% extends "layout.html" %}
-{% block title %}Bot Einstellungen{% endblock %}
+{% block title %}{{ t("Bot Einstellungen") }}{% endblock %}
 {% block content %}
-  <h2>{{ _('Bot-Einstellungen') }}</h2>
+  <h2>{{ t("Bot-Einstellungen") }}</h2>
 
   <form method="post">
-    {% for user in users %}
-      <label>
-        <input type="checkbox" name="allow_dm_{{ user.user_id }}" {% if user.allow_dm %}checked{% endif %}>
-        {{ user.username }} – {{ _('DM erlaubt') }}
-      </label><br>
-    {% endfor %}
-    <button type="submit" class="btn">{{ _('Speichern') }}</button>
+    {% if users is defined and users %}
+      {% for user in users %}
+        <label>
+          <input type="checkbox" name="allow_dm_{{ user.user_id }}" {% if user.allow_dm %}checked{% endif %}>
+          {{ user.username }} – {{ t("DM erlaubt") }}
+        </label><br>
+      {% endfor %}
+      <button type="submit" class="btn">{{ t("Speichern") }}</button>
+    {% else %}
+      <p>{{ t("Keine Benutzer gefunden.") }}</p>
+    {% endif %}
   </form>
 {% endblock %}

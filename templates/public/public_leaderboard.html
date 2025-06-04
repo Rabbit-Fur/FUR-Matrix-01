@@ -2,14 +2,29 @@
 {% block title %}{{ t("leaderboard_title") }}{% endblock %}
 {% block content %}
   <h2>{{ t("top_players") }}</h2>
-  {% for category, results in leaderboard.items() %}
+  {% set lb = leaderboard if leaderboard is defined else [] %}
+  {% if lb %}
     <div class="panel">
-      <h3>{{ t(category) }}</h3>
-      <ol>
-        {% for row in results %}
-          <li>{{ row.username }} – {{ row.score }}</li>
+      <table class="table table-striped">
+        <thead>
+          <tr>
+            <th>{{ t("rank") }}</th>
+            <th>{{ t("username") }}</th>
+            <th>{{ t("score") }}</th>
+          </tr>
+        </thead>
+        <tbody>
+        {% for row in lb %}
+          <tr>
+            <td>{{ row.rank }}</td>
+            <td>{{ row.username }}</td>
+            <td>{{ row.score }}</td>
+          </tr>
         {% endfor %}
-      </ol>
+        </tbody>
+      </table>
     </div>
-  {% endfor %}
+  {% else %}
+    <p>{{ t("No data available") }}</p>
+  {% endif %}
 {% endblock %}

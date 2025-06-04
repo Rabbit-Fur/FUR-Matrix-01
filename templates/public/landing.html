@@ -1,7 +1,12 @@
 {% extends "layout.html" %}
+
 {% block title %}{{ t("start_title") }}{% endblock %}
+
 {% block content %}
-  <h1>🐺 {{ t("welcome_message") }}</h1>
-  <p>{{ t("portal_intro") }}</p>
-  <a class="btn" href="{{ url_for('public.login') }}">{{ t("login_with_discord") }}</a>
+  <div style="text-align: center; margin-bottom: 2em;">
+    <img src="{{ url_for('static', filename='img/logo.png') }}" alt="FUR Logo" style="max-width:200px; margin-bottom: 1em;">
+    <h1>🐺 {{ t("welcome_message") }}</h1>
+    <p>{{ t("portal_intro") }}</p>
+    <a class="btn" href="{{ url_for('public.login') }}">{{ t("login_with_discord") }}</a>
+  </div>
 {% endblock %}

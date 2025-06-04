@@ -48,10 +48,10 @@ class Config:
     DISCORD_CLIENT_SECRET: str | None = get_env_str("DISCORD_CLIENT_SECRET", required=False)
     DISCORD_REDIRECT_URI: str | None = get_env_str("DISCORD_REDIRECT_URI", required=False)
     
-    #BABEL
+    # BABEL / i18n
     BABEL_DEFAULT_LOCALE = "de"
     BABEL_SUPPORTED_LOCALES = get_supported_languages()
-    
+
     # --- Internationalization ---
     SUPPORTED_LANGUAGES: list[str] = [
         "en", "de", "vi", "tr", "it", "cs", "es", "fr", "pl", "ru"

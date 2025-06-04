@@ -1,3 +1,7 @@
+"""
+main_app.py – Einstiegspunkt für das FUR-System (Web & Discord-Bot)
+Mit Debug-Modus für lokale Entwicklung und sauberem Application-Factory-Pattern.
+"""
 import sys
 import os
 sys.path.append(os.path.dirname(__file__))
@@ -66,6 +70,7 @@ def signal_handler(sig, frame):
     cleanup()
     sys.exit(0)
 
+# --- Main-Start für lokalen Betrieb und Zusatzdienste ---
 if __name__ == "__main__":
     try:
         init_db()
@@ -74,11 +79,12 @@ if __name__ == "__main__":
         signal.signal(signal.SIGINT, signal_handler)
         check_github_repo()
 
+        # Discord-Bot optional starten (asynchron im Thread)
         if get_env_bool("ENABLE_DISCORD_BOT", default=True):
             threading.Thread(target=start_discord_bot, daemon=True).start()
 
         port = get_env_int("PORT", required=False, default=8080)
-        debug = True
+        debug = True  # <--- Debug-Modus für lokale Entwicklung AKTIV
         logging.info(f"🌐 Starte Webserver auf http://localhost:{port} (Debug={debug})")
         app.run(host="0.0.0.0", port=port, debug=debug)
 
@@ -88,6 +94,7 @@ if __name__ == "__main__":
         log_error("Main", e)
         raise
 
+# ➕ Healthcheck für Railway/CI/Monitoring
 @app.route("/health")
 def healthcheck():
     return Response("ok", status=200)

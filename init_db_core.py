@@ -49,7 +49,7 @@ def init_db():
             FOREIGN KEY (created_by) REFERENCES users(id)
         );
         """,
-        # Teilnehmer (klassisch)
+        # Teilnehmer
         """
         CREATE TABLE IF NOT EXISTS participants (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -86,16 +86,8 @@ def init_db():
     try:
         conn = get_db_connection()
         cursor = conn.cursor()
-
-        # Standard-Tabellen
         for stmt in schema:
             cursor.executescript(stmt)
-
-        # Optional: erweiterte Event-Teilnehmer (neues System)
-        if os.path.exists("sql/init_event_participants.sql"):
-            with open("sql/init_event_participants.sql", "r", encoding="utf-8") as f:
-                cursor.executescript(f.read())
-
         conn.commit()
         conn.close()
         log.info("✅ Datenbank initialisiert/aktualisiert (%s)", DB_PATH)

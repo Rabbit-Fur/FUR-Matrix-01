@@ -1,13 +1,10 @@
-{% if 'r3' in session.get('role_ids', []) or 'r4' in session.get('role_ids', []) or session.get('admin_logged_in') %}
 {% extends "layout.html" %}
-{% block title %}Member Dashboard{% endblock %}
+{% block title %}{{ t("Member Dashboard") }}{% endblock %}
 {% block content %}
-  <h2>{{ _('Willkommen im Mitgliederbereich') }}</h2>
-  <p>{{ _('Hier findest du Downloads, Stats und deine persönlichen Daten.') }}</p>
-  <div class="flex">
-    <a class="btn" href="{{ url_for('members.downloads') }}">{{ _('Downloads') }}</a>
-    <a class="btn" href="{{ url_for('members.stats') }}">{{ _('Statistiken') }}</a>
-    <a class="btn" href="{{ url_for('public.settings') }}">{{ _('Einstellungen') }}</a>
+  <h2>{{ t("Willkommen im Mitgliederbereich") }}</h2>
+  <p>{{ t("Hier findest du Downloads, Stats und deine persönlichen Daten.") }}</p>
+  <div class="flex" style="gap:1rem;">
+    <a class="btn" href="{{ url_for('members.downloads') }}">{{ t('Downloads') }}</a>
+    <a class="btn" href="{{ url_for('members.stats') }}">{{ t('Statistiken') }}</a>
   </div>
 {% endblock %}
-{% endif %}

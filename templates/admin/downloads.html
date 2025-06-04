@@ -1,22 +1,28 @@
 {% extends "layout.html" %}
-{% block title %}Admin Downloads{% endblock %}
+{% block title %}{{ t("Admin Downloads") }}{% endblock %}
 {% block content %}
-  <h2>{{ _('Exporte & Berichte') }}</h2>
+  <h2>{{ t("Exporte & Berichte") }}</h2>
 
   <div class="panel">
-    <h3>{{ _('CSV-Exporte') }}</h3>
+    <h3>{{ t("CSV-Exporte") }}</h3>
     <ul>
-      <li><a href="{{ url_for('admin.export_participants') }}">📥 {{ _('Teilnehmer Export') }}</a></li>
-      <li><a href="{{ url_for('admin.export_scores') }}">📥 {{ _('Scores Export') }}</a></li>
+      <li><a href="{{ url_for('admin.export_participants') }}">📥 {{ t("Teilnehmer Export") }}</a></li>
+      <li><a href="{{ url_for('admin.export_scores') }}">📥 {{ t("Scores Export") }}</a></li>
     </ul>
   </div>
 
   <div class="panel">
-    <h3>{{ _('Letzte Berichte') }}</h3>
+    <h3>{{ t("Letzte Berichte") }}</h3>
     <ul>
-      {% for file in reports %}
-        <li><a href="{{ url_for('static', filename='reports/' ~ file) }}" target="_blank">{{ file }}</a></li>
-      {% endfor %}
+      {% if reports is defined and reports %}
+        {% for file in reports %}
+          <li>
+            <a href="{{ url_for('static', filename='reports/' ~ file) }}" target="_blank">{{ file }}</a>
+          </li>
+        {% endfor %}
+      {% else %}
+        <li>{{ t("Keine Berichte verfügbar.") }}</li>
+      {% endif %}
     </ul>
   </div>
 {% endblock %}

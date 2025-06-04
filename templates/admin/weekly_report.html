@@ -1,36 +1,47 @@
+{% extends "layout.html" %}
 
-{% extends 'admin/admin.html' %}
-
-{% block title %}Wöchentlicher Report{% endblock %}
+{% block title %}{{ t("Wöchentlicher Report") }}{% endblock %}
 
 {% block content %}
-<h1>📊 Wöchentlicher Report</h1>
+<h1>📊 {{ t("Wöchentlicher Report") }}</h1>
 
-<h2>🎯 Teilnahme letzte 7 Tage</h2>
+<h2>🎯 {{ t("Teilnahme letzte 7 Tage") }}</h2>
 <table border="1" cellpadding="5">
     <tr>
-        <th>Discord User ID</th>
-        <th>Anzahl Teilnahmen</th>
+        <th>{{ t("Discord User ID") }}</th>
+        <th>{{ t("Anzahl Teilnahmen") }}</th>
     </tr>
-    {% for row in participation %}
-    <tr>
-        <td>{{ row.user_id }}</td>
-        <td>{{ row.count }}</td>
-    </tr>
-    {% endfor %}
+    {% if participation is defined and participation %}
+      {% for row in participation %}
+      <tr>
+          <td>{{ row.user_id }}</td>
+          <td>{{ row.count }}</td>
+      </tr>
+      {% endfor %}
+    {% else %}
+      <tr>
+          <td colspan="2">{{ t("Keine Daten vorhanden.") }}</td>
+      </tr>
+    {% endif %}
 </table>
 
-<h2>🔮 Kommende Events (nächste 7 Tage)</h2>
+<h2>🔮 {{ t("Kommende Events (nächste 7 Tage)") }}</h2>
 <table border="1" cellpadding="5">
     <tr>
-        <th>Titel</th>
-        <th>Datum & Uhrzeit</th>
+        <th>{{ t("Titel") }}</th>
+        <th>{{ t("Datum & Uhrzeit") }}</th>
     </tr>
-    {% for event in upcoming %}
-    <tr>
-        <td>{{ event.title }}</td>
-        <td>{{ event.event_time }}</td>
-    </tr>
-    {% endfor %}
+    {% if upcoming is defined and upcoming %}
+      {% for event in upcoming %}
+      <tr>
+          <td>{{ event.title }}</td>
+          <td>{{ event.event_time }}</td>
+      </tr>
+      {% endfor %}
+    {% else %}
+      <tr>
+          <td colspan="2">{{ t("Keine Events in den nächsten 7 Tagen.") }}</td>
+      </tr>
+    {% endif %}
 </table>
 {% endblock %}

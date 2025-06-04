@@ -1,47 +1,6 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>FUR Progress Dashboard</title>
-  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600&display=swap" rel="stylesheet">
-  <style>
-    body {
-      font-family: 'Orbitron', sans-serif;
-      background-color: #0f0f0f;
-      color: #f0f0f0;
-      margin: 0;
-      padding: 20px;
-    }
-    h1 {
-      color: #9f00ff;
-    }
-    .log-entry {
-      background: #1a1a1a;
-      padding: 15px;
-      margin-bottom: 20px;
-      border-left: 6px solid #9f00ff;
-      box-shadow: 0 0 10px rgba(159, 0, 255, 0.5);
-    }
-    .log-entry h2 {
-      margin-top: 0;
-      color: #ffd700;
-    }
-    .status {
-      font-size: 0.95rem;
-    }
-    .status span {
-      display: inline-block;
-      margin-right: 10px;
-      padding: 5px 10px;
-      border-radius: 5px;
-    }
-    .done { background-color: #007f00; color: white; }
-    .pending { background-color: #b00020; color: white; }
-    .inprogress { background-color: #ffaa00; color: black; }
-  </style>
-</head>
-<body>
+{% extends "layout.html" %}
+{% block title %}FUR Progress Dashboard{% endblock %}
+{% block content %}
   <h1>FUR SYSTEM – Daily Progress Dashboard</h1>
 
   <div class="log-entry">
@@ -65,6 +24,4 @@
       <li>CI/CD auf GitHub finalisieren</li>
     </ul>
   </div>
-
-</body>
-</html>
+{% endblock %}

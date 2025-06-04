@@ -1,29 +1,29 @@
 {% extends "layout.html" %}
-{% block title %}Event erstellen{% endblock %}
+{% block title %}{{ t("Event erstellen") }}{% endblock %}
 {% block content %}
-  <h2>{{ _('Neues Event erstellen') }}</h2>
+  <h2>{{ t("Neues Event erstellen") }}</h2>
 
   <form method="post">
-    <label for="title">{{ _('Titel') }}</label>
+    <label for="title">{{ t("Titel") }}</label>
     <input type="text" id="title" name="title" required>
 
-    <label for="description">{{ _('Beschreibung') }}</label>
+    <label for="description">{{ t("Beschreibung") }}</label>
     <textarea id="description" name="description"></textarea>
 
-    <label for="event_time">{{ _('Datum & Uhrzeit') }}</label>
+    <label for="event_time">{{ t("Datum & Uhrzeit") }}</label>
     <input type="datetime-local" id="event_time" name="event_time" required>
 
-    <label for="role">{{ _('Zielrolle') }}</label>
+    <label for="role">{{ t("Zielrolle") }}</label>
     <input type="text" id="role" name="role">
 
-    <label for="recurrence">{{ _('Wiederholung') }}</label>
+    <label for="recurrence">{{ t("Wiederholung") }}</label>
     <select id="recurrence" name="recurrence">
-      <option value="">{{ _('Keine') }}</option>
-      <option value="daily">{{ _('Täglich') }}</option>
-      <option value="weekly">{{ _('Wöchentlich') }}</option>
-      <option value="monthly">{{ _('Monatlich') }}</option>
+      <option value="">{{ t("Keine") }}</option>
+      <option value="daily">{{ t("Täglich") }}</option>
+      <option value="weekly">{{ t("Wöchentlich") }}</option>
+      <option value="monthly">{{ t("Monatlich") }}</option>
     </select>
 
-    <button type="submit" class="btn">{{ _('Erstellen') }}</button>
+    <button type="submit" class="btn">{{ t("Erstellen") }}</button>
   </form>
 {% endblock %}
