@@ -1,8 +1,6 @@
 from flask import Blueprint, render_template
 import os
 from datetime import datetime
-from dashboard.routes import dashboard
-app.register_blueprint(dashboard)
 
 dashboard = Blueprint("dashboard", __name__, url_prefix="/dashboard")
 
