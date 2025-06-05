@@ -4,7 +4,7 @@ public_routes.py – Flask Blueprint für alle öffentlichen Views
 Stellt alle öffentlichen Seiten bereit (ohne Login/Role), z.B. Landing Page, Login, Lore, Events, Leaderboards.
 """
 import os
-from flask import Blueprint, render_template, current_app, request, session, redirect, url_for, abort
+from flask import Blueprint, render_template, current_app, request, session, redirect, url_for, abort, flash
 from fur_lang.i18n import get_supported_languages
 
 public_bp = Blueprint("public", __name__)
@@ -52,6 +52,13 @@ def view_event(event_id):
         abort(404)
     event = {"id": event_id, "title": f"Event {event_id}", "date": "2025-06-01", "description": "Details folgen..."}
     return render_template("public/view_event.html", event=event)
+
+@public_bp.route("/events/<int:event_id>/join", methods=["POST"])
+def join_event(event_id):
+    """Ermöglicht das Beitreten zu einem Event (Dummy, Demo-Logik)."""
+    # Beispiel: Session-User in participants eintragen (hier nur Flash-Meldung als Dummy)
+    flash("Du bist dem Event erfolgreich beigetreten!", "success")
+    return redirect(url_for('public.view_event', event_id=event_id))
 
 @public_bp.route("/hall_of_fame")
 def hall_of_fame():
