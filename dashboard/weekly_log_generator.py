@@ -52,8 +52,8 @@ def run_weekly_log():
 
     cur.execute("""
         SELECT user_id, COUNT(*) as count
-        FROM event_participants
-        JOIN events ON event_participants.event_id = events.id
+        FROM participants
+        JOIN events ON participants.event_id = events.id
         WHERE datetime(events.event_time) BETWEEN ? AND ?
         GROUP BY user_id ORDER BY count DESC
     """, (week_start.isoformat(), now.isoformat()))
