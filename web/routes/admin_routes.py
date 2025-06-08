@@ -4,7 +4,9 @@ admin_routes.py – Flask Blueprint für Admin-Views (geschützt, R4+)
 Stellt alle Admin-Oberflächen bereit, geschützt durch das r4_required-Decorator (nur Admins/R4).
 """
 
-from flask import Blueprint, render_template, Response
+from flask import Blueprint, render_template, Response, request, current_app
+import os
+import json
 from web.auth.decorators import r4_required
 
 admin_bp = Blueprint("admin", __name__, url_prefix="/admin")
@@ -106,12 +108,47 @@ def tools():
     return render_template("admin/tools.html")
 
 @r4_required
-@admin_bp.route("/translations_editor")
+@admin_bp.route("/translations_editor", methods=["GET", "POST"])
 def translations_editor():
-    """
-    Editor für Übersetzungen und Internationalisierung.
-    """
+    """Editor für Übersetzungen und Internationalisierung."""
 
+    from fur_lang.i18n import get_supported_languages, translations
+
+    supported_languages = get_supported_languages()
+    selected_language = request.args.get("lang") or request.form.get("language")
+    if not selected_language and supported_languages:
+        selected_language = supported_languages[0]
+
+    data = {}
+    file_path = None
+    if selected_language:
+        file_path = os.path.join(current_app.root_path, "translations", f"{selected_language}.json")
+        if os.path.exists(file_path):
+            with open(file_path, "r", encoding="utf-8") as f:
+                try:
+                    data = json.load(f)
+                except json.JSONDecodeError:
+                    current_app.logger.error("Invalid JSON in %s", file_path)
+
+    if request.method == "POST" and any(k.startswith("translations[") for k in request.form.keys()):
+        updated = {}
+        for k, v in request.form.items():
+            if k.startswith("translations[") and k.endswith("]"):
+                key = k[len("translations["):-1]
+                updated[key] = v
+        if file_path:
+            os.makedirs(os.path.dirname(file_path), exist_ok=True)
+            with open(file_path, "w", encoding="utf-8") as f:
+                json.dump(updated, f, indent=2, ensure_ascii=False)
+            translations[selected_language] = updated
+            data = updated
+
+    return render_template(
+        "admin/translations_editor.html",
+        available_languages=supported_languages,
+        selected_language=selected_language,
+        translations=data,
+    )
 # --- Zusätzliche Admin-Endpoints für Tools & Exporte ---
 
 @admin_bp.route("/trigger_reminder", methods=["POST"])
