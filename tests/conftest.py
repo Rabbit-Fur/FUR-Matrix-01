@@ -5,6 +5,14 @@ Stellt Fixtures für Flask-App, Test-Client, und Datenbank-Setup bereit.
 Erleichtert Unit- und Integrationstests aller Komponenten (Web, Bot, DB).
 """
 
+import os
+
+# Defaultwerte für benötigte Umgebungsvariablen setzen, damit die Konfiguration
+# auch in der Testumgebung ohne .env funktioniert.
+os.environ.setdefault("DISCORD_TOKEN", "dummy")
+os.environ.setdefault("DISCORD_GUILD_ID", "1")
+os.environ.setdefault("DISCORD_CHANNEL_ID", "1")
+
 import pytest
 from web import create_app
 from init_db_core import init_db, get_db_connection
