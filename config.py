@@ -32,7 +32,9 @@ class Config:
     SESSION_COOKIE_HTTPONLY: bool = True
     SESSION_COOKIE_SAMESITE: str = "Lax"
     PERMANENT_SESSION_LIFETIME: timedelta = timedelta(
-        minutes=get_env_int("SESSION_LIFETIME_MINUTES", default=60)
+        minutes=get_env_int(
+            "SESSION_LIFETIME_MINUTES", required=False, default=60
+        )
     )
     WTF_CSRF_ENABLED: bool = True
 
