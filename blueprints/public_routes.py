@@ -19,6 +19,7 @@ import requests
 
 public_bp = Blueprint("public", __name__)
 
+
 @public_bp.route("/")
 def landing():
     """
@@ -26,12 +27,14 @@ def landing():
     """
     return render_template("public/landing.html")
 
+
 @public_bp.route("/login")
 def login():
     """
     Login-Seite (öffentlich).
     """
     return render_template("public/login.html")
+
 
 @public_bp.route("/login/discord")
 def discord_login():
@@ -50,6 +53,7 @@ def discord_login():
     }
     url = f"https://discord.com/oauth2/authorize?{urlencode(params)}"
     return redirect(url)
+
 
 @public_bp.route("/login/discord/callback")
 def discord_callback():
@@ -97,12 +101,21 @@ def discord_callback():
     flash("Erfolgreich mit Discord eingeloggt", "success")
     return redirect(url_for("public.landing"))
 
+
+# Optionale Kurz-URL, falls der OAuth-Redirect ohne Pfad genutzt wird
+@public_bp.route("/callback")
+def callback_alias():
+    """Alias, ruft die eigentliche Discord-OAuth-Callback-Route auf."""
+    return discord_callback()
+
+
 @public_bp.route("/lore")
 def lore():
     """
     Öffentliche Lore-/Story-Seite.
     """
     return render_template("public/lore.html")
+
 
 @public_bp.route("/calendar")
 def calendar():
@@ -111,12 +124,14 @@ def calendar():
     """
     return render_template("public/calendar.html")
 
+
 @public_bp.route("/events_list")
 def events_list():
     """
     Öffentliche Event-Liste.
     """
     return render_template("public/events_list.html")
+
 
 @public_bp.route("/hall_of_fame")
 def hall_of_fame():
@@ -125,12 +140,14 @@ def hall_of_fame():
     """
     return render_template("public/hall_of_fame.html")
 
+
 @public_bp.route("/public_leaderboard")
 def public_leaderboard():
     """
     Öffentliche Leaderboard-Seite.
     """
     return render_template("public/public_leaderboard.html")
+
 
 @public_bp.route("/view_event")
 def view_event():
@@ -147,7 +164,10 @@ def join_event(event_id):
 
     user_id = session["discord_user_id"]
     db = get_db()
-    db.execute("INSERT INTO event_participants (event_id, user_id) VALUES (?, ?)", (event_id, user_id))
+    db.execute(
+        "INSERT INTO event_participants (event_id, user_id) VALUES (?, ?)",
+        (event_id, user_id),
+    )
     db.commit()
     flash(t("you_joined_event"), "success")
     return redirect(url_for("public.view_event", event_id=event_id))
