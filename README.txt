@@ -20,6 +20,8 @@ export DISCORD_CHANNEL_ID=1
 export DISCORD_CLIENT_ID=<client id>
 export DISCORD_CLIENT_SECRET=<client secret>
 export DISCORD_REDIRECT_URI=http://localhost:8080/login/discord/callback
+# Alternativ kann auch die Kurz-URL
+# http://localhost:8080/callback verwendet werden
 ```
 
 3. Anwendung starten:
