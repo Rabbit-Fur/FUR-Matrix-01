@@ -1,9 +1,10 @@
-from flask import Flask
-app = Flask(__name__)
+"""Minimaler Einstiegspunkt zum lokalen Testen der Web-App."""
 
-@app.route("/")
-def hello():
-    return "Hello, FUR!"
+from web import create_app
+
+# Lade die komplette Anwendung mit allen Blueprints
+app = create_app()
 
 if __name__ == "__main__":
+    # Standard-Port und Debug-Modus für lokale Entwicklung
     app.run(port=8080, debug=True)
