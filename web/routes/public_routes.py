@@ -4,7 +4,19 @@ public_routes.py – Flask Blueprint für alle öffentlichen Views
 Stellt alle öffentlichen Seiten bereit (ohne Login/Role), z.B. Landing Page, Login, Lore, Events, Leaderboards.
 """
 import os
-from flask import Blueprint, render_template, current_app, request, session, redirect, url_for, abort, flash
+from flask import (
+    Blueprint,
+    render_template,
+    current_app,
+    request,
+    session,
+    redirect,
+    url_for,
+    abort,
+    flash,
+)
+from urllib.parse import urlencode
+import requests
 from fur_lang.i18n import get_supported_languages
 
 public_bp = Blueprint("public", __name__)
@@ -24,6 +36,70 @@ def set_language():
 def login():
     """Login-Seite (öffentlich/Discord)."""
     return render_template("public/login.html")
+
+@public_bp.route("/login/discord")
+def discord_login():
+    """Startet den OAuth-Login bei Discord."""
+    client_id = current_app.config.get("DISCORD_CLIENT_ID")
+    redirect_uri = current_app.config.get("DISCORD_REDIRECT_URI")
+    if not client_id or not redirect_uri:
+        flash("Discord OAuth nicht konfiguriert", "danger")
+        return redirect(url_for("public.login"))
+
+    params = {
+        "client_id": client_id,
+        "redirect_uri": redirect_uri,
+        "response_type": "code",
+        "scope": "identify",
+    }
+    url = f"https://discord.com/oauth2/authorize?{urlencode(params)}"
+    return redirect(url)
+
+@public_bp.route("/login/discord/callback")
+def discord_callback():
+    """Callback-URL für den Discord-OAuth-Login."""
+    code = request.args.get("code")
+    if not code:
+        flash("Discord Login fehlgeschlagen", "danger")
+        return redirect(url_for("public.login"))
+
+    try:
+        token_resp = requests.post(
+            "https://discord.com/api/oauth2/token",
+            data={
+                "client_id": current_app.config.get("DISCORD_CLIENT_ID"),
+                "client_secret": current_app.config.get("DISCORD_CLIENT_SECRET"),
+                "grant_type": "authorization_code",
+                "code": code,
+                "redirect_uri": current_app.config.get("DISCORD_REDIRECT_URI"),
+            },
+            headers={"Content-Type": "application/x-www-form-urlencoded"},
+            timeout=10,
+        )
+        token_resp.raise_for_status()
+        access_token = token_resp.json().get("access_token")
+    except Exception as e:
+        current_app.logger.error(f"Discord Token Error: {e}")
+        flash("Discord Login fehlgeschlagen", "danger")
+        return redirect(url_for("public.login"))
+
+    try:
+        user_resp = requests.get(
+            "https://discord.com/api/users/@me",
+            headers={"Authorization": f"Bearer {access_token}"},
+            timeout=10,
+        )
+        user_resp.raise_for_status()
+        user = user_resp.json()
+    except Exception as e:
+        current_app.logger.error(f"Discord User Error: {e}")
+        flash("Discord Login fehlgeschlagen", "danger")
+        return redirect(url_for("public.login"))
+
+    session["discord_user_id"] = user["id"]
+    session["discord_username"] = user.get("username")
+    flash("Erfolgreich mit Discord eingeloggt", "success")
+    return redirect(url_for("public.landing"))
 
 @public_bp.route("/lore")
 def lore():
