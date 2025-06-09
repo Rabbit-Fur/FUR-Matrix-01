@@ -49,6 +49,11 @@ class Config:
     DISCORD_CLIENT_ID: str | None = get_env_str("DISCORD_CLIENT_ID", required=False)
     DISCORD_CLIENT_SECRET: str | None = get_env_str("DISCORD_CLIENT_SECRET", required=False)
     DISCORD_REDIRECT_URI: str | None = get_env_str("DISCORD_REDIRECT_URI", required=False)
+
+    # --- Discord Role Mapping ---
+    R3_ROLE_IDS: set[str] = set(filter(None, get_env_str("R3_ROLE_IDS", required=False, default="").split(',')))
+    R4_ROLE_IDS: set[str] = set(filter(None, get_env_str("R4_ROLE_IDS", required=False, default="").split(',')))
+    ADMIN_ROLE_IDS: set[str] = set(filter(None, get_env_str("ADMIN_ROLE_IDS", required=False, default="").split(',')))
     
     # BABEL / i18n
     BABEL_DEFAULT_LOCALE = "de"

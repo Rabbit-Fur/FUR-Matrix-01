@@ -20,6 +20,10 @@ export DISCORD_CHANNEL_ID=1
 export DISCORD_CLIENT_ID=<client id>
 export DISCORD_CLIENT_SECRET=<client secret>
 export DISCORD_REDIRECT_URI=http://localhost:8080/login/discord/callback
+# Rollen-IDs für Zugriffsebenen (kommasepariert)
+export R3_ROLE_IDS=1234,5678
+export R4_ROLE_IDS=9876
+export ADMIN_ROLE_IDS=1111
 # Alternativ kann auch die Kurz-URL
 # http://localhost:8080/callback verwendet werden
 ```
