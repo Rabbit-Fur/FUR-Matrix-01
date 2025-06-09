@@ -66,46 +66,68 @@ def discord_callback():
     """Callback-URL für den Discord-OAuth-Login."""
     code = request.args.get("code")
     if not code:
-        flash("Discord Login fehlgeschlagen", "danger")
-        return redirect(url_for("public.login"))
+        return "Fehlender Code", 400
 
-    try:
-        token_resp = requests.post(
-            "https://discord.com/api/oauth2/token",
-            data={
-                "client_id": current_app.config.get("DISCORD_CLIENT_ID"),
-                "client_secret": current_app.config.get("DISCORD_CLIENT_SECRET"),
-                "grant_type": "authorization_code",
-                "code": code,
-                "redirect_uri": current_app.config.get("DISCORD_REDIRECT_URI"),
-            },
-            headers={"Content-Type": "application/x-www-form-urlencoded"},
-            timeout=10,
+    data = {
+        "client_id": current_app.config.get("DISCORD_CLIENT_ID"),
+        "client_secret": current_app.config.get("DISCORD_CLIENT_SECRET"),
+        "grant_type": "authorization_code",
+        "code": code,
+        "redirect_uri": current_app.config.get("DISCORD_REDIRECT_URI"),
+    }
+    headers = {"Content-Type": "application/x-www-form-urlencoded"}
+    token_response = requests.post(
+        "https://discord.com/api/oauth2/token", data=data, headers=headers
+    )
+
+    if token_response.status_code != 200:
+        return (
+            f"Discord Token Error: {token_response.status_code} - {token_response.text}",
+            401,
         )
-        token_resp.raise_for_status()
-        access_token = token_resp.json().get("access_token")
-    except Exception as e:
-        current_app.logger.error(f"Discord Token Error: {e}")
-        flash("Discord Login fehlgeschlagen", "danger")
-        return redirect(url_for("public.login"))
 
-    try:
-        user_resp = requests.get(
-            "https://discord.com/api/users/@me",
-            headers={"Authorization": f"Bearer {access_token}"},
-            timeout=10,
-        )
-        user_resp.raise_for_status()
-        user = user_resp.json()
-    except Exception as e:
-        current_app.logger.error(f"Discord User Error: {e}")
-        flash("Discord Login fehlgeschlagen", "danger")
-        return redirect(url_for("public.login"))
+    access_token = token_response.json().get("access_token")
 
-    session["discord_user_id"] = user["id"]
-    session["discord_username"] = user.get("username")
+    user_response = requests.get(
+        "https://discord.com/api/users/@me",
+        headers={"Authorization": f"Bearer {access_token}"},
+    )
+    user_data = user_response.json()
+
+    guild_response = requests.get(
+        f"https://discord.com/api/users/@me/guilds/{current_app.config.get('DISCORD_GUILD_ID')}/member",
+        headers={"Authorization": f"Bearer {access_token}"},
+    )
+
+    if guild_response.status_code != 200:
+        return "Nicht-Mitglied im FUR Discord-Server", 403
+
+    guild_member = guild_response.json()
+    user_roles = set(guild_member.get("roles", []))
+
+    r3_roles = current_app.config.get("R3_ROLE_IDS")
+    r4_roles = current_app.config.get("R4_ROLE_IDS")
+    admin_roles = current_app.config.get("ADMIN_ROLE_IDS")
+
+    if user_roles & admin_roles:
+        role_level = "ADMIN"
+    elif user_roles & r4_roles:
+        role_level = "R4"
+    elif user_roles & r3_roles:
+        role_level = "R3"
+    else:
+        return "Keine gültige Rolle für den Zugriff", 403
+
+    session["user"] = {
+        "id": user_data["id"],
+        "username": user_data["username"],
+        "avatar": user_data["avatar"],
+        "email": user_data.get("email"),
+        "role_level": role_level,
+    }
+
     flash("Erfolgreich mit Discord eingeloggt", "success")
-    return redirect(url_for("public.landing"))
+    return redirect(url_for("dashboard.progress"))
 
 
 # Optionale Kurz-URL, falls der OAuth-Redirect ohne Pfad genutzt wird
