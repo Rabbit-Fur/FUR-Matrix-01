@@ -4,7 +4,17 @@ admin_routes.py – Flask Blueprint für Admin-Views (geschützt, R4+)
 Stellt alle Admin-Oberflächen bereit, geschützt durch das r4_required-Decorator (nur Admins/R4).
 """
 
-from flask import Blueprint, render_template, Response, request, current_app
+from flask import (
+    Blueprint,
+    render_template,
+    Response,
+    request,
+    current_app,
+    redirect,
+    url_for,
+    flash,
+)
+from init_db_core import get_db_connection
 import os
 import json
 from web.auth.decorators import r4_required
@@ -28,11 +38,30 @@ def calendar():
     return render_template("admin/calendar.html")
 
 @r4_required
-@admin_bp.route("/create_event")
+@admin_bp.route("/create_event", methods=["GET", "POST"])
 def create_event():
     """
     Event-Erstellung für Admins.
     """
+    if request.method == "POST":
+        title = request.form.get("title")
+        event_time = request.form.get("event_time")
+        description = request.form.get("description")
+
+        try:
+            conn = get_db_connection()
+            conn.execute(
+                "INSERT INTO events (title, event_time, created_by, description) VALUES (?, ?, ?, ?)",
+                (title, event_time, 1, description),
+            )
+            conn.commit()
+            conn.close()
+            flash("Event erstellt", "success")
+            return redirect(url_for("admin.events"))
+        except Exception as e:
+            current_app.logger.error("Event creation failed: %s", e, exc_info=True)
+            flash("Fehler beim Speichern", "danger")
+
     return render_template("admin/create_event.html")
 
 @r4_required
