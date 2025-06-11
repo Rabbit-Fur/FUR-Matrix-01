@@ -1,22 +1,12 @@
 [phases.setup]
-# SQLite benötigt die C-Bibliothek zur Laufzeit
 aptPkgs = ["libsqlite3-0"]
-
-# Diese Pakete werden aus dem Nix-Paket-Manager installiert
 nixPkgs = ["python3", "pip", "nodejs"]
 
 [phases.install]
-# Installiere Python-Abhängigkeiten
-# Danach die Node.js-Abhängigkeiten für Codex etc.
 cmds = [
   "pip install -r requirements.txt",
   "npm install"
 ]
 
-[phases.build]
-# Optional: Baue Assets, führe Tests oder linters aus
-# cmds = ["npm run build"]
-
 [start]
-# Flask oder anderes Startkommando für dein Websystem
-cmd = "python3 app.py"
+cmd = "python3 main_app.py"
