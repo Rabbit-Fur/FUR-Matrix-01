@@ -1,0 +1,9 @@
+{
+  "i18nDir": "translations",
+  "scripts": {
+    "sync": "python i18n_tools/translate_sync.py",
+    "audit": "python utils/github_service.py --audit",
+    "fix": "python utils/auto_fixer.py",
+    "release": "python utils/github_service.py --release"
+  }
+}
