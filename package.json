@@ -1,0 +1,10 @@
+{
+  "name": "fur-project",
+  "version": "1.0.0",
+  "scripts": {
+    "codex:sync": "codex-fur sync",
+    "codex:audit": "codex-fur audit",
+    "codex:fix": "codex-fur fix",
+    "codex:release": "codex-fur release"
+  }
+}
