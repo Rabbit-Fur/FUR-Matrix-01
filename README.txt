@@ -38,6 +38,14 @@ Das Skript `mini.py` ist lediglich für kurze Tests gedacht und lädt keine Blue
 
 ## Codex-FUR Befehle
 
+Zuerst das Tool global installieren:
+```bash
+npm install -g github:Rabbit-Fur/codex-fur
+```
+
+Nach der Installation kann die Konfiguration mit `codex-fur init` erstellt werden.
+
+
 Das Projekt nutzt [codex-fur](https://github.com/Rabbit-Fur/codex-fur) für Wartungsaufgaben.
 Nach der Installation stehen diese npm-Scripts zur Verfügung:
 
