@@ -1,0 +1,74 @@
+name: FUR Codex Automation
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  schedule:
+    - cron: '0 1 1 * *'  # Jeden 1. des Monats um 01:00 Uhr (Champion-Autopilot)
+
+jobs:
+  codex-review:
+    name: Run Codex with Autopilot
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Setup Python & Node
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.11
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 18
+
+      - name: Install Codex CLI & Tools
+        run: |
+          npm install -g openai-codex
+          pip install -r requirements.txt
+          pip install black isort
+
+      - name: Run translate_sync.py
+        run: |
+          python main/i18n_tools/translate_sync.py
+
+      - name: Run Codex Tasks
+        run: |
+          codex --task "
+            1. Prüfe und vervollständige alle /main/translations/*.json.
+            2. Reminder-System (reminder_cog.py) auf fur_lang-Nutzung und Zeitsteuerung prüfen.
+            3. Champion-Autopilot (reminder_autopilot.py) validieren: Monatswechsel, Poster-Generierung, Discord-Webhook-Struktur."
+
+      - name: Run Linter
+        run: |
+          black . && isort .
+
+      - name: Run Tests
+        run: |
+          python -m unittest discover
+
+      - name: Commit & Create PR if needed
+        id: pr-check
+        run: |
+          git config user.name "Codex Bot"
+          git config user.email "codex@openai.com"
+          git add . || true
+          git diff --cached --quiet || git commit -m "Codex Auto-Fix: Reminder, i18n, Champion"
+          git diff --cached --quiet && echo "no_changes=true" >> $GITHUB_OUTPUT || echo "no_changes=false" >> $GITHUB_OUTPUT
+
+      - name: Create Pull Request (if changes)
+        if: steps.pr-check.outputs.no_changes == 'false'
+        uses: peter-evans/create-pull-request@v5
+        with:
+          commit-message: "Codex Auto-Fix: Reminder/i18n/Champion"
+          branch: codex/fix-${{ github.run_id }}
+          title: "🛠 Codex Fixes (Reminder, i18n, Champion)"
+          body: |
+            Automatisch generierter Pull Request von Codex:
+            - Reminder-System geprüft und ggf. korrigiert
+            - Übersetzungsdateien synchronisiert via translate_sync.py
+            - Champion-Autopilot getestet und aktualisiert
+          labels: codex, auto-fix
