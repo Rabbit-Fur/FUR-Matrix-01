@@ -22,4 +22,4 @@ codex-fur sync     # Übersetzungen synchronisieren
 codex-fur audit    # Projekt analysieren & fixen
 codex-fur release  # Commit, Push & Tag auf main
 ```
-# Codex FUR – v2 2Release Test am 12.06.2025
+# Codex FUR – v22 2Release Test am 12.06.2025
