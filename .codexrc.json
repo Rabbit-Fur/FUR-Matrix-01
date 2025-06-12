@@ -1,0 +1,52 @@
+{
+  "name": "codex-fur",
+  "description": "FUR System Codex: Validiert, vervollständigt und verbessert automatisch alle Projektdateien nach FUR QUM Codex",
+  "include": [
+    "main_app.py",
+    "reminder/*.py",
+    "event/*.py",
+    "leaderboard/*.py",
+    "translations/*.json",
+    "static/**/*.js",
+    "templates/**/*.html",
+    "admin/**/*.py",
+    "utils/*.py"
+  ],
+  "exclude": [
+    "**/venv/**",
+    "**/__pycache__/**",
+    "**/node_modules/**"
+  ],
+  "tasks": [
+    {
+      "name": "Lint & Fix Python",
+      "type": "lint",
+      "language": "python",
+      "style": "pep8",
+      "autoFix": true
+    },
+    {
+      "name": "Validate and autofix HTML/Jinja",
+      "type": "format",
+      "language": "html",
+      "autoFix": true
+    },
+    {
+      "name": "Check and complete translations",
+      "type": "translate_sync",
+      "source": "de.json",
+      "targets": ["en.json", "tr.json", "vi.json"]
+    },
+    {
+      "name": "Refactor JS",
+      "type": "lint",
+      "language": "javascript",
+      "autoFix": true
+    },
+    {
+      "name": "Meta Check",
+      "type": "meta",
+      "instructions": "Ensure all files follow the FUR Codex for structure, naming, modularity and role-protection logic."
+    }
+  ]
+}
