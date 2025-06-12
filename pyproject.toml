@@ -1,0 +1,15 @@
+[project]
+name = "fur-system"
+version = "0.1.0"
+description = "Champion, Reminder und Leaderboard System für GGW"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+  "Flask",
+  "requests",
+  "discord.py",
+  "schedule"
+]
+
+[tool.setuptools]
+packages = ["blueprints", "bot", "core", "dashboard", "utils", "web"]
