@@ -4,12 +4,15 @@ init_db_core.py – Initialisiert die SQLite-Datenbank für das FUR-System
 Legt beim ersten Start alle notwendigen Tabellen an (User, Events, Teilnehmer, Reminder, Hall of Fame).
 """
 
+import logging
 import os
 import sqlite3
-import logging
 
-DB_PATH = os.getenv("DATABASE_PATH") or os.path.join(os.path.dirname(__file__), "data", "admin_users.db")
+DB_PATH = os.getenv("DATABASE_PATH") or os.path.join(
+    os.path.dirname(__file__), "data", "admin_users.db"
+)
 log = logging.getLogger(__name__)
+
 
 def get_db_connection() -> sqlite3.Connection:
     """
@@ -21,6 +24,7 @@ def get_db_connection() -> sqlite3.Connection:
     conn = sqlite3.connect(DB_PATH)
     conn.row_factory = sqlite3.Row
     return conn
+
 
 def init_db():
     """
@@ -35,6 +39,7 @@ def init_db():
             username TEXT UNIQUE NOT NULL,
             password_hash TEXT NOT NULL,
             role TEXT NOT NULL,
+            discord_id TEXT,
             created_at TEXT NOT NULL
         );
         """,
@@ -70,6 +75,30 @@ def init_db():
             FOREIGN KEY (user_id) REFERENCES users(id)
         );
         """,
+        # Custom Reminders
+        """
+        CREATE TABLE IF NOT EXISTS reminders (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            message TEXT NOT NULL,
+            send_time TEXT,
+            created_by INTEGER,
+            FOREIGN KEY (created_by) REFERENCES users(id)
+        );
+        """,
+        """
+        CREATE TABLE IF NOT EXISTS reminder_participants (
+            reminder_id INTEGER NOT NULL,
+            user_id INTEGER NOT NULL,
+            PRIMARY KEY (reminder_id, user_id),
+            FOREIGN KEY (reminder_id) REFERENCES reminders(id) ON DELETE CASCADE,
+            FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+        );
+        """,
+        """
+        CREATE TABLE IF NOT EXISTS reminder_optout (
+            user_id INTEGER PRIMARY KEY REFERENCES users(id) ON DELETE CASCADE
+        );
+        """,
         # Hall of Fame (Champions)
         """
         CREATE TABLE IF NOT EXISTS hall_of_fame (
@@ -80,7 +109,7 @@ def init_db():
             poster_url TEXT,
             created_at TEXT
         );
-        """
+        """,
     ]
 
     try:
