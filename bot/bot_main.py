@@ -1,25 +1,17 @@
-"""
-bot_main.py – Startpunkt für den Discord-Bot (FUR System)
-"""
+"""Startpunkt für den Discord-Bot (FUR System)."""
 
 import asyncio
 import logging
 
-"""
-Unterstützt echten Betrieb (discord.py) und Fallback mit Stub für Testumgebungen.
-Initialisiert Intents, registriert Events, startet den Bot.
-"""
-
-import logging
+"""Unterstützt echten Betrieb (discord.py) und Fallback mit Stub."""
 
 try:
     import discord
     from discord.ext import commands
 
     IS_STUB = False
-except ImportError:
-    # Fallback: Minimal-Stub nutzen, falls discord.py nicht installiert ist
-    import discord_util as discord
+except ImportError:  # pragma: no cover - optional for testing
+    import discord_util as discord  # type: ignore
 
     IS_STUB = True
 
@@ -47,10 +39,15 @@ bot = commands.Bot(command_prefix="!", intents=intents)
 
 @bot.event
 async def on_ready():
-    log.info(f"✅ Eingeloggt als {bot.user} (ID: {getattr(bot.user, 'id', 'n/a')})")
+    log.info(
+        "✅ Eingeloggt als %s (ID: %s)",
+        bot.user,
+        getattr(bot.user, "id", "n/a"),
+    )
 
 
 def is_ready() -> bool:
+    """Return True if the bot reports readiness."""
     return hasattr(bot, "is_ready") and bot.is_ready()
 
 
@@ -63,58 +60,25 @@ async def load_extensions(bot):
         log.error(f"❌ Fehler beim Laden der Reminder-Cogs: {e}")
 
 
-def main():
-    try:
-        from config import Config
+async def start_bot() -> None:
+    """Load cogs and start the bot asynchronously."""
+    from config import Config
 
-        log.info("🚀 Discord-Bot wird gestartet...")
-
-        async def start_bot():
-            await load_extensions(bot)
-            await bot.start(Config.DISCORD_TOKEN)
-
-        asyncio.run(start_bot())
-
-    except Exception as e:
-        log.critical(
-            f"❌ Login fehlgeschlagen. Prüfe Token und Intents: {e}", exc_info=True
-        )
-
-
-def run_bot():
-    """Event: Bot ist bereit und eingeloggt."""
-    log.info(f"✅ Eingeloggt als {bot.user} (ID: {getattr(bot.user, 'id', 'n/a')})")
-
-
-def is_ready() -> bool:
-    """
-    Prüft, ob der Bot einsatzbereit ist.
-
-    Returns:
-        bool: True, wenn Bot bereit.
-    """
-    return hasattr(bot, "is_ready") and bot.is_ready()
+    await load_extensions(bot)
+    await bot.start(Config.DISCORD_TOKEN)
 
 
 def main() -> None:
-    """
-    Startet den Discord-Bot.
-
-    Nutzt Token aus Config, meldet Fehler klar im Log.
-    """
+    """Entry point used by external scripts."""
     try:
-        from config import Config
-
         log.info("🚀 Discord-Bot wird gestartet...")
-        bot.run(Config.DISCORD_TOKEN)
+        asyncio.run(start_bot())
     except Exception as e:
         log.critical(
-            f"❌ Login fehlgeschlagen. Prüfe Token und Intents: {e}", exc_info=True
+            "❌ Login fehlgeschlagen. Prüfe Token und Intents: %s", e, exc_info=True
         )
 
 
 def run_bot() -> None:
-    """
-    Alias für Main (Kompatibilität zu anderem Systemcode).
-    """
+    """Backward compatible alias for :func:`main`."""
     main()
