@@ -8,9 +8,24 @@ import logging
 import os
 import sqlite3
 
-DB_PATH = os.getenv("DATABASE_PATH") or os.path.join(
-    os.path.dirname(__file__), "data", "admin_users.db"
-)
+
+def get_db_path() -> str:
+    """Return absolute path to the SQLite database."""
+    env_url = os.getenv("DATABASE_URL")
+    if env_url and env_url.startswith("sqlite:///"):
+        db_path = env_url.replace("sqlite:///", "", 1)
+    else:
+        db_path = env_url or os.path.join(
+            os.path.dirname(__file__), "data", "admin_users.db"
+        )
+    abs_path = os.path.abspath(db_path)
+    os.makedirs(os.path.dirname(abs_path), exist_ok=True)
+    if not os.path.exists(abs_path):
+        open(abs_path, "a").close()
+    return abs_path
+
+
+DB_PATH = get_db_path()
 log = logging.getLogger(__name__)
 
 
