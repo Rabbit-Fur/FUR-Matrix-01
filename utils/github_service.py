@@ -38,6 +38,15 @@ def _check_response(response: requests.Response) -> None:
         )
         raise RuntimeError("GitHub API: Unauthorized - TOKEN_GITHUB_API pr\u00fcfen")
     response.raise_for_status()
+if not REPO or not TOKEN:
+    raise RuntimeError(
+        "Bitte Umgebungsvariablen REPO_GITHUB und TOKEN_GITHUB_API setzen!"
+    )
+
+HEADERS = {
+    "Authorization": f"token {TOKEN}",
+    "Accept": "application/vnd.github.v3+json",
+}
 
 
 def fetch_repo_info(owner: Optional[str] = None, repo: Optional[str] = None) -> dict:

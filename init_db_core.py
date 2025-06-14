@@ -26,6 +26,9 @@ def get_db_path() -> str:
 
 
 DB_PATH = get_db_path()
+DB_PATH = os.getenv("DATABASE_URL") or os.path.join(
+    os.path.dirname(__file__), "data", "admin_users.db"
+)
 log = logging.getLogger(__name__)
 
 
