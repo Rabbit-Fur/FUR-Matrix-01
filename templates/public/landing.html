@@ -1,13 +1,6 @@
 {% extends "layout.html" %}
-{% set bg_image = "/static/bg/landing.png" %}
-
-{% block title %}{{ t("start_title") }}{% endblock %}
-
+{% set bg_image = "/static/bg/index.png" %}
+{% block title %}Startseite{% endblock %}
 {% block content %}
-  <div style="text-align: center; margin-bottom: 2em;">
-    <img src="{{ url_for('static', filename='img/logo.png') }}" alt="FUR Logo" style="max-width:200px; margin-bottom: 1em;">
-    <h1>🐺 {{ t("welcome_message") }}</h1>
-    <p>{{ t("portal_intro") }}</p>
-    <a class="btn" href="{{ url_for('public.discord_login') }}">{{ t("login_with_discord") }}</a>
-  </div>
+  {% include "components/hero.html" %}
 {% endblock %}
