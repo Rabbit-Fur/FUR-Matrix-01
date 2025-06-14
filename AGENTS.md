@@ -1,22 +1,30 @@
-# Codex Agent Guide – FUR SYSTEM
+# 🧠 FUR SYSTEM – AGENTS.md
+Codex Contributor Guide · Version: QUM-1.0  
+Repository: `Rabbit-Fur/try`
 
-## 🗂 Projektstruktur
-- Flask Web-Backend: `main/`
-- Discord Bot: `bot/`
-- Mehrsprachigkeit: `main/translations/`
+---
 
-## 🛠 Tools & Linting
-- Formatter: `black .` + `isort .`
-- Testbefehl: `python3 -m unittest discover`
-- Starten: `python3 main/app.py`
+## 📦 Matrix-Struktur (Projektübersicht)
 
-## 🧾 Fokusaufgaben für Codex
-- Vervollständigung aller Übersetzungen in `main/translations/`
-- Validierung von JSON-Strukturen & Einheitlichkeit der Keys
-- Reminder-Modul prüfen (Zeitsteuerung, DMs, Sprachintegration)
-- Zugriffsprüfung für R3/R4/ADMIN bei allen Routen
+| Verzeichnis     | Inhalt                                                                 |
+|----------------|------------------------------------------------------------------------|
+| `web/`         | Flask-Routen, HTML-Templates, API-Endpunkte (Blueprints)               |
+| `bot/`         | Discord-Bot, Cogs, Reminder-System, Leaderboard                        |
+| `core/`        | Logging, i18n, Meta-Daten, Markdown, Systemanalysen                    |
+| `database/`    | SQLite-Modelle, DB-Zugriffe, Prepared Statements                        |
+| `static/`      | Assets: Bilder, CSS, Champion-Poster, Branding                          |
+| `tests/`       | Unit- & Integrationstests mit Pytest                                    |
 
-## 🧪 Codex soll...
-- PRs nur über `main` erzeugen
-- Python 3.11 verwenden
-- Änderungen über Pull Requests einreichen
+---
+
+## 🛠️ Setup-Anleitung für Codex-Agent:innen
+
+Vor **jeder Änderung**:
+
+```bash
+# Vorbereitung
+pip install -r requirements.txt
+
+# Code-Formatierung & Schnelltests
+black . && isort .
+pytest --disable-warnings --maxfail=1
