@@ -48,7 +48,6 @@ HEADERS = {
     "Accept": "application/vnd.github.v3+json",
 }
 
-
 def fetch_repo_info(owner: Optional[str] = None, repo: Optional[str] = None) -> dict:
     """
     Holt Repo-Infos vom GitHub-API.

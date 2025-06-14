@@ -31,8 +31,6 @@ intents.members = True
 
 # Bot-Instanz wird erst bei Start erstellt
 bot: commands.Bot | None = None
-
-
 def create_bot() -> commands.Bot:
     """Instantiate the Discord bot with a safe connector."""
     connector = aiohttp.TCPConnector(resolver=aiohttp.AsyncResolver())

@@ -13,7 +13,7 @@ from datetime import datetime, timedelta
 import discord
 from discord.ext import commands, tasks
 
-from bot.bot_main import get_bot_db_connection as get_db
+from web.database import get_db
 
 log = logging.getLogger(__name__)
 
