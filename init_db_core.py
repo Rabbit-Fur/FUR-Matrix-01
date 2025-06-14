@@ -1,8 +1,9 @@
-a"""
+"""
 init_db_core.py – Initialisiert die SQLite-Datenbank für das FUR-System
 
 Legt beim ersten Start alle notwendigen Tabellen an (User, Events, Teilnehmer, Reminder, Hall of Fame).
 """
+
 
 import logging
 import os
