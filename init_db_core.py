@@ -1,4 +1,4 @@
-"""
+a"""
 init_db_core.py – Initialisiert die SQLite-Datenbank für das FUR-System
 
 Legt beim ersten Start alle notwendigen Tabellen an (User, Events, Teilnehmer, Reminder, Hall of Fame).
@@ -8,9 +8,11 @@ import logging
 import os
 import sqlite3
 
+log = logging.getLogger(__name__)
+
 
 def get_db_path() -> str:
-    """Return absolute path to the SQLite database."""
+    """Gibt den absoluten Pfad zur SQLite-Datenbank zurück."""
     env_url = os.getenv("DATABASE_URL")
     if env_url and env_url.startswith("sqlite:///"):
         db_path = env_url.replace("sqlite:///", "", 1)
@@ -26,18 +28,6 @@ def get_db_path() -> str:
 
 
 DB_PATH = get_db_path()
-    abs_path = os.path.abspath(db_path)
-    os.makedirs(os.path.dirname(abs_path), exist_ok=True)
-    if not os.path.exists(abs_path):
-        open(abs_path, "a").close()
-    return abs_path
-
-
-DB_PATH = get_db_path()
-DB_PATH = os.getenv("DATABASE_URL") or os.path.join(
-    os.path.dirname(__file__), "data", "admin_users.db"
-)
-log = logging.getLogger(__name__)
 
 
 def get_db_connection() -> sqlite3.Connection:
