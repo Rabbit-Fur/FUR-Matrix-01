@@ -16,6 +16,9 @@ pip install -r requirements.txt
 python main_app.py
 ```
 
+The application stores its data in a SQLite file. Configure a custom location via
+`DATABASE_URL=sqlite:///absolute/path/to/fur.db`. The default is `data/admin_users.db`.
+
 ## CLI
 ```bash
 codex-fur sync     # Übersetzungen synchronisieren

@@ -5,11 +5,12 @@ Dieses Cog versendet regelmäßig Erinnerungsnachrichten an einen konfigurierbar
 """
 
 import logging
-import os
 from datetime import datetime
 
 import discord
 from discord.ext import commands, tasks
+
+from config import Config
 
 log = logging.getLogger(__name__)
 
@@ -19,12 +20,12 @@ class Reminders(commands.Cog):
     Discord-Cog: Regelmäßige Erinnerungen für Events, Quests und mehr.
 
     - Nutzt Discord Tasks für zeitgesteuerte Benachrichtigungen.
-    - Channel-ID wird vorzugsweise aus Umgebungsvariable geladen.
+    - Channel-ID wird aus der zentralen Config geladen.
     """
 
     def __init__(self, bot: commands.Bot):
         self.bot = bot
-        self.channel_id = int(os.getenv("DISCORD_CHANNEL_ID", "1365580225945014385"))
+        self.channel_id = Config.REMINDER_CHANNEL_ID
         self.reminder_loop.start()
 
     def cog_unload(self):

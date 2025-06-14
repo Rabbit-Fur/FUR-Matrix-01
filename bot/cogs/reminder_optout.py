@@ -21,5 +21,6 @@ class ReminderOptOut(commands.Cog):
             await ctx.send("✅ You will no longer receive reminder DMs.")
 
 
-def setup(bot: commands.Bot) -> None:
-    bot.add_cog(ReminderOptOut(bot))
+async def setup(bot: commands.Bot) -> None:
+    """Register the cog using discord.py's async setup convention."""
+    await bot.add_cog(ReminderOptOut(bot))
