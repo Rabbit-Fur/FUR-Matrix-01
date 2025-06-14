@@ -27,6 +27,10 @@ class Reminders(commands.Cog):
         self.bot = bot
         self.channel_id = Config.REMINDER_CHANNEL_ID
         self.reminder_loop.start()
+    def __init__(self, bot: commands.Bot):
+        self.bot = bot
+        self.channel_id = int(os.getenv("REMINDER_CHANNEL_ID", "1365580225945014385"))
+        self.reminder_loop.start()
 
     def cog_unload(self):
         """Stoppt den Reminder-Loop beim Entladen des Cogs."""
