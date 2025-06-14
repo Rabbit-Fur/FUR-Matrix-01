@@ -13,10 +13,12 @@ import requests
 
 GITHUB_API = "https://api.github.com"
 REPO = os.getenv("REPO_GITHUB")
-TOKEN = os.getenv("TOKEN_GITHUB")
+TOKEN = os.getenv("TOKEN_GITHUB_API")
 
 if not REPO or not TOKEN:
-    raise RuntimeError("Bitte Umgebungsvariablen REPO_GITHUB und TOKEN_GITHUB setzen!")
+    raise RuntimeError(
+        "Bitte Umgebungsvariablen REPO_GITHUB und TOKEN_GITHUB_API setzen!"
+    )
 
 HEADERS = {
     "Authorization": f"token {TOKEN}",
@@ -41,7 +43,7 @@ def fetch_repo_info(owner: Optional[str] = None, repo: Optional[str] = None) -> 
     repo_name = repo_full.split("/")[1] if repo_full else None
     if not (owner and repo_name and TOKEN):
         raise RuntimeError(
-            "GITHUB_TOKEN, REPO_GITHUB (owner/repo) müssen in .env definiert sein!"
+            "TOKEN_GITHUB_API und REPO_GITHUB (owner/repo) müssen in der Umgebung gesetzt sein!"
         )
 
     url = f"{GITHUB_API}/repos/{owner}/{repo_name}"

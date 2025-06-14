@@ -11,7 +11,7 @@ import os
 # auch in der Testumgebung ohne .env funktioniert.
 os.environ.setdefault("DISCORD_TOKEN", "dummy")
 os.environ.setdefault("DISCORD_GUILD_ID", "1")
-os.environ.setdefault("DISCORD_CHANNEL_ID", "1")
+os.environ.setdefault("REMINDER_CHANNEL_ID", "1")
 
 import pytest
 
