@@ -42,13 +42,17 @@ class Config:
     WTF_CSRF_ENABLED: bool = True
 
     # --- Database ---
-    DATABASE_PATH: str = os.path.join(basedir, "data", "admin_users.db")
+    DATABASE_URL: str = get_env_str(
+        "DATABASE_URL",
+        required=False,
+        default=f"sqlite:///{os.path.join(basedir, 'data', 'admin_users.db')}",
+    )
 
     # --- Discord Integration ---
     DISCORD_WEBHOOK_URL: str | None = get_env_str("DISCORD_WEBHOOK_URL", required=False)
     DISCORD_TOKEN: str = get_env_str("DISCORD_TOKEN", required=True)
     DISCORD_GUILD_ID: int = get_env_int("DISCORD_GUILD_ID", required=True)
-    DISCORD_CHANNEL_ID: int = get_env_int("DISCORD_CHANNEL_ID", required=True)
+    REMINDER_CHANNEL_ID: int = get_env_int("REMINDER_CHANNEL_ID", required=True)
     DISCORD_CLIENT_ID: str | None = get_env_str("DISCORD_CLIENT_ID", required=False)
     DISCORD_CLIENT_SECRET: str | None = get_env_str(
         "DISCORD_CLIENT_SECRET", required=False

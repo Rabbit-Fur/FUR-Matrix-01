@@ -24,7 +24,7 @@ class Reminders(commands.Cog):
 
     def __init__(self, bot: commands.Bot):
         self.bot = bot
-        self.channel_id = int(os.getenv("DISCORD_CHANNEL_ID", "1365580225945014385"))
+        self.channel_id = int(os.getenv("REMINDER_CHANNEL_ID", "1365580225945014385"))
         self.reminder_loop.start()
 
     def cog_unload(self):
