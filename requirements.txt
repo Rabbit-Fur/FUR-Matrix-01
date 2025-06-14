@@ -19,6 +19,7 @@ redis==6.1.0
 requests==2.32.3
 tlgbotfwk
 werkzeug
+PyNaCl
 
 # Development & Testing
 pytest>=7.0.0
