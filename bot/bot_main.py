@@ -33,6 +33,22 @@ intents.members = True
 bot: commands.Bot | None = None
 
 
+def create_bot() -> commands.Bot:
+    """Instantiate the Discord bot with a safe connector."""
+    connector = aiohttp.TCPConnector(resolver=aiohttp.AsyncResolver())
+    new_bot = commands.Bot(command_prefix="!", intents=intents, connector=connector)
+
+    @new_bot.event
+    async def on_ready():
+        log.info(
+            "✅ Eingeloggt als %s (ID: %s)",
+            new_bot.user,
+            getattr(new_bot.user, "id", "n/a"),
+        )
+
+    return new_bot
+
+
 def is_ready() -> bool:
     """Return True if the bot reports readiness."""
     return bot is not None and bot.is_ready()
@@ -52,6 +68,7 @@ async def run_bot(max_retries: int = 3) -> None:
     from config import Config
 
     global bot
+    bot = create_bot()
     connector = aiohttp.TCPConnector(resolver=aiohttp.AsyncResolver())
     bot = commands.Bot(command_prefix="!", intents=intents, connector=connector)
 
