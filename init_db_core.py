@@ -8,7 +8,7 @@ import logging
 import os
 import sqlite3
 
-DB_PATH = os.getenv("DATABASE_PATH") or os.path.join(
+DB_PATH = os.getenv("DATABASE_URL") or os.path.join(
     os.path.dirname(__file__), "data", "admin_users.db"
 )
 log = logging.getLogger(__name__)

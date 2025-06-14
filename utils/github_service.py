@@ -13,10 +13,12 @@ import requests
 
 GITHUB_API = "https://api.github.com"
 REPO = os.getenv("REPO_GITHUB")
-TOKEN = os.getenv("TOKEN_GITHUB")
+TOKEN = os.getenv("TOKEN_GITHUB_API")
 
 if not REPO or not TOKEN:
-    raise RuntimeError("Bitte Umgebungsvariablen REPO_GITHUB und TOKEN_GITHUB setzen!")
+    raise RuntimeError(
+        "Bitte Umgebungsvariablen REPO_GITHUB und TOKEN_GITHUB_API setzen!"
+    )
 
 HEADERS = {
     "Authorization": f"token {TOKEN}",
