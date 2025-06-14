@@ -6,10 +6,12 @@ Später kann es mit Datenbank- oder API-Anbindung erweitert werden.
 """
 
 import logging
+
 import discord
 from discord.ext import commands
 
 log = logging.getLogger(__name__)
+
 
 class Leaderboard(commands.Cog):
     """
@@ -34,7 +36,7 @@ class Leaderboard(commands.Cog):
         # Platzhalter – später durch DB- oder API-Aufruf ersetzen!
         fake_data = {
             "raids": ["Alice - 120", "Bob - 110", "Charlie - 100"],
-            "donations": ["Dino - 500", "Eva - 450"]
+            "donations": ["Dino - 500", "Eva - 450"],
         }
         if category not in fake_data:
             await ctx.send(f"❌ Kategorie '{category}' ist nicht verfügbar.")
@@ -48,6 +50,7 @@ class Leaderboard(commands.Cog):
             log.info(f"Leaderboard '{category}' an {ctx.channel.id} gesendet.")
         except Exception as e:
             log.error(f"Fehler beim Senden des Leaderboards: {e}", exc_info=True)
+
 
 async def setup(bot: commands.Bot) -> None:
     """

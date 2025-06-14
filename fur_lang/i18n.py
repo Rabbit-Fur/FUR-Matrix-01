@@ -1,8 +1,12 @@
-import os
 import json
-from flask import session, current_app
+import os
 
-TRANSLATION_FOLDER = os.path.join(os.path.dirname(os.path.dirname(__file__)), "translations")
+from flask import current_app, session
+
+TRANSLATION_FOLDER = os.path.join(
+    os.path.dirname(os.path.dirname(__file__)), "translations"
+)
+
 
 def load_translations(directory=TRANSLATION_FOLDER):
     translations = {}
@@ -16,10 +20,13 @@ def load_translations(directory=TRANSLATION_FOLDER):
                     print(f"⚠️ Fehler beim Laden von {filename}: {e}")
     return translations
 
+
 translations = load_translations()
+
 
 def get_supported_languages():
     return list(translations.keys())
+
 
 def t(key: str, default=None):
     lang = session.get("lang", current_app.config.get("BABEL_DEFAULT_LOCALE", "de"))

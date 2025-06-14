@@ -1,5 +1,6 @@
-from datetime import datetime
 import os
+from datetime import datetime
+
 
 def generate_daily_log():
     today = datetime.now().strftime("%Y-%m-%d")
@@ -31,6 +32,7 @@ def generate_daily_log():
 """
     with open(log_path, "w", encoding="utf-8") as f:
         f.write(content)
+
 
 if __name__ == "__main__":
     generate_daily_log()

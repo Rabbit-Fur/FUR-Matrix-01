@@ -1,6 +1,7 @@
 import json
 from pathlib import Path
 from typing import Dict, Set
+
 import requests
 
 TRANSLATIONS_DIR = Path("translations")

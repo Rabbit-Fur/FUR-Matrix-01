@@ -11,10 +11,12 @@ import sqlite3
 from datetime import datetime, timedelta
 
 import discord
-from bot.bot_main import get_bot_db_connection as get_db
 from discord.ext import commands, tasks
 
+from bot.bot_main import get_bot_db_connection as get_db
+
 log = logging.getLogger(__name__)
+
 
 class ReminderCog(commands.Cog):
     """
@@ -96,7 +98,9 @@ class ReminderCog(commands.Cog):
                             (event["id"], p["user_id"], datetime.utcnow().isoformat()),
                         )
                         db.commit()
-                        log.info(f"✅ Reminder sent to {p['user_id']} for event {event['id']}")
+                        log.info(
+                            f"✅ Reminder sent to {p['user_id']} for event {event['id']}"
+                        )
                     except discord.Forbidden:
                         log.warning(f"Cannot DM user {p['user_id']}: DMs disabled.")
                     except Exception as e:
@@ -111,6 +115,7 @@ class ReminderCog(commands.Cog):
     async def before_check_reminders(self) -> None:
         """Wartet bis der Bot vollständig bereit ist, bevor Reminder-Loop startet."""
         await self.bot.wait_until_ready()
+
 
 async def setup(bot: commands.Bot) -> None:
     """
