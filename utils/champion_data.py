@@ -6,7 +6,7 @@ Wird für automatische Poster-Generierung und Hall-of-Fame-Features genutzt.
 """
 
 from datetime import datetime
-from typing import List, Dict, Optional
+from typing import Dict, List, Optional
 
 # Interner Champion-Datenspeicher
 champions: List[Dict[str, str]] = [
@@ -15,9 +15,10 @@ champions: List[Dict[str, str]] = [
         "honor_title": "🔥 Champion of the Month 🔥",
         "month": "Mai 2025",
         "poster_url": "/static/champions/xevi_april2025.png",
-        "created_at": datetime.utcnow().isoformat()
+        "created_at": datetime.utcnow().isoformat(),
     }
 ]
+
 
 def get_latest_champion() -> Optional[Dict[str, str]]:
     """
@@ -27,6 +28,7 @@ def get_latest_champion() -> Optional[Dict[str, str]]:
         dict | None: Champion-Daten (username, honor_title, month, poster_url, created_at) oder None, falls keine Champions vorhanden.
     """
     return champions[-1] if champions else None
+
 
 def add_champion(username: str, honor_title: str, month: str, poster_url: str) -> None:
     """
@@ -41,13 +43,16 @@ def add_champion(username: str, honor_title: str, month: str, poster_url: str) -
     Returns:
         None
     """
-    champions.append({
-        "username": username,
-        "honor_title": honor_title,
-        "month": month,
-        "poster_url": poster_url,
-        "created_at": datetime.utcnow().isoformat()
-    })
+    champions.append(
+        {
+            "username": username,
+            "honor_title": honor_title,
+            "month": month,
+            "poster_url": poster_url,
+            "created_at": datetime.utcnow().isoformat(),
+        }
+    )
+
 
 def get_all_champions() -> List[Dict[str, str]]:
     """

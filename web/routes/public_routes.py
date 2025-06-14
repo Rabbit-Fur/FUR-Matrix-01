@@ -9,8 +9,17 @@ import secrets
 from urllib.parse import urlencode
 
 import requests
-from flask import (Blueprint, abort, current_app, flash, redirect,
-                   render_template, request, session, url_for)
+from flask import (
+    Blueprint,
+    abort,
+    current_app,
+    flash,
+    redirect,
+    render_template,
+    request,
+    session,
+    url_for,
+)
 
 from fur_lang.i18n import get_supported_languages
 from web.auth.decorators import r3_required

@@ -1,7 +1,7 @@
 """
 auto_fixer.py – Automatisches Code-Fixing-Tool für Python-Projekte
 
-Formatiert Python-Dateien gemäß PEP8, entfernt ungenutzte Imports und Variablen, 
+Formatiert Python-Dateien gemäß PEP8, entfernt ungenutzte Imports und Variablen,
 wendet Black und Isort an, und unterstützt grundlegende eigene Regex-basierte Fixes.
 
 Tools: flake8 (Check), black, isort, autoflake (müssen installiert sein).
@@ -15,6 +15,7 @@ from typing import List, Set
 
 PROJECT_DIR: Path = Path(__file__).resolve().parent
 IGNORED_DIRS: Set[str] = {"venv", ".venv", "__pycache__", "migrations"}
+
 
 def fix_file(filepath: Path) -> None:
     """
@@ -56,13 +57,15 @@ def fix_file(filepath: Path) -> None:
     except OSError as e:
         print(f"❌ Fehler beim Schreiben in {filepath}: {e}")
 
+
 def run_flake8_and_fix() -> None:
     """
     Sucht alle Python-Dateien im Projekt und wendet Basis-Fixes an,
     danach werden black und isort ausgeführt.
     """
     py_files = [
-        file for file in PROJECT_DIR.rglob("*.py")
+        file
+        for file in PROJECT_DIR.rglob("*.py")
         if not any(part in IGNORED_DIRS for part in file.parts)
     ]
 
@@ -79,6 +82,7 @@ def run_flake8_and_fix() -> None:
     except FileNotFoundError as e:
         print(f"❌ Werkzeug nicht gefunden (black/isort): {e}")
 
+
 def fix_unused_imports() -> None:
     """
     Entfernt ungenutzte Importe & Variablen mit autoflake.
@@ -86,12 +90,22 @@ def fix_unused_imports() -> None:
     print("🧹 Entferne ungenutzte Importe mit autoflake...")
     try:
         subprocess.run(
-            ["autoflake", "--in-place", "--remove-all-unused-imports", "--remove-unused-variables", "-r", "."],
+            [
+                "autoflake",
+                "--in-place",
+                "--remove-all-unused-imports",
+                "--remove-unused-variables",
+                "-r",
+                ".",
+            ],
             cwd=PROJECT_DIR,
-            check=True
+            check=True,
         )
     except FileNotFoundError:
-        print("❌ 'autoflake' ist nicht installiert. Bitte via pip installieren: pip install autoflake")
+        print(
+            "❌ 'autoflake' ist nicht installiert. Bitte via pip installieren: pip install autoflake"
+        )
+
 
 if __name__ == "__main__":
     try:

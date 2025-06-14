@@ -6,7 +6,9 @@ Stellen sicher, dass der User korrekt eingeloggt ist und die passende Rolle (R3,
 """
 
 from functools import wraps
-from flask import session, redirect, url_for, flash, abort
+
+from flask import abort, flash, redirect, session, url_for
+
 
 def login_required(view_func):
     """Schützt eine Route für eingeloggte User."""
@@ -20,6 +22,7 @@ def login_required(view_func):
 
     return wrapper
 
+
 def r3_required(view_func):
     """Zugriff nur für Mitglieder (R3+, Admin)."""
 
@@ -32,6 +35,7 @@ def r3_required(view_func):
 
     return wrapper
 
+
 def r4_required(view_func):
     """Zugriff nur für R4 oder Admin."""
 
@@ -43,6 +47,7 @@ def r4_required(view_func):
         return view_func(*args, **kwargs)
 
     return wrapper
+
 
 def admin_required(view_func):
     """Zugriff nur für System-Admins."""

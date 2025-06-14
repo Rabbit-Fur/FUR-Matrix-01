@@ -1,8 +1,10 @@
-from flask import Blueprint, render_template
 import os
 from datetime import datetime
 
+from flask import Blueprint, render_template
+
 dashboard = Blueprint("dashboard", __name__, url_prefix="/dashboard")
+
 
 @dashboard.route("/progress")
 def progress():

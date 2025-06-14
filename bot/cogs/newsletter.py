@@ -5,10 +5,12 @@ Erlaubt es Administratoren, wichtige Nachrichten als Clan-Announcements im Chann
 """
 
 import logging
+
 import discord
 from discord.ext import commands
 
 log = logging.getLogger(__name__)
+
 
 class Newsletter(commands.Cog):
     """
@@ -33,11 +35,14 @@ class Newsletter(commands.Cog):
         """
         try:
             await ctx.send(f"📢 Clan-Ankündigung:\n{message}")
-            log.info(f"Announcement gesendet von {ctx.author} in Channel {ctx.channel.id}")
+            log.info(
+                f"Announcement gesendet von {ctx.author} in Channel {ctx.channel.id}"
+            )
         except discord.Forbidden:
             log.warning("Bot hat keine Berechtigung zum Senden in diesem Channel.")
         except Exception as e:
             log.error(f"Fehler beim Senden der Ankündigung: {e}", exc_info=True)
+
 
 async def setup(bot: commands.Bot) -> None:
     """

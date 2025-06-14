@@ -7,6 +7,7 @@ Dieses Cog stellt grundlegende Commands bereit, die für alle Servermitglieder n
 import discord
 from discord.ext import commands
 
+
 class BaseCommands(commands.Cog):
     """
     Cog: Basisbefehle für alle User.
@@ -38,6 +39,7 @@ class BaseCommands(commands.Cog):
             ctx (commands.Context): Aufruf-Kontext.
         """
         await ctx.send("🔥 Welcome to the FUR Alliance – Strength, Unity, Respect.")
+
 
 async def setup(bot: commands.Bot) -> None:
     """

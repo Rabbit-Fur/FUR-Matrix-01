@@ -4,13 +4,15 @@ reminders.py – Discord-Cog für wiederkehrende Erinnerungen (Events, Quests et
 Dieses Cog versendet regelmäßig Erinnerungsnachrichten an einen konfigurierbaren Kanal.
 """
 
-from datetime import datetime
 import logging
+import os
+from datetime import datetime
+
 import discord
 from discord.ext import commands, tasks
-import os
 
 log = logging.getLogger(__name__)
+
 
 class Reminders(commands.Cog):
     """
@@ -47,6 +49,7 @@ class Reminders(commands.Cog):
     async def before_reminder(self):
         """Wartet bis Bot vollständig bereit ist, bevor der Loop startet."""
         await self.bot.wait_until_ready()
+
 
 async def setup(bot: commands.Bot):
     """Fügt das Reminders-Cog dem Bot hinzu (discord.py 2.x-Standard)."""
