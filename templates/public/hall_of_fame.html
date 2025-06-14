@@ -1,5 +1,8 @@
 {% extends "layout.html" %}
+{% set bg_image = "/static/bg/hof_fire.png" %}
+
 {% block title %}{{ t("hall_of_fame_title") }}{% endblock %}
+
 {% block content %}
   <h2>{{ t("monthly_champions") }}</h2>
   {% set hof_entries = hof if hof is defined and hof else [

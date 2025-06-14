@@ -1,13 +1,12 @@
 {% extends "layout.html" %}
-{% block title %}{{ t("events_title") }}{% endblock %}
+{% set bg_image = "/static/bg/events_list.png" %}
+
+{% block title %}{{ t("all_events") }}{% endblock %}
+
 {% block content %}
-  <h2>{{ t("upcoming_events") }}</h2>
-  {% set event_list = events if events is defined and events else [
-      {'id': 1, 'title': 'FUR Mega Event', 'description': 'Platzhalter-Event #1', 'event_time': '2025-06-15 19:00'},
-      {'id': 2, 'title': 'Champion Night', 'description': 'Platzhalter-Event #2', 'event_time': '2025-06-22 21:00'}
-  ] %}
-  {% if event_list %}
-    {% for event in event_list %}
+  <h2>{{ t("past_and_upcoming_events") }}</h2>
+  {% if events %}
+    {% for event in events %}
       <div class="panel">
         <h3>{{ event.title }}</h3>
         <p>{{ event.description }}</p>
@@ -16,6 +15,6 @@
       </div>
     {% endfor %}
   {% else %}
-    <p>{{ t("No events yet.") }}</p>
+    <p>{{ t("no_events_found") }}</p>
   {% endif %}
 {% endblock %}

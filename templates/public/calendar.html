@@ -1,5 +1,8 @@
 {% extends "layout.html" %}
+{% set bg_image = "/static/bg/calendar.png" %}
+
 {% block title %}{{ t("calendar_title") }}{% endblock %}
+
 {% block content %}
   <h2>{{ t("calendar_heading") }}</h2>
   <div id="calendar"></div>

@@ -1,5 +1,8 @@
 {% extends "layout.html" %}
+{% set bg_image = "/static/bg/view_event.png" %}
+
 {% block title %}{{ t("event_detail_title") }}{% endblock %}
+
 {% block content %}
   {% set dummy_event = {'id': 1, 'title': 'FUR Mega Event', 'description': 'Platzhalter-Event', 'event_time': '2025-06-15 19:00', 'role': 'Member'} %}
   {% set dummy_participants = [
