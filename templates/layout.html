@@ -9,7 +9,7 @@
             font-family: Arial, sans-serif;
             margin: 0;
             min-height: 100vh;
-            background: url('{{ url_for('static', filename='img/background.jpg') }}') no-repeat center center fixed;
+            background: url('{{ bg_image | default(url_for("static", filename="img/background.jpg")) }}') no-repeat center center fixed;
             background-size: cover;
             color: #fff;
         }
@@ -77,13 +77,13 @@
 
     <nav>
         <a href="{{ url_for('public.landing') }}">Home</a>
-		<a href="{{ url_for('public.dashboard') }}">Public Dashboard</a>
-		<a href="{{ url_for('admin.dashboard') }}">Admin Dashboard</a>
-		<a href="{{ url_for('members.dashboard') }}">Member Dashboard</a>
-		<a href="{{ url_for('public.events') }}">Events</a>
-		<a href="{{ url_for('public.leaderboard') }}">Leaderboard</a>
-		<a href="{{ url_for('public.hall_of_fame') }}">Hall of Fame</a>
-		<a href="{{ url_for('public.lore') }}">Lore</a>	
+        <a href="{{ url_for('public.dashboard') }}">Public Dashboard</a>
+        <a href="{{ url_for('admin.dashboard') }}">Admin Dashboard</a>
+        <a href="{{ url_for('members.dashboard') }}">Member Dashboard</a>
+        <a href="{{ url_for('public.events') }}">Events</a>
+        <a href="{{ url_for('public.leaderboard') }}">Leaderboard</a>
+        <a href="{{ url_for('public.hall_of_fame') }}">Hall of Fame</a>
+        <a href="{{ url_for('public.lore') }}">Lore</a>  
     </nav>
 
     <div class="container">
