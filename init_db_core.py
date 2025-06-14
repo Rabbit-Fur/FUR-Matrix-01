@@ -127,7 +127,16 @@ def init_db():
             created_at TEXT
         );
         """,
+        """
+        CREATE TABLE IF NOT EXISTS event_participants (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            user_id INTEGER NOT NULL,
+            event_id INTEGER NOT NULL,
+            FOREIGN KEY (user_id) REFERENCES users(id),
+            FOREIGN KEY (event_id) REFERENCES events(id)
+        """),
     ]
+
 
     try:
         conn = get_db_connection()
