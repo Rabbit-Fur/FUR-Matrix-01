@@ -4,18 +4,19 @@ public_routes.py – Flask Blueprint für alle öffentlichen Views
 Stellt alle öffentlichen Seiten bereit (ohne Login/Role), z.B. Landing Page, Login, Lore, Events, Leaderboards.
 """
 
+from urllib.parse import urlencode
+
+import requests
 from flask import (
     Blueprint,
-    render_template,
-    redirect,
-    url_for,
-    request,
-    flash,
     current_app,
+    flash,
+    redirect,
+    render_template,
+    request,
     session,
+    url_for,
 )
-from urllib.parse import urlencode
-import requests
 
 public_bp = Blueprint("public", __name__)
 

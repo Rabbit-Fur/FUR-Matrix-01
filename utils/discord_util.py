@@ -5,8 +5,10 @@ Stellt Dummy-Implementierungen der wichtigsten discord.py-Klassen bereit,
 um die Integration in Testumgebungen und Offline-Entwicklung zu ermöglichen.
 """
 
+
 class Client:
     """Stub für discord.Client (Testumgebung)."""
+
     def __init__(self, *args, **kwargs):
         self.user = None
 
@@ -26,8 +28,10 @@ class Client:
         """Immer bereit (Mock)."""
         return True
 
+
 class Intents:
     """Stub für discord.Intents."""
+
     @classmethod
     def default(cls):
         """Gibt ein Default-Intents-Objekt zurück."""
@@ -38,14 +42,18 @@ class Intents:
         """Gibt ein Intents-Objekt mit allen Berechtigungen zurück."""
         return cls()
 
+
 class Message:
     """Stub für discord.Message."""
+
     def __init__(self, content: str = "", author=None):
         self.content = content
         self.author = author
 
+
 class User:
     """Stub für discord.User."""
+
     def __init__(self, name: str = "StubUser"):
         self.name = name
         self.id = 1234

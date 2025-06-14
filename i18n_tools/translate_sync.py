@@ -6,13 +6,14 @@ Dieses Skript prüft alle Übersetzungsdateien gegen eine Master-Sprache,
 Platzhalter (z.B. {name}, {count}) werden automatisch erkannt und korrekt übernommen.
 """
 
+import argparse
+import json
 import os
 import re
-import json
-import argparse
-from pathlib import Path
 from collections import defaultdict
+from pathlib import Path
 from typing import Dict, List
+
 import openai
 
 # === Konfiguration ===
@@ -23,16 +24,45 @@ USE_GPT = True
 
 # 🌍 32 meistgesprochene Sprachen (ISO 639-1)
 TARGET_LANGS = [
-    "zh", "es", "en", "hi", "ar", "bn", "pt", "ru", "ja", "pa",
-    "de", "jv", "ko", "fr", "te", "mr", "tr", "ta", "vi", "ur",
-    "it", "fa", "pl", "uk", "nl", "th", "gu", "ro", "hu", "id",
-    "sv", "cs"
+    "zh",
+    "es",
+    "en",
+    "hi",
+    "ar",
+    "bn",
+    "pt",
+    "ru",
+    "ja",
+    "pa",
+    "de",
+    "jv",
+    "ko",
+    "fr",
+    "te",
+    "mr",
+    "tr",
+    "ta",
+    "vi",
+    "ur",
+    "it",
+    "fa",
+    "pl",
+    "uk",
+    "nl",
+    "th",
+    "gu",
+    "ro",
+    "hu",
+    "id",
+    "sv",
+    "cs",
 ]
 
 # === API Key laden ===
 openai.api_key = os.getenv("OPENAI_API_KEY")
 if USE_GPT and not openai.api_key:
     raise EnvironmentError("❌ OPENAI_API_KEY ist nicht gesetzt.")
+
 
 def extract_placeholders(text: str) -> List[str]:
     """
@@ -45,6 +75,7 @@ def extract_placeholders(text: str) -> List[str]:
         List[str]: Liste der Platzhalter.
     """
     return re.findall(r"{[^{}]+}", text)
+
 
 def restore_placeholders(translated: str, original_placeholders: List[str]) -> str:
     """
@@ -63,6 +94,7 @@ def restore_placeholders(translated: str, original_placeholders: List[str]) -> s
             translated = translated.replace(ph, original_placeholders[i], 1)
     return translated
 
+
 def translate(text: str, lang: str) -> str:
     """
     Übersetzt einen UI-Text automatisiert via OpenAI GPT.
@@ -78,18 +110,21 @@ def translate(text: str, lang: str) -> str:
     try:
         response = openai.ChatCompletion.create(
             model="gpt-3.5-turbo",
-            messages=[{
-                "role": "user",
-                "content": f"Übersetze folgenden Text ins {lang} für eine Benutzeroberfläche. "
-                           f"Behalte Platzhalter wie {{name}}, {{count}} unverändert:\n\n'{text}'"
-            }],
-            temperature=0.3
+            messages=[
+                {
+                    "role": "user",
+                    "content": f"Übersetze folgenden Text ins {lang} für eine Benutzeroberfläche. "
+                    f"Behalte Platzhalter wie {{name}}, {{count}} unverändert:\n\n'{text}'",
+                }
+            ],
+            temperature=0.3,
         )
         result = response.choices[0].message.content.strip()
         return restore_placeholders(result, placeholders)
     except Exception as e:
         print(f"⚠️ GPT-Fehler ({lang}): {e}")
         return f"[{lang}] {text}"
+
 
 def load_json(path: Path) -> Dict:
     """
@@ -110,6 +145,7 @@ def load_json(path: Path) -> Dict:
         print(f"❌ Ungültige JSON-Datei: {path}")
         return {}
 
+
 def save_json(path: Path, data: Dict) -> None:
     """
     Speichert ein Dict als JSON-Datei.
@@ -121,7 +157,10 @@ def save_json(path: Path, data: Dict) -> None:
     with open(path, "w", encoding="utf-8") as f:
         json.dump(data, f, indent=2, ensure_ascii=False)
 
-def sync_translations(dry_run: bool = False, report_only: bool = False) -> Dict[str, List[str]]:
+
+def sync_translations(
+    dry_run: bool = False, report_only: bool = False
+) -> Dict[str, List[str]]:
     """
     Synchronisiert alle Übersetzungsdateien gegen die Master-Sprache,
     übersetzt neue Keys falls notwendig, und erzeugt Reportdaten.
@@ -160,6 +199,7 @@ def sync_translations(dry_run: bool = False, report_only: bool = False) -> Dict[
 
     return report
 
+
 def generate_report(report: Dict[str, List[str]]) -> None:
     """
     Erzeugt einen Markdown-Report über alle neuen/fehlenden Keys pro Sprache.
@@ -175,10 +215,19 @@ def generate_report(report: Dict[str, List[str]]) -> None:
     with open(REPORT_PATH, "w", encoding="utf-8") as f:
         f.write("\n".join(lines))
 
+
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="Synchronisiere i18n JSON-Dateien in mehrere Sprachen.")
-    parser.add_argument("--dry-run", action="store_true", help="Zeigt nur, was geändert würde.")
-    parser.add_argument("--report-only", action="store_true", help="Erstellt nur den Report, ohne zu übersetzen.")
+    parser = argparse.ArgumentParser(
+        description="Synchronisiere i18n JSON-Dateien in mehrere Sprachen."
+    )
+    parser.add_argument(
+        "--dry-run", action="store_true", help="Zeigt nur, was geändert würde."
+    )
+    parser.add_argument(
+        "--report-only",
+        action="store_true",
+        help="Erstellt nur den Report, ohne zu übersetzen.",
+    )
     args = parser.parse_args()
 
     print("🌍 Starte Übersetzungsabgleich...")

@@ -6,14 +6,17 @@ Lädt alle benötigten Einstellungen aus Umgebungsvariablen oder .env-Datei und 
 
 import os
 from datetime import timedelta
+
 from dotenv import load_dotenv
-from utils.env_helpers import get_env_str, get_env_int, get_env_bool
+
 from fur_lang.i18n import get_supported_languages
+from utils.env_helpers import get_env_bool, get_env_int, get_env_str
 
 # 📍 .env Pfad dynamisch bestimmbar via ENV_FILE, sonst Fallback zu ./env
 basedir = os.path.abspath(os.path.dirname(__file__))
 env_path = os.environ.get("ENV_FILE", os.path.join(basedir, ".env"))
 load_dotenv(env_path)
+
 
 class Config:
     """
@@ -23,7 +26,9 @@ class Config:
     """
 
     # --- Flask Core ---
-    SECRET_KEY: str = get_env_str("SECRET_KEY", default="dev-secret-key-CHANGE-ME-IN-PROD")
+    SECRET_KEY: str = get_env_str(
+        "SECRET_KEY", default="dev-secret-key-CHANGE-ME-IN-PROD"
+    )
     FLASK_ENV: str = get_env_str("FLASK_ENV", default="development")
     DEBUG: bool = FLASK_ENV == "development"
 
@@ -32,9 +37,7 @@ class Config:
     SESSION_COOKIE_HTTPONLY: bool = True
     SESSION_COOKIE_SAMESITE: str = "Lax"
     PERMANENT_SESSION_LIFETIME: timedelta = timedelta(
-        minutes=get_env_int(
-            "SESSION_LIFETIME_MINUTES", required=False, default=60
-        )
+        minutes=get_env_int("SESSION_LIFETIME_MINUTES", required=False, default=60)
     )
     WTF_CSRF_ENABLED: bool = True
 
@@ -47,21 +50,42 @@ class Config:
     DISCORD_GUILD_ID: int = get_env_int("DISCORD_GUILD_ID", required=True)
     DISCORD_CHANNEL_ID: int = get_env_int("DISCORD_CHANNEL_ID", required=True)
     DISCORD_CLIENT_ID: str | None = get_env_str("DISCORD_CLIENT_ID", required=False)
-    DISCORD_CLIENT_SECRET: str | None = get_env_str("DISCORD_CLIENT_SECRET", required=False)
-    DISCORD_REDIRECT_URI: str | None = get_env_str("DISCORD_REDIRECT_URI", required=False)
+    DISCORD_CLIENT_SECRET: str | None = get_env_str(
+        "DISCORD_CLIENT_SECRET", required=False
+    )
+    DISCORD_REDIRECT_URI: str | None = get_env_str(
+        "DISCORD_REDIRECT_URI", required=False
+    )
 
     # --- Discord Role Mapping ---
-    R3_ROLE_IDS: set[str] = set(filter(None, get_env_str("R3_ROLE_IDS", required=False, default="").split(',')))
-    R4_ROLE_IDS: set[str] = set(filter(None, get_env_str("R4_ROLE_IDS", required=False, default="").split(',')))
-    ADMIN_ROLE_IDS: set[str] = set(filter(None, get_env_str("ADMIN_ROLE_IDS", required=False, default="").split(',')))
-    
+    R3_ROLE_IDS: set[str] = set(
+        filter(None, get_env_str("R3_ROLE_IDS", required=False, default="").split(","))
+    )
+    R4_ROLE_IDS: set[str] = set(
+        filter(None, get_env_str("R4_ROLE_IDS", required=False, default="").split(","))
+    )
+    ADMIN_ROLE_IDS: set[str] = set(
+        filter(
+            None, get_env_str("ADMIN_ROLE_IDS", required=False, default="").split(",")
+        )
+    )
+
     # BABEL / i18n
     BABEL_DEFAULT_LOCALE = "de"
     BABEL_SUPPORTED_LOCALES = get_supported_languages()
 
     # --- Internationalization ---
     SUPPORTED_LANGUAGES: list[str] = [
-        "en", "de", "vi", "tr", "it", "cs", "es", "fr", "pl", "ru"
+        "en",
+        "de",
+        "vi",
+        "tr",
+        "it",
+        "cs",
+        "es",
+        "fr",
+        "pl",
+        "ru",
     ]
     DEFAULT_LANGUAGE: str = "en"
 

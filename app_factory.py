@@ -10,14 +10,15 @@ def create_app():
 
     try:
         # Bestehende Blueprints
+        from healthcheck import health_bp
         from landing_route import landing_bp
         from static_routes import static_bp
-        from healthcheck import health_bp
+
+        from web.routes.admin_routes import admin_bp
+        from web.routes.member_routes import member_bp
 
         # Neue Routengruppen für Blueprint-Integration
         from web.routes.public_routes import public_bp
-        from web.routes.member_routes import member_bp
-        from web.routes.admin_routes import admin_bp
 
         # Blueprint-Registrierung
         app.register_blueprint(landing_bp)
@@ -26,12 +27,12 @@ def create_app():
 
         app.register_blueprint(public_bp)  # Öffentlich sichtbar
         app.register_blueprint(member_bp, url_prefix="/members")  # restricted
-        app.register_blueprint(admin_bp, url_prefix="/admin")     # R4+, Owner
+        app.register_blueprint(admin_bp)  # R4+, Owner
 
     except Exception as e:
         app.logger.warning(f"Blueprint registration failed: {e}")
 
-    from fur_lang.i18n import t, current_lang
+    from fur_lang.i18n import current_lang, t
 
     @app.context_processor
     def inject_i18n_functions():

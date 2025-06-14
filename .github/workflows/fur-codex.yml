@@ -1,0 +1,36 @@
+name: Codex FUR Release
+
+on:
+  push:
+    branches: [main]
+  workflow_run:
+    workflows: ["CI"]
+    types:
+      - completed
+
+jobs:
+  codex-release:
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install codex-fur
+        run: npm install -g github:Rabbit-Fur/codex-fur
+
+      - name: Run Codex Release
+        run: codex-fur release
+
+      - name: Commit & Push Changes
+        run: |
+          git config --global user.name "codex-fur-bot"
+          git config --global user.email "codex@fur.gg"
+          git add .
+          git commit -m "🤖 Codex Auto-Release"
+          git push origin main

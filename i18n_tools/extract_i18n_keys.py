@@ -11,6 +11,7 @@ import os
 import re
 from pathlib import Path
 from typing import List, Set
+
 import openai
 
 # === Konfiguration ===
@@ -23,6 +24,7 @@ USE_GPT = True  # Für Tests False setzen, dann nur Kopie
 openai.api_key = os.getenv("OPENAI_API_KEY")
 if USE_GPT and not openai.api_key:
     raise EnvironmentError("❌ OPENAI_API_KEY ist nicht gesetzt.")
+
 
 def scan_translation_keys() -> List[str]:
     """
@@ -46,6 +48,7 @@ def scan_translation_keys() -> List[str]:
                     print(f"⚠️ Fehler beim Lesen von {path}: {e}")
     return sorted(found_keys)
 
+
 def translate_gpt(text: str) -> str:
     """
     Übersetzt einen String ins Deutsche via OpenAI GPT.
@@ -60,13 +63,19 @@ def translate_gpt(text: str) -> str:
         print(f"🌍 GPT übersetzt: '{text}'")
         response = openai.ChatCompletion.create(
             model="gpt-3.5-turbo",
-            messages=[{"role": "user", "content": f"Übersetze folgenden Text für eine Benutzeroberfläche ins Deutsche: '{text}'"}],
-            temperature=0.3
+            messages=[
+                {
+                    "role": "user",
+                    "content": f"Übersetze folgenden Text für eine Benutzeroberfläche ins Deutsche: '{text}'",
+                }
+            ],
+            temperature=0.3,
         )
         return response.choices[0].message.content.strip()
     except Exception as e:
         print(f"❌ GPT-Fehler bei '{text}': {e}")
         return text
+
 
 def update_translation_file(keys: List[str]) -> None:
     """
@@ -93,6 +102,7 @@ def update_translation_file(keys: List[str]) -> None:
 
     print(f"✅ {new_count} neue Übersetzungen hinzugefügt.")
     print(f"📁 Datei gespeichert: {TRANSLATION_FILE}")
+
 
 if __name__ == "__main__":
     print("🔍 Scanne Quellverzeichnisse nach _('...') Keys ...")

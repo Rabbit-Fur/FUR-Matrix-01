@@ -35,3 +35,25 @@ python main_app.py
 ```
 
 Das Skript `mini.py` ist lediglich für kurze Tests gedacht und lädt keine Blueprints. Für die vollständige Anwendung mit Discord-Login muss `main_app.py` (oder `gunicorn main_app:app`) verwendet werden.
+
+## Codex-FUR Befehle
+
+Zuerst das Tool global installieren:
+```bash
+npm install -g github:Rabbit-Fur/codex-fur
+```
+
+Nach der Installation kann die Konfiguration mit `codex-fur init` erstellt werden.
+
+
+Das Projekt nutzt [codex-fur](https://github.com/Rabbit-Fur/codex-fur) für Wartungsaufgaben.
+Nach der Installation stehen diese npm-Scripts zur Verfügung:
+
+```bash
+npm run codex:sync     # Übersetzungen synchronisieren
+npm run codex:audit    # Projekt analysieren
+npm run codex:fix      # Automatische Fixes anwenden
+npm run codex:release  # Release-Workflow starten
+```
+
+Die Konfiguration findet sich in `codex-fur.json`.

@@ -4,22 +4,26 @@ admin_routes.py – Flask Blueprint für Admin-Views (geschützt, R4+)
 Stellt alle Admin-Oberflächen bereit, geschützt durch das r4_required-Decorator (nur Admins/R4).
 """
 
+import json
+import os
+
 from flask import (
     Blueprint,
-    render_template,
     Response,
-    request,
     current_app,
-    redirect,
-    url_for,
     flash,
+    redirect,
+    render_template,
+    request,
+    url_for,
 )
+
 from init_db_core import get_db_connection
-import os
-import json
 from web.auth.decorators import r4_required
+from web.database import get_db
 
 admin_bp = Blueprint("admin", __name__, url_prefix="/admin")
+
 
 @r4_required
 @admin_bp.route("/")
@@ -29,6 +33,7 @@ def admin_dashboard():
     """
     return render_template("admin/admin.html")
 
+
 @r4_required
 @admin_bp.route("/calendar")
 def calendar():
@@ -36,6 +41,7 @@ def calendar():
     Admin-Kalenderansicht.
     """
     return render_template("admin/calendar.html")
+
 
 @r4_required
 @admin_bp.route("/create_event", methods=["GET", "POST"])
@@ -64,6 +70,7 @@ def create_event():
 
     return render_template("admin/create_event.html")
 
+
 @r4_required
 @admin_bp.route("/dashboard")
 def dashboard():
@@ -71,6 +78,7 @@ def dashboard():
     Alternative Dashboard-Ansicht (z. B. Statistiken).
     """
     return render_template("admin/dashboard.html")
+
 
 @r4_required
 @admin_bp.route("/diplomacy")
@@ -80,6 +88,7 @@ def diplomacy():
     """
     return render_template("admin/diplomacy.html")
 
+
 @r4_required
 @admin_bp.route("/downloads")
 def downloads():
@@ -87,6 +96,7 @@ def downloads():
     Downloads für Admins (z. B. Reports, Templates).
     """
     return render_template("admin/downloads.html")
+
 
 @r4_required
 @admin_bp.route("/edit_event")
@@ -96,6 +106,7 @@ def edit_event():
     """
     return render_template("admin/edit_event.html")
 
+
 @r4_required
 @admin_bp.route("/events")
 def events():
@@ -103,6 +114,7 @@ def events():
     Übersicht aller Events (Verwaltung).
     """
     return render_template("admin/events.html")
+
 
 @r4_required
 @admin_bp.route("/leaderboards")
@@ -112,6 +124,7 @@ def leaderboards():
     """
     return render_template("admin/leaderboards.html")
 
+
 @r4_required
 @admin_bp.route("/participants")
 def participants():
@@ -119,6 +132,16 @@ def participants():
     Teilnehmer-Übersicht für Events.
     """
     return render_template("admin/participants.html")
+
+
+@r4_required
+@admin_bp.route("/reminders")
+def reminder_admin():
+    db = get_db()
+    reminders = db.execute("SELECT * FROM reminders ORDER BY send_time ASC").fetchall()
+    db.close()
+    return render_template("admin/reminders.html", reminders=reminders)
+
 
 @r4_required
 @admin_bp.route("/settings")
@@ -128,6 +151,7 @@ def settings():
     """
     return render_template("admin/settings.html")
 
+
 @r4_required
 @admin_bp.route("/tools")
 def tools():
@@ -135,6 +159,7 @@ def tools():
     Admin-Tools (z. B. Import/Export).
     """
     return render_template("admin/tools.html")
+
 
 @r4_required
 @admin_bp.route("/translations_editor", methods=["GET", "POST"])
@@ -151,7 +176,9 @@ def translations_editor():
     data = {}
     file_path = None
     if selected_language:
-        file_path = os.path.join(current_app.root_path, "translations", f"{selected_language}.json")
+        file_path = os.path.join(
+            current_app.root_path, "translations", f"{selected_language}.json"
+        )
         if os.path.exists(file_path):
             with open(file_path, "r", encoding="utf-8") as f:
                 try:
@@ -159,11 +186,13 @@ def translations_editor():
                 except json.JSONDecodeError:
                     current_app.logger.error("Invalid JSON in %s", file_path)
 
-    if request.method == "POST" and any(k.startswith("translations[") for k in request.form.keys()):
+    if request.method == "POST" and any(
+        k.startswith("translations[") for k in request.form.keys()
+    ):
         updated = {}
         for k, v in request.form.items():
             if k.startswith("translations[") and k.endswith("]"):
-                key = k[len("translations["):-1]
+                key = k[len("translations[") : -1]
                 updated[key] = v
         if file_path:
             os.makedirs(os.path.dirname(file_path), exist_ok=True)
@@ -178,7 +207,10 @@ def translations_editor():
         selected_language=selected_language,
         translations=data,
     )
+
+
 # --- Zusätzliche Admin-Endpoints für Tools & Exporte ---
+
 
 @admin_bp.route("/trigger_reminder", methods=["POST"])
 def trigger_reminder():

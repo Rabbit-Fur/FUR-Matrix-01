@@ -5,20 +5,24 @@ Stellt alle öffentlichen Seiten bereit (ohne Login/Role), z.B. Landing Page, Lo
 """
 
 import os
+import secrets
+from urllib.parse import urlencode
+
+import requests
 from flask import (
     Blueprint,
-    render_template,
+    abort,
     current_app,
+    flash,
+    redirect,
+    render_template,
     request,
     session,
-    redirect,
     url_for,
-    abort,
-    flash,
 )
-from urllib.parse import urlencode
-import requests
+
 from fur_lang.i18n import get_supported_languages
+from web.auth.decorators import r3_required
 
 public_bp = Blueprint("public", __name__)
 
@@ -57,6 +61,9 @@ def discord_login():
         "response_type": "code",
         "scope": "identify",
     }
+    state = secrets.token_urlsafe(16)
+    session["discord_oauth_state"] = state
+    params["state"] = state
     url = f"https://discord.com/oauth2/authorize?{urlencode(params)}"
     return redirect(url)
 
@@ -65,8 +72,11 @@ def discord_login():
 def discord_callback():
     """Callback-URL für den Discord-OAuth-Login."""
     code = request.args.get("code")
+    state = request.args.get("state")
     if not code:
         return "Fehlender Code", 400
+    if not state or state != session.pop("discord_oauth_state", None):
+        return "Ungültiger OAuth-State", 400
 
     data = {
         "client_id": current_app.config.get("DISCORD_CLIENT_ID"),
@@ -77,14 +87,17 @@ def discord_callback():
     }
     headers = {"Content-Type": "application/x-www-form-urlencoded"}
     token_response = requests.post(
-        "https://discord.com/api/oauth2/token", data=data, headers=headers
+        "https://discord.com/api/oauth2/token", data=data, headers=headers, timeout=10
     )
 
     if token_response.status_code != 200:
-        return (
-            f"Discord Token Error: {token_response.status_code} - {token_response.text}",
-            401,
+        current_app.logger.error(
+            "Discord Token Error %s - %s",
+            token_response.status_code,
+            token_response.text,
         )
+        flash("Discord Login fehlgeschlagen", "danger")
+        return redirect(url_for("public.login"))
 
     access_token = token_response.json().get("access_token")
 
@@ -175,8 +188,13 @@ def view_event(event_id):
 
 
 @public_bp.route("/events/<int:event_id>/join", methods=["POST"])
+@r3_required
 def join_event(event_id):
     """Ermöglicht das Beitreten zu einem Event (Dummy, Demo-Logik)."""
+    if "user" not in session:
+        flash("Du musst eingeloggt sein.", "warning")
+        return redirect(url_for("public.login"))
+
     # Beispiel: Session-User in participants eintragen (hier nur Flash-Meldung als Dummy)
     flash("Du bist dem Event erfolgreich beigetreten!", "success")
     return redirect(url_for("public.view_event", event_id=event_id))

@@ -2,25 +2,29 @@
 main_app.py – Einstiegspunkt für das FUR-System (Web & Discord-Bot)
 Mit Debug-Modus für lokale Entwicklung und sauberem Application-Factory-Pattern.
 """
-import sys
+
 import os
+import sys
+
 sys.path.append(os.path.dirname(__file__))
 
-import logging
-import threading
-import locale
 import atexit
+import locale
+import logging
 import signal
+import threading
 
 from dotenv import load_dotenv
-from web import create_app
-from utils.env_helpers import get_env_str, get_env_bool, get_env_int
-from init_db_core import init_db
-from utils.github_service import fetch_repo_info
-from fur_lang.i18n import t
 from flask import Response, session
+
 from dashboard.routes import dashboard
-#app.register_blueprint(dashboard)
+from fur_lang.i18n import t
+from init_db_core import init_db
+from utils.env_helpers import get_env_bool, get_env_int, get_env_str
+from utils.github_service import fetch_repo_info
+from web import create_app
+
+# app.register_blueprint(dashboard)
 
 # --- Application-Factory: App-Objekt (für Gunicorn/Railway!) ---
 app = create_app()
@@ -40,11 +44,13 @@ load_dotenv()
 logging.basicConfig(
     filename="app.log",
     level=logging.INFO,
-    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
 )
+
 
 def log_error(error_type, error):
     logging.error(f"{error_type}: {str(error)}", exc_info=True)
+
 
 def check_github_repo():
     try:
@@ -54,21 +60,26 @@ def check_github_repo():
     except Exception as e:
         log_error("GitHub", e)
 
+
 def start_discord_bot():
     try:
         logging.info("🤖 Starte Discord-Bot...")
         from bot.bot_main import run_bot
+
         run_bot()
     except Exception as e:
         log_error("Discord-Bot", e)
 
+
 def cleanup():
     logging.info("🔻 Anwendung wird beendet.")
+
 
 def signal_handler(sig, frame):
     logging.info("🛑 SIGINT empfangen. Beende Anwendung...")
     cleanup()
     sys.exit(0)
+
 
 # --- Main-Start für lokalen Betrieb und Zusatzdienste ---
 if __name__ == "__main__":
@@ -93,6 +104,7 @@ if __name__ == "__main__":
     except Exception as e:
         log_error("Main", e)
         raise
+
 
 # ➕ Healthcheck für Railway/CI/Monitoring
 @app.route("/health")
