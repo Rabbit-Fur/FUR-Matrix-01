@@ -39,9 +39,9 @@ def create_app():
 
         app.register_blueprint(public_bp)
         app.register_blueprint(member_bp, url_prefix="/members")
-        app.register_blueprint(admin_bp, url_prefix="/admin")
+        app.register_blueprint(admin_bp)
         app.register_blueprint(reminder_api)
-        app.register_blueprint(dashboard, url_prefix="/dashboard")  # NEU!
+        app.register_blueprint(dashboard)
 
         app.logger.info("✅ Alle Blueprints erfolgreich registriert.")
 
