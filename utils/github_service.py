@@ -19,6 +19,25 @@ GITHUB_API = "https://api.github.com"
 REPO = os.getenv("REPO_GITHUB")
 TOKEN = os.getenv("TOKEN_GITHUB_API")
 
+HEADERS = {"Accept": "application/vnd.github.v3+json"}
+if TOKEN:
+    HEADERS["Authorization"] = f"token {TOKEN}"
+else:
+    logging.warning(
+        "TOKEN_GITHUB_API nicht gesetzt – GitHub API-Aufrufe k\u00f6nnen scheitern."
+    )
+if not REPO:
+    logging.warning("REPO_GITHUB nicht gesetzt – GitHub API deaktiviert.")
+
+
+def _check_response(response: requests.Response) -> None:
+    """Raise informative errors for GitHub API calls."""
+    if response.status_code == 401:
+        logging.error(
+            "❌ GitHub API 401 Unauthorized. Token fehlt oder ist ung\u00fcltig."
+        )
+        raise RuntimeError("GitHub API: Unauthorized - TOKEN_GITHUB_API pr\u00fcfen")
+    response.raise_for_status()
 if not REPO or not TOKEN:
     raise RuntimeError(
         "Bitte Umgebungsvariablen REPO_GITHUB und TOKEN_GITHUB_API setzen!"
@@ -57,6 +76,7 @@ def fetch_repo_info(owner: Optional[str] = None, repo: Optional[str] = None) -> 
             "❌ GitHub API 401 Unauthorized. Token fehlt oder ist ung\u00fcltig."
         )
     response.raise_for_status()
+    _check_response(response)
     return response.json()
 
 
@@ -80,6 +100,7 @@ def commit_file(file_path: str, content: str, branch: str, commit_msg: str) -> d
     if response.status_code == 401:
         logging.error("❌ GitHub API 401 Unauthorized beim Commit.")
     response.raise_for_status()
+    _check_response(response)
     return response.json()
 
 
@@ -101,6 +122,7 @@ def create_branch(branch: str, from_branch: str = "main") -> dict:
     if response.status_code == 401:
         logging.error("❌ GitHub API 401 Unauthorized beim Branch-Erstellen.")
     response.raise_for_status()
+    _check_response(response)
     return response.json()
 
 
@@ -119,6 +141,7 @@ def get_branch_sha(branch: str) -> str:
     if response.status_code == 401:
         logging.error("❌ GitHub API 401 Unauthorized beim Abrufen der SHA.")
     response.raise_for_status()
+    _check_response(response)
     return response.json()["object"]["sha"]
 
 
@@ -141,4 +164,5 @@ def create_pull_request(title: str, body: str, head: str, base: str = "main") ->
     if response.status_code == 401:
         logging.error("❌ GitHub API 401 Unauthorized beim Pull Request.")
     response.raise_for_status()
+    _check_response(response)
     return response.json()

@@ -20,10 +20,15 @@ def get_db_path() -> str:
         )
     abs_path = os.path.abspath(db_path)
     os.makedirs(os.path.dirname(abs_path), exist_ok=True)
+    if not os.path.exists(abs_path):
+        open(abs_path, "a").close()
     return abs_path
 
 
 DB_PATH = get_db_path()
+DB_PATH = os.getenv("DATABASE_URL") or os.path.join(
+    os.path.dirname(__file__), "data", "admin_users.db"
+)
 log = logging.getLogger(__name__)
 
 
