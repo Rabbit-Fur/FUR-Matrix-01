@@ -4,7 +4,9 @@ from datetime import datetime, timedelta
 
 import requests
 
-DB_PATH = "data/admin_users.db"
+from init_db_core import get_db_path
+
+DB_PATH = get_db_path()
 WEBHOOK_URL = os.getenv("DISCORD_WEBHOOK_URL")
 LOG_DIR = "core/logs"
 os.makedirs(LOG_DIR, exist_ok=True)

@@ -29,21 +29,29 @@ intents.message_content = True
 intents.guilds = True
 intents.members = True
 
-# DNS-Resolver-Fallback und Connector
-connector = aiohttp.TCPConnector(resolver=aiohttp.AsyncResolver())
-
-# Bot-Instanz erstellen
-bot = commands.Bot(command_prefix="!", intents=intents, connector=connector)
+# Bot-Instanz wird erst bei Start erstellt
+bot: commands.Bot | None = None
 
 
-@bot.event
-async def on_ready():
-    log.info("✅ Eingeloggt als %s (ID: %s)", bot.user, getattr(bot.user, "id", "n/a"))
+def create_bot() -> commands.Bot:
+    """Instantiate the Discord bot with a safe connector."""
+    connector = aiohttp.TCPConnector(resolver=aiohttp.AsyncResolver())
+    new_bot = commands.Bot(command_prefix="!", intents=intents, connector=connector)
+
+    @new_bot.event
+    async def on_ready():
+        log.info(
+            "✅ Eingeloggt als %s (ID: %s)",
+            new_bot.user,
+            getattr(new_bot.user, "id", "n/a"),
+        )
+
+    return new_bot
 
 
 def is_ready() -> bool:
     """Return True if the bot reports readiness."""
-    return hasattr(bot, "is_ready") and bot.is_ready()
+    return bot is not None and bot.is_ready()
 
 
 async def load_extensions(bot: commands.Bot) -> None:
@@ -58,6 +66,9 @@ async def load_extensions(bot: commands.Bot) -> None:
 async def start_bot(max_retries: int = 3) -> None:
     """Load cogs and start the bot asynchronously with retries."""
     from config import Config
+
+    global bot
+    bot = create_bot()
 
     await load_extensions(bot)
 
