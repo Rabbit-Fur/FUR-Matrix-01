@@ -29,21 +29,13 @@ intents.message_content = True
 intents.guilds = True
 intents.members = True
 
-# DNS-Resolver-Fallback und Connector
-connector = aiohttp.TCPConnector(resolver=aiohttp.AsyncResolver())
-
-# Bot-Instanz erstellen
-bot = commands.Bot(command_prefix="!", intents=intents, connector=connector)
-
-
-@bot.event
-async def on_ready():
-    log.info("✅ Eingeloggt als %s (ID: %s)", bot.user, getattr(bot.user, "id", "n/a"))
+# Bot-Instanz wird erst bei Start erstellt
+bot: commands.Bot | None = None
 
 
 def is_ready() -> bool:
     """Return True if the bot reports readiness."""
-    return hasattr(bot, "is_ready") and bot.is_ready()
+    return bot is not None and bot.is_ready()
 
 
 async def load_extensions(bot: commands.Bot) -> None:
@@ -55,9 +47,21 @@ async def load_extensions(bot: commands.Bot) -> None:
         log.error("❌ Fehler beim Laden der Reminder-Cogs: %s", e)
 
 
-async def start_bot(max_retries: int = 3) -> None:
-    """Load cogs and start the bot asynchronously with retries."""
+async def run_bot(max_retries: int = 3) -> None:
+    """Instantiate and start the bot asynchronously with retries."""
     from config import Config
+
+    global bot
+    connector = aiohttp.TCPConnector(resolver=aiohttp.AsyncResolver())
+    bot = commands.Bot(command_prefix="!", intents=intents, connector=connector)
+
+    @bot.event
+    async def on_ready() -> None:
+        log.info(
+            "✅ Eingeloggt als %s (ID: %s)",
+            bot.user,
+            getattr(bot.user, "id", "n/a"),
+        )
 
     await load_extensions(bot)
 
@@ -91,11 +95,11 @@ def main() -> None:
     """Entry point used by external scripts."""
     try:
         log.info("🚀 Discord-Bot wird gestartet...")
-        asyncio.run(start_bot())
+        asyncio.run(run_bot())
     except Exception as e:  # pragma: no cover - optional for testing
         log.critical("❌ Login fehlgeschlagen. %s", e, exc_info=True)
 
 
-def run_bot() -> None:
+def run_bot_sync() -> None:
     """Backward compatible alias for :func:`main`."""
     main()

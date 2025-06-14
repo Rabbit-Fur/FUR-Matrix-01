@@ -6,15 +6,38 @@ Alle API-Keys werden aus Umgebungsvariablen geladen.
 """
 
 import base64
+import logging
 import os
 from typing import Optional
 
 import requests
+from dotenv import load_dotenv
+
+load_dotenv()
 
 GITHUB_API = "https://api.github.com"
 REPO = os.getenv("REPO_GITHUB")
 TOKEN = os.getenv("TOKEN_GITHUB_API")
 
+HEADERS = {"Accept": "application/vnd.github.v3+json"}
+if TOKEN:
+    HEADERS["Authorization"] = f"token {TOKEN}"
+else:
+    logging.warning(
+        "TOKEN_GITHUB_API nicht gesetzt – GitHub API-Aufrufe k\u00f6nnen scheitern."
+    )
+if not REPO:
+    logging.warning("REPO_GITHUB nicht gesetzt – GitHub API deaktiviert.")
+
+
+def _check_response(response: requests.Response) -> None:
+    """Raise informative errors for GitHub API calls."""
+    if response.status_code == 401:
+        logging.error(
+            "❌ GitHub API 401 Unauthorized. Token fehlt oder ist ung\u00fcltig."
+        )
+        raise RuntimeError("GitHub API: Unauthorized - TOKEN_GITHUB_API pr\u00fcfen")
+    response.raise_for_status()
 if not REPO or not TOKEN:
     raise RuntimeError(
         "Bitte Umgebungsvariablen REPO_GITHUB und TOKEN_GITHUB_API setzen!"
@@ -48,7 +71,7 @@ def fetch_repo_info(owner: Optional[str] = None, repo: Optional[str] = None) -> 
 
     url = f"{GITHUB_API}/repos/{owner}/{repo_name}"
     response = requests.get(url, headers=HEADERS)
-    response.raise_for_status()
+    _check_response(response)
     return response.json()
 
 
@@ -69,7 +92,7 @@ def commit_file(file_path: str, content: str, branch: str, commit_msg: str) -> d
     encoded_content = base64.b64encode(content.encode("utf-8")).decode("utf-8")
     data = {"message": commit_msg, "content": encoded_content, "branch": branch}
     response = requests.put(url, json=data, headers=HEADERS)
-    response.raise_for_status()
+    _check_response(response)
     return response.json()
 
 
@@ -88,7 +111,7 @@ def create_branch(branch: str, from_branch: str = "main") -> dict:
     base_sha = get_branch_sha(from_branch)
     data = {"ref": f"refs/heads/{branch}", "sha": base_sha}
     response = requests.post(url, json=data, headers=HEADERS)
-    response.raise_for_status()
+    _check_response(response)
     return response.json()
 
 
@@ -104,7 +127,7 @@ def get_branch_sha(branch: str) -> str:
     """
     url = f"{GITHUB_API}/repos/{REPO}/git/refs/heads/{branch}"
     response = requests.get(url, headers=HEADERS)
-    response.raise_for_status()
+    _check_response(response)
     return response.json()["object"]["sha"]
 
 
@@ -124,5 +147,5 @@ def create_pull_request(title: str, body: str, head: str, base: str = "main") ->
     url = f"{GITHUB_API}/repos/{REPO}/pulls"
     data = {"title": title, "body": body, "head": head, "base": base}
     response = requests.post(url, json=data, headers=HEADERS)
-    response.raise_for_status()
+    _check_response(response)
     return response.json()
