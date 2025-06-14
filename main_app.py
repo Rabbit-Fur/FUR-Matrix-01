@@ -8,6 +8,7 @@ import sys
 
 sys.path.append(os.path.dirname(__file__))
 
+import asyncio
 import atexit
 import locale
 import logging
@@ -66,7 +67,7 @@ def start_discord_bot():
         logging.info("🤖 Starte Discord-Bot...")
         from bot.bot_main import run_bot
 
-        run_bot()
+        asyncio.run(run_bot())
     except Exception as e:
         log_error("Discord-Bot", e)
 

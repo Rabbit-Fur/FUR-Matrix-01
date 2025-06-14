@@ -16,10 +16,11 @@ pip install -r requirements.txt
 export SECRET_KEY=dev
 export DISCORD_TOKEN=<your token>
 export DISCORD_GUILD_ID=1
-export DISCORD_CHANNEL_ID=1
+export REMINDER_CHANNEL_ID=1
 export DISCORD_CLIENT_ID=<client id>
 export DISCORD_CLIENT_SECRET=<client secret>
 export DISCORD_REDIRECT_URI=http://localhost:8080/login/discord/callback
+export DATABASE_URL=sqlite:///fur.db
 # Rollen-IDs für Zugriffsebenen (kommasepariert)
 export R3_ROLE_IDS=1234,5678
 export R4_ROLE_IDS=9876

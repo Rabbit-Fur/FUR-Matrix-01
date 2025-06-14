@@ -19,7 +19,9 @@ class ReminderCog(commands.Cog):
         self.reminder_loop.cancel()
 
     def get_db_connection(self):
-        conn = sqlite3.connect("data/admin_users.db")
+        from init_db_core import get_db_path
+
+        conn = sqlite3.connect(get_db_path())
         conn.row_factory = sqlite3.Row
         return conn
 
