@@ -4,7 +4,6 @@ init_db_core.py – Initialisiert die SQLite-Datenbank für das FUR-System
 Legt beim ersten Start alle notwendigen Tabellen an (User, Events, Teilnehmer, Reminder, Hall of Fame).
 """
 
-
 import logging
 import os
 import sqlite3
@@ -127,6 +126,7 @@ def init_db():
             created_at TEXT
         );
         """,
+        # Korrekt geschlossene event_participants-Tabelle
         """
         CREATE TABLE IF NOT EXISTS event_participants (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -134,9 +134,9 @@ def init_db():
             event_id INTEGER NOT NULL,
             FOREIGN KEY (user_id) REFERENCES users(id),
             FOREIGN KEY (event_id) REFERENCES events(id)
-        """),
+        );
+        """
     ]
-
 
     try:
         conn = get_db_connection()
@@ -144,6 +144,12 @@ def init_db():
         for stmt in schema:
             cursor.executescript(stmt)
         conn.commit()
+
+        # Debug: Tabelle auflisten
+        cursor.execute("SELECT name FROM sqlite_master WHERE type='table'")
+        tables = [row["name"] for row in cursor.fetchall()]
+        log.info("📋 Tabellen in der DB: %s", tables)
+
         conn.close()
         log.info("✅ Datenbank initialisiert/aktualisiert (%s)", DB_PATH)
     except Exception as e:
