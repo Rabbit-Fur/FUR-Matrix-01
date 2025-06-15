@@ -3,73 +3,23 @@
 <head>
     <meta charset="UTF-8">
     <title>{% block title %}MATRIX System by FUR{% endblock %}</title>
-    
-    <!-- Hauptstylesheet -->
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-    
-    <!-- Hero-Komponenten-Styling -->
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/hero.css') }}">
-    
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            min-height: 100vh;
-            background: url('{{ bg_image | default(url_for("static", filename="img/background.jpg")) }}') no-repeat center center fixed;
-            background-size: cover;
-            color: #fff;
-        }
-        .btn {
-            display: inline-block;
-            padding: 0.5em 1em;
-            background: #ff9900;
-            color: #222;
-            border-radius: 8px;
-            text-decoration: none;
-            font-weight: bold;
-        }
-        .btn:hover {
-            background: #ffaa33;
-        }
-        nav {
-            margin-bottom: 2em;
-            background: rgba(24,26,32,0.95);
-            padding: 1em;
-            border-radius: 0 0 16px 16px;
-        }
-        .container {
-            max-width: 1000px;
-            margin: 2em auto;
-            background: rgba(24,26,32,0.95);
-            border-radius: 16px;
-            box-shadow: 0 4px 24px #000a;
-            padding: 2em;
-        }
-        .lang-selector {
-            position: absolute;
-            top: 1em;
-            right: 2em;
-        }
-        select {
-            padding: 0.3em 0.6em;
-            border-radius: 5px;
-            font-weight: bold;
+        .grid-layout {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+            padding: 1rem;
         }
         @media (max-width: 600px) {
-            .container {
-                margin: 1em;
-                padding: 1em;
-            }
-            nav {
-                font-size: 90%;
-                padding: 0.5em;
+            .grid-layout {
+                grid-template-columns: 1fr;
             }
         }
     </style>
 </head>
 <body>
 
-    <!-- Sprachumschaltung -->
     <div class="lang-selector">
         <form method="GET" action="{{ url_for('public.set_language') }}">
             <select name="lang" onchange="this.form.submit()">
@@ -82,22 +32,14 @@
         </form>
     </div>
 
-    <!-- Navigation -->
-    <nav>
-        <a href="{{ url_for('public.landing') }}">Home</a>
-        <a href="{{ url_for('public.dashboard') }}">Public Dashboard</a>
-        <a href="{{ url_for('admin.dashboard') }}">Admin Dashboard</a>
-        <a href="{{ url_for('members.dashboard') }}">Member Dashboard</a>
-        <a href="{{ url_for('public.events') }}">Events</a>
-        <a href="{{ url_for('public.leaderboard') }}">Leaderboard</a>
-        <a href="{{ url_for('public.hall_of_fame') }}">Hall of Fame</a>
-        <a href="{{ url_for('public.lore') }}">Lore</a>  
-    </nav>
+    {% block navbar %}{% endblock %}
 
-    <!-- Inhalt -->
-    <div class="container">
-        {% block content %}{% endblock %}
-    </div>
+    <main class="container">
+        <div class="grid-layout">
+            {% block content %}{% endblock %}
+        </div>
+    </main>
 
+    {% block footer %}{% endblock %}
 </body>
 </html>
