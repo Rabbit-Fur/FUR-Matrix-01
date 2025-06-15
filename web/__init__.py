@@ -6,12 +6,11 @@ und bindet die zentrale Config-Klasse aus dem Projekt-Root ein.
 """
 
 import os
-
 from flask import Flask, request, session
 from flask_babel import Babel
 
 from config import Config
-from database import close_db  # ✅ DB-Teardown importieren
+from database import close_db
 from fur_lang.i18n import current_lang, get_supported_languages, t
 
 try:
@@ -34,13 +33,17 @@ def create_app():
     app.config.setdefault(
         "BABEL_TRANSLATION_DIRECTORIES", os.path.join(base_dir, "translations")
     )
-    babel = Babel(app)
 
-    @babel.localeselector
+    babel = Babel()
+    babel.init_app(app)
+
+    # ✅ Flask-Babel ≥2.0: locale_selector_func statt @localeselector
     def get_locale():
         return session.get("lang") or request.accept_languages.best_match(
             app.config["BABEL_SUPPORTED_LOCALES"]
         )
+
+    app.locale_selector_func(get_locale)
 
     # 🌐 Sprache manuell via ?lang=
     @app.before_request
@@ -75,7 +78,7 @@ def create_app():
         app.register_blueprint(dashboard)
 
         app.logger.info("✅ Alle Blueprints erfolgreich registriert.")
-    except Exception as e:
+    except Exception:
         app.logger.error("❌ Blueprint registration failed:", exc_info=True)
 
     # 📦 DB-Teardown bei AppContext-Ende
