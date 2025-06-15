@@ -196,5 +196,21 @@
   "Übersicht": "Übersicht",
   "⏰ Erinnerung auslösen": "⏰ Erinnerung auslösen",
   "🏆 Champion posten": "🏆 Champion posten",
-  "🧪 Healthcheck ausführen": "🧪 Healthcheck ausführen"
+  "🧪 Healthcheck ausführen": "🧪 Healthcheck ausführen",
+  "announce_error": "Fehler beim Senden der Ankündigung.",
+  "announce_message": "📢 {message}",
+  "announce_no_permission": "Bot hat keine Berechtigung zum Senden in diesem Channel.",
+  "announce_usage": "Verwendung: !announce <Nachricht>",
+  "base_fur_info": "🔥 Willkommen bei der FUR-Allianz – Stärke, Einheit, Respekt.",
+  "base_ping_pong": "🏓 Pong! FUR ist online.",
+  "leaderboard_error": "Fehler beim Leaderboard-Versand.",
+  "leaderboard_header": "Top {category}",
+  "leaderboard_message": "{header}\n{content}",
+  "leaderboard_unknown_category": "Kategorie '{category}' ist nicht verfügbar.",
+  "reminder_event_15min": "Erinnerung: Das Event '{title}' startet in 15 Minuten.",
+  "reminder_event_5min": "Erinnerung: Das Event '{title}' startet in 5 Minuten.",
+  "reminder_hourly": "Erinnerung: {time} UTC - prüfe deine Aufgaben!",
+  "reminder_optout_error": "Fehler beim Deaktivieren der Erinnerungen.",
+  "reminder_optout_success": "Du erhältst keine Erinnerungen mehr.",
+  "reminder_optout_usage": "Nutze '!reminder stop', um Erinnerungen zu deaktivieren."
 }
