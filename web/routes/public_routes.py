@@ -48,9 +48,9 @@ def login():
 
 @public_bp.route("/login/discord")
 def discord_login():
-    """Startet den OAuth-Login bei Discord."""
     client_id = current_app.config.get("DISCORD_CLIENT_ID")
     redirect_uri = current_app.config.get("DISCORD_REDIRECT_URI")
+
     if not client_id or not redirect_uri:
         flash("Discord OAuth nicht konfiguriert", "danger")
         return redirect(url_for("public.login"))
@@ -62,12 +62,13 @@ def discord_login():
         "client_id": client_id,
         "redirect_uri": redirect_uri,
         "response_type": "code",
-        "scope": "identify",
+        "scope": "identify guilds guilds.members.read",
         "state": state,
     }
 
     url = f"https://discord.com/oauth2/authorize?{urlencode(params)}"
     return redirect(url)
+
 
 
 @public_bp.route("/callback")
