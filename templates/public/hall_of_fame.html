@@ -1,24 +1,23 @@
 {% extends "layout.html" %}
 {% set bg_image = "/static/bg/hof_fire.png" %}
-
 {% block title %}{{ t("hall_of_fame_title") }}{% endblock %}
 
 {% block content %}
-  <h2>{{ t("monthly_champions") }}</h2>
-  {% set hof_entries = hof if hof is defined and hof else [
-      {'username': 'Marcel', 'month': 'Mai 2025', 'honor_title': 'PvP-Champion', 'poster_url': '/static/champions/champion_testchampion_mai2025.png'}
-  ] %}
-  {% if hof_entries %}
-    {% for entry in hof_entries %}
-      <div class="panel">
-        <h3>{{ entry.username }} – {{ entry.month }}</h3>
-        <p>{{ entry.honor_title }}</p>
-        {% if entry.poster_url %}
-          <img src="{{ entry.poster_url }}" alt="{{ t('Champion Poster') }}" style="max-width: 100%;">
-        {% endif %}
-      </div>
-    {% endfor %}
-  {% else %}
-    <p>{{ t("No entries in Hall of Fame.") }}</p>
-  {% endif %}
+  <div class="main-content">
+    <h2>{{ t("monthly_champions") }}</h2>
+
+    {% if hof %}
+      {% for entry in hof %}
+        <div class="panel">
+          <h3>{{ entry.username }} – {{ entry.month }}</h3>
+          <p>{{ entry.honor_title }}</p>
+          {% if entry.poster_url %}
+            <img src="{{ entry.poster_url }}" alt="{{ t('Champion Poster') }}" style="max-width: 100%;">
+          {% endif %}
+        </div>
+      {% endfor %}
+    {% else %}
+      <p>{{ t("No entries in Hall of Fame.") }}</p>
+    {% endif %}
+  </div>
 {% endblock %}
