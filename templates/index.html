@@ -1,8 +1,12 @@
 {% extends "layout.html" %}
 {% set bg_image = "/static/bg/index.png" %}
-{% block title %}Startseite{% endblock %}
+
+{% block title %}{{ _('start_title') }}{% endblock %}
+
 {% block content %}
-  <h1>🐺 {{ _('Willkommen bei System by FUR') }}</h1>
-  <p>{{ _('Das zentrale Portal für Events, Auszeichnungen und Ruhm.') }}</p>
-  <a class="btn" href="{{ url_for('public.discord_login') }}">{{ _('Login mit Discord') }}</a>
+  <div style="text-align: center; margin-top: 2em;">
+    <h1>🐺 {{ _('welcome_message') }}</h1>
+    <p>{{ _('portal_intro') }}</p>
+    <a class="btn" href="{{ url_for('public.discord_login') }}">{{ _('login_with_discord') }}</a>
+  </div>
 {% endblock %}
