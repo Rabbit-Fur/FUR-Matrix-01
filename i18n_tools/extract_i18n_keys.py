@@ -1,7 +1,7 @@
 """
 translation_auto.py – Automatisches Extrahieren und Übersetzen von UI-Texten
 
-Dieses Skript sucht in Quellcode und Templates nach allen _(...) Keys,
+Dieses Skript sucht in Quellcode und Templates nach allen Aufrufen von ``t(“…”)`` und schreibt sie als JSON-Datei,
 übersetzt sie bei Bedarf automatisiert via OpenAI GPT (oder kopiert sie als Fallback)
 und schreibt das Ergebnis als JSON-Translation-File für Flask-Babel/i18n.
 """
@@ -28,12 +28,12 @@ if USE_GPT and not openai.api_key:
 
 def scan_translation_keys() -> List[str]:
     """
-    Scannt alle Quellverzeichnisse nach _('Text')-Keys und gibt eine sortierte Liste zurück.
+    Scannt alle Quellverzeichnisse nach Aufrufen von t ('Text') und gibt eine sortierte Liste zurück.
 
     Returns:
         List[str]: Alphabetisch sortierte Liste aller gefundenen Keys.
     """
-    pattern = re.compile(r"_\(\s*['\"](.+?)['\"]\s*\)")
+    pattern = re.compile(r"t\(\s*['\"](.+?)['\"]\s*\)")
     found_keys: Set[str] = set()
 
     for folder in SOURCE_DIRS:
@@ -105,7 +105,7 @@ def update_translation_file(keys: List[str]) -> None:
 
 
 if __name__ == "__main__":
-    print("🔍 Scanne Quellverzeichnisse nach _('...') Keys ...")
+    print("🔍 Scanne Quellverzeichnisse nach t('…') Keys ...")
     keys = scan_translation_keys()
     print(f"🔑 {len(keys)} eindeutige Keys gefunden.")
     update_translation_file(keys)
