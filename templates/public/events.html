@@ -7,6 +7,7 @@
 <div class="main-content">
   <div class="page-header">
     <h1>📅 {{ t("Alle geplanten Events") }}</h1>
+    <p>{{ t("Hier findest du alle anstehenden Events der Allianz. Mit einem Klick kannst du teilnehmen.") }}</p>
   </div>
 
   <div class="calendar-card">
@@ -31,7 +32,7 @@
             {% if session.get("user") %}
               <td>
                 <form action="{{ url_for('public.join_event', event_id=event.id) }}" method="POST" style="display:inline;">
-                  <button type="submit">🎟️ {{ t("Beitreten") }}</button>
+                  <button type="submit" class="btn btn-small">🎟️ {{ t("Beitreten") }}</button>
                 </form>
               </td>
             {% endif %}
