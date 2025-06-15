@@ -9,21 +9,25 @@
   color: #fff;
   backdrop-filter: blur(4px);
 }
+
 .hero-panel h1 {
   font-size: 2.4rem;
   color: #fcd770;
   margin-bottom: 1rem;
 }
+
 .hero-panel p {
   font-size: 1.15rem;
   color: #ddd;
   margin-bottom: 2rem;
 }
+
 .fur-logo {
   height: 130px;
   margin-bottom: 1.5rem;
   filter: drop-shadow(0 0 14px #ff8c00);
 }
+
 .login-button {
   background: #ffa500;
   padding: 14px 30px;
@@ -35,8 +39,26 @@
   box-shadow: 0 4px 14px rgba(255, 165, 0, 0.4);
   transition: background 0.2s ease, transform 0.2s ease;
 }
+
 .login-button:hover {
   background: #ff8c00;
   transform: scale(1.03);
   color: #111;
+}
+
+/* 📱 Mobile-Optimierung */
+@media (max-width: 768px) {
+  .hero-panel {
+    margin: 3rem 1rem;
+    padding: 2rem 1.5rem;
+  }
+
+  .hero-panel h1 {
+    font-size: 2rem;
+  }
+
+  .login-button {
+    font-size: 1rem;
+    padding: 12px 24px;
+  }
 }
