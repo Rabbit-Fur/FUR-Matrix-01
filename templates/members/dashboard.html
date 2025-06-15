@@ -1,10 +1,16 @@
 {% extends "layout.html" %}
+{% set bg_image = "/static/bg/members.png" %}
 {% block title %}{{ t("Member Dashboard") }}{% endblock %}
+
 {% block content %}
-    <h1>{{ t("Mitglieder-Übersicht") }}</h1>
-    <ul>
-        <li><a href="{{ url_for('members.stats') }}">{{ t("Meine Statistiken") }}</a></li>
-        <li><a href="{{ url_for('members.downloads') }}">{{ t("Downloads") }}</a></li>
-        <li><a href="{{ url_for('members.settings') }}">{{ t("Einstellungen") }}</a></li>
-    </ul>
+  <div class="main-content">
+    <h1>👤 {{ t("Mitglieder-Übersicht") }}</h1>
+    <div class="panel">
+      <ul>
+        <li><a class="btn" href="{{ url_for('members.stats') }}">📊 {{ t("Meine Statistiken") }}</a></li>
+        <li><a class="btn" href="{{ url_for('members.downloads') }}">📥 {{ t("Downloads") }}</a></li>
+        <li><a class="btn" href="{{ url_for('members.settings') }}">⚙️ {{ t("Einstellungen") }}</a></li>
+      </ul>
+    </div>
+  </div>
 {% endblock %}
