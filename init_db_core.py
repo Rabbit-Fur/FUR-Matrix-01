@@ -37,13 +37,28 @@ def get_db_connection() -> sqlite3.Connection:
     return conn
 
 
+def ensure_event_time_column():
+    """Stellt sicher, dass die Spalte 'event_time' in der Tabelle 'events' existiert."""
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        cursor.execute("PRAGMA table_info(events);")
+        columns = [col[1] for col in cursor.fetchall()]
+        if "event_time" not in columns:
+            cursor.execute("ALTER TABLE events ADD COLUMN event_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP;")
+            conn.commit()
+            log.info("➕ Spalte 'event_time' zur Tabelle 'events' hinzugefügt.")
+        conn.close()
+    except Exception as e:
+        log.error("❌ Fehler beim Prüfen/Hinzufügen von 'event_time': %s", e, exc_info=True)
+
+
 def init_db():
     """
     Initialisiert die Datenbank: Legt Tabellen an, falls sie fehlen.
     Wird beim App-Start ausgeführt.
     """
     schema = [
-
         # -- Tabelle "users"
         """
         CREATE TABLE IF NOT EXISTS users (
@@ -57,7 +72,6 @@ def init_db():
             updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         );
         """,
-
         # -- Trigger für updated_at
         """
         CREATE TRIGGER IF NOT EXISTS update_users_timestamp
@@ -67,8 +81,7 @@ def init_db():
             UPDATE users SET updated_at = CURRENT_TIMESTAMP WHERE id = OLD.id;
         END;
         """,
-
-        # -- Events (aktualisiert)
+        # -- Events
         """
         CREATE TABLE IF NOT EXISTS events (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -81,7 +94,6 @@ def init_db():
             FOREIGN KEY (created_by) REFERENCES users(id)
         );
         """,
-
         # -- Teilnehmer
         """
         CREATE TABLE IF NOT EXISTS participants (
@@ -92,7 +104,6 @@ def init_db():
             FOREIGN KEY (user_id) REFERENCES users(id)
         );
         """,
-
         # -- Reminder-Send-Status
         """
         CREATE TABLE IF NOT EXISTS reminders_sent (
@@ -104,7 +115,6 @@ def init_db():
             FOREIGN KEY (user_id) REFERENCES users(id)
         );
         """,
-
         # -- Reminder
         """
         CREATE TABLE IF NOT EXISTS reminders (
@@ -115,7 +125,6 @@ def init_db():
             FOREIGN KEY (created_by) REFERENCES users(id)
         );
         """,
-
         # -- Reminder-Teilnehmer
         """
         CREATE TABLE IF NOT EXISTS reminder_participants (
@@ -126,14 +135,12 @@ def init_db():
             FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
         );
         """,
-
         # -- Reminder-Optout
         """
         CREATE TABLE IF NOT EXISTS reminder_optout (
             user_id INTEGER PRIMARY KEY REFERENCES users(id) ON DELETE CASCADE
         );
         """,
-
         # -- Hall of Fame
         """
         CREATE TABLE IF NOT EXISTS hall_of_fame (
@@ -145,8 +152,7 @@ def init_db():
             created_at TEXT
         );
         """,
-
-        # -- Event-Teilnehmer (separat)
+        # -- Event-Teilnehmer
         """
         CREATE TABLE IF NOT EXISTS event_participants (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -165,6 +171,8 @@ def init_db():
         for stmt in schema:
             cursor.executescript(stmt)
         conn.commit()
+
+        ensure_event_time_column()  # ➕ Füge Spalte nachträglich hinzu (wenn nicht vorhanden)
 
         # Debug: Tabellen anzeigen
         cursor.execute("SELECT name FROM sqlite_master WHERE type='table'")
