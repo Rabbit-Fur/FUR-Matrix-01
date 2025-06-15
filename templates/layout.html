@@ -2,8 +2,64 @@
 <html lang="{{ current_lang() }}">
 <head>
     <meta charset="UTF-8">
-    <title>{% block title %}FUR System Portal{% endblock %}</title>
+    <title>{% block title %}MATRIX System by FUR{% endblock %}</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            min-height: 100vh;
+            background: url('{{ bg_image | default(url_for("static", filename="img/background.jpg")) }}') no-repeat center center fixed;
+            background-size: cover;
+            color: #fff;
+        }
+        .btn {
+            display: inline-block;
+            padding: 0.5em 1em;
+            background: #ff9900;
+            color: #222;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: bold;
+        }
+        .btn:hover {
+            background: #ffaa33;
+        }
+        nav {
+            margin-bottom: 2em;
+            background: rgba(24,26,32,0.95);
+            padding: 1em;
+            border-radius: 0 0 16px 16px;
+        }
+        .container {
+            max-width: 1000px;
+            margin: 2em auto;
+            background: rgba(24,26,32,0.95);
+            border-radius: 16px;
+            box-shadow: 0 4px 24px #000a;
+            padding: 2em;
+        }
+        .lang-selector {
+            position: absolute;
+            top: 1em;
+            right: 2em;
+        }
+        select {
+            padding: 0.3em 0.6em;
+            border-radius: 5px;
+            font-weight: bold;
+        }
+        @media (max-width: 600px) {
+            .container {
+                margin: 1em;
+                padding: 1em;
+            }
+            nav {
+                font-size: 90%;
+                padding: 0.5em;
+            }
+        }
+    </style>
 </head>
 <body>
 
@@ -11,37 +67,27 @@
         <form method="GET" action="{{ url_for('public.set_language') }}">
             <select name="lang" onchange="this.form.submit()">
                 {% for lang in config['BABEL_SUPPORTED_LOCALES'] %}
-                    <option value="{{ lang }}" {% if session.get('lang') == lang %}selected{% endif %}>{{ lang.upper() }}</option>
+                    <option value="{{ lang }}" {% if session.get('lang') == lang %}selected{% endif %}>
+                        {{ lang.upper() }}
+                    </option>
                 {% endfor %}
             </select>
         </form>
     </div>
 
-    {% block navbar %}{% endblock %}
+    <nav>
+        <a href="{{ url_for('public.landing') }}">Home</a>
+        <a href="{{ url_for('public.dashboard') }}">Public Dashboard</a>
+        <a href="{{ url_for('admin.dashboard') }}">Admin Dashboard</a>
+        <a href="{{ url_for('members.dashboard') }}">Member Dashboard</a>
+        <a href="{{ url_for('public.events') }}">Events</a>
+        <a href="{{ url_for('public.leaderboard') }}">Leaderboard</a>
+        <a href="{{ url_for('public.hall_of_fame') }}">Hall of Fame</a>
+        <a href="{{ url_for('public.lore') }}">Lore</a>  
+    </nav>
 
-    <main class="container">
-        {% if request.endpoint == 'public.landing' %}
-            {% include "components/hero.html" %}
-        {% endif %}
-
-        <section class="grid-layout">
-            <!-- Beispielhafte Event-Karten -->
-            <div class="card-box">
-                <h2>Champion Night</h2>
-                <p>📅 01. Juni 2025<br>🔥 Sei dabei, wenn die Besten gegeneinander antreten!</p>
-                <a class="btn" href="{{ url_for('public.view_event', event_id=1) }}">Mehr erfahren</a>
-            </div>
-            <div class="card-box">
-                <h2>Training Session</h2>
-                <p>📅 10. Juni 2025<br>💪 Perfektioniere deine Skills mit den Profis.</p>
-                <a class="btn" href="{{ url_for('public.view_event', event_id=2) }}">Mehr erfahren</a>
-            </div>
-        </section>
-
+    <div class="container">
         {% block content %}{% endblock %}
-    </main>
-
-    {% block footer %}{% endblock %}
-
+    </div>
 </body>
 </html>
