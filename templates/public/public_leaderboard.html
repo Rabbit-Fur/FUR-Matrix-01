@@ -6,12 +6,15 @@
 <div class="main-content">
   <div class="page-header">
     <h1>🏆 {{ t("Leaderboards") }}</h1>
+    <p>{{ t("Die besten Mitglieder im Überblick – Punktestand und Rang") }}</p>
   </div>
 
   {% if leaderboard %}
-    <ol>
+    <ol class="leaderboard-list">
       {% for entry in leaderboard %}
-        <li>{{ entry.rank }}. {{ entry.username }} – {{ entry.score }}</li>
+        <li>
+          <strong>#{{ entry.rank }}</strong> – {{ entry.username }} <span style="float:right;">{{ entry.score }} 🧠</span>
+        </li>
       {% endfor %}
     </ol>
   {% else %}
