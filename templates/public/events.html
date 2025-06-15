@@ -15,56 +15,35 @@
         <tr>
           <th>📝 {{ t("Titel") }}</th>
           <th>📄 {{ t("Beschreibung") }}</th>
-          <th>🕒 {{ t("Zeit") }}</th>
-          <th>🎭 {{ t("Rolle") }}</th>
-          <th>🔁 {{ t("Wiederholung") }}</th>
+          <th>🗓️ {{ t("Datum") }}</th>
           {% if session.get("user") %}
             <th>⚙️ {{ t("Aktionen") }}</th>
           {% endif %}
         </tr>
       </thead>
       <tbody>
-        {% if events is defined and events %}
+        {% if events %}
           {% for event in events %}
-          <tr class="{% if event.event_time < now %}past-event{% endif %}">
+          <tr>
             <td>{{ event.title }}</td>
-            <td>{{ event.description[:50] }}{% if event.description|length > 50 %}...{% endif %}</td>
-            <td data-time="{{ event.event_time }}">{{ event.event_time }}</td>
-            <td>{{ event.role or '-' }}</td>
-            <td>{{ event.recurrence or t("Keine") }}</td>
+            <td>{{ event.description[:80] }}{% if event.description|length > 80 %}...{% endif %}</td>
+            <td>{{ event.event_date }}</td>
             {% if session.get("user") %}
               <td>
-                <a href="{{ url_for('members.edit_event', event_id=event.id) }}" title="{{ t('Bearbeiten') }}">✏️</a>
-                <form action="{{ url_for('members.delete_event', event_id=event.id) }}" method="POST" style="display:inline;" onsubmit="return confirm('{{ t('Wirklich löschen?') }}')">
-                  <button type="submit" style="background:none;border:none;color:red;">❌</button>
+                <form action="{{ url_for('public.join_event', event_id=event.id) }}" method="POST" style="display:inline;">
+                  <button type="submit">🎟️ {{ t("Beitreten") }}</button>
                 </form>
-                <a href="{{ url_for('members.participants', event_id=event.id) }}" title="{{ t('Teilnehmer') }}">👥</a>
               </td>
             {% endif %}
           </tr>
           {% endfor %}
         {% else %}
           <tr>
-            <td colspan="6">{{ t("Keine geplanten Events gefunden.") }}</td>
+            <td colspan="4">{{ t("Keine geplanten Events gefunden.") }}</td>
           </tr>
         {% endif %}
       </tbody>
     </table>
   </div>
 </div>
-
-<script>
-  document.addEventListener('DOMContentLoaded', function () {
-    const rows = document.querySelectorAll('td[data-time]');
-    const now = new Date();
-
-    rows.forEach(cell => {
-      const eventTime = new Date(cell.dataset.time);
-      if (eventTime < now) {
-        cell.parentElement.classList.add('past-event');
-      }
-    });
-  });
-</script>
-
 {% endblock %}
