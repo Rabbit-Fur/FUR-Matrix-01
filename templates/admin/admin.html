@@ -1,14 +1,16 @@
 {% extends "layout.html" %}
-{% block title %}Admin Panel{% endblock %}
+{% set bg_image = "/static/bg/admin.png" %}
+
+{% block title %}Admin Dashboard{% endblock %}
+
 {% block content %}
-  <h2>{{ _('Admin Dashboard') }}</h2>
-  <div class="flex">
-    <a class="btn" href="{{ url_for('admin.events') }}">{{ _('Events verwalten') }}</a>
-    <a class="btn" href="{{ url_for('admin.participants') }}">{{ _('Teilnehmer') }}</a>
-    <a class="btn" href="{{ url_for('admin.leaderboards') }}">{{ _('Leaderboards') }}</a>
-    <a class="btn" href="{{ url_for('admin.translations') }}">{{ _('Übersetzungen') }}</a>
-    <a class="btn" href="{{ url_for('admin.settings') }}">{{ _('Bot-Einstellungen') }}</a>
+<div class="main-content">
+  <div class="page-header">
+    <h1>🔧 {{ _('Admin-Tools') }}</h1>
     <a class="btn" href="{{ url_for('admin.tools') }}">{{ _('Wartung & Trigger') }}</a>
+    <a class="btn" href="{{ url_for('admin.create_event') }}">{{ _('Neues Event erstellen') }}</a>
+    <a class="btn" href="{{ url_for('admin.view_reminders') }}">{{ _('Reminder verwalten') }}</a>
   </div>
-
-
+  <p>{{ _('Willkommen im Admin-Bereich.') }}</p>
+</div>
+{% endblock %}
