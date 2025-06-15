@@ -1,6 +1,6 @@
 # 🔧 Core Frameworks
 flask==2.3.3
-flask-babel==2.0.0
+flask-babel-next==1.1.0
 Flask-Session==0.8.0
 flask-wtf
 flask-limiter
