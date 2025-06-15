@@ -64,7 +64,7 @@ def discord_callback():
     if not state or state != session.pop("discord_oauth_state", None):
         return "Ungültiger OAuth-State", 400
 
-    # Token-Anfrage
+    # Token anfordern
     token_res = requests.post(
         "https://discord.com/api/oauth2/token",
         data={
@@ -85,19 +85,18 @@ def discord_callback():
 
     access_token = token_res.json().get("access_token")
 
-    # Benutzerdaten abfragen
+    # User-Daten holen
     user_res = requests.get(
         "https://discord.com/api/users/@me",
         headers={"Authorization": f"Bearer {access_token}"},
     )
     user_data = user_res.json()
 
-    # Mitgliedschaft prüfen
+    # Mitgliedschaft im FUR-Server prüfen
     guild_res = requests.get(
         f"https://discord.com/api/users/@me/guilds/{current_app.config['DISCORD_GUILD_ID']}/member",
         headers={"Authorization": f"Bearer {access_token}"},
     )
-
     if guild_res.status_code != 200:
         return "Nicht-Mitglied im FUR Discord-Server", 403
 
@@ -108,7 +107,6 @@ def discord_callback():
     r4_roles = set(map(str, current_app.config.get("R4_ROLE_IDS", set())))
     admin_roles = set(map(str, current_app.config.get("ADMIN_ROLE_IDS", set())))
 
-    # Debug-Ausgabe
     current_app.logger.info(f"Discord User Rollen: {user_roles}")
     current_app.logger.info(f"Vergleichsrollen → R3: {r3_roles}, R4: {r4_roles}, ADMIN: {admin_roles}")
 
@@ -122,7 +120,7 @@ def discord_callback():
         current_app.logger.warning("❌ Keine gültige Discord-Rolle erkannt.")
         return "Keine gültige Rolle für den Zugriff", 403
 
-    # Login erfolgreich
+    # Session speichern
     session["user"] = {
         "id": user_data["id"],
         "username": user_data["username"],
@@ -130,9 +128,36 @@ def discord_callback():
         "email": user_data.get("email"),
         "role_level": role_level,
     }
+    session.permanent = True  # Session für 1 Tag aktiv
 
+    # Persistenz in DB
+    from database import get_db
+    db = get_db()
+    db.execute("""
+        INSERT INTO users (discord_id, username, avatar, email, role_level)
+        VALUES (?, ?, ?, ?, ?)
+        ON CONFLICT(discord_id) DO UPDATE SET
+            username=excluded.username,
+            avatar=excluded.avatar,
+            email=excluded.email,
+            role_level=excluded.role_level
+    """, (
+        user_data["id"],
+        user_data["username"],
+        user_data["avatar"],
+        user_data.get("email"),
+        role_level
+    ))
+    db.commit()
+
+    # Weiterleitung je nach Rolle
     flash("Erfolgreich mit Discord eingeloggt", "success")
-    return redirect(url_for("dashboard.progress"))
+
+    if role_level in ["ADMIN", "R4"]:
+        return redirect(url_for("admin.dashboard"))
+    else:  # R3
+        return redirect(url_for("member.dashboard"))
+
 
 
 # Weitere öffentliche Routen
