@@ -1,8 +1,8 @@
 <section class="hero-panel">
-  <img src="{{ url_for('static', filename='img/fur_logo.png') }}" class="fur-logo" />
+  <img src="{{ url_for('static', filename='img/fur_logo.png') }}" alt="FUR Logo" class="fur-logo" />
   <h1>{{ _('Willkommen im FUR Portal') }}</h1>
   <p>{{ _('Verwalte deine Events, Statistiken, Downloads und mehr!') }}</p>
-  <a class="login-button" href="{{ url_for('public.discord_login') }}">
+  <a class="btn login-button" href="{{ url_for('public.discord_login') }}">
     {{ _('Mit Discord einloggen') }}
   </a>
 </section>
