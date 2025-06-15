@@ -1,93 +1,48 @@
 <!DOCTYPE html>
-<html lang="{{ current_lang() }}">
+<html lang="de">
 <head>
-    <meta charset="UTF-8">
-    <title>{% block title %}MATRIX System by FUR{% endblock %}</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            min-height: 100vh;
-            background: url('{{ bg_image | default(url_for("static", filename="img/background.jpg")) }}') no-repeat center center fixed;
-            background-size: cover;
-            color: #fff;
-        }
-        .btn {
-            display: inline-block;
-            padding: 0.5em 1em;
-            background: #ff9900;
-            color: #222;
-            border-radius: 8px;
-            text-decoration: none;
-            font-weight: bold;
-        }
-        .btn:hover {
-            background: #ffaa33;
-        }
-        nav {
-            margin-bottom: 2em;
-            background: rgba(24,26,32,0.95);
-            padding: 1em;
-            border-radius: 0 0 16px 16px;
-        }
-        .container {
-            max-width: 1000px;
-            margin: 2em auto;
-            background: rgba(24,26,32,0.95);
-            border-radius: 16px;
-            box-shadow: 0 4px 24px #000a;
-            padding: 2em;
-        }
-        .lang-selector {
-            position: absolute;
-            top: 1em;
-            right: 2em;
-        }
-        select {
-            padding: 0.3em 0.6em;
-            border-radius: 5px;
-            font-weight: bold;
-        }
-        @media (max-width: 600px) {
-            .container {
-                margin: 1em;
-                padding: 1em;
-            }
-            nav {
-                font-size: 90%;
-                padding: 0.5em;
-            }
-        }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FUR Modern Theme</title>
+
+  <!-- Darkmode Support -->
+  <meta name="color-scheme" content="dark light" />
+  <meta name="theme-color" content="#1a1a1a" />
+
+  <!-- Favicon -->
+  <link rel="icon" href="/favicon.ico" />
+
+  <!-- Google Fonts -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap" />
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-
-    <div class="lang-selector">
-        <form method="GET" action="{{ url_for('public.set_language') }}">
-            <select name="lang" onchange="this.form.submit()">
-                {% for lang in config['BABEL_SUPPORTED_LOCALES'] %}
-                    <option value="{{ lang }}" {% if session.get('lang') == lang %}selected{% endif %}>
-                        {{ lang.upper() }}
-                    </option>
-                {% endfor %}
-            </select>
-        </form>
-    </div>
-
-    <nav>
-        <a href="{{ url_for('public.landing') }}">Home</a>
-        <a href="{{ url_for('public.dashboard') }}">Public Dashboard</a>
-        <a href="{{ url_for('admin.dashboard') }}">Admin Dashboard</a>
-        <a href="{{ url_for('members.dashboard') }}">Member Dashboard</a>
-        <a href="{{ url_for('public.events') }}">Events</a>
-        <a href="{{ url_for('public.leaderboard') }}">Leaderboard</a>
-        <a href="{{ url_for('public.hall_of_fame') }}">Hall of Fame</a>
-        <a href="{{ url_for('public.lore') }}">Lore</a>  
+  <header>
+    <nav class="nav" aria-label="Hauptnavigation">
+      <a href="#" class="active" aria-label="Startseite">🏠 Home</a>
+      <a href="#" aria-label="Öffentliches Dashboard">📊 Public Dashboard</a>
+      <a href="#" aria-label="Admin Dashboard">🛠️ Admin Dashboard</a>
+      <a href="#" aria-label="Mitgliederbereich">👥 Member Dashboard</a>
+      <a href="#" aria-label="Eventkalender">📅 Events</a>
+      <a href="#" aria-label="Bestenliste">🏆 Leaderboard</a>
+      <a href="#" aria-label="Ruhmeshalle">👑 Hall of Fame</a>
+      <a href="#" aria-label="FUR Geschichte">📖 Lore</a>
+      <a href="#" class="btn" aria-label="Jetzt deployen">🚀 Deploy Now</a>
     </nav>
+  </header>
 
-    <div class="container">
-        {% block content %}{% endblock %}
-    </div>
+  <main class="container">
+    <section class="intro">
+      <h1>Willkommen im FUR System</h1>
+      <p>Dies ist eine moderne UI‑Vorschau im FUR-Stil – bereit für Matrix, Core und alle Einsatzmodule.</p>
+      <button class="btn" aria-label="Mission starten">Mission starten</button>
+    </section>
+  </main>
+
+  <footer>
+    &copy; 2025 Forged in Unity – Elite Server #28
+  </footer>
 </body>
 </html>
