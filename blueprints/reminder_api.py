@@ -1,10 +1,10 @@
 from flask import Blueprint, jsonify
 
 from bot.reminder_system import send_reminder_by_id
-from web.auth.decorators import r4_required
 from database import get_db  # ✅ zentraler DB-Zugriff
+from web.auth.decorators import r4_required
 
-reminder_api = Blueprint("reminder_api", __name__, url_prefix="/api/reminders")
+reminder_api = Blueprint("reminder_api", __name__)
 
 
 @reminder_api.route("/<int:reminder_id>/participants")
@@ -34,8 +34,6 @@ def send_reminder_now(reminder_id: int):
 @r4_required
 def deactivate_reminder(reminder_id: int):
     db = get_db()
-    db.execute(
-        "UPDATE reminders SET send_time = NULL WHERE id = ?", (reminder_id,)
-    )
+    db.execute("UPDATE reminders SET send_time = NULL WHERE id = ?", (reminder_id,))
     db.commit()
     return jsonify({"status": "deactivated"})
