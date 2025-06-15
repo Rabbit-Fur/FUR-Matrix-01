@@ -1,15 +1,19 @@
 {% extends "layout.html" %}
+{% set bg_image = "/static/bg/bot_settings.png" %}
 {% block title %}{{ t("Bot Einstellungen") }}{% endblock %}
+
 {% block content %}
   <h2>{{ t("Bot-Einstellungen") }}</h2>
 
   <form method="post">
-    {% if users is defined and users %}
+    {% if users %}
       {% for user in users %}
-        <label>
-          <input type="checkbox" name="allow_dm_{{ user.user_id }}" {% if user.allow_dm %}checked{% endif %}>
-          {{ user.username }} – {{ t("DM erlaubt") }}
-        </label><br>
+        <div class="form-row" style="margin-bottom: 0.75rem;">
+          <label for="allow_dm_{{ user.id }}">
+            <input type="checkbox" id="allow_dm_{{ user.id }}" name="allow_dm_{{ user.id }}" {% if user.allow_dm %}checked{% endif %}>
+            {{ user.username }} – {{ t("DM erlaubt") }}
+          </label>
+        </div>
       {% endfor %}
       <button type="submit" class="btn">{{ t("Speichern") }}</button>
     {% else %}
