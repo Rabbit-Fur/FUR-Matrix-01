@@ -1,6 +1,5 @@
 # public_routes.py – Discord Login & öffentliche Views für das FUR System
 
-import os
 import secrets
 from urllib.parse import urlencode
 
@@ -12,7 +11,7 @@ from flask import (
 
 from fur_lang.i18n import get_supported_languages
 from web.auth.decorators import r3_required
-from database import get_db  # ✅ Zentraler DB-Zugriff
+from database import get_db
 
 public_bp = Blueprint("public", __name__)
 
@@ -99,14 +98,12 @@ def discord_callback():
 
     access_token = token_res.json().get("access_token")
 
-    # User-Daten holen
     user_res = requests.get(
         "https://discord.com/api/users/@me",
         headers={"Authorization": f"Bearer {access_token}"},
     )
     user_data = user_res.json()
 
-    # Mitgliedschaft im FUR-Server prüfen
     guild_res = requests.get(
         f"https://discord.com/api/users/@me/guilds/{current_app.config['DISCORD_GUILD_ID']}/member",
         headers={"Authorization": f"Bearer {access_token}"},
@@ -134,7 +131,6 @@ def discord_callback():
         current_app.logger.warning("❌ Keine gültige Discord-Rolle erkannt.")
         return "Keine gültige Rolle für den Zugriff", 403
 
-    # Session speichern
     session["user"] = {
         "id": user_data["id"],
         "username": user_data["username"],
@@ -142,9 +138,8 @@ def discord_callback():
         "email": user_data.get("email"),
         "role_level": role_level,
     }
-    session.permanent = True  # Session für 1 Tag aktiv
+    session.permanent = True
 
-    # Persistenz in DB
     db = get_db()
     db.execute("""
         INSERT INTO users (discord_id, username, avatar, email, role_level)
@@ -163,7 +158,6 @@ def discord_callback():
     ))
     db.commit()
 
-    # Weiterleitung je nach Rolle
     flash("Erfolgreich mit Discord eingeloggt", "success")
 
     if role_level in ["ADMIN", "R4"]:
@@ -172,7 +166,6 @@ def discord_callback():
         return redirect(url_for("member.dashboard"))
 
 
-# Weitere öffentliche Routen
 @public_bp.route("/lore")
 def lore():
     return render_template("public/lore.html")
@@ -185,23 +178,27 @@ def calendar():
 
 @public_bp.route("/events")
 def events():
-    events = [
-        {"id": 1, "title": "Champion Night", "date": "2025-06-01"},
-        {"id": 2, "title": "Training", "date": "2025-06-10"},
-    ]
-    return render_template("public/events_list.html", events=events)
+    db = get_db()
+    rows = db.execute("""
+        SELECT id, title, event_date, description
+        FROM events
+        ORDER BY event_date ASC
+    """).fetchall()
+    return render_template("public/events_list.html", events=rows)
 
 
 @public_bp.route("/events/<int:event_id>")
 def view_event(event_id):
-    if event_id not in (1, 2):
+    db = get_db()
+    event = db.execute("""
+        SELECT id, title, event_date, description
+        FROM events
+        WHERE id = ?
+    """, (event_id,)).fetchone()
+
+    if not event:
         abort(404)
-    event = {
-        "id": event_id,
-        "title": f"Event {event_id}",
-        "date": "2025-06-01",
-        "description": "Details folgen...",
-    }
+
     return render_template("public/view_event.html", event=event)
 
 
@@ -218,24 +215,36 @@ def join_event(event_id):
 
 @public_bp.route("/hall_of_fame")
 def hall_of_fame():
-    hof = [
-        {
-            "username": "Marcel",
-            "month": "Mai 2025",
-            "honor_title": "PvP-Champion",
-            "poster_url": "/static/champions/champion_testchampion_mai2025.png",
-        },
-    ]
-    return render_template("public/hall_of_fame.html", hof=hof)
+    db = get_db()
+    rows = db.execute("""
+        SELECT username, honor_title, month, poster_url
+        FROM hall_of_fame
+        ORDER BY id DESC
+        LIMIT 10
+    """).fetchall()
+    return render_template("public/hall_of_fame.html", hof=rows)
 
 
 @public_bp.route("/leaderboard")
 def leaderboard():
-    leaderboard_data = [
-        {"rank": 1, "username": "Marcel", "score": 250},
-        {"rank": 2, "username": "Neko", "score": 200},
-    ]
-    return render_template("public/public_leaderboard.html", leaderboard=leaderboard_data)
+    db = get_db()
+    rows = db.execute("""
+        SELECT username, score
+        FROM leaderboard
+        ORDER BY score DESC
+        LIMIT 100
+    """).fetchall()
+
+    # Ränge berechnen
+    leaderboard = []
+    for i, row in enumerate(rows, start=1):
+        leaderboard.append({
+            "rank": i,
+            "username": row["username"],
+            "score": row["score"]
+        })
+
+    return render_template("public/public_leaderboard.html", leaderboard=leaderboard)
 
 
 @public_bp.route("/dashboard")
