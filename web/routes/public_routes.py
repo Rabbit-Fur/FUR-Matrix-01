@@ -12,6 +12,7 @@ from flask import (
 
 from fur_lang.i18n import get_supported_languages
 from web.auth.decorators import r3_required
+from database import get_db  # ✅ Zentraler DB-Zugriff
 
 public_bp = Blueprint("public", __name__)
 
@@ -78,7 +79,6 @@ def discord_callback():
     if not state or state != session.pop("discord_oauth_state", None):
         return "Ungültiger OAuth-State", 400
 
-    # Token anfordern
     token_res = requests.post(
         "https://discord.com/api/oauth2/token",
         data={
@@ -145,7 +145,6 @@ def discord_callback():
     session.permanent = True  # Session für 1 Tag aktiv
 
     # Persistenz in DB
-    from database import get_db
     db = get_db()
     db.execute("""
         INSERT INTO users (discord_id, username, avatar, email, role_level)
