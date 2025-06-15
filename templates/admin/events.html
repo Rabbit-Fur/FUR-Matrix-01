@@ -1,8 +1,11 @@
 {% extends "layout.html" %}
+{% set bg_image = "/static/bg/admin_events.png" %}
 {% block title %}{{ t("Events verwalten") }}{% endblock %}
+
 {% block content %}
   <h2>{{ t("Events verwalten") }}</h2>
   <a class="btn" href="{{ url_for('admin.create_event') }}">{{ t("Neues Event erstellen") }}</a>
+
   <table>
     <thead>
       <tr>
@@ -13,16 +16,16 @@
       </tr>
     </thead>
     <tbody>
-      {% if events is defined and events %}
+      {% if events %}
         {% for event in events %}
           <tr>
             <td>{{ event.title }}</td>
-            <td>{{ event.event_time }}</td>
-            <td>{{ event.role }}</td>
+            <td>{{ event.event_date }}</td>
+            <td>{{ event.role or t("Keine") }}</td>
             <td>
               <a class="btn" href="{{ url_for('admin.edit_event', event_id=event.id) }}">{{ t("Bearbeiten") }}</a>
               <form method="post" action="{{ url_for('admin.delete_event', event_id=event.id) }}" style="display:inline;">
-                <button class="btn" type="submit">{{ t("Löschen") }}</button>
+                <button class="btn" type="submit" onclick="return confirm('{{ t('Wirklich löschen?') }}')">🗑️</button>
               </form>
             </td>
           </tr>
