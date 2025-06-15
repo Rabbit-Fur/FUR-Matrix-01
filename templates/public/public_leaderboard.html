@@ -1,33 +1,21 @@
 {% extends "layout.html" %}
 {% set bg_image = "/static/bg/leaderboard.png" %}
-
-{% block title %}{{ t("leaderboard_title") }}{% endblock %}
+{% block title %}{{ t("Leaderboards") }}{% endblock %}
 
 {% block content %}
-  <h2>{{ t("top_players") }}</h2>
-  {% set lb = leaderboard if leaderboard is defined else [] %}
-  {% if lb %}
-    <div class="panel">
-      <table class="table table-striped">
-        <thead>
-          <tr>
-            <th>{{ t("rank") }}</th>
-            <th>{{ t("username") }}</th>
-            <th>{{ t("score") }}</th>
-          </tr>
-        </thead>
-        <tbody>
-        {% for row in lb %}
-          <tr>
-            <td>{{ row.rank }}</td>
-            <td>{{ row.username }}</td>
-            <td>{{ row.score }}</td>
-          </tr>
-        {% endfor %}
-        </tbody>
-      </table>
-    </div>
+<div class="main-content">
+  <div class="page-header">
+    <h1>🏆 {{ t("Leaderboards") }}</h1>
+  </div>
+
+  {% if leaderboard %}
+    <ol>
+      {% for entry in leaderboard %}
+        <li>{{ entry.rank }}. {{ entry.username }} – {{ entry.score }}</li>
+      {% endfor %}
+    </ol>
   {% else %}
-    <p>{{ t("No data available") }}</p>
+    <p>{{ t("Keine Daten verfügbar") }}</p>
   {% endif %}
+</div>
 {% endblock %}
