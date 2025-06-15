@@ -1,8 +1,4 @@
-"""
-public_routes.py – Flask Blueprint für alle öffentlichen Views
-
-Stellt alle öffentlichen Seiten bereit (ohne Login/Role), z.B. Landing Page, Login, Lore, Events, Leaderboards.
-"""
+# public_routes.py – Discord Login & öffentliche Views für das FUR System
 
 import os
 import secrets
@@ -10,15 +6,8 @@ from urllib.parse import urlencode
 
 import requests
 from flask import (
-    Blueprint,
-    abort,
-    current_app,
-    flash,
-    redirect,
-    render_template,
-    request,
-    session,
-    url_for,
+    Blueprint, abort, current_app, flash, redirect,
+    render_template, request, session, url_for
 )
 
 from fur_lang.i18n import get_supported_languages
@@ -42,18 +31,13 @@ def set_language():
 
 @public_bp.route("/login")
 def login():
-    """Login-Seite (öffentlich/Discord)."""
     return render_template("public/login.html")
 
 
 @public_bp.route("/login/discord")
 def discord_login():
-    client_id = current_app.config.get("DISCORD_CLIENT_ID")
-    redirect_uri = current_app.config.get("DISCORD_REDIRECT_URI")
-
-    if not client_id or not redirect_uri:
-        flash("Discord OAuth nicht konfiguriert", "danger")
-        return redirect(url_for("public.login"))
+    client_id = current_app.config["DISCORD_CLIENT_ID"]
+    redirect_uri = current_app.config["DISCORD_REDIRECT_URI"]
 
     state = secrets.token_urlsafe(16)
     session["discord_oauth_state"] = state
@@ -70,10 +54,8 @@ def discord_login():
     return redirect(url)
 
 
-
 @public_bp.route("/callback")
 def discord_callback():
-    """Callback-URL für den Discord-OAuth-Login (einheitlich genutzt)."""
     code = request.args.get("code")
     state = request.args.get("state")
 
@@ -82,53 +64,53 @@ def discord_callback():
     if not state or state != session.pop("discord_oauth_state", None):
         return "Ungültiger OAuth-State", 400
 
-    data = {
-        "client_id": current_app.config.get("DISCORD_CLIENT_ID"),
-        "client_secret": current_app.config.get("DISCORD_CLIENT_SECRET"),
-        "grant_type": "authorization_code",
-        "code": code,
-        "redirect_uri": current_app.config.get("DISCORD_REDIRECT_URI"),
-    }
-
-    headers = {"Content-Type": "application/x-www-form-urlencoded"}
-    token_response = requests.post(
+    # Token-Anfrage
+    token_res = requests.post(
         "https://discord.com/api/oauth2/token",
-        data=data,
-        headers=headers,
+        data={
+            "client_id": current_app.config["DISCORD_CLIENT_ID"],
+            "client_secret": current_app.config["DISCORD_CLIENT_SECRET"],
+            "grant_type": "authorization_code",
+            "code": code,
+            "redirect_uri": current_app.config["DISCORD_REDIRECT_URI"],
+        },
+        headers={"Content-Type": "application/x-www-form-urlencoded"},
         timeout=10,
     )
 
-    if token_response.status_code != 200:
-        current_app.logger.error(
-            "Discord Token Error %s - %s",
-            token_response.status_code,
-            token_response.text,
-        )
+    if token_res.status_code != 200:
+        current_app.logger.error("OAuth Token Error %s: %s", token_res.status_code, token_res.text)
         flash("Discord Login fehlgeschlagen", "danger")
         return redirect(url_for("public.login"))
 
-    access_token = token_response.json().get("access_token")
+    access_token = token_res.json().get("access_token")
 
-    user_response = requests.get(
+    # Benutzerdaten abfragen
+    user_res = requests.get(
         "https://discord.com/api/users/@me",
         headers={"Authorization": f"Bearer {access_token}"},
     )
-    user_data = user_response.json()
+    user_data = user_res.json()
 
-    guild_response = requests.get(
-        f"https://discord.com/api/users/@me/guilds/{current_app.config.get('DISCORD_GUILD_ID')}/member",
+    # Mitgliedschaft prüfen
+    guild_res = requests.get(
+        f"https://discord.com/api/users/@me/guilds/{current_app.config['DISCORD_GUILD_ID']}/member",
         headers={"Authorization": f"Bearer {access_token}"},
     )
 
-    if guild_response.status_code != 200:
+    if guild_res.status_code != 200:
         return "Nicht-Mitglied im FUR Discord-Server", 403
 
-    guild_member = guild_response.json()
-    user_roles = set(guild_member.get("roles", []))
+    guild_member = guild_res.json()
+    user_roles = set(str(role) for role in guild_member.get("roles", []))
 
-    r3_roles = current_app.config.get("R3_ROLE_IDS")
-    r4_roles = current_app.config.get("R4_ROLE_IDS")
-    admin_roles = current_app.config.get("ADMIN_ROLE_IDS")
+    r3_roles = set(map(str, current_app.config.get("R3_ROLE_IDS", set())))
+    r4_roles = set(map(str, current_app.config.get("R4_ROLE_IDS", set())))
+    admin_roles = set(map(str, current_app.config.get("ADMIN_ROLE_IDS", set())))
+
+    # Debug-Ausgabe
+    current_app.logger.info(f"Discord User Rollen: {user_roles}")
+    current_app.logger.info(f"Vergleichsrollen → R3: {r3_roles}, R4: {r4_roles}, ADMIN: {admin_roles}")
 
     if user_roles & admin_roles:
         role_level = "ADMIN"
@@ -137,8 +119,10 @@ def discord_callback():
     elif user_roles & r3_roles:
         role_level = "R3"
     else:
+        current_app.logger.warning("❌ Keine gültige Discord-Rolle erkannt.")
         return "Keine gültige Rolle für den Zugriff", 403
 
+    # Login erfolgreich
     session["user"] = {
         "id": user_data["id"],
         "username": user_data["username"],
@@ -151,6 +135,7 @@ def discord_callback():
     return redirect(url_for("dashboard.progress"))
 
 
+# Weitere öffentliche Routen
 @public_bp.route("/lore")
 def lore():
     return render_template("public/lore.html")
