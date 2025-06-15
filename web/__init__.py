@@ -42,6 +42,15 @@ def create_app():
         or request.accept_languages.best_match(app.config["BABEL_SUPPORTED_LOCALES"]),
     )
 
+    babel = Babel(app)
+
+    # ✅ Klassischer Decorator für Locale-Ermittlung
+    @babel.localeselector
+    def get_locale():
+        return session.get("lang") or request.accept_languages.best_match(
+            app.config["BABEL_SUPPORTED_LOCALES"]
+        )
+
     # 🌐 Sprache manuell via ?lang=
     @app.before_request
     def set_language_from_request():
