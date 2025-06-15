@@ -1,59 +1,57 @@
 """
-discord_util.py – Minimaler Discord.py-Stub für Tests und Offline-Entwicklung
+discord_util.py – Discord-Integrationsmodul für Live-Betrieb und Webhook-Fallback
 
-Stellt Dummy-Implementierungen der wichtigsten discord.py-Klassen bereit,
-um die Integration in Testumgebungen und Offline-Entwicklung zu ermöglichen.
+Entscheidet automatisch, ob ein echter discord.py-Bot oder nur Webhook-Kommunikation verwendet wird.
 """
 
+import os
+import logging
 
-class Client:
-    """Stub für discord.Client (Testumgebung)."""
+ENABLE_BOT = os.getenv("ENABLE_DISCORD_BOT", "false").lower() == "true"
 
-    def __init__(self, *args, **kwargs):
-        self.user = None
+if ENABLE_BOT:
+    # ✅ Echtbetrieb: discord.py
+    import discord
+    from discord.ext import commands
 
-    async def start(self, *args, **kwargs):
-        """Simuliert das Starten des Bots."""
-        print("🧪 Stub-Client gestartet")
+    intents = discord.Intents.all()
+    bot = commands.Bot(command_prefix="!", intents=intents)
 
-    async def close(self):
-        """Simuliert das Schließen des Bots."""
-        print("🧪 Stub-Client geschlossen")
+    async def send_discord_message(channel_id: int, content: str, file_path: str = None):
+        """Sendet eine Nachricht über den echten Discord-Bot."""
+        channel = bot.get_channel(channel_id)
+        if channel is None:
+            logging.warning(f"⚠️ Channel {channel_id} nicht gefunden.")
+            return
 
-    def run(self, token: str):
-        """Simuliert den Run-Aufruf mit Token."""
-        print(f"🧪 run(token={token}) aufgerufen (stub)")
+        if file_path:
+            file = discord.File(file_path)
+            await channel.send(content, file=file)
+        else:
+            await channel.send(content)
 
-    def is_ready(self) -> bool:
-        """Immer bereit (Mock)."""
-        return True
+else:
+    # 📨 Fallback-Modus: Webhook-Poster
+    import requests
 
+    DISCORD_WEBHOOK_URL = os.getenv("DISCORD_WEBHOOK_URL")
 
-class Intents:
-    """Stub für discord.Intents."""
+    def send_discord_message(channel_id: int, content: str, file_path: str = None):
+        """Sendet eine Nachricht via Discord Webhook (ohne Bot)."""
+        data = {"content": content}
+        files = None
 
-    @classmethod
-    def default(cls):
-        """Gibt ein Default-Intents-Objekt zurück."""
-        return cls()
+        if file_path and os.path.exists(file_path):
+            with open(file_path, "rb") as f:
+                files = {"file": (os.path.basename(file_path), f)}
+                response = requests.post(DISCORD_WEBHOOK_URL, data=data, files=files)
+        else:
+            response = requests.post(DISCORD_WEBHOOK_URL, json=data)
 
-    @classmethod
-    def all(cls):
-        """Gibt ein Intents-Objekt mit allen Berechtigungen zurück."""
-        return cls()
+        if response.status_code not in [200, 204]:
+            logging.error(f"❌ Webhook fehlgeschlagen: {response.status_code} – {response.text}")
+        else:
+            logging.info("✅ Webhook erfolgreich gesendet.")
 
-
-class Message:
-    """Stub für discord.Message."""
-
-    def __init__(self, content: str = "", author=None):
-        self.content = content
-        self.author = author
-
-
-class User:
-    """Stub für discord.User."""
-
-    def __init__(self, name: str = "StubUser"):
-        self.name = name
-        self.id = 1234
+    # Dummy für Kompatibilität
+    bot = None
