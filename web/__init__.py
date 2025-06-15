@@ -6,7 +6,6 @@ und bindet die zentrale Config-Klasse aus dem Projekt-Root ein.
 """
 
 import os
-
 from flask import Flask, request, session
 from flask_babel import Babel
 
@@ -14,6 +13,10 @@ from config import Config
 from fur_lang.i18n import get_supported_languages, t, current_lang
 from database import close_db  # ✅ DB-Teardown importieren
 
+try:
+    from utils.bg_resolver import resolve_background_template
+except ImportError:
+    resolve_background_template = lambda: "/static/img/background.jpg"
 
 def create_app():
     base_dir = os.path.abspath(os.path.dirname(os.path.dirname(__file__)))
@@ -23,7 +26,7 @@ def create_app():
     app = Flask(__name__, template_folder=template_folder, static_folder=static_folder)
     app.config.from_object(Config)
 
-    # Mehrsprachigkeit via Flask-Babel
+    # 🌍 Flask-Babel (i18n)
     app.config.setdefault("BABEL_DEFAULT_LOCALE", "de")
     app.config.setdefault("BABEL_SUPPORTED_LOCALES", get_supported_languages())
     app.config.setdefault(
@@ -31,22 +34,29 @@ def create_app():
     )
     babel = Babel(app)
 
-    # 📦 DB-Teardown bei AppContext-Ende
-    app.teardown_appcontext(close_db)
+    @babel.localeselector
+    def get_locale():
+        return session.get("lang") or request.accept_languages.best_match(
+            app.config["BABEL_SUPPORTED_LOCALES"]
+        )
 
-    # 🌐 Globale Jinja2-Hilfsfunktionen: t(), current_lang()
-    @app.context_processor
-    def inject_i18n_functions():
-        return {"t": t, "current_lang": current_lang}
-
-    # 🌍 Sprache direkt aus ?lang= setzen (optional)
+    # 🌐 Sprache manuell via ?lang=
     @app.before_request
     def set_language_from_request():
         lang = request.args.get("lang")
-        if lang in app.config.get("BABEL_SUPPORTED_LOCALES", []):
+        if lang in app.config["BABEL_SUPPORTED_LOCALES"]:
             session["lang"] = lang
 
-    # 🧩 Blueprint-Registrierung
+    # 🌐 Globale Jinja2-Funktionen
+    @app.context_processor
+    def inject_globals():
+        return {
+            "t": t,
+            "current_lang": current_lang,
+            "resolve_background_template": resolve_background_template,
+        }
+
+    # 🧩 Blueprints laden
     try:
         from dashboard.routes import dashboard
         from web.routes.admin_routes import admin_bp
@@ -62,9 +72,12 @@ def create_app():
 
         app.logger.info("✅ Alle Blueprints erfolgreich registriert.")
     except Exception as e:
-        app.logger.error(f"❌ Blueprint registration failed: {e}", exc_info=True)
+        app.logger.error("❌ Blueprint registration failed:", exc_info=True)
 
-    # 🧪 Template-Struktur prüfen
+    # 📦 DB-Teardown bei AppContext-Ende
+    app.teardown_appcontext(close_db)
+
+    # 📂 Template-Prüfung
     app.logger.info(f"TEMPLATE_ROOT = {app.template_folder}")
     if not os.path.exists(os.path.join(app.template_folder, "public/landing.html")):
         app.logger.error("❌ landing.html nicht gefunden! Kontrolliere den Pfad.")
