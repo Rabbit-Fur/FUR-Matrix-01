@@ -7,6 +7,8 @@ Dieses Cog stellt grundlegende Commands bereit, die für alle Servermitglieder n
 import discord
 from discord.ext import commands
 
+from fur_lang.i18n import t
+
 
 class BaseCommands(commands.Cog):
     """
@@ -27,7 +29,7 @@ class BaseCommands(commands.Cog):
         Args:
             ctx (commands.Context): Aufruf-Kontext.
         """
-        await ctx.send("🏓 Pong! FUR is online.")
+        await ctx.send(t("base_ping_pong"))
 
     @commands.command(name="fur")
     async def fur_info(self, ctx: commands.Context) -> None:
@@ -38,7 +40,7 @@ class BaseCommands(commands.Cog):
         Args:
             ctx (commands.Context): Aufruf-Kontext.
         """
-        await ctx.send("🔥 Welcome to the FUR Alliance – Strength, Unity, Respect.")
+        await ctx.send(t("base_fur_info"))
 
 
 async def setup(bot: commands.Bot) -> None:

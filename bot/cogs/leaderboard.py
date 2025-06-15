@@ -5,9 +5,11 @@ Zeigt Top-Spieler in Kategorien wie Raids oder Donations aus der leaderboard-Tab
 """
 
 import logging
+
 from discord.ext import commands
-from web.database import get_db
+
 from fur_lang.i18n import t
+from web.database import get_db
 
 log = logging.getLogger(__name__)
 
@@ -34,19 +36,26 @@ class Leaderboard(commands.Cog):
                 ORDER BY score DESC
                 LIMIT 10
                 """,
-                (category.lower(),)
+                (category.lower(),),
             ).fetchall()
 
             if not rows:
-                await ctx.send(t("leaderboard_unknown_category", category=category, lang=lang))
+                await ctx.send(
+                    t("leaderboard_unknown_category", category=category, lang=lang)
+                )
                 return
 
             header = t("leaderboard_header", category=category.capitalize(), lang=lang)
             content = "\n".join(
-                [f"{i+1}. {row['username']} – {row['score']}" for i, row in enumerate(rows)]
+                [
+                    f"{i+1}. {row['username']} – {row['score']}"
+                    for i, row in enumerate(rows)
+                ]
             )
 
-            await ctx.send(f"{header}\n{content}")
+            await ctx.send(
+                t("leaderboard_message", header=header, content=content, lang=lang)
+            )
             log.info(f"📊 Live-Leaderboard '{category}' gesendet in {ctx.channel.id}")
 
         except Exception as e:

@@ -196,5 +196,21 @@
   "Übersicht": "Übersicht",
   "⏰ Erinnerung auslösen": "Trigger Reminder",
   "🏆 Champion posten": "Post Champion",
-  "🧪 Healthcheck ausführen": "Run Healthcheck"
+  "🧪 Healthcheck ausführen": "Run Healthcheck",
+  "announce_error": "Error while sending the announcement.",
+  "announce_message": "📢 {message}",
+  "announce_no_permission": "Bot lacks permission to send in this channel.",
+  "announce_usage": "Usage: !announce <message>",
+  "base_fur_info": "🔥 Welcome to the FUR Alliance – Strength, Unity, Respect.",
+  "base_ping_pong": "🏓 Pong! FUR is online.",
+  "leaderboard_error": "Error while sending the leaderboard.",
+  "leaderboard_header": "Top {category}",
+  "leaderboard_message": "{header}\n{content}",
+  "leaderboard_unknown_category": "Category '{category}' is not available.",
+  "reminder_event_15min": "Reminder: The event '{title}' starts in 15 minutes.",
+  "reminder_event_5min": "Reminder: The event '{title}' starts in 5 minutes.",
+  "reminder_hourly": "Reminder: {time} UTC - check your tasks!",
+  "reminder_optout_error": "Error disabling reminders.",
+  "reminder_optout_success": "You will no longer receive reminders.",
+  "reminder_optout_usage": "Use '!reminder stop' to disable reminders."
 }
