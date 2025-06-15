@@ -55,24 +55,27 @@ def discord_login():
         flash("Discord OAuth nicht konfiguriert", "danger")
         return redirect(url_for("public.login"))
 
+    state = secrets.token_urlsafe(16)
+    session["discord_oauth_state"] = state
+
     params = {
         "client_id": client_id,
         "redirect_uri": redirect_uri,
         "response_type": "code",
         "scope": "identify",
+        "state": state,
     }
-    state = secrets.token_urlsafe(16)
-    session["discord_oauth_state"] = state
-    params["state"] = state
+
     url = f"https://discord.com/oauth2/authorize?{urlencode(params)}"
     return redirect(url)
 
 
-@public_bp.route("/login/discord/callback")
+@public_bp.route("/callback")
 def discord_callback():
-    """Callback-URL für den Discord-OAuth-Login."""
+    """Callback-URL für den Discord-OAuth-Login (einheitlich genutzt)."""
     code = request.args.get("code")
     state = request.args.get("state")
+
     if not code:
         return "Fehlender Code", 400
     if not state or state != session.pop("discord_oauth_state", None):
@@ -85,9 +88,13 @@ def discord_callback():
         "code": code,
         "redirect_uri": current_app.config.get("DISCORD_REDIRECT_URI"),
     }
+
     headers = {"Content-Type": "application/x-www-form-urlencoded"}
     token_response = requests.post(
-        "https://discord.com/api/oauth2/token", data=data, headers=headers, timeout=10
+        "https://discord.com/api/oauth2/token",
+        data=data,
+        headers=headers,
+        timeout=10,
     )
 
     if token_response.status_code != 200:
@@ -143,29 +150,18 @@ def discord_callback():
     return redirect(url_for("dashboard.progress"))
 
 
-# Optionale Kurz-URL, falls der OAuth-Redirect ohne Pfad genutzt wird
-@public_bp.route("/callback")
-def callback_alias():
-    """Alias, ruft die eigentliche Discord-OAuth-Callback-Route auf."""
-    return discord_callback()
-
-
 @public_bp.route("/lore")
 def lore():
-    """Story/Lore-Übersicht."""
     return render_template("public/lore.html")
 
 
 @public_bp.route("/calendar")
 def calendar():
-    """Öffentlicher Event-Kalender."""
     return render_template("public/calendar.html")
 
 
 @public_bp.route("/events")
 def events():
-    """Liste aller öffentlichen Events."""
-    # DUMMY-Daten – später mit Datenbank/Logik ersetzen
     events = [
         {"id": 1, "title": "Champion Night", "date": "2025-06-01"},
         {"id": 2, "title": "Training", "date": "2025-06-10"},
@@ -175,7 +171,6 @@ def events():
 
 @public_bp.route("/events/<int:event_id>")
 def view_event(event_id):
-    """Detailansicht für ein bestimmtes Event."""
     if event_id not in (1, 2):
         abort(404)
     event = {
@@ -190,19 +185,16 @@ def view_event(event_id):
 @public_bp.route("/events/<int:event_id>/join", methods=["POST"])
 @r3_required
 def join_event(event_id):
-    """Ermöglicht das Beitreten zu einem Event (Dummy, Demo-Logik)."""
     if "user" not in session:
         flash("Du musst eingeloggt sein.", "warning")
         return redirect(url_for("public.login"))
 
-    # Beispiel: Session-User in participants eintragen (hier nur Flash-Meldung als Dummy)
     flash("Du bist dem Event erfolgreich beigetreten!", "success")
     return redirect(url_for("public.view_event", event_id=event_id))
 
 
 @public_bp.route("/hall_of_fame")
 def hall_of_fame():
-    """Hall of Fame: Champions des Systems."""
     hof = [
         {
             "username": "Marcel",
@@ -216,17 +208,13 @@ def hall_of_fame():
 
 @public_bp.route("/leaderboard")
 def leaderboard():
-    """Öffentliches Leaderboard."""
     leaderboard_data = [
         {"rank": 1, "username": "Marcel", "score": 250},
         {"rank": 2, "username": "Neko", "score": 200},
     ]
-    return render_template(
-        "public/public_leaderboard.html", leaderboard=leaderboard_data
-    )
+    return render_template("public/public_leaderboard.html", leaderboard=leaderboard_data)
 
 
 @public_bp.route("/dashboard")
 def dashboard():
-    """Öffentliches Dashboard mit Systemstatus/Schnellzugriffen."""
     return render_template("public/dashboard.html")
