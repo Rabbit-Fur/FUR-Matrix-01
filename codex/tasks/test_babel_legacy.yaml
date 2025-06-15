@@ -1,0 +1,6 @@
+id: test_babel_legacy
+version: 1
+checks:
+  - file_glob: "**/*.py"
+    pattern: "@babel\\.localeselector"
+    error: "❌ Veralteter Babel-Decorator gefunden!"

@@ -8,10 +8,10 @@ und bindet die zentrale Config-Klasse aus dem Projekt-Root ein.
 import os
 
 from flask import Flask, request, session
+from flask_babel_next import Babel
 
 from config import Config
 from database import close_db
-from flask_babel_next import Babel
 from fur_lang.i18n import current_lang, get_supported_languages, t
 
 try:
@@ -41,15 +41,6 @@ def create_app():
         locale_selector=lambda: session.get("lang")
         or request.accept_languages.best_match(app.config["BABEL_SUPPORTED_LOCALES"]),
     )
-
-    babel = Babel(app)
-
-    # ✅ Klassischer Decorator für Locale-Ermittlung
-    @babel.localeselector
-    def get_locale():
-        return session.get("lang") or request.accept_languages.best_match(
-            app.config["BABEL_SUPPORTED_LOCALES"]
-        )
 
     # 🌐 Sprache manuell via ?lang=
     @app.before_request
