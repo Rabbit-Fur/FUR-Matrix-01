@@ -24,11 +24,11 @@ from init_db_core import init_db
 from utils.env_helpers import get_env_bool, get_env_int, get_env_str
 from utils.github_service import fetch_repo_info
 from web import create_app
-
-# app.register_blueprint(dashboard)
+from database import close_db  # ✅ DB-Teardown importieren
 
 # --- Application-Factory: App-Objekt (für Gunicorn/Railway!) ---
 app = create_app()
+app.teardown_appcontext(close_db)  # ✅ Automatisches Schließen von DB-Verbindungen
 app.jinja_env.globals.update(t=t)
 app.jinja_env.globals.update(current_lang=lambda: session.get("lang", "de"))
 
