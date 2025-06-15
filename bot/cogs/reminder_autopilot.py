@@ -1,8 +1,8 @@
 """
 reminder_autopilot.py – Reminder-Cog für automatische Discord-DMs vor Eventbeginn
 
-Wird alle 60 Sekunden ausgeführt und sendet Erinnerungen an Teilnehmer
-von Events, die in 5 Minuten starten. Erinnerungen werden nur einmal versendet.
+Sendet alle 60 Sekunden eine Erinnerung an Teilnehmer von Events,
+die in ca. 5 Minuten beginnen. Unterstützt Mehrsprachigkeit via fur_lang.i18n.
 """
 
 import asyncio
@@ -12,6 +12,7 @@ from datetime import datetime, timedelta
 
 import discord
 from discord.ext import commands, tasks
+from fur_lang.i18n import t  # ✅ Übersetzungsfunktion
 
 log = logging.getLogger(__name__)
 REMINDER_INTERVAL_SECONDS = 60  # Prüfung alle 60 Sekunden
@@ -31,6 +32,24 @@ class ReminderCog(commands.Cog):
         conn = sqlite3.connect(get_db_path())
         conn.row_factory = sqlite3.Row
         return conn
+
+    def get_user_language(self, user_id: int) -> str:
+        """
+        Holt die bevorzugte Sprache eines Benutzers aus der DB.
+        Fallback ist "de".
+        """
+        try:
+            db = self.get_db_connection()
+            row = db.execute(
+                "SELECT lang FROM users WHERE discord_id = ?",
+                (str(user_id),)
+            ).fetchone()
+            db.close()
+            if row and row["lang"]:
+                return row["lang"]
+        except Exception as e:
+            log.warning(f"⚠️ Sprache für User {user_id} nicht ermittelbar: {e}")
+        return "de"
 
     @tasks.loop(seconds=REMINDER_INTERVAL_SECONDS)
     async def reminder_loop(self):
@@ -55,13 +74,18 @@ class ReminderCog(commands.Cog):
             reminders = cursor.fetchall()
 
             for row in reminders:
+                user_id = int(row["user_id"])
+                lang = self.get_user_language(user_id)
+
                 try:
-                    user = await self.bot.fetch_user(int(row["user_id"]))
+                    user = await self.bot.fetch_user(user_id)
                     if user is None:
                         raise ValueError("Unbekannter Benutzer")
-                    await user.send(
-                        f"⏰ Erinnerung: Das Event **{row['title']}** beginnt in ca. 5 Minuten!"
-                    )
+
+                    message = t("reminder_event_5min", title=row["title"], lang=lang)
+
+                    await user.send(message)
+
                     cursor.execute(
                         """
                         INSERT INTO reminders_sent (event_id, user_id, sent_at)
@@ -70,7 +94,7 @@ class ReminderCog(commands.Cog):
                         (row["event_id"], row["user_id"], now.isoformat(timespec="seconds")),
                     )
                     db.commit()
-                    log.info(f"📤 DM-Erinnerung an {user} gesendet.")
+                    log.info(f"📤 DM-Erinnerung an {user} ({lang}) gesendet.")
                 except Exception as e:
                     log.warning(f"❌ Konnte DM an {row['user_id']} nicht senden: {e}")
 
@@ -81,5 +105,5 @@ class ReminderCog(commands.Cog):
 
 
 async def setup(bot: commands.Bot):
-    """Registriert das Cog im Bot."""
+    """Registriert das Reminder-Cog beim Bot."""
     await bot.add_cog(ReminderCog(bot))
