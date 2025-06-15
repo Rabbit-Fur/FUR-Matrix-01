@@ -1,0 +1,20 @@
+{% extends "layout.html" %}
+{% set bg_image = resolve_background_template() %}
+{% set bg_image = "/static/bg/member_settings.png" %}
+{% block title %}{{ t("Einstellungen") }}{% endblock %}
+
+{% block content %}
+  <h2>⚙️ {{ t("Benachrichtigungen & Einstellungen") }}</h2>
+
+  <form method="post" class="panel">
+    <div class="form-group">
+      <label for="allow_dm">
+        <input type="checkbox" name="allow_dm" id="allow_dm" value="1"
+          {% if user_settings is not defined or user_settings.allow_dm %}checked{% endif %}>
+        {{ t("Direktnachrichten vom Bot erlauben") }}
+      </label>
+    </div>
+
+    <button type="submit" class="btn">{{ t("Speichern") }}</button>
+  </form>
+{% endblock %}

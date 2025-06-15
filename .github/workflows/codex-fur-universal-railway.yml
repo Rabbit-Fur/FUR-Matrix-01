@@ -1,0 +1,35 @@
+# .github/workflows/codex-fur-universal-railway.yml
+name: 🚆 Codex FUR Universal + Railway Deploy
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+
+env:
+  RAILWAY_PROJECT: fur-martix
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 📥 Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: 🐳 Build codex-universal-fur
+        run: |
+          docker build -f codex-universal-fur.Dockerfile -t ghcr.io/${{ env.IMAGE_NAME }}:latest .
+
+      - name: 🔐 Set Railway Token
+        run: echo "${{ secrets.RAILWAY_TOKEN }}" | docker login --username ${{ github.actor }} --password-stdin ghcr.io
+
+      - name: 🚀 Push Image to GHCR
+        run: |
+          docker push ghcr.io/${{ env.IMAGE_NAME }}:latest
+
+      - name: ⚙️ Trigger Railway Deployment
+        run: |
+          curl -X POST https://backboard.railway.app/project/${{ env.RAILWAY_PROJECT }}/deploy             -H "Authorization: Bearer ${{ secrets.RAILWAY_TOKEN }}"             -H "Content-Type: application/json"

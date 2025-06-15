@@ -1,0 +1,33 @@
+{% extends "layout.html" %}
+{% set bg_image = resolve_background_template() %}
+{% set bg_image = "/static/bg/create_event.png" %}
+
+{% block title %}{{ t("Event erstellen") }}{% endblock %}
+
+{% block content %}
+  <h2>{{ t("Neues Event erstellen") }}</h2>
+
+  <form method="post">
+    <label for="title">{{ t("Titel") }}</label>
+    <input type="text" id="title" name="title" required>
+
+    <label for="description">{{ t("Beschreibung") }}</label>
+    <textarea id="description" name="description"></textarea>
+
+    <label for="event_date">{{ t("Datum & Uhrzeit") }}</label>
+    <input type="datetime-local" id="event_date" name="event_date" required>
+
+    <label for="role">{{ t("Zielrolle") }}</label>
+    <input type="text" id="role" name="role">
+
+    <label for="recurrence">{{ t("Wiederholung") }}</label>
+    <select id="recurrence" name="recurrence">
+      <option value="">{{ t("Keine") }}</option>
+      <option value="daily">{{ t("Täglich") }}</option>
+      <option value="weekly">{{ t("Wöchentlich") }}</option>
+      <option value="monthly">{{ t("Monatlich") }}</option>
+    </select>
+
+    <button type="submit" class="btn">{{ t("Erstellen") }}</button>
+  </form>
+{% endblock %}

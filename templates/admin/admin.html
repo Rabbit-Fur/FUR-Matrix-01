@@ -1,0 +1,17 @@
+{% extends "layout.html" %}
+{% set bg_image = resolve_background_template() %}
+{% set bg_image = "/static/bg/admin.png" %}
+
+{% block title %}Admin Panel{% endblock %}
+
+{% block content %}
+  <h2>{{ _('Admin Dashboard') }}</h2>
+  <div class="flex">
+    <a class="btn" href="{{ url_for('admin.events') }}">{{ _('Events verwalten') }}</a>
+    <a class="btn" href="{{ url_for('admin.participants') }}">{{ _('Teilnehmer') }}</a>
+    <a class="btn" href="{{ url_for('admin.leaderboards') }}">{{ _('Leaderboards') }}</a>
+    <a class="btn" href="{{ url_for('admin.translations') }}">{{ _('Übersetzungen') }}</a>
+    <a class="btn" href="{{ url_for('admin.settings') }}">{{ _('Bot-Einstellungen') }}</a>
+    <a class="btn" href="{{ url_for('admin.tools') }}">{{ _('Wartung & Trigger') }}</a>
+  </div>
+{% endblock %}

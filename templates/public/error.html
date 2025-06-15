@@ -1,0 +1,13 @@
+{% extends "layout.html" %}
+{% set bg_image = resolve_background_template() %}
+{% set bg_image = "/static/bg/error.png" %}
+
+{% block title %}{{ t("Fehler") }}{% endblock %}
+
+{% block content %}
+  <div class="main-content center-text">
+    <h1>🚫 404 – {{ t("Seite nicht gefunden") }}</h1>
+    <p>{{ t("Die angeforderte Seite existiert nicht oder wurde verschoben.") }}</p>
+    <a href="{{ url_for('public.landing') }}" class="btn">← {{ t("Zurück zur Startseite") }}</a>
+  </div>
+{% endblock %}

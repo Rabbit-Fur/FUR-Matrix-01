@@ -1,0 +1,27 @@
+{% extends "layout.html" %}
+{% set bg_image = resolve_background_template() %}
+{% set bg_image = "/static/bg/leaderboard_admin.png" %}
+{% block title %}{{ t("Leaderboards (Admin)") }}{% endblock %}
+
+{% block content %}
+  <h2>{{ t("Leaderboards verwalten") }}</h2>
+
+  {% if data and data.items() %}
+    {% for category, users in data.items() %}
+      <div class="panel">
+        <h3>{{ t(category) }}</h3>
+        {% if users %}
+          <ol>
+            {% for user in users %}
+              <li>{{ user.username }} – {{ user.score }}</li>
+            {% endfor %}
+          </ol>
+        {% else %}
+          <p>{{ t("Keine Einträge in dieser Kategorie.") }}</p>
+        {% endif %}
+      </div>
+    {% endfor %}
+  {% else %}
+    <p>{{ t("Keine Leaderboards gefunden.") }}</p>
+  {% endif %}
+{% endblock %}

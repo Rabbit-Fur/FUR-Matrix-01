@@ -1,0 +1,24 @@
+{% extends "layout.html" %}
+{% set bg_image = resolve_background_template() %}
+{% set bg_image = "/static/bg/hof_fire.png" %}
+{% block title %}{{ t("hall_of_fame_title") }}{% endblock %}
+
+{% block content %}
+  <div class="main-content">
+    <h1>🏆 {{ t("monthly_champions") }}</h1>
+
+    {% if hof is defined and hof %}
+      {% for entry in hof %}
+        <div class="panel">
+          <h3>{{ entry.username }} – {{ entry.month }}</h3>
+          <p>{{ entry.honor_title }}</p>
+          {% if entry.poster_url %}
+            <img src="{{ entry.poster_url }}" alt="{{ t('Champion Poster') }}" style="max-width: 100%; border-radius: 8px;">
+          {% endif %}
+        </div>
+      {% endfor %}
+    {% else %}
+      <p>{{ t("No entries in Hall of Fame.") }}</p>
+    {% endif %}
+  </div>
+{% endblock %}

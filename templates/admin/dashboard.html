@@ -1,0 +1,32 @@
+{% extends "layout.html" %}
+{% set bg_image = resolve_background_template() %}
+{% set bg_image = "/static/bg/admin.png" %}
+
+{% block title %}{{ t("Admin Dashboard") }}{% endblock %}
+
+{% block content %}
+  <h1>{{ t("Admin Dashboard") }}</h1>
+  <p>{{ t("Systemkontrolle, Nutzerverwaltung, Logs, Einstellungen, Tools…") }}</p>
+
+  <div class="flex" style="gap:1rem; flex-wrap: wrap;">
+    <a class="btn" href="{{ url_for('admin.calendar') }}">{{ t('Admin Kalender') }}</a>
+    <a class="btn" href="{{ url_for('admin.create_event') }}">{{ t('Event erstellen (Admin)') }}</a>
+    <a class="btn" href="{{ url_for('admin.participants') }}">{{ t('Teilnehmer') }}</a>
+    <a class="btn" href="{{ url_for('admin.leaderboards') }}">{{ t('Leaderboards') }}</a>
+    <a class="btn" href="{{ url_for('admin.translations_editor') }}">{{ t('Übersetzungen') }}</a>
+    <a class="btn" href="{{ url_for('admin.tools') }}">{{ t('Tools') }}</a>
+    <a class="btn" href="{{ url_for('admin.settings') }}">{{ t('Einstellungen') }}</a>
+    <a class="btn" href="{{ url_for('admin.downloads') }}">{{ t('Downloads') }}</a>
+  </div>
+
+  {% if stats is defined %}
+  <div class="panel" style="margin-top:2rem;">
+    <h3>{{ t("Systemstatus") }}</h3>
+    <ul>
+      <li>{{ t("Nutzer insgesamt") }}: {{ stats.total_users if stats.total_users is defined else '–' }}</li>
+      <li>{{ t("Aktive Events") }}: {{ stats.active_events if stats.active_events is defined else '–' }}</li>
+      <li>{{ t("Offene Aufgaben") }}: {{ stats.open_tasks if stats.open_tasks is defined else '–' }}</li>
+    </ul>
+  </div>
+  {% endif %}
+{% endblock %}

@@ -1,0 +1,16 @@
+{% extends "layout.html" %}
+{% set bg_image = resolve_background_template() %}
+{% set bg_image = "/static/bg/members_dashboard.png" %}
+{% block title %}{{ t("Member Dashboard") }}{% endblock %}
+
+{% block content %}
+  <div class="main-content">
+    <h2>👤 {{ t("Willkommen im Mitgliederbereich") }}</h2>
+    <p>{{ t("Hier findest du Downloads, Stats und deine persönlichen Daten.") }}</p>
+
+    <div class="panel flex" style="gap:1rem; flex-wrap: wrap;">
+      <a class="btn" href="{{ url_for('members.downloads') }}">📥 {{ t("Downloads") }}</a>
+      <a class="btn" href="{{ url_for('members.stats') }}">📊 {{ t("Statistiken") }}</a>
+    </div>
+  </div>
+{% endblock %}

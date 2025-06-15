@@ -1,0 +1,38 @@
+{% extends "layout.html" %}
+{% set bg_image = resolve_background_template() %}
+{% set bg_image = "/static/bg/calendar.png" %}
+
+{% block title %}{{ t("calendar_title") }}{% endblock %}
+
+{% block content %}
+  <h2>📆 {{ t("calendar_heading") }}</h2>
+  <div id="calendar" style="max-width: 100%; margin-top: 1rem;"></div>
+{% endblock %}
+
+{% block scripts %}
+  <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.0/main.min.js"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.0/main.min.css" />
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      const calendarEl = document.getElementById("calendar");
+      const calendar = new FullCalendar.Calendar(calendarEl, {
+        initialView: "dayGridMonth",
+        height: "auto",
+        locale: "{{ get_locale() }}",  // nur wenn du i18n → Babel o.ä. nutzt
+        events: {{ events_json | safe if events_json is defined else "[]" }},
+        headerToolbar: {
+          left: "prev,next today",
+          center: "title",
+          right: "dayGridMonth,timeGridWeek,timeGridDay"
+        },
+        eventTimeFormat: {
+          hour: "2-digit",
+          minute: "2-digit",
+          hour12: false
+        },
+        noEventsContent: "{{ t('Keine Events gefunden.') }}"
+      });
+      calendar.render();
+    });
+  </script>
+{% endblock %}

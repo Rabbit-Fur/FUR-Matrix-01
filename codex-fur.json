@@ -1,0 +1,6 @@
+{
+  "name": "codex-fur",
+  "description": "FUR Codex CLI",
+  "entry": "codex/bin/index.js",
+  "commands": ["sync", "audit", "release"]
+}

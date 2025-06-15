@@ -1,0 +1,42 @@
+{% extends "layout.html" %}
+{% set bg_image = resolve_background_template() %}
+{% set bg_image = "/static/bg/member_stats.png" %}
+{% block title %}{{ t("Mitgliederstatistiken") }}{% endblock %}
+
+{% block content %}
+  {% if 'r3' in session.get('role_ids', []) or 'r4' in session.get('role_ids', []) or session.get('admin_logged_in') %}
+    <h2>📊 {{ t("Deine Statistiken") }}</h2>
+
+    <div class="panel">
+      <h3>⚔️ {{ t("Raid-Punkte") }}</h3>
+      <p>{{ t("Punkte insgesamt") }}: {{ stats.raids if stats is defined and stats.raids is defined else 0 }}</p>
+    </div>
+
+    <div class="panel">
+      <h3>🎁 {{ t("Spenden") }}</h3>
+      <p>{{ t("Gespendet") }}: {{ stats.donations if stats is defined and stats.donations is defined else 0 }}</p>
+    </div>
+
+    <div class="panel">
+      <h3>🎭 {{ t("Teilnahmen an Events") }}</h3>
+      <p>{{ t("Events besucht") }}: {{ stats.participations if stats is defined and stats.participations is defined else 0 }}</p>
+    </div>
+
+    <div class="panel">
+      <h3>🏆 {{ t("Ehrenhalle") }}</h3>
+      {% if stats is defined and stats.hall_of_fame %}
+        <ul>
+          {% for entry in stats.hall_of_fame %}
+            <li>{{ entry.month }}: {{ entry.title }}</li>
+          {% endfor %}
+        </ul>
+      {% else %}
+        <p>{{ t("Keine Einträge") }}</p>
+      {% endif %}
+    </div>
+  {% else %}
+    <div class="panel warning">
+      <p>🚫 {{ t("Du hast keinen Zugriff auf diesen Bereich.") }}</p>
+    </div>
+  {% endif %}
+{% endblock %}

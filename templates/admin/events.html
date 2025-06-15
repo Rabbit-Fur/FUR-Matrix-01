@@ -1,0 +1,41 @@
+{% extends "layout.html" %}
+{% set bg_image = resolve_background_template() %}
+{% set bg_image = "/static/bg/admin_events.png" %}
+{% block title %}{{ t("Events verwalten") }}{% endblock %}
+
+{% block content %}
+  <h2>{{ t("Events verwalten") }}</h2>
+  <a class="btn" href="{{ url_for('admin.create_event') }}">{{ t("Neues Event erstellen") }}</a>
+
+  <table>
+    <thead>
+      <tr>
+        <th>{{ t("Titel") }}</th>
+        <th>{{ t("Datum") }}</th>
+        <th>{{ t("Zielrolle") }}</th>
+        <th>{{ t("Aktionen") }}</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% if events %}
+        {% for event in events %}
+          <tr>
+            <td>{{ event.title }}</td>
+            <td>{{ event.event_date }}</td>
+            <td>{{ event.role or t("Keine") }}</td>
+            <td>
+              <a class="btn" href="{{ url_for('admin.edit_event', event_id=event.id) }}">{{ t("Bearbeiten") }}</a>
+              <form method="post" action="{{ url_for('admin.delete_event', event_id=event.id) }}" style="display:inline;">
+                <button class="btn" type="submit" onclick="return confirm('{{ t('Wirklich löschen?') }}')">🗑️</button>
+              </form>
+            </td>
+          </tr>
+        {% endfor %}
+      {% else %}
+        <tr>
+          <td colspan="4">{{ t("Keine Events gefunden.") }}</td>
+        </tr>
+      {% endif %}
+    </tbody>
+  </table>
+{% endblock %}

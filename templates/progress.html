@@ -1,0 +1,33 @@
+{% extends "layout.html" %}
+{% set bg_image = resolve_background_template() %}
+{% set bg_image = "/static/bg/progress.png" %}
+{% block title %}FUR Progress Dashboard{% endblock %}
+{% block content %}
+  <h1>FUR SYSTEM – Daily Progress Dashboard</h1>
+
+  {% if log_content %}
+    <pre>{{ log_content }}</pre>
+  {% else %}
+    <div class="log-entry">
+      <h2>📅 27. Mai 2025</h2>
+      <p class="status">
+        <span class="done">FUR-LANG initialisiert</span>
+        <span class="inprogress">Champion-Modul: Web-Ansicht fehlt</span>
+        <span class="done">Reminder-System aktiv</span>
+        <span class="pending">Kalender-Modul noch offen</span>
+        <span class="done">FUR-MATRIX integriert</span>
+      </p>
+      <p><strong>Lernfortschritt:</strong> C++ STL-Handling, String-Verarbeitung, Zeitzonen, Sprachlogik</p>
+    </div>
+
+    <div class="log-entry">
+      <h2>🔜 Nächste Schritte (28. Mai)</h2>
+      <ul>
+        <li>/hall-of-fame HTML-Seite fertigstellen</li>
+        <li>FUR-LANG in Templates einbinden</li>
+        <li>Gambling-Poster mit Chips/V-Coins visualisieren</li>
+        <li>CI/CD auf GitHub finalisieren</li>
+      </ul>
+    </div>
+  {% endif %}
+{% endblock %}
