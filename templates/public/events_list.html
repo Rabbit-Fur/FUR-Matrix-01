@@ -12,11 +12,11 @@
     <table>
       <thead>
         <tr>
-          <th>{{ t("Titel") }}</th>
-          <th>{{ t("Beschreibung") }}</th>
-          <th>{{ t("Zeit") }}</th>
+          <th>📝 {{ t("Titel") }}</th>
+          <th>📄 {{ t("Beschreibung") }}</th>
+          <th>🕒 {{ t("Datum & Uhrzeit") }}</th>
           {% if session.get("user") %}
-            <th>{{ t("Aktion") }}</th>
+            <th>🎟️ {{ t("Aktion") }}</th>
           {% endif %}
         </tr>
       </thead>
@@ -25,12 +25,12 @@
           {% for event in events %}
             <tr>
               <td>{{ event.title }}</td>
-              <td>{{ event.description[:80] }}{% if event.description|length > 80 %}...{% endif %}</td>
+              <td>{{ event.description[:80] }}{% if event.description|length > 80 %}…{% endif %}</td>
               <td>{{ event.event_date }}</td>
               {% if session.get("user") %}
                 <td>
-                  <form action="{{ url_for('public.join_event', event_id=event.id) }}" method="POST">
-                    <button type="submit">{{ t("Beitreten") }}</button>
+                  <form action="{{ url_for('public.join_event', event_id=event.id) }}" method="POST" style="display:inline;">
+                    <button type="submit" class="btn btn-small">➕ {{ t("Beitreten") }}</button>
                   </form>
                 </td>
               {% endif %}
