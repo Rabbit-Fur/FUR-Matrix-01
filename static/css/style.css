@@ -1,192 +1,253 @@
-"""\
+<<<<<<< HEAD
 /* ==========================
-   FUR SYSTEM – style.css (Redesign)
+   FUR SYSTEM – style.css
    ========================== */
 
 html, body {
-  margin: 0;
-  padding: 0;
-  height: 100%;
-  font-family: 'Segoe UI', Arial, sans-serif;
-  background: transparent;
-  color: #f0f0f0;
-  box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    font-family: 'Segoe UI', Arial, sans-serif;
+    background: transparent;
+    color: #f0f0f0;
+    min-height: 100vh;
+    box-sizing: border-box;
 }
 
 body {
-  display: flex;
-  flex-direction: column;
-  min-height: 100vh;
-  background-color: #121218;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
 }
 
-/* === Header / Navigation === */
+header {
+    background: rgba(20, 20, 30, 0.8);
+    box-shadow: 0 2px 10px rgba(0,0,0,0.8);
+    padding: 12px 0;
+    z-index: 20;
+}
+
 nav.nav {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 2rem;
-  background: rgba(20, 20, 30, 0.9);
-  padding: 1rem 2rem;
-  border-radius: 0 0 16px 16px;
-  box-shadow: 0 4px 18px rgba(0,0,0,0.4);
-  z-index: 10;
+    display: flex;
+    justify-content: center;
+    gap: 2.2rem;
+    align-items: center;
+    font-size: 1.13rem;
 }
 
 nav.nav a {
-  color: #ffc857;
-  text-decoration: none;
-  font-weight: 600;
-  font-size: 1.1rem;
-  padding: 6px 18px;
-  border-radius: 30px;
-  transition: all 0.2s ease;
+    color: #ffc857;
+    text-decoration: none;
+    padding: 6px 20px;
+    border-radius: 2em;
+    transition: background 0.2s, color 0.2s;
+    font-weight: 600;
+    letter-spacing: 0.04em;
 }
+
 nav.nav a:hover, nav.nav a.active {
-  background: #ffc857;
-  color: #212121;
+    background: #ffc857;
+    color: #232323;
 }
 
-/* === Main Container === */
+nav.nav span {
+    color: #fff;
+    font-size: 1.08rem;
+    margin-left: 2rem;
+}
+
 main.container {
-  flex: 1;
-  width: 100%;
-  max-width: 1080px;
-  margin: 3rem auto;
-  background: rgba(30, 30, 38, 0.94);
-  box-shadow: 0 8px 32px rgba(0,0,0,0.35);
-  border-radius: 18px;
-  padding: 3rem;
-  backdrop-filter: blur(4px);
+    flex: 1;
+    width: 100%;
+    max-width: 1040px;
+    margin: 36px auto 24px auto;
+    background: rgba(30, 30, 38, 0.92);
+    box-shadow: 0 6px 32px rgba(0,0,0,0.30);
+    border-radius: 18px;
+    padding: 32px 28px 36px 28px;
+    min-height: 320px;
+    backdrop-filter: blur(2px);
+    transition: box-shadow 0.2s;
 }
 
-/* === Headings === */
+footer {
+    width: 100%;
+    background: rgba(22, 22, 32, 0.90);
+    text-align: center;
+    color: #888;
+    padding: 18px 0 10px 0;
+    font-size: 1rem;
+    border-radius: 0 0 12px 12px;
+    box-shadow: 0 -2px 20px rgba(0,0,0,0.4);
+}
+
 h1, h2, h3, h4, h5 {
-  color: #ffd65a;
-  margin-top: 0;
+    color: #ffc857;
+    margin-top: 0;
 }
 
-/* === Buttons === */
-button, .btn {
-  background: linear-gradient(to bottom, #ffa500, #ff9000);
-  color: #111;
-  border: none;
-  border-radius: 12px;
-  padding: 14px 36px;
-  font-size: 1.1rem;
-  font-weight: 700;
-  cursor: pointer;
-  box-shadow: 0 4px 18px rgba(255, 140, 0, 0.4);
-  transition: background 0.2s, transform 0.2s, color 0.2s;
+a {
+    color: #80bfff;
+    transition: color 0.2s;
 }
-button:hover, .btn:hover {
-  background: linear-gradient(to bottom, #ff7f00, #ff9900);
-  transform: scale(1.04);
-  color: #fff;
+a:hover {
+    color: #ffc857;
 }
 
-/* === Hero Panel (zentral) === */
-.hero-panel {
-  background: rgba(15, 15, 15, 0.88);
-  padding: 3.5rem 2.5rem;
-  border-radius: 18px;
-  text-align: center;
-  margin: 5rem auto;
-  max-width: 580px;
-  box-shadow: 0 0 42px rgba(255, 140, 0, 0.5);
-  backdrop-filter: blur(6px);
-}
-.hero-panel h1 {
-  font-size: 2.6rem;
-  color: #ffd65a;
-  margin-bottom: 1.4rem;
-}
-.hero-panel p {
-  font-size: 1.2rem;
-  color: #ccc;
-  margin-bottom: 2.2rem;
-}
-.fur-logo {
-  height: 130px;
-  margin-bottom: 1.6rem;
-  filter: drop-shadow(0 0 16px rgba(255, 102, 0, 0.45));
-}
-
-/* === Tables === */
+/* Tables */
 table {
-  width: 100%;
-  border-collapse: collapse;
-  margin: 24px 0;
-  background: rgba(40,40,56,0.96);
-  border-radius: 10px;
-  overflow: hidden;
+    width: 100%;
+    border-collapse: collapse;
+    margin: 20px 0;
+    background: rgba(40,40,56,0.97);
+    border-radius: 8px;
+    overflow: hidden;
 }
+
 th, td {
-  padding: 14px 16px;
-  text-align: left;
+    padding: 12px 14px;
+    text-align: left;
 }
+
 th {
-  background: #232333;
-  color: #ffc857;
-  border-bottom: 2px solid #ffc857;
+    background: #222a36;
+    color: #ffc857;
+    font-size: 1.02em;
+    border-bottom: 2px solid #ffc857;
 }
 tr:nth-child(even) {
-  background: rgba(48,48,66,0.95);
+    background: rgba(50,50,68,0.92);
 }
 tr:hover {
-  background: #393979;
-  color: #fff;
+    background: #393979;
+    color: #fff;
 }
 
-/* === Forms === */
-input, textarea, select {
-  background: #26263d;
-  color: #fff;
-  border: 1px solid #444;
-  border-radius: 8px;
-  padding: 12px;
-  font-size: 1rem;
-  margin-bottom: 1rem;
-  width: 100%;
-  box-sizing: border-box;
-  transition: border 0.15s ease;
+/* Buttons */
+button, .btn {
+    background: #ffc857;
+    color: #222;
+    border: none;
+    border-radius: 18px;
+    padding: 10px 28px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    cursor: pointer;
+    margin-top: 10px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    transition: background 0.2s, color 0.2s;
+}
+button:hover, .btn:hover {
+    background: #ffab00;
+    color: #212121;
+}
+
+/* Form Styles */
+input[type="text"], input[type="password"], input[type="email"], textarea, select {
+    background: #26263d;
+    color: #fff;
+    border: 1px solid #444;
+    border-radius: 8px;
+    padding: 10px 14px;
+    font-size: 1rem;
+    margin-bottom: 16px;
+    width: 100%;
+    box-sizing: border-box;
+    outline: none;
+    transition: border 0.15s;
 }
 input:focus, textarea:focus, select:focus {
-  border-color: #ffc857;
+    border: 1.5px solid #ffc857;
 }
+
 label {
-  color: #ffc857;
-  font-weight: 500;
-  margin-bottom: 6px;
-  display: block;
+    color: #ffc857;
+    font-weight: 500;
+    margin-bottom: 6px;
+    display: block;
 }
 
-/* === Footer === */
-footer {
-  width: 100%;
-  background: rgba(22, 22, 32, 0.90);
-  text-align: center;
-  color: #888;
-  padding: 18px 0;
-  font-size: 1rem;
-  border-radius: 0 0 12px 12px;
-  box-shadow: 0 -2px 20px rgba(0,0,0,0.4);
+/* Responsive Design */
+@media (max-width: 700px) {
+    main.container {
+        padding: 12px 6px 20px 6px;
+        max-width: 98vw;
+        border-radius: 10px;
+    }
+    nav.nav {
+        gap: 1.0rem;
+        font-size: 1rem;
+    }
 }
 
-/* === Responsive === */
-@media (max-width: 720px) {
-  nav.nav {
-    flex-wrap: wrap;
-    gap: 1rem;
-    font-size: 1rem;
-  }
-  main.container {
-    padding: 1.5rem;
-    margin: 2rem auto;
-  }
-  .hero-panel {
-    margin: 3rem auto;
-    padding: 2rem 1.5rem;
-  }
+/* Extra UX */
+::-webkit-scrollbar {
+    width: 8px;
+    background: #232344;
 }
-""")
+::-webkit-scrollbar-thumb {
+    background: #363656;
+    border-radius: 8px;
+=======
+
+body {
+    margin: 0;
+    padding: 0;
+    min-height: 100vh;
+    font-family: Arial, sans-serif;
+    background-image: url("/static/img/background.jpg");
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
+}
+nav {
+    background: rgba(0,0,0,0.85);
+    padding: 1rem 2rem;
+    display: flex;
+    gap: 2rem;
+}
+nav a {
+    color: #fff;
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 1.2rem;
+    transition: color 0.2s;
+}
+nav a:hover {
+    color: #ffd700;
+}
+.container {
+    max-width: 1100px;
+    margin: 42px auto 0 auto;
+    background: rgba(255,255,255,0.91);
+    border-radius: 18px;
+    padding: 36px 32px 32px 32px;
+    box-shadow: 0 4px 32px rgba(0,0,0,0.15);
+}
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 12px 0;
+}
+th, td {
+    padding: 8px 12px;
+    border-bottom: 1px solid #ccc;
+}
+.button, .btn {
+    background: #3a346e;
+    color: #fff;
+    border-radius: 12px;
+    padding: 8px 28px;
+    border: none;
+    font-weight: bold;
+    font-size: 1.1rem;
+    text-decoration: none;
+    margin: 16px 0 0 0;
+    display: inline-block;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+.button:hover, .btn:hover {
+    background: #4e4ba8;
+>>>>>>> b9da45a45805ab6a1f5377830ffb553178ced3ba
+}
