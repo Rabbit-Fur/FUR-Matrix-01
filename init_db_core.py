@@ -31,12 +31,7 @@ DB_PATH = get_db_path()
 
 
 def get_db_connection() -> sqlite3.Connection:
-    """
-    Stellt eine Verbindung zur SQLite-Datenbank her.
-
-    Returns:
-        sqlite3.Connection: Aktive DB-Verbindung.
-    """
+    """Stellt eine Verbindung zur SQLite-Datenbank her."""
     conn = sqlite3.connect(DB_PATH)
     conn.row_factory = sqlite3.Row
     return conn
@@ -48,17 +43,31 @@ def init_db():
     Wird beim App-Start ausgeführt.
     """
     schema = [
-        # Admin/User-Tabelle (Rollen)
+
+        # -- Erstellt die Tabelle "users" für persistente Discord-Logins
         """
         CREATE TABLE IF NOT EXISTS users (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
-            username TEXT UNIQUE NOT NULL,
-            password_hash TEXT NOT NULL,
-            role TEXT NOT NULL,
-            discord_id TEXT,
-            created_at TEXT NOT NULL
+            discord_id TEXT NOT NULL UNIQUE,
+            username TEXT NOT NULL,
+            avatar TEXT,
+            email TEXT,
+            role_level TEXT NOT NULL,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         );
         """,
+
+        # -- Optional: Trigger für automatische Aktualisierung von updated_at bei Änderung
+        """
+        CREATE TRIGGER IF NOT EXISTS update_users_timestamp
+        AFTER UPDATE ON users
+        FOR EACH ROW
+        BEGIN
+            UPDATE users SET updated_at = CURRENT_TIMESTAMP WHERE id = OLD.id;
+        END;
+        """,
+
         # Events
         """
         CREATE TABLE IF NOT EXISTS events (
@@ -70,6 +79,7 @@ def init_db():
             FOREIGN KEY (created_by) REFERENCES users(id)
         );
         """,
+
         # Teilnehmer
         """
         CREATE TABLE IF NOT EXISTS participants (
@@ -80,6 +90,7 @@ def init_db():
             FOREIGN KEY (user_id) REFERENCES users(id)
         );
         """,
+
         # Reminder-Status
         """
         CREATE TABLE IF NOT EXISTS reminders_sent (
@@ -91,7 +102,8 @@ def init_db():
             FOREIGN KEY (user_id) REFERENCES users(id)
         );
         """,
-        # Custom Reminders
+
+        # Reminder
         """
         CREATE TABLE IF NOT EXISTS reminders (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -101,6 +113,8 @@ def init_db():
             FOREIGN KEY (created_by) REFERENCES users(id)
         );
         """,
+
+        # Reminder-Teilnehmer
         """
         CREATE TABLE IF NOT EXISTS reminder_participants (
             reminder_id INTEGER NOT NULL,
@@ -110,12 +124,15 @@ def init_db():
             FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
         );
         """,
+
+        # Reminder-Optout
         """
         CREATE TABLE IF NOT EXISTS reminder_optout (
             user_id INTEGER PRIMARY KEY REFERENCES users(id) ON DELETE CASCADE
         );
         """,
-        # Hall of Fame (Champions)
+
+        # Hall of Fame
         """
         CREATE TABLE IF NOT EXISTS hall_of_fame (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -126,7 +143,8 @@ def init_db():
             created_at TEXT
         );
         """,
-        # Korrekt geschlossene event_participants-Tabelle
+
+        # Event-Teilnehmer (neue Tabelle)
         """
         CREATE TABLE IF NOT EXISTS event_participants (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -141,16 +159,18 @@ def init_db():
     try:
         conn = get_db_connection()
         cursor = conn.cursor()
+
         for stmt in schema:
             cursor.executescript(stmt)
         conn.commit()
 
-        # Debug: Tabelle auflisten
+        # Debug: Tabellen anzeigen
         cursor.execute("SELECT name FROM sqlite_master WHERE type='table'")
         tables = [row["name"] for row in cursor.fetchall()]
         log.info("📋 Tabellen in der DB: %s", tables)
 
         conn.close()
         log.info("✅ Datenbank initialisiert/aktualisiert (%s)", DB_PATH)
+
     except Exception as e:
         log.error("❌ Fehler bei DB-Initialisierung: %s", e, exc_info=True)
