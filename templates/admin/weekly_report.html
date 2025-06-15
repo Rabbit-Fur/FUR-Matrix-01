@@ -1,4 +1,5 @@
 {% extends "layout.html" %}
+{% set bg_image = "/static/bg/report.png" %}
 
 {% block title %}{{ t("Wöchentlicher Report") }}{% endblock %}
 
@@ -7,41 +8,41 @@
 
 <h2>🎯 {{ t("Teilnahme letzte 7 Tage") }}</h2>
 <table border="1" cellpadding="5">
+  <tr>
+    <th>{{ t("Discord User ID") }}</th>
+    <th>{{ t("Anzahl Teilnahmen") }}</th>
+  </tr>
+  {% if participation %}
+    {% for row in participation %}
     <tr>
-        <th>{{ t("Discord User ID") }}</th>
-        <th>{{ t("Anzahl Teilnahmen") }}</th>
+      <td>{{ row.user_id }}</td>
+      <td>{{ row.count }}</td>
     </tr>
-    {% if participation is defined and participation %}
-      {% for row in participation %}
-      <tr>
-          <td>{{ row.user_id }}</td>
-          <td>{{ row.count }}</td>
-      </tr>
-      {% endfor %}
-    {% else %}
-      <tr>
-          <td colspan="2">{{ t("Keine Daten vorhanden.") }}</td>
-      </tr>
-    {% endif %}
+    {% endfor %}
+  {% else %}
+    <tr>
+      <td colspan="2">{{ t("Keine Daten vorhanden.") }}</td>
+    </tr>
+  {% endif %}
 </table>
 
 <h2>🔮 {{ t("Kommende Events (nächste 7 Tage)") }}</h2>
 <table border="1" cellpadding="5">
+  <tr>
+    <th>{{ t("Titel") }}</th>
+    <th>{{ t("Datum & Uhrzeit") }}</th>
+  </tr>
+  {% if upcoming %}
+    {% for event in upcoming %}
     <tr>
-        <th>{{ t("Titel") }}</th>
-        <th>{{ t("Datum & Uhrzeit") }}</th>
+      <td>{{ event.title }}</td>
+      <td>{{ event.event_date }}</td>
     </tr>
-    {% if upcoming is defined and upcoming %}
-      {% for event in upcoming %}
-      <tr>
-          <td>{{ event.title }}</td>
-          <td>{{ event.event_time }}</td>
-      </tr>
-      {% endfor %}
-    {% else %}
-      <tr>
-          <td colspan="2">{{ t("Keine Events in den nächsten 7 Tagen.") }}</td>
-      </tr>
-    {% endif %}
+    {% endfor %}
+  {% else %}
+    <tr>
+      <td colspan="2">{{ t("Keine Events in den nächsten 7 Tagen.") }}</td>
+    </tr>
+  {% endif %}
 </table>
 {% endblock %}
