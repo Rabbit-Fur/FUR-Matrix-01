@@ -2,62 +2,8 @@
 <html lang="{{ current_lang() }}">
 <head>
     <meta charset="UTF-8">
-    <title>{% block title %}MATRIX System by FUR{% endblock %}</title>
+    <title>{% block title %}FUR System Portal{% endblock %}</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-    <style>
-        :root {
-            --bg-dark: #1a1a28;
-            --bg-panel: #222233ee;
-            --text-light: #f0f0f0;
-            --accent: #ffc857;
-            --accent-dark: #ff9900;
-        }
-        .grid-layout {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 1.5rem;
-            padding: 1rem;
-        }
-        .card-box {
-            background: var(--bg-panel);
-            border-radius: 12px;
-            padding: 2rem;
-            box-shadow: 0 0 30px #000a;
-        }
-        .hero-panel {
-            text-align: center;
-            background: rgba(20, 20, 30, 0.95);
-            border-radius: 16px;
-            padding: 3rem;
-            box-shadow: 0 0 32px #ff8c00aa;
-        }
-        .hero-panel img.fur-logo {
-            height: 100px;
-            margin-bottom: 1rem;
-        }
-        .hero-panel h1 {
-            font-size: 2rem;
-            color: var(--accent);
-            margin-bottom: 1rem;
-        }
-        .hero-panel p {
-            font-size: 1.1rem;
-            color: var(--text-light);
-            margin-bottom: 1.5rem;
-        }
-        .hero-panel .login-button {
-            background: var(--accent);
-            color: #222;
-            font-weight: bold;
-            padding: 12px 24px;
-            border-radius: 10px;
-            text-decoration: none;
-            transition: background 0.2s;
-        }
-        .hero-panel .login-button:hover {
-            background: var(--accent-dark);
-        }
-    </style>
 </head>
 <body>
 
@@ -65,9 +11,7 @@
         <form method="GET" action="{{ url_for('public.set_language') }}">
             <select name="lang" onchange="this.form.submit()">
                 {% for lang in config['BABEL_SUPPORTED_LOCALES'] %}
-                    <option value="{{ lang }}" {% if session.get('lang') == lang %}selected{% endif %}>
-                        {{ lang.upper() }}
-                    </option>
+                    <option value="{{ lang }}" {% if session.get('lang') == lang %}selected{% endif %}>{{ lang.upper() }}</option>
                 {% endfor %}
             </select>
         </form>
@@ -76,20 +20,26 @@
     {% block navbar %}{% endblock %}
 
     <main class="container">
-        <section class="hero-panel">
-            <img src="{{ url_for('static', filename='img/fur_logo.png') }}" class="fur-logo" alt="FUR Logo" />
-            <h1>{{ _('Willkommen im FUR Portal') }}</h1>
-            <p>{{ _('Verwalte deine Events, Statistiken, Downloads und mehr!') }}</p>
-            <a class="login-button" href="{{ url_for('public.discord_login') }}">
-                {{ _('Mit Discord einloggen') }}
-            </a>
+        {% include "components/hero.html" %}
+
+        <section class="grid-layout">
+            <!-- Beispielhafte Event-Karten -->
+            <div class="card-box">
+                <h2>Champion Night</h2>
+                <p>📅 01. Juni 2025<br>🔥 Sei dabei, wenn die Besten gegeneinander antreten!</p>
+                <a class="btn" href="{{ url_for('public.view_event', event_id=1) }}">Mehr erfahren</a>
+            </div>
+            <div class="card-box">
+                <h2>Training Session</h2>
+                <p>📅 10. Juni 2025<br>💪 Perfektioniere deine Skills mit den Profis.</p>
+                <a class="btn" href="{{ url_for('public.view_event', event_id=2) }}">Mehr erfahren</a>
+            </div>
         </section>
 
-        <div class="grid-layout">
-            {% block content %}{% endblock %}
-        </div>
+        {% block content %}{% endblock %}
     </main>
 
     {% block footer %}{% endblock %}
+
 </body>
 </html>
