@@ -1,32 +1,22 @@
 id: task_migrate_flask_babel_v2
-title: Migriere Projekt auf Flask-Babel-Next 1.1.0
+title: Migriere Projekt auf Flask-Babel 2.0
 description: |
-  Aktualisiere alle Projektdateien auf die neue Bibliothek flask-babel-next. Ersetze @babel.localeselector durch babel.locale_selector_func(...) und stelle sicher, dass flask-babel-next==1.1.0 verwendet wird. Ziel ist zukunftssicherer, CI-tauglicher i18n-Code ohne veraltete Decorator-Syntax.
+  Aktualisiere alle Projektdateien auf die stabile Bibliothek flask-babel==2.0.0.
+  Nutze weiterhin den klassischen Decorator @babel.localeselector.
+  Stelle sicher, dass keine Abhängigkeiten zu flask-babel-next vorhanden sind.
   
 steps:
-  - name: Update Abhängigkeit auf flask-babel-next==1.1.0
+  - name: Update Abhängigkeit auf flask-babel==2.0.0
     file: requirements.txt
     action: replace_line
     match: ^flask-babel.*$
-    replacement: flask-babel-next==1.1.0
+    replacement: flask-babel==2.0.0
 
-  - name: Entferne alle @babel.localeselector Dekoratoren
+  - name: Stelle sicher, dass @babel.localeselector verwendet wird
     file_glob: "**/*.py"
-    action: regex_replace
-    pattern: "@babel\\.localeselector\\s*\\ndef\\s+get_locale\\(.*?\\):.*?(\\n\\s+.*?)*?(?=\\n[^ \\t])"
-    replacement: ""
-
-  - name: Füge neue locale_selector_func ein
-    file: web/__init__.py
-    action: insert_after
-    after: "babel.init_app\\(app\\)"
-    content: |
-      def get_locale():
-          return session.get("lang") or request.accept_languages.best_match(
-              app.config["BABEL_SUPPORTED_LOCALES"]
-          )
-      
-      babel.locale_selector_func(get_locale)
+    action: grep
+    pattern: "@babel.localeselector"
+    error: "❌ Kein @babel.localeselector gefunden"
 
   - name: Verifiziere Imports für session und request
     file: web/__init__.py

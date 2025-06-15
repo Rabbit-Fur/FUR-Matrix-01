@@ -8,7 +8,7 @@ und bindet die zentrale Config-Klasse aus dem Projekt-Root ein.
 import os
 
 from flask import Flask, request, session
-from flask_babel_next import Babel
+from flask_babel import Babel
 
 from config import Config
 from database import close_db
@@ -35,16 +35,14 @@ def create_app():
         "BABEL_TRANSLATION_DIRECTORIES", os.path.join(base_dir, "translations")
     )
 
-    babel = Babel()
-    babel.init_app(app)
+    babel = Babel(app)
 
-    # ✅ Richtiger Aufruf: am Babel-Objekt, nicht Flask
+    # ✅ Klassischer Decorator für Locale-Ermittlung
+    @babel.localeselector
     def get_locale():
         return session.get("lang") or request.accept_languages.best_match(
             app.config["BABEL_SUPPORTED_LOCALES"]
         )
-
-    babel.locale_selector_func(get_locale)  # ✅ korrekt!
 
     # 🌐 Sprache manuell via ?lang=
     @app.before_request
