@@ -12,6 +12,7 @@ from flask_babel import Babel
 
 from config import Config
 from fur_lang.i18n import get_supported_languages
+from database import close_db  # ✅ DB-Teardown importieren
 
 
 def create_app():
@@ -29,6 +30,9 @@ def create_app():
         "BABEL_TRANSLATION_DIRECTORIES", os.path.join(base_dir, "translations")
     )
     babel = Babel(app)
+
+    # ✅ Automatisches DB-Verbindungs-Teardown
+    app.teardown_appcontext(close_db)
 
     try:
         from dashboard.routes import dashboard  # NEU!
