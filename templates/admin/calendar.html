@@ -1,5 +1,8 @@
 {% extends "layout.html" %}
+{% set bg_image = "/static/bg/calendar.png" %}
+
 {% block title %}{{ t("Admin Kalender") }}{% endblock %}
+
 {% block content %}
   <h2>{{ t("Event-Kalender (Admin)") }}</h2>
   <div id="calendar"></div>
@@ -11,7 +14,7 @@
     document.addEventListener("DOMContentLoaded", function () {
       var calendar = new FullCalendar.Calendar(document.getElementById("calendar"), {
         initialView: "dayGridMonth",
-        events: {{ events_json | safe if events_json is defined else "[]" }}
+        events: {{ events_json | default("[]") | safe }}
       });
       calendar.render();
     });
