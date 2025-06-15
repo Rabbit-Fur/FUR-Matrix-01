@@ -1,28 +1,37 @@
 {% extends "layout.html" %}
+{% set bg_image = "/static/bg/reminders.png" %}
+{% block title %}{{ _('reminder_admin_title') }}{% endblock %}
+
 {% block content %}
 <h1>{{ _('reminder_admin_title') }}</h1>
 
-<table border="1" cellpadding="8">
-  <tr>
-    <th>{{ _('reminder_message') }}</th>
-    <th>{{ _('reminder_time') }}</th>
-    <th>{{ _('participants') }}</th>
-    <th>{{ _('actions') }}</th>
-  </tr>
-  {% for r in reminders %}
-  <tr>
-    <td>{{ r['message'] }}</td>
-    <td>{{ r['send_time'] }}</td>
-    <td><button onclick="loadParticipants({{ r['id'] }})">{{ _('view') }}</button></td>
-    <td>
-      <button onclick="sendNow({{ r['id'] }})">{{ _('send_now') }}</button>
-      <button onclick="deactivate({{ r['id'] }})">{{ _('deactivate') }}</button>
-    </td>
-  </tr>
-  {% endfor %}
+<table class="table">
+  <thead>
+    <tr>
+      <th>{{ _('reminder_message') }}</th>
+      <th>{{ _('reminder_time') }}</th>
+      <th>{{ _('participants') }}</th>
+      <th>{{ _('actions') }}</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for r in reminders %}
+    <tr>
+      <td>{{ r['message'] }}</td>
+      <td>{{ r['send_time'] or '–' }}</td>
+      <td>
+        <button onclick="loadParticipants({{ r['id'] }})">👥 {{ _('view') }}</button>
+      </td>
+      <td>
+        <button onclick="sendNow({{ r['id'] }})">📤 {{ _('send_now') }}</button>
+        <button onclick="deactivate({{ r['id'] }})">🛑 {{ _('deactivate') }}</button>
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
 </table>
 
-<div id="participants" style="margin-top:20px;"></div>
+<div id="participants" class="panel" style="margin-top:20px;"></div>
 
 <script>
 function loadParticipants(id) {
@@ -30,7 +39,7 @@ function loadParticipants(id) {
     .then(r => r.json())
     .then(data => {
       document.getElementById('participants').innerHTML =
-        `<h3>Participants for Reminder ${id}:</h3><pre>` +
+        `<h3>{{ _('participants') }} – Reminder ${id}</h3><pre>` +
         JSON.stringify(data, null, 2) +
         `</pre>`;
     });
@@ -38,12 +47,12 @@ function loadParticipants(id) {
 
 function sendNow(id) {
   fetch(`/api/reminders/${id}/send`, { method: "POST" })
-    .then(() => alert("✅ Reminder sent!"));
+    .then(() => alert("✅ {{ _('reminder_sent') }}"));
 }
 
 function deactivate(id) {
   fetch(`/api/reminders/${id}/deactivate`, { method: "POST" })
-    .then(() => alert("🚫 Reminder deactivated."));
+    .then(() => alert("🚫 {{ _('reminder_deactivated') }}"));
 }
 </script>
 {% endblock %}
