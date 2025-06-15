@@ -1,6 +1,6 @@
 # 🔧 Core Frameworks
 flask==2.3.3
-flask-babel==2.0.0
+flask-babel-next @ git+https://github.com/python-babel/flask-babel.git@next
 Flask-Session==0.8.0
 flask-wtf
 flask-limiter

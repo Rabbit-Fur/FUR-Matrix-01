@@ -1,14 +1,14 @@
 id: task_migrate_flask_babel_v2
 title: Migriere Projekt auf Flask-Babel ≥2.0 mit locale_selector_func
 description: |
-  Aktualisiere alle Projektdateien auf die neue Syntax von Flask-Babel ≥2.0. Ersetze @babel.localeselector durch babel.locale_selector_func(...) und stelle sicher, dass flask-babel==2.0.0 verwendet wird. Ziel ist zukunftssicherer, CI-tauglicher i18n-Code ohne veraltete Decorator-Syntax.
+  Aktualisiere alle Projektdateien auf die neue Syntax von Flask-Babel ≥2.0. Ersetze @babel.localeselector durch babel.locale_selector_func(...) und stelle sicher, dass flask-babel-next verwendet wird. Ziel ist zukunftssicherer, CI-tauglicher i18n-Code ohne veraltete Decorator-Syntax.
   
 steps:
-  - name: Update Abhängigkeit auf flask-babel==2.0.0
+  - name: Update Abhängigkeit auf flask-babel-next
     file: requirements.txt
     action: replace_line
     match: ^flask-babel.*$
-    replacement: flask-babel==2.0.0
+    replacement: flask-babel-next @ git+https://github.com/python-babel/flask-babel.git@next
 
   - name: Entferne alle @babel.localeselector Dekoratoren
     file_glob: "**/*.py"
