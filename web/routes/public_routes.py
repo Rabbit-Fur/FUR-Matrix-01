@@ -31,7 +31,21 @@ def set_language():
 
 @public_bp.route("/login")
 def login():
+    user = session.get("user")
+    if user:
+        role = user.get("role_level")
+        if role in ["ADMIN", "R4"]:
+            return redirect(url_for("admin.dashboard"))
+        elif role == "R3":
+            return redirect(url_for("member.dashboard"))
     return render_template("public/login.html")
+
+
+@public_bp.route("/logout")
+def logout():
+    session.clear()
+    flash("Du wurdest erfolgreich ausgeloggt.", "info")
+    return redirect(url_for("public.login"))
 
 
 @public_bp.route("/login/discord")
@@ -155,9 +169,8 @@ def discord_callback():
 
     if role_level in ["ADMIN", "R4"]:
         return redirect(url_for("admin.dashboard"))
-    else:  # R3
+    else:
         return redirect(url_for("member.dashboard"))
-
 
 
 # Weitere öffentliche Routen
