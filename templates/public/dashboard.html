@@ -4,11 +4,16 @@
 {% block title %}{{ t("Dashboard") }}{% endblock %}
 
 {% block content %}
-    <h1>{{ t("Dashboard") }}</h1>
-    <p>{{ t("Systemstatus, Statistiken und Schnellzugriffe:") }}</p>
-    <ul>
-        <li><a href="{{ url_for('public.events') }}">{{ t("Alle Events") }}</a></li>
-        <li><a href="{{ url_for('public.leaderboard') }}">{{ t("leaderboard_title") }}</a></li>
-        <li><a href="{{ url_for('public.hall_of_fame') }}">{{ t("hall_of_fame_title") }}</a></li>
-    </ul>
+  <div class="main-content">
+    <div class="page-header">
+      <h1>📊 {{ t("Dashboard") }}</h1>
+      <p>{{ t("Systemstatus, Statistiken und Schnellzugriffe:") }}</p>
+    </div>
+
+    <div class="flex" style="gap:1rem; flex-wrap:wrap;">
+      <a class="btn" href="{{ url_for('public.events') }}">📅 {{ t("Alle Events") }}</a>
+      <a class="btn" href="{{ url_for('public.leaderboard') }}">🏆 {{ t("leaderboard_title") }}</a>
+      <a class="btn" href="{{ url_for('public.hall_of_fame') }}">🔥 {{ t("hall_of_fame_title") }}</a>
+    </div>
+  </div>
 {% endblock %}
