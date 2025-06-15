@@ -37,13 +37,13 @@ def create_app():
     babel = Babel()
     babel.init_app(app)
 
-    # ✅ Flask-Babel ≥2.0: locale_selector_func statt @localeselector
+    # ✅ Richtiger Aufruf: am Babel-Objekt, nicht Flask
     def get_locale():
         return session.get("lang") or request.accept_languages.best_match(
             app.config["BABEL_SUPPORTED_LOCALES"]
         )
 
-    app.locale_selector_func(get_locale)
+    babel.locale_selector_func(get_locale)  # ✅ korrekt!
 
     # 🌐 Sprache manuell via ?lang=
     @app.before_request
