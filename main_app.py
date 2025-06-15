@@ -5,9 +5,6 @@ Mit Debug-Modus für lokale Entwicklung und sauberem Application-Factory-Pattern
 
 import os
 import sys
-
-sys.path.append(os.path.dirname(__file__))
-
 import asyncio
 import atexit
 import locale
@@ -18,25 +15,28 @@ import threading
 from dotenv import load_dotenv
 from flask import Response, session
 
+sys.path.append(os.path.dirname(__file__))
+
+# 🌍 Module
 from dashboard.routes import dashboard
 from fur_lang.i18n import t
 from init_db_core import init_db
-from utils.env_helpers import get_env_bool, get_env_int, get_env_str
+from utils.env_helpers import get_env_bool, get_env_int
 from utils.github_service import fetch_repo_info
 from web import create_app
 from database import close_db  # ✅ DB-Teardown importieren
 
-# --- Application-Factory: App-Objekt (für Gunicorn/Railway!) ---
+# === Flask App erstellen ===
 app = create_app()
-app.teardown_appcontext(close_db)  # ✅ Automatisches Schließen von DB-Verbindungen
+app.teardown_appcontext(close_db)
 app.jinja_env.globals.update(t=t)
 app.jinja_env.globals.update(current_lang=lambda: session.get("lang", "de"))
 
-# 🌍 Locale setzen (UTF-8 empfohlen)
+# 🌍 Locale setzen
 try:
     locale.setlocale(locale.LC_ALL, "en_US.UTF-8")
 except locale.Error:
-    locale.setlocale(locale.LC_ALL, "")
+    locale.setlocale(locale.LC_ALL, "")  # Fallback auf Default
 
 # 📄 .env laden
 load_dotenv()
@@ -66,7 +66,6 @@ def start_discord_bot():
     try:
         logging.info("🤖 Starte Discord-Bot...")
         from bot.bot_main import run_bot
-
         asyncio.run(run_bot())
     except Exception as e:
         log_error("Discord-Bot", e)
@@ -82,7 +81,7 @@ def signal_handler(sig, frame):
     sys.exit(0)
 
 
-# --- Main-Start für lokalen Betrieb und Zusatzdienste ---
+# === Einstiegspunkt für lokale Ausführung ===
 if __name__ == "__main__":
     try:
         init_db()
@@ -91,12 +90,12 @@ if __name__ == "__main__":
         signal.signal(signal.SIGINT, signal_handler)
         check_github_repo()
 
-        # Discord-Bot optional starten (asynchron im Thread)
         if get_env_bool("ENABLE_DISCORD_BOT", default=True):
             threading.Thread(target=start_discord_bot, daemon=True).start()
 
-        port = get_env_int("PORT", required=False, default=8080)
-        debug = False  # <--- Debug-Modus für lokale Entwicklung AKTIV
+        port = get_env_int("PORT", default=8080)
+        debug = get_env_bool("DEBUG", default=False)
+
         logging.info(f"🌐 Starte Webserver auf http://localhost:{port} (Debug={debug})")
         app.run(host="0.0.0.0", port=port, debug=debug)
 
