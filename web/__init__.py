@@ -6,17 +6,19 @@ und bindet die zentrale Config-Klasse aus dem Projekt-Root ein.
 """
 
 import os
+
 from flask import Flask, request, session
 from flask_babel import Babel
 
 from config import Config
-from fur_lang.i18n import get_supported_languages, t, current_lang
 from database import close_db  # ✅ DB-Teardown importieren
+from fur_lang.i18n import current_lang, get_supported_languages, t
 
 try:
     from utils.bg_resolver import resolve_background_template
 except ImportError:
     resolve_background_template = lambda: "/static/img/background.jpg"
+
 
 def create_app():
     base_dir = os.path.abspath(os.path.dirname(os.path.dirname(__file__)))
@@ -58,16 +60,18 @@ def create_app():
 
     # 🧩 Blueprints laden
     try:
+        from blueprints.admin import admin
+        from blueprints.leaderboard import leaderboard
+        from blueprints.member import member
+        from blueprints.public import public
+        from blueprints.reminder_api import reminder_api
         from dashboard.routes import dashboard
-        from web.routes.admin_routes import admin_bp
-        from web.routes.member_routes import member_bp
-        from web.routes.public_routes import public_bp
-        from web.routes.reminder_api import reminder_api
 
-        app.register_blueprint(public_bp)
-        app.register_blueprint(member_bp, url_prefix="/members")
-        app.register_blueprint(admin_bp)
-        app.register_blueprint(reminder_api)
+        app.register_blueprint(public)
+        app.register_blueprint(member, url_prefix="/members")
+        app.register_blueprint(admin, url_prefix="/admin")
+        app.register_blueprint(leaderboard, url_prefix="/leaderboard")
+        app.register_blueprint(reminder_api, url_prefix="/api/reminders")
         app.register_blueprint(dashboard)
 
         app.logger.info("✅ Alle Blueprints erfolgreich registriert.")

@@ -7,26 +7,18 @@ Stellt alle Admin-Oberflächen bereit, geschützt durch das r4_required-Decorato
 import json
 import os
 
-from flask import (
-    Blueprint,
-    Response,
-    current_app,
-    flash,
-    redirect,
-    render_template,
-    request,
-    url_for,
-)
+from flask import (Blueprint, Response, current_app, flash, redirect,
+                   render_template, request, url_for)
 
 from init_db_core import get_db_connection
 from web.auth.decorators import r4_required
 from web.database import get_db
 
-admin_bp = Blueprint("admin", __name__, url_prefix="/admin")
+admin = Blueprint("admin", __name__)
 
 
 @r4_required
-@admin_bp.route("/")
+@admin.route("/")
 def admin_dashboard():
     """
     Zeigt das Admin-Dashboard an.
@@ -35,7 +27,7 @@ def admin_dashboard():
 
 
 @r4_required
-@admin_bp.route("/calendar")
+@admin.route("/calendar")
 def calendar():
     """
     Admin-Kalenderansicht.
@@ -44,7 +36,7 @@ def calendar():
 
 
 @r4_required
-@admin_bp.route("/create_event", methods=["GET", "POST"])
+@admin.route("/create_event", methods=["GET", "POST"])
 def create_event():
     """
     Event-Erstellung für Admins.
@@ -72,7 +64,7 @@ def create_event():
 
 
 @r4_required
-@admin_bp.route("/dashboard")
+@admin.route("/dashboard")
 def dashboard():
     """
     Alternative Dashboard-Ansicht (z. B. Statistiken).
@@ -81,7 +73,7 @@ def dashboard():
 
 
 @r4_required
-@admin_bp.route("/diplomacy")
+@admin.route("/diplomacy")
 def diplomacy():
     """
     Diplomatie-Management.
@@ -90,7 +82,7 @@ def diplomacy():
 
 
 @r4_required
-@admin_bp.route("/downloads")
+@admin.route("/downloads")
 def downloads():
     """
     Downloads für Admins (z. B. Reports, Templates).
@@ -99,7 +91,7 @@ def downloads():
 
 
 @r4_required
-@admin_bp.route("/edit_event")
+@admin.route("/edit_event")
 def edit_event():
     """
     Event-Bearbeitung.
@@ -108,7 +100,7 @@ def edit_event():
 
 
 @r4_required
-@admin_bp.route("/events")
+@admin.route("/events")
 def events():
     """
     Übersicht aller Events (Verwaltung).
@@ -117,7 +109,7 @@ def events():
 
 
 @r4_required
-@admin_bp.route("/leaderboards")
+@admin.route("/leaderboards")
 def leaderboards():
     """
     Leaderboard-Übersicht für Admins.
@@ -126,7 +118,7 @@ def leaderboards():
 
 
 @r4_required
-@admin_bp.route("/participants")
+@admin.route("/participants")
 def participants():
     """
     Teilnehmer-Übersicht für Events.
@@ -135,7 +127,7 @@ def participants():
 
 
 @r4_required
-@admin_bp.route("/reminders")
+@admin.route("/reminders")
 def reminder_admin():
     db = get_db()
     reminders = db.execute("SELECT * FROM reminders ORDER BY send_time ASC").fetchall()
@@ -144,7 +136,7 @@ def reminder_admin():
 
 
 @r4_required
-@admin_bp.route("/settings")
+@admin.route("/settings")
 def settings():
     """
     Admin-Einstellungen.
@@ -153,7 +145,7 @@ def settings():
 
 
 @r4_required
-@admin_bp.route("/tools")
+@admin.route("/tools")
 def tools():
     """
     Admin-Tools (z. B. Import/Export).
@@ -162,7 +154,7 @@ def tools():
 
 
 @r4_required
-@admin_bp.route("/translations_editor", methods=["GET", "POST"])
+@admin.route("/translations_editor", methods=["GET", "POST"])
 def translations_editor():
     """Editor für Übersetzungen und Internationalisierung."""
 
@@ -212,25 +204,25 @@ def translations_editor():
 # --- Zusätzliche Admin-Endpoints für Tools & Exporte ---
 
 
-@admin_bp.route("/trigger_reminder", methods=["POST"])
+@admin.route("/trigger_reminder", methods=["POST"])
 def trigger_reminder():
     """Löst serverseitig einen Erinnerungs-Task aus (Platzhalter)."""
     return "Reminder triggered"
 
 
-@admin_bp.route("/trigger_champion_post", methods=["POST"])
+@admin.route("/trigger_champion_post", methods=["POST"])
 def trigger_champion_post():
     """Postet den aktuellen Champion in den Discord-Channel (Platzhalter)."""
     return "Champion post triggered"
 
 
-@admin_bp.route("/healthcheck", methods=["POST"])
+@admin.route("/healthcheck", methods=["POST"])
 def healthcheck():
     """Einfacher Healthcheck-Endpunkt für Admin-Tools."""
     return Response("ok", status=200)
 
 
-@admin_bp.route("/export_participants")
+@admin.route("/export_participants")
 def export_participants():
     """CSV-Export aller Teilnehmer (Dummy-Implementierung)."""
     csv_data = "username\n"
@@ -241,7 +233,7 @@ def export_participants():
     )
 
 
-@admin_bp.route("/export_scores")
+@admin.route("/export_scores")
 def export_scores():
     """CSV-Export der Score-Tabelle (Dummy-Implementierung)."""
     csv_data = "username,score\n"

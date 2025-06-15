@@ -4,24 +4,22 @@ import secrets
 from urllib.parse import urlencode
 
 import requests
-from flask import (
-    Blueprint, abort, current_app, flash, redirect,
-    render_template, request, session, url_for
-)
+from flask import (Blueprint, abort, current_app, flash, redirect,
+                   render_template, request, session, url_for)
 
+from database import get_db
 from fur_lang.i18n import get_supported_languages
 from web.auth.decorators import r3_required
-from database import get_db
 
-public_bp = Blueprint("public", __name__)
+public = Blueprint("public", __name__)
 
 
-@public_bp.route("/")
+@public.route("/")
 def landing():
     return render_template("public/landing.html")
 
 
-@public_bp.route("/set_language")
+@public.route("/set_language")
 def set_language():
     lang = request.args.get("lang")
     if lang in get_supported_languages():
@@ -29,7 +27,7 @@ def set_language():
     return redirect(request.referrer or url_for("public.landing"))
 
 
-@public_bp.route("/login")
+@public.route("/login")
 def login():
     user = session.get("user")
     if user:
@@ -41,14 +39,14 @@ def login():
     return render_template("public/login.html")
 
 
-@public_bp.route("/logout")
+@public.route("/logout")
 def logout():
     session.clear()
     flash("Du wurdest erfolgreich ausgeloggt.", "info")
     return redirect(url_for("public.login"))
 
 
-@public_bp.route("/login/discord")
+@public.route("/login/discord")
 def discord_login():
     client_id = current_app.config["DISCORD_CLIENT_ID"]
     redirect_uri = current_app.config["DISCORD_REDIRECT_URI"]
@@ -68,7 +66,7 @@ def discord_login():
     return redirect(url)
 
 
-@public_bp.route("/callback")
+@public.route("/callback")
 def discord_callback():
     code = request.args.get("code")
     state = request.args.get("state")
@@ -92,7 +90,9 @@ def discord_callback():
     )
 
     if token_res.status_code != 200:
-        current_app.logger.error("OAuth Token Error %s: %s", token_res.status_code, token_res.text)
+        current_app.logger.error(
+            "OAuth Token Error %s: %s", token_res.status_code, token_res.text
+        )
         flash("Discord Login fehlgeschlagen", "danger")
         return redirect(url_for("public.login"))
 
@@ -119,7 +119,9 @@ def discord_callback():
     admin_roles = set(map(str, current_app.config.get("ADMIN_ROLE_IDS", set())))
 
     current_app.logger.info(f"Discord User Rollen: {user_roles}")
-    current_app.logger.info(f"Vergleichsrollen → R3: {r3_roles}, R4: {r4_roles}, ADMIN: {admin_roles}")
+    current_app.logger.info(
+        f"Vergleichsrollen → R3: {r3_roles}, R4: {r4_roles}, ADMIN: {admin_roles}"
+    )
 
     if user_roles & admin_roles:
         role_level = "ADMIN"
@@ -141,7 +143,8 @@ def discord_callback():
     session.permanent = True
 
     db = get_db()
-    db.execute("""
+    db.execute(
+        """
         INSERT INTO users (discord_id, username, avatar, email, role_level)
         VALUES (?, ?, ?, ?, ?)
         ON CONFLICT(discord_id) DO UPDATE SET
@@ -149,13 +152,15 @@ def discord_callback():
             avatar=excluded.avatar,
             email=excluded.email,
             role_level=excluded.role_level
-    """, (
-        user_data["id"],
-        user_data["username"],
-        user_data["avatar"],
-        user_data.get("email"),
-        role_level
-    ))
+    """,
+        (
+            user_data["id"],
+            user_data["username"],
+            user_data["avatar"],
+            user_data.get("email"),
+            role_level,
+        ),
+    )
     db.commit()
 
     flash("Erfolgreich mit Discord eingeloggt", "success")
@@ -166,35 +171,40 @@ def discord_callback():
         return redirect(url_for("member.dashboard"))
 
 
-@public_bp.route("/lore")
+@public.route("/lore")
 def lore():
     return render_template("public/lore.html")
 
 
-@public_bp.route("/calendar")
+@public.route("/calendar")
 def calendar():
     return render_template("public/calendar.html")
 
 
-@public_bp.route("/events")
+@public.route("/events")
 def events():
     db = get_db()
-    rows = db.execute("""
+    rows = db.execute(
+        """
         SELECT id, title, event_date, description
         FROM events
         ORDER BY event_date ASC
-    """).fetchall()
+    """
+    ).fetchall()
     return render_template("public/events_list.html", events=rows)
 
 
-@public_bp.route("/events/<int:event_id>")
+@public.route("/events/<int:event_id>")
 def view_event(event_id):
     db = get_db()
-    event = db.execute("""
+    event = db.execute(
+        """
         SELECT id, title, event_date, description
         FROM events
         WHERE id = ?
-    """, (event_id,)).fetchone()
+    """,
+        (event_id,),
+    ).fetchone()
 
     if not event:
         abort(404)
@@ -202,7 +212,7 @@ def view_event(event_id):
     return render_template("public/view_event.html", event=event)
 
 
-@public_bp.route("/events/<int:event_id>/join", methods=["POST"])
+@public.route("/events/<int:event_id>/join", methods=["POST"])
 @r3_required
 def join_event(event_id):
     if "user" not in session:
@@ -213,40 +223,42 @@ def join_event(event_id):
     return redirect(url_for("public.view_event", event_id=event_id))
 
 
-@public_bp.route("/hall_of_fame")
+@public.route("/hall_of_fame")
 def hall_of_fame():
     db = get_db()
-    rows = db.execute("""
+    rows = db.execute(
+        """
         SELECT username, honor_title, month, poster_url
         FROM hall_of_fame
         ORDER BY id DESC
         LIMIT 10
-    """).fetchall()
+    """
+    ).fetchall()
     return render_template("public/hall_of_fame.html", hof=rows)
 
 
-@public_bp.route("/leaderboard")
+@public.route("/leaderboard")
 def leaderboard():
     db = get_db()
-    rows = db.execute("""
+    rows = db.execute(
+        """
         SELECT username, score
         FROM leaderboard
         ORDER BY score DESC
         LIMIT 100
-    """).fetchall()
+    """
+    ).fetchall()
 
     # Ränge berechnen
     leaderboard = []
     for i, row in enumerate(rows, start=1):
-        leaderboard.append({
-            "rank": i,
-            "username": row["username"],
-            "score": row["score"]
-        })
+        leaderboard.append(
+            {"rank": i, "username": row["username"], "score": row["score"]}
+        )
 
     return render_template("public/public_leaderboard.html", leaderboard=leaderboard)
 
 
-@public_bp.route("/dashboard")
+@public.route("/dashboard")
 def dashboard():
     return render_template("public/dashboard.html")
