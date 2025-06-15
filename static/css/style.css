@@ -1,3 +1,4 @@
+"""\
 .hero-panel {
   background: rgba(15, 15, 15, 0.88);
   padding: 3rem 2rem;
@@ -38,14 +39,4 @@
   transform: scale(1.04);
   color: #fff;
 }
-""")
-
-    # landing.html
-    zipf.writestr("templates/public/landing.html", """\
-{% extends "layout.html" %}
-{% set bg_image = "/static/bg/index.png" %}
-{% block title %}Startseite{% endblock %}
-{% block content %}
-  {% include "components/hero.html" %}
-{% endblock %}
 """)
