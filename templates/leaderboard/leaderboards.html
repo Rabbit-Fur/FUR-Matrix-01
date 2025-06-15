@@ -1,25 +1,21 @@
 {% extends "layout.html" %}
-{% block title %}Leaderboards{% endblock %}
-{% block content %}
-  <div class="main-content">
-    <div class="page-header">
-      <h1>🏆 {{ _('Leaderboards') }}</h1>
-    </div>
+{% set bg_image = "/static/bg/leaderboard.png" %}
+{% block title %}{{ t("Leaderboards") }}{% endblock %}
 
-    {% for category, entries in leaderboards.items() %}
-      <div class="leaderboard-card">
-        <h2>{{ category }}</h2>
-        {% if entries %}
-          <ol>
-            {% for entry in entries %}
-              <li>{{ entry.username }} – {{ entry.score }}</li>
-            {% endfor %}
-          </ol>
-        {% else %}
-          <p>{{ _('Keine Daten verfügbar') }}</p>
-        {% endif %}
-      </div>
-    {% endfor %}
+{% block content %}
+<div class="main-content">
+  <div class="page-header">
+    <h1>🏆 {{ t("Leaderboards") }}</h1>
   </div>
+
+  {% if leaderboard %}
+    <ol>
+      {% for entry in leaderboard %}
+        <li>{{ entry.rank }}. {{ entry.username }} – {{ entry.score }}</li>
+      {% endfor %}
+    </ol>
+  {% else %}
+    <p>{{ t("Keine Daten verfügbar") }}</p>
+  {% endif %}
+</div>
 {% endblock %}
-{% extends "layout.html" %}
