@@ -1,12 +1,12 @@
 Flask==3.1.1
-Flask-Babel>=3.1.0
+Flask-Babel==2.0.0
 Flask-Session==0.8.0
 SQLAlchemy==2.0.41
 apscheduler
 deepl
 discord.py==2.5.2
 flask
-flask-babel
+flask-babel==2.0.0
 flask-limiter
 flask-wtf
 ics
