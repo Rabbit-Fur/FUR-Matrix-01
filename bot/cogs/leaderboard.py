@@ -1,26 +1,18 @@
 """
-leaderboard.py – Discord-Cog für Ingame-Statistiken und Rankings
+leaderboard.py – Discord-Cog für Live-Rankings aus der Datenbank
 
-Dieses Cog zeigt verschiedene Leaderboards (z. B. Raids, Donations) an.
-Später kann es mit Datenbank- oder API-Anbindung erweitert werden.
+Zeigt Top-Spieler in Kategorien wie Raids oder Donations aus der leaderboard-Tabelle.
 """
 
 import logging
-
-import discord
 from discord.ext import commands
+from web.database import get_db
 from fur_lang.i18n import t
 
 log = logging.getLogger(__name__)
 
 
 class Leaderboard(commands.Cog):
-    """
-    Cog: Zeigt Ingame-Statistiken / Rankings an (aus DB/API).
-
-    Der Befehl !top <Kategorie> zeigt ein Leaderboard für die gewünschte Kategorie.
-    """
-
     def __init__(self, bot: commands.Bot):
         self.bot = bot
 
@@ -28,32 +20,39 @@ class Leaderboard(commands.Cog):
     async def top_players(self, ctx: commands.Context, category: str = "raids") -> None:
         """
         Befehl: !top [Kategorie]
-        Zeigt das Ranking der Top-Spieler in einer bestimmten Kategorie an.
+        Holt die Top 10 für eine Kategorie aus der Datenbank.
         """
-        lang = "de"  # 🔁 später automatisch aus DB/User
-
-        # 🔁 Platzhalterdaten – später durch DB/API ersetzen
-        fake_data = {
-            "raids": ["Alice – 120", "Bob – 110", "Charlie – 100"],
-            "donations": ["Dino – 500", "Eva – 450"],
-        }
-
-        if category not in fake_data:
-            await ctx.send(t("leaderboard_unknown_category", category=category, lang=lang))
-            log.warning(f"❌ Unbekannte Kategorie: {category}")
-            return
-
-        entries = fake_data[category]
-        leaderboard_text = "\n".join(entries)
-        header = t("leaderboard_header", category=category.capitalize(), lang=lang)
+        lang = "de"  # 🔁 später aus Nutzerprofil
 
         try:
-            await ctx.send(f"{header}\n{leaderboard_text}")
-            log.info(f"📊 Leaderboard '{category}' gesendet in {ctx.channel.id}")
+            db = get_db()
+            rows = db.execute(
+                """
+                SELECT username, score
+                FROM leaderboard
+                WHERE category = ?
+                ORDER BY score DESC
+                LIMIT 10
+                """,
+                (category.lower(),)
+            ).fetchall()
+
+            if not rows:
+                await ctx.send(t("leaderboard_unknown_category", category=category, lang=lang))
+                return
+
+            header = t("leaderboard_header", category=category.capitalize(), lang=lang)
+            content = "\n".join(
+                [f"{i+1}. {row['username']} – {row['score']}" for i, row in enumerate(rows)]
+            )
+
+            await ctx.send(f"{header}\n{content}")
+            log.info(f"📊 Live-Leaderboard '{category}' gesendet in {ctx.channel.id}")
+
         except Exception as e:
             log.error(f"❌ Fehler beim Leaderboard-Versand: {e}", exc_info=True)
+            await ctx.send(t("leaderboard_error", lang=lang))
 
 
 async def setup(bot: commands.Bot) -> None:
-    """Registriert das Leaderboard-Cog beim Bot."""
     await bot.add_cog(Leaderboard(bot))
