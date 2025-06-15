@@ -44,7 +44,7 @@ def init_db():
     """
     schema = [
 
-        # -- Erstellt die Tabelle "users" für persistente Discord-Logins
+        # -- Tabelle "users"
         """
         CREATE TABLE IF NOT EXISTS users (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -58,7 +58,7 @@ def init_db():
         );
         """,
 
-        # -- Optional: Trigger für automatische Aktualisierung von updated_at bei Änderung
+        # -- Trigger für updated_at
         """
         CREATE TRIGGER IF NOT EXISTS update_users_timestamp
         AFTER UPDATE ON users
@@ -68,19 +68,21 @@ def init_db():
         END;
         """,
 
-        # Events
+        # -- Events (aktualisiert)
         """
         CREATE TABLE IF NOT EXISTS events (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             title TEXT NOT NULL,
-            event_time TEXT NOT NULL,
-            created_by INTEGER NOT NULL,
+            event_date TEXT NOT NULL,
             description TEXT,
+            role TEXT,
+            recurrence TEXT,
+            created_by INTEGER NOT NULL,
             FOREIGN KEY (created_by) REFERENCES users(id)
         );
         """,
 
-        # Teilnehmer
+        # -- Teilnehmer
         """
         CREATE TABLE IF NOT EXISTS participants (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -91,7 +93,7 @@ def init_db():
         );
         """,
 
-        # Reminder-Status
+        # -- Reminder-Send-Status
         """
         CREATE TABLE IF NOT EXISTS reminders_sent (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -103,7 +105,7 @@ def init_db():
         );
         """,
 
-        # Reminder
+        # -- Reminder
         """
         CREATE TABLE IF NOT EXISTS reminders (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -114,7 +116,7 @@ def init_db():
         );
         """,
 
-        # Reminder-Teilnehmer
+        # -- Reminder-Teilnehmer
         """
         CREATE TABLE IF NOT EXISTS reminder_participants (
             reminder_id INTEGER NOT NULL,
@@ -125,14 +127,14 @@ def init_db():
         );
         """,
 
-        # Reminder-Optout
+        # -- Reminder-Optout
         """
         CREATE TABLE IF NOT EXISTS reminder_optout (
             user_id INTEGER PRIMARY KEY REFERENCES users(id) ON DELETE CASCADE
         );
         """,
 
-        # Hall of Fame
+        # -- Hall of Fame
         """
         CREATE TABLE IF NOT EXISTS hall_of_fame (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -144,7 +146,7 @@ def init_db():
         );
         """,
 
-        # Event-Teilnehmer (neue Tabelle)
+        # -- Event-Teilnehmer (separat)
         """
         CREATE TABLE IF NOT EXISTS event_participants (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
