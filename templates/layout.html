@@ -20,7 +20,9 @@
     {% block navbar %}{% endblock %}
 
     <main class="container">
-        {% include "components/hero.html" %}
+        {% if request.endpoint == 'public.landing' %}
+            {% include "components/hero.html" %}
+        {% endif %}
 
         <section class="grid-layout">
             <!-- Beispielhafte Event-Karten -->
