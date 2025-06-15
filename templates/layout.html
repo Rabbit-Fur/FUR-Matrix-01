@@ -5,16 +5,57 @@
     <title>{% block title %}MATRIX System by FUR{% endblock %}</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
     <style>
+        :root {
+            --bg-dark: #1a1a28;
+            --bg-panel: #222233ee;
+            --text-light: #f0f0f0;
+            --accent: #ffc857;
+            --accent-dark: #ff9900;
+        }
         .grid-layout {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
             gap: 1.5rem;
             padding: 1rem;
         }
-        @media (max-width: 600px) {
-            .grid-layout {
-                grid-template-columns: 1fr;
-            }
+        .card-box {
+            background: var(--bg-panel);
+            border-radius: 12px;
+            padding: 2rem;
+            box-shadow: 0 0 30px #000a;
+        }
+        .hero-panel {
+            text-align: center;
+            background: rgba(20, 20, 30, 0.95);
+            border-radius: 16px;
+            padding: 3rem;
+            box-shadow: 0 0 32px #ff8c00aa;
+        }
+        .hero-panel img.fur-logo {
+            height: 100px;
+            margin-bottom: 1rem;
+        }
+        .hero-panel h1 {
+            font-size: 2rem;
+            color: var(--accent);
+            margin-bottom: 1rem;
+        }
+        .hero-panel p {
+            font-size: 1.1rem;
+            color: var(--text-light);
+            margin-bottom: 1.5rem;
+        }
+        .hero-panel .login-button {
+            background: var(--accent);
+            color: #222;
+            font-weight: bold;
+            padding: 12px 24px;
+            border-radius: 10px;
+            text-decoration: none;
+            transition: background 0.2s;
+        }
+        .hero-panel .login-button:hover {
+            background: var(--accent-dark);
         }
     </style>
 </head>
@@ -35,6 +76,15 @@
     {% block navbar %}{% endblock %}
 
     <main class="container">
+        <section class="hero-panel">
+            <img src="{{ url_for('static', filename='img/fur_logo.png') }}" class="fur-logo" alt="FUR Logo" />
+            <h1>{{ _('Willkommen im FUR Portal') }}</h1>
+            <p>{{ _('Verwalte deine Events, Statistiken, Downloads und mehr!') }}</p>
+            <a class="login-button" href="{{ url_for('public.discord_login') }}">
+                {{ _('Mit Discord einloggen') }}
+            </a>
+        </section>
+
         <div class="grid-layout">
             {% block content %}{% endblock %}
         </div>
