@@ -1,20 +1,16 @@
-# try/blueprints/api_users.py
-
 from datetime import datetime
-
-from bson import ObjectId
 from flask import Blueprint, jsonify, request
-
 from database.mongo_client import db
 from schemas.user_schema import UserModel
+from bson import ObjectId
 
 api_users = Blueprint("api_users", __name__, url_prefix="/api/users")
 users = db["users"]
 
 
-def serialize_user(user) -> dict:
+def serialize_user(user: dict) -> dict:
     user["id"] = str(user["_id"])
-    del user["_id"]
+    user.pop("_id", None)
     return user
 
 
@@ -35,11 +31,11 @@ def get_user_by_discord_id(discord_id):
 def create_user():
     try:
         data = request.get_json()
-        user_data = UserModel(**data).dict()
-        user_data["created_at"] = datetime.utcnow()
-        user_data["updated_at"] = datetime.utcnow()
-        result = users.insert_one(user_data)
-        user_data["id"] = str(result.inserted_id)
-        return jsonify(user_data), 201
+        user = UserModel(**data).dict(by_alias=True)
+        user["created_at"] = datetime.utcnow()
+        user["updated_at"] = datetime.utcnow()
+        result = users.insert_one(user)
+        user["id"] = str(result.inserted_id)
+        return jsonify(user), 201
     except Exception as e:
         return jsonify({"error": str(e)}), 400
