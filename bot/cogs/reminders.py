@@ -27,7 +27,9 @@ class Reminders(commands.Cog):
 
     def __init__(self, bot: commands.Bot):
         self.bot = bot
-        self.channel_id = int(os.getenv("REMINDER_CHANNEL_ID", getattr(Config, "REMINDER_CHANNEL_ID", 0)))
+        self.channel_id = int(
+            os.getenv("REMINDER_CHANNEL_ID", getattr(Config, "REMINDER_CHANNEL_ID", 0))
+        )
         self.reminder_loop.start()
 
     def cog_unload(self):
@@ -44,13 +46,19 @@ class Reminders(commands.Cog):
 
         if channel:
             try:
-                message = t("reminder_hourly", time=now, lang="de")  # 🔁 später dynamisch
+                message = t(
+                    "reminder_hourly", time=now, lang="de"
+                )  # 🔁 später dynamisch
                 await channel.send(message)
-                log.info(f"📤 Reminder gesendet an Channel {self.channel_id} (UTC {now})")
+                log.info(
+                    f"📤 Reminder gesendet an Channel {self.channel_id} (UTC {now})"
+                )
             except Exception as e:
                 log.error(f"❌ Fehler beim Senden des stündlichen Reminders: {e}")
         else:
-            log.warning(f"⚠️ Channel-ID {self.channel_id} ungültig oder nicht auffindbar.")
+            log.warning(
+                f"⚠️ Channel-ID {self.channel_id} ungültig oder nicht auffindbar."
+            )
 
     @reminder_loop.before_loop
     async def before_reminder(self):

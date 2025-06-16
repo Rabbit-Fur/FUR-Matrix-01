@@ -5,7 +5,6 @@ class Client:
     """Minimal stub to satisfy bot import."""
 
 
-
 class Intents:
     @staticmethod
     def all():

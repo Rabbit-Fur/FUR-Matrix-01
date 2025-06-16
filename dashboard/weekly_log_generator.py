@@ -1,21 +1,13 @@
 import os
-import sqlite3
 from datetime import datetime, timedelta
 
 import requests
 
-from init_db_core import get_db_path
+from database.mongo_client import db
 
-DB_PATH = get_db_path()
 WEBHOOK_URL = os.getenv("DISCORD_WEBHOOK_URL")
 LOG_DIR = "core/logs"
 os.makedirs(LOG_DIR, exist_ok=True)
-
-
-def get_db():
-    conn = sqlite3.connect(DB_PATH)
-    conn.row_factory = sqlite3.Row
-    return conn
 
 
 def generate_markdown_report(participation, upcoming, filename):
@@ -53,32 +45,32 @@ def run_weekly_log():
     week_start = now - timedelta(days=7)
     week_end = now + timedelta(days=7)
 
-    db = get_db()
-    cur = db.cursor()
-
-    cur.execute(
-        """
-        SELECT user_id, COUNT(*) as count
-        FROM participants
-        JOIN events ON participants.event_id = events.id
-        WHERE datetime(events.event_time) BETWEEN ? AND ?
-        GROUP BY user_id ORDER BY count DESC
-    """,
-        (week_start.isoformat(), now.isoformat()),
+    participation = list(
+        db["participants"].aggregate(
+            [
+                {
+                    "$lookup": {
+                        "from": "events",
+                        "localField": "event_id",
+                        "foreignField": "_id",
+                        "as": "event",
+                    }
+                },
+                {"$unwind": "$event"},
+                {"$match": {"event.event_time": {"$gte": week_start, "$lte": now}}},
+                {"$group": {"_id": "$user_id", "count": {"$sum": 1}}},
+            ]
+        )
     )
-    participation = cur.fetchall()
 
-    cur.execute(
-        """
-        SELECT id, title, event_time
-        FROM events
-        WHERE datetime(event_time) BETWEEN ? AND ?
-        ORDER BY event_time
-    """,
-        (now.isoformat(), week_end.isoformat()),
+    upcoming = list(
+        db["events"]
+        .find(
+            {"event_time": {"$gte": now, "$lte": week_end}},
+            {"title": 1, "event_time": 1},
+        )
+        .sort("event_time", 1)
     )
-    upcoming = cur.fetchall()
-    db.close()
 
     filename = f"{now.date()}-weekly.md"
     markdown = generate_markdown_report(participation, upcoming, filename)

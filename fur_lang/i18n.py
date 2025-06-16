@@ -6,9 +6,10 @@ stellt zentrale Hilfsfunktionen für Templates, Cogs und Routen bereit.
 """
 
 import json
-import os
 import logging
-from flask import session, current_app
+import os
+
+from flask import current_app, session
 
 log = logging.getLogger(__name__)
 
@@ -43,14 +44,16 @@ def get_supported_languages():
 
 def current_lang() -> str:
     """Ermittelt die aktuelle Sprache aus der Session oder Default-Konfiguration."""
-    return session.get("lang", current_app.config.get("BABEL_DEFAULT_LOCALE", LANG_FALLBACK))
+    return session.get(
+        "lang", current_app.config.get("BABEL_DEFAULT_LOCALE", LANG_FALLBACK)
+    )
 
 
 def t(key: str, default: str = None, lang: str = None, **kwargs) -> str:
     """
     Holt die Übersetzung für den gegebenen Key.
     Unterstützt optionale {variablen} im Text via kwargs.
-    
+
     Args:
         key (str): Übersetzungsschlüssel
         default (str): Fallback-Text, falls Key fehlt

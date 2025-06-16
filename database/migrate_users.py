@@ -1,7 +1,9 @@
 # scripts/migrate_users.py
 
 import sqlite3
+
 from database.mongo_client import db
+
 
 def migrate_users():
     mongo_users = db["users"]
@@ -21,7 +23,7 @@ def migrate_users():
             "email": row["email"],
             "role_level": row["role_level"],
             "created_at": row["created_at"],
-            "updated_at": row["updated_at"]
+            "updated_at": row["updated_at"],
         }
         users.append(user)
 
@@ -32,6 +34,7 @@ def migrate_users():
         print("⚠️ Keine Nutzer gefunden.")
 
     sqlite_conn.close()
+
 
 if __name__ == "__main__":
     migrate_users()
