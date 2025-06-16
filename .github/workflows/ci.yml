@@ -1,13 +1,9 @@
-name: 🧪 CI – Test & Lint (MongoDB + Flask)
+name: 🧪 CI – FUR System MongoDB + Flask
 
 on:
   push:
     branches: [main]
   pull_request:
-
-env:
-  POETRY_VIRTUALENVS_CREATE: false
-  MONGODB_URI: "mongodb://localhost:27017/furdb"  # Local Mongo für Tests
 
 jobs:
   test:
@@ -24,39 +20,33 @@ jobs:
           --health-timeout=5s
           --health-retries=5
 
+    env:
+      MONGODB_URI: "mongodb://localhost:27017/furdb"
+      FLASK_ENV: "test"
+      SECRET_KEY: "test_key"
+
     steps:
-      - name: 🧾 Checkout Repository
+      - name: 🔄 Checkout Repository
         uses: actions/checkout@v3
 
-      - name: 🐍 Setup Python
+      - name: 🐍 Set up Python
         uses: actions/setup-python@v4
         with:
           python-version: "3.11"
 
-      - name: 📦 Install Poetry
-        run: pip install poetry
+      - name: 📦 Install Dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
 
-      - name: 📥 Install Dependencies
-        run: poetry install
+      - name: 🧹 Code Style – Black
+        run: black . --check
 
-      - name: 🧹 Code Quality – isort
-        run: poetry run isort . --check-only
+      - name: 🧮 Sort Imports – isort
+        run: isort . --check-only
 
-      - name: 🎨 Code Quality – black
-        run: poetry run black . --check
+      - name: 🔍 Static Check – flake8
+        run: flake8 .
 
-      - name: 🔍 Linting – flake8
-        run: poetry run flake8 .
-
-      - name: 🧪 Run Tests with Coverage
-        run: poetry run pytest --cov=./ --cov-report=xml
-
-      - name: 📈 Upload Coverage Report
-        uses: codecov/codecov-action@v3
-        with:
-          token: ${{ secrets.CODECOV_TOKEN }}
-          files: ./coverage.xml
-          flags: unittests
-          name: codecov-mongodb-ci
-          fail_ci_if_error: false
-
+      - name: 🧪 Run Pytest
+        run: pytest -v
