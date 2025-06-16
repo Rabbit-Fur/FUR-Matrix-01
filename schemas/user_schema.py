@@ -1,23 +1,34 @@
-# schemas/user_schema.py
-
-from datetime import datetime
+from pydantic import BaseModel, Field
 from typing import Optional
+from bson import ObjectId
+from datetime import datetime
 
-from pydantic import BaseModel, EmailStr, Field
+
+class PyObjectId(ObjectId):
+    @classmethod
+    def __get_validators__(cls):
+        yield cls.validate
+
+    @classmethod
+    def validate(cls, v):
+        if isinstance(v, ObjectId):
+            return v
+        if not ObjectId.is_valid(v):
+            raise ValueError("Ungültige ObjectId")
+        return ObjectId(v)
 
 
 class UserModel(BaseModel):
-    discord_id: str = Field(..., example="123456789012345678")
+    id: Optional[PyObjectId] = Field(alias="_id")
+    discord_id: str
     username: str
     avatar: Optional[str] = None
-    email: Optional[EmailStr] = None
-    role_level: str
-    created_at: Optional[datetime] = None
-    updated_at: Optional[datetime] = None
-
-
-class UserOut(UserModel):
-    id: str
+    email: Optional[str] = None
+    role_level: str  # z. B. "R3", "R4", "ADMIN"
+    created_at: Optional[datetime] = Field(default_factory=datetime.utcnow)
+    updated_at: Optional[datetime] = Field(default_factory=datetime.utcnow)
 
     class Config:
-        orm_mode = True
+        allow_population_by_field_name = True
+        arbitrary_types_allowed = True
+        json_encoders = {ObjectId: str, datetime: lambda v: v.isoformat()}
