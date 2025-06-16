@@ -1,6 +1,14 @@
+"""
+database/__init__.py – Initialisiert die MongoDB-Verbindung für das FUR-System
+
+Exportiert:
+- `db`: Globale MongoDB-Datenbankinstanz
+- `close_db()`: Platzhalter für Kompatibilität mit Flask-Teardown oder Tests
+"""
+
 from .mongo_client import db
 
 
 def close_db(e=None):
-    """MongoDB uses connection pooling; nothing to close."""
+    """MongoDB verwendet Connection Pooling. Kein explizites Schließen nötig."""
     return None
