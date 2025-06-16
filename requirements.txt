@@ -5,7 +5,7 @@ flask-babel @ git+https://github.com/python-babel/flask-babel.git
 flask-wtf
 flask-limiter
 pymongo>=4.7.0
-pydantic>=2.6.4
+pydantic>=1.10.12,<2.0.0
 
 # 📚 Datenbank & Planung
 SQLAlchemy==2.0.41
