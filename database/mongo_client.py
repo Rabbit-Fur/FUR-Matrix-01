@@ -1,32 +1,18 @@
-# database/mongo_client.py
-
 import os
-
-from pymongo import MongoClient
+from pymongo.mongo_client import MongoClient
 from pymongo.server_api import ServerApi
 
-# Verbindung aus Umgebungsvariablen oder direkt setzen
-MONGODB_URI = os.getenv("MONGODB_URI") or (
-    "mongodb+srv://maimarcelgpt:rC3LJVAnnD0Lii0f@furdb.qbrvzgp.mongodb.net/furdb"
-    "?retryWrites=true&w=majority&appName=FURdb"
-)
+MONGO_USER = "maimarcelgpt"
+MONGO_PASS = os.getenv("MONGO_PASSWORD")  # z. B. aus .env geladen
+CLUSTER = "furdb.qbrvzgp"
+DB = "furdb"
 
-# MongoDB-Client initialisieren
-client = MongoClient(MONGODB_URI, server_api=ServerApi("1"))
+uri = f"mongodb+srv://{MONGO_USER}:{MONGO_PASS}@{CLUSTER}.mongodb.net/{DB}?retryWrites=true&w=majority&appName=FURdb"
 
-# Datenbank auswählen (furdb)
-db = client["furdb"]
+client = MongoClient(uri, server_api=ServerApi('1'))
 
-
-# Testverbindung
-def test_connection():
-    try:
-        client.admin.command("ping")
-        print("✅ MongoDB-Verbindung erfolgreich")
-    except Exception as e:
-        print("❌ MongoDB-Verbindung fehlgeschlagen:", e)
-
-
-# Optional beim Import testen
-if __name__ == "__main__":
-    test_connection()
+try:
+    client.admin.command('ping')
+    print("✅ MongoDB-Verbindung erfolgreich")
+except Exception as e:
+    print("❌ Fehler bei MongoDB-Verbindung:", e)
