@@ -1,15 +1,40 @@
 [project]
 name = "fur-system"
 version = "0.1.0"
-description = "Champion, Reminder und Leaderboard System für GGW"
+description = "Champion-, Reminder- und Leaderboard-System für GGW"
 readme = "README.md"
 requires-python = ">=3.10"
+
 dependencies = [
-  "Flask",
-  "requests",
-  "discord.py",
-  "schedule"
+  "Flask>=2.3",
+  "requests>=2.31",
+  "discord.py>=2.3",
+  "schedule>=1.2",
+  "pymongo>=4.7.0",
+  "pydantic>=2.6.4",
+  "Flask-Babel>=2.0.0",
+  "python-dotenv>=1.0.1"
 ]
 
 [tool.setuptools]
-packages = ["blueprints", "bot", "core", "dashboard", "utils", "web"]
+packages = ["blueprints", "bot", "core", "dashboard", "utils", "web", "schemas", "database"]
+
+[tool.setuptools.package-data]
+web = ["templates/*.html", "static/**/*"]
+translations = ["*.json"]
+
+[tool.pytest.ini_options]
+minversion = "6.0"
+addopts = "-ra -q"
+testpaths = ["tests"]
+
+[tool.black]
+line-length = 100
+target-version = ["py310"]
+
+[tool.isort]
+profile = "black"
+
+[tool.flake8]
+max-line-length = 100
+extend-ignore = ["E203", "W503"]
