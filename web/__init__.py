@@ -8,10 +8,10 @@ und bindet die zentrale Config-Klasse aus dem Projekt-Root ein.
 import os
 
 from flask import Flask, request, session
-from flask_babel_next import Babel
 
 from config import Config
 from database import close_db
+from flask_babel_next import Babel
 from fur_lang.i18n import current_lang, get_supported_languages, t
 
 try:

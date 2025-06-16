@@ -7,6 +7,7 @@ Unterstützt echten Discord.py-Bot oder Stub/Webhook-Modus je nach ENV.
 import asyncio
 import logging
 import os
+
 import aiohttp
 
 from config import Config
@@ -23,6 +24,7 @@ else:
 
     class commands:  # type: ignore
         Bot = BotStub
+
 
 # 🔧 Logging
 log = logging.getLogger(__name__)
@@ -46,7 +48,11 @@ def create_bot() -> commands.Bot:
 
         @new_bot.event
         async def on_ready():
-            log.info("✅ Eingeloggt als %s (ID: %s)", new_bot.user, getattr(new_bot.user, "id", "n/a"))
+            log.info(
+                "✅ Eingeloggt als %s (ID: %s)",
+                new_bot.user,
+                getattr(new_bot.user, "id", "n/a"),
+            )
 
     else:
         new_bot = BotStub()
@@ -78,9 +84,13 @@ async def run_bot(max_retries: int = 3) -> None:
                 await bot.start(Config.DISCORD_TOKEN)
                 return
             except aiohttp.ClientConnectorError as e:
-                log.warning("DNS-Verbindungsfehler (%s/%s): %s", attempt, max_retries, e)
+                log.warning(
+                    "DNS-Verbindungsfehler (%s/%s): %s", attempt, max_retries, e
+                )
                 if attempt == max_retries:
-                    log.critical("❌ Discord-Gateway dauerhaft unerreichbar.", exc_info=True)
+                    log.critical(
+                        "❌ Discord-Gateway dauerhaft unerreichbar.", exc_info=True
+                    )
                     raise
                 await asyncio.sleep(5)
             except Exception as e:

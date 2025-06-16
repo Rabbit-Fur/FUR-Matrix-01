@@ -1,9 +1,11 @@
 # models_mongo.py
 
-from pydantic import BaseModel, Field, EmailStr
-from typing import Optional
 from datetime import datetime
+from typing import Optional
+
 from bson import ObjectId
+from pydantic import BaseModel, EmailStr, Field
+
 
 class PyObjectId(ObjectId):
     @classmethod
@@ -15,6 +17,7 @@ class PyObjectId(ObjectId):
         if isinstance(v, ObjectId):
             return v
         return ObjectId(str(v))
+
 
 class UserModel(BaseModel):
     id: Optional[PyObjectId] = Field(alias="_id")

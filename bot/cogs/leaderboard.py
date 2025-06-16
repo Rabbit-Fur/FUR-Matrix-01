@@ -1,15 +1,11 @@
-"""
-leaderboard.py – Discord-Cog für Live-Rankings aus der Datenbank
-
-Zeigt Top-Spieler in Kategorien wie Raids oder Donations aus der leaderboard-Tabelle.
-"""
+"""Leaderboard cog using MongoDB."""
 
 import logging
 
 from discord.ext import commands
 
+from database.mongo_client import db
 from fur_lang.i18n import t
-from web.database import get_db
 
 log = logging.getLogger(__name__)
 
@@ -20,31 +16,20 @@ class Leaderboard(commands.Cog):
 
     @commands.command(name="top")
     async def top_players(self, ctx: commands.Context, category: str = "raids") -> None:
-        """
-        Befehl: !top [Kategorie]
-        Holt die Top 10 für eine Kategorie aus der Datenbank.
-        """
-        lang = "de"  # 🔁 später aus Nutzerprofil
-
+        lang = "de"
         try:
-            db = get_db()
-            rows = db.execute(
-                """
-                SELECT username, score
-                FROM leaderboard
-                WHERE category = ?
-                ORDER BY score DESC
-                LIMIT 10
-                """,
-                (category.lower(),),
-            ).fetchall()
-
+            rows = (
+                db["leaderboard"]
+                .find({"category": category.lower()})
+                .sort("score", -1)
+                .limit(10)
+            )
+            rows = list(rows)
             if not rows:
                 await ctx.send(
                     t("leaderboard_unknown_category", category=category, lang=lang)
                 )
                 return
-
             header = t("leaderboard_header", category=category.capitalize(), lang=lang)
             content = "\n".join(
                 [
@@ -52,12 +37,10 @@ class Leaderboard(commands.Cog):
                     for i, row in enumerate(rows)
                 ]
             )
-
             await ctx.send(
                 t("leaderboard_message", header=header, content=content, lang=lang)
             )
             log.info(f"📊 Live-Leaderboard '{category}' gesendet in {ctx.channel.id}")
-
         except Exception as e:
             log.error(f"❌ Fehler beim Leaderboard-Versand: {e}", exc_info=True)
             await ctx.send(t("leaderboard_error", lang=lang))

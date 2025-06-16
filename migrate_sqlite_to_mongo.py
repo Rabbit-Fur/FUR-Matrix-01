@@ -2,11 +2,13 @@
 
 import sqlite3
 from datetime import datetime
+
 from database.mongo_client import db
 from models.models_mongo import UserModel
 
 # Pfad zur SQLite-Datenbank
 SQLITE_DB_PATH = "fur.db"
+
 
 def migrate_users():
     sqlite_conn = sqlite3.connect(SQLITE_DB_PATH)
@@ -37,6 +39,7 @@ def migrate_users():
 
     sqlite_conn.close()
     print("🎉 Migration abgeschlossen.")
+
 
 if __name__ == "__main__":
     migrate_users()

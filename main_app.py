@@ -3,13 +3,13 @@ main_app.py – Einstiegspunkt für das FUR-System (Web & Discord-Bot)
 Mit Debug-Modus für lokale Entwicklung und sauberem Application-Factory-Pattern.
 """
 
-import os
-import sys
 import asyncio
 import atexit
 import locale
 import logging
+import os
 import signal
+import sys
 import threading
 
 from dotenv import load_dotenv
@@ -19,12 +19,12 @@ sys.path.append(os.path.dirname(__file__))
 
 # 🌍 Module
 from dashboard.routes import dashboard
+from database import close_db  # ✅ DB-Teardown importieren
 from fur_lang.i18n import t
 from init_db_core import init_db
 from utils.env_helpers import get_env_bool, get_env_int
 from utils.github_service import fetch_repo_info
 from web import create_app
-from database import close_db  # ✅ DB-Teardown importieren
 
 # === Flask App erstellen ===
 app = create_app()
@@ -66,6 +66,7 @@ def start_discord_bot():
     try:
         logging.info("🤖 Starte Discord-Bot...")
         from bot.bot_main import run_bot
+
         asyncio.run(run_bot())
     except Exception as e:
         log_error("Discord-Bot", e)

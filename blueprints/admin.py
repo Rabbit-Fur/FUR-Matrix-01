@@ -1,18 +1,21 @@
-"""
-admin_routes.py – Flask Blueprint für Admin-Views (geschützt, R4+)
-
-Stellt alle Admin-Oberflächen bereit, geschützt durch das r4_required-Decorator (nur Admins/R4).
-"""
+"""Admin blueprint using MongoDB."""
 
 import json
 import os
 
-from flask import (Blueprint, Response, current_app, flash, redirect,
-                   render_template, request, url_for)
+from flask import (
+    Blueprint,
+    Response,
+    current_app,
+    flash,
+    redirect,
+    render_template,
+    request,
+    url_for,
+)
 
-from init_db_core import get_db_connection
+from database.mongo_client import db
 from web.auth.decorators import r4_required
-from web.database import get_db
 
 admin = Blueprint("admin", __name__)
 
@@ -20,144 +23,103 @@ admin = Blueprint("admin", __name__)
 @r4_required
 @admin.route("/")
 def admin_dashboard():
-    """
-    Zeigt das Admin-Dashboard an.
-    """
     return render_template("admin/admin.html")
 
 
 @r4_required
 @admin.route("/calendar")
 def calendar():
-    """
-    Admin-Kalenderansicht.
-    """
     return render_template("admin/calendar.html")
 
 
 @r4_required
 @admin.route("/create_event", methods=["GET", "POST"])
 def create_event():
-    """
-    Event-Erstellung für Admins.
-    """
     if request.method == "POST":
         title = request.form.get("title")
         event_time = request.form.get("event_time")
         description = request.form.get("description")
-
         try:
-            conn = get_db_connection()
-            conn.execute(
-                "INSERT INTO events (title, event_time, created_by, description) VALUES (?, ?, ?, ?)",
-                (title, event_time, 1, description),
+            db["events"].insert_one(
+                {
+                    "title": title,
+                    "event_time": event_time,
+                    "created_by": 1,
+                    "description": description,
+                }
             )
-            conn.commit()
-            conn.close()
             flash("Event erstellt", "success")
             return redirect(url_for("admin.events"))
         except Exception as e:
             current_app.logger.error("Event creation failed: %s", e, exc_info=True)
             flash("Fehler beim Speichern", "danger")
-
     return render_template("admin/create_event.html")
 
 
 @r4_required
 @admin.route("/dashboard")
 def dashboard():
-    """
-    Alternative Dashboard-Ansicht (z. B. Statistiken).
-    """
     return render_template("admin/dashboard.html")
 
 
 @r4_required
 @admin.route("/diplomacy")
 def diplomacy():
-    """
-    Diplomatie-Management.
-    """
     return render_template("admin/diplomacy.html")
 
 
 @r4_required
 @admin.route("/downloads")
 def downloads():
-    """
-    Downloads für Admins (z. B. Reports, Templates).
-    """
     return render_template("admin/downloads.html")
 
 
 @r4_required
 @admin.route("/edit_event")
 def edit_event():
-    """
-    Event-Bearbeitung.
-    """
     return render_template("admin/edit_event.html")
 
 
 @r4_required
 @admin.route("/events")
 def events():
-    """
-    Übersicht aller Events (Verwaltung).
-    """
     return render_template("admin/events.html")
 
 
 @r4_required
 @admin.route("/leaderboards")
 def leaderboards():
-    """
-    Leaderboard-Übersicht für Admins.
-    """
     return render_template("admin/leaderboards.html")
 
 
 @r4_required
 @admin.route("/participants")
 def participants():
-    """
-    Teilnehmer-Übersicht für Events.
-    """
     return render_template("admin/participants.html")
 
 
 @r4_required
 @admin.route("/reminders")
 def reminder_admin():
-    db = get_db()
-    reminders = db.execute("SELECT * FROM reminders ORDER BY send_time ASC").fetchall()
-    db.close()
+    reminders = list(db["reminders"].find().sort("send_time", 1))
     return render_template("admin/reminders.html", reminders=reminders)
 
 
 @r4_required
 @admin.route("/settings")
 def settings():
-    """
-    Admin-Einstellungen.
-    """
     return render_template("admin/settings.html")
 
 
 @r4_required
 @admin.route("/tools")
 def tools():
-    """
-    Admin-Tools (z. B. Import/Export).
-    """
     return render_template("admin/tools.html")
 
 
 @r4_required
 @admin.route("/translations_editor", methods=["GET", "POST"])
 def translations_editor():
-    """Editor für Übersetzungen und Internationalisierung."""
-
     from fur_lang.i18n import get_supported_languages, translations
 
     supported_languages = get_supported_languages()
@@ -201,30 +163,23 @@ def translations_editor():
     )
 
 
-# --- Zusätzliche Admin-Endpoints für Tools & Exporte ---
-
-
 @admin.route("/trigger_reminder", methods=["POST"])
 def trigger_reminder():
-    """Löst serverseitig einen Erinnerungs-Task aus (Platzhalter)."""
     return "Reminder triggered"
 
 
 @admin.route("/trigger_champion_post", methods=["POST"])
 def trigger_champion_post():
-    """Postet den aktuellen Champion in den Discord-Channel (Platzhalter)."""
     return "Champion post triggered"
 
 
 @admin.route("/healthcheck", methods=["POST"])
 def healthcheck():
-    """Einfacher Healthcheck-Endpunkt für Admin-Tools."""
     return Response("ok", status=200)
 
 
 @admin.route("/export_participants")
 def export_participants():
-    """CSV-Export aller Teilnehmer (Dummy-Implementierung)."""
     csv_data = "username\n"
     return Response(
         csv_data,
@@ -235,7 +190,6 @@ def export_participants():
 
 @admin.route("/export_scores")
 def export_scores():
-    """CSV-Export der Score-Tabelle (Dummy-Implementierung)."""
     csv_data = "username,score\n"
     return Response(
         csv_data,

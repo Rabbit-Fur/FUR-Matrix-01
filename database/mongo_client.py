@@ -1,8 +1,9 @@
 # database/mongo_client.py
 
+import os
+
 from pymongo import MongoClient
 from pymongo.server_api import ServerApi
-import os
 
 # Verbindung aus Umgebungsvariablen oder direkt setzen
 MONGODB_URI = os.getenv("MONGODB_URI") or (
@@ -11,10 +12,11 @@ MONGODB_URI = os.getenv("MONGODB_URI") or (
 )
 
 # MongoDB-Client initialisieren
-client = MongoClient(MONGODB_URI, server_api=ServerApi('1'))
+client = MongoClient(MONGODB_URI, server_api=ServerApi("1"))
 
 # Datenbank auswählen (furdb)
 db = client["furdb"]
+
 
 # Testverbindung
 def test_connection():
@@ -23,6 +25,7 @@ def test_connection():
         print("✅ MongoDB-Verbindung erfolgreich")
     except Exception as e:
         print("❌ MongoDB-Verbindung fehlgeschlagen:", e)
+
 
 # Optional beim Import testen
 if __name__ == "__main__":

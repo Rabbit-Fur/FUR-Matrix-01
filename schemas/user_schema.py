@@ -1,8 +1,10 @@
 # schemas/user_schema.py
 
-from pydantic import BaseModel, EmailStr, Field
-from typing import Optional
 from datetime import datetime
+from typing import Optional
+
+from pydantic import BaseModel, EmailStr, Field
+
 
 class UserModel(BaseModel):
     discord_id: str = Field(..., example="123456789012345678")
@@ -12,6 +14,7 @@ class UserModel(BaseModel):
     role_level: str
     created_at: Optional[datetime] = None
     updated_at: Optional[datetime] = None
+
 
 class UserOut(UserModel):
     id: str

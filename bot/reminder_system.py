@@ -1,27 +1,19 @@
 import asyncio
 import logging
 
+from bson import ObjectId
+
 from bot.bot_main import bot
-from web.database import get_db
+from database.mongo_client import db
 
 
-async def _send_reminder(reminder_id: int) -> None:
-    db = get_db()
-    reminder = db.execute(
-        "SELECT message FROM reminders WHERE id = ?",
-        (reminder_id,),
-    ).fetchone()
+async def _send_reminder(reminder_id: str) -> None:
+    reminder = db["reminders"].find_one({"_id": ObjectId(reminder_id)})
     if not reminder:
         logging.warning("Reminder-ID %s not found", reminder_id)
-        db.close()
         return
 
-    participants = db.execute(
-        "SELECT u.discord_id FROM reminder_participants rp "
-        "JOIN users u ON u.id = rp.user_id WHERE rp.reminder_id = ?",
-        (reminder_id,),
-    ).fetchall()
-    db.close()
+    participants = db["reminder_participants"].find({"reminder_id": reminder_id})
 
     for row in participants:
         try:
@@ -33,7 +25,7 @@ async def _send_reminder(reminder_id: int) -> None:
             logging.error("[Reminder] Failed to send to %s: %s", row["discord_id"], exc)
 
 
-def send_reminder_by_id(reminder_id: int) -> None:
+def send_reminder_by_id(reminder_id: str) -> None:
     loop = asyncio.get_event_loop()
     if loop.is_running():
         asyncio.ensure_future(_send_reminder(reminder_id))

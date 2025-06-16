@@ -4,8 +4,8 @@ discord_util.py – Discord-Integrationsmodul für Live-Betrieb und Webhook-Fall
 Entscheidet automatisch, ob ein echter discord.py-Bot oder nur Webhook-Kommunikation verwendet wird.
 """
 
-import os
 import logging
+import os
 
 ENABLE_BOT = os.getenv("ENABLE_DISCORD_BOT", "false").lower() == "true"
 
@@ -17,7 +17,9 @@ if ENABLE_BOT:
     intents = discord.Intents.all()
     bot = commands.Bot(command_prefix="!", intents=intents)
 
-    async def send_discord_message(channel_id: int, content: str, file_path: str = None):
+    async def send_discord_message(
+        channel_id: int, content: str, file_path: str = None
+    ):
         """Sendet eine Nachricht über den echten Discord-Bot."""
         channel = bot.get_channel(channel_id)
         if channel is None:
@@ -49,7 +51,9 @@ else:
             response = requests.post(DISCORD_WEBHOOK_URL, json=data)
 
         if response.status_code not in [200, 204]:
-            logging.error(f"❌ Webhook fehlgeschlagen: {response.status_code} – {response.text}")
+            logging.error(
+                f"❌ Webhook fehlgeschlagen: {response.status_code} – {response.text}"
+            )
         else:
             logging.info("✅ Webhook erfolgreich gesendet.")
 

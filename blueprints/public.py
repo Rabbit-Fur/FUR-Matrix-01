@@ -1,13 +1,21 @@
-# public_routes.py – Discord Login & öffentliche Views für das FUR System
-
 import secrets
 from urllib.parse import urlencode
 
 import requests
-from flask import (Blueprint, abort, current_app, flash, redirect,
-                   render_template, request, session, url_for)
+from bson import ObjectId
+from flask import (
+    Blueprint,
+    abort,
+    current_app,
+    flash,
+    redirect,
+    render_template,
+    request,
+    session,
+    url_for,
+)
 
-from database import get_db
+from database.mongo_client import db
 from fur_lang.i18n import get_supported_languages
 from web.auth.decorators import r3_required
 
@@ -118,11 +126,6 @@ def discord_callback():
     r4_roles = set(map(str, current_app.config.get("R4_ROLE_IDS", set())))
     admin_roles = set(map(str, current_app.config.get("ADMIN_ROLE_IDS", set())))
 
-    current_app.logger.info(f"Discord User Rollen: {user_roles}")
-    current_app.logger.info(
-        f"Vergleichsrollen → R3: {r3_roles}, R4: {r4_roles}, ADMIN: {admin_roles}"
-    )
-
     if user_roles & admin_roles:
         role_level = "ADMIN"
     elif user_roles & r4_roles:
@@ -142,26 +145,18 @@ def discord_callback():
     }
     session.permanent = True
 
-    db = get_db()
-    db.execute(
-        """
-        INSERT INTO users (discord_id, username, avatar, email, role_level)
-        VALUES (?, ?, ?, ?, ?)
-        ON CONFLICT(discord_id) DO UPDATE SET
-            username=excluded.username,
-            avatar=excluded.avatar,
-            email=excluded.email,
-            role_level=excluded.role_level
-    """,
-        (
-            user_data["id"],
-            user_data["username"],
-            user_data["avatar"],
-            user_data.get("email"),
-            role_level,
-        ),
+    db["users"].update_one(
+        {"discord_id": user_data["id"]},
+        {
+            "$set": {
+                "username": user_data["username"],
+                "avatar": user_data["avatar"],
+                "email": user_data.get("email"),
+                "role_level": role_level,
+            }
+        },
+        upsert=True,
     )
-    db.commit()
 
     flash("Erfolgreich mit Discord eingeloggt", "success")
 
@@ -183,36 +178,19 @@ def calendar():
 
 @public.route("/events")
 def events():
-    db = get_db()
-    rows = db.execute(
-        """
-        SELECT id, title, event_date, description
-        FROM events
-        ORDER BY event_date ASC
-    """
-    ).fetchall()
+    rows = list(db["events"].find().sort("event_date", 1))
     return render_template("public/events_list.html", events=rows)
 
 
-@public.route("/events/<int:event_id>")
+@public.route("/events/<event_id>")
 def view_event(event_id):
-    db = get_db()
-    event = db.execute(
-        """
-        SELECT id, title, event_date, description
-        FROM events
-        WHERE id = ?
-    """,
-        (event_id,),
-    ).fetchone()
-
+    event = db["events"].find_one({"_id": ObjectId(event_id)})
     if not event:
         abort(404)
-
     return render_template("public/view_event.html", event=event)
 
 
-@public.route("/events/<int:event_id>/join", methods=["POST"])
+@public.route("/events/<event_id>/join", methods=["POST"])
 @r3_required
 def join_event(event_id):
     if "user" not in session:
@@ -225,38 +203,21 @@ def join_event(event_id):
 
 @public.route("/hall_of_fame")
 def hall_of_fame():
-    db = get_db()
-    rows = db.execute(
-        """
-        SELECT username, honor_title, month, poster_url
-        FROM hall_of_fame
-        ORDER BY id DESC
-        LIMIT 10
-    """
-    ).fetchall()
+    rows = list(db["hall_of_fame"].find().sort("_id", -1).limit(10))
     return render_template("public/hall_of_fame.html", hof=rows)
 
 
 @public.route("/leaderboard")
 def leaderboard():
-    db = get_db()
-    rows = db.execute(
-        """
-        SELECT username, score
-        FROM leaderboard
-        ORDER BY score DESC
-        LIMIT 100
-    """
-    ).fetchall()
-
-    # Ränge berechnen
-    leaderboard = []
+    rows = list(db["leaderboard"].find().sort("score", -1).limit(100))
+    leaderboard_list = []
     for i, row in enumerate(rows, start=1):
-        leaderboard.append(
+        leaderboard_list.append(
             {"rank": i, "username": row["username"], "score": row["score"]}
         )
-
-    return render_template("public/public_leaderboard.html", leaderboard=leaderboard)
+    return render_template(
+        "public/public_leaderboard.html", leaderboard=leaderboard_list
+    )
 
 
 @public.route("/dashboard")

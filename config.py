@@ -35,7 +35,10 @@ class Config:
     DATABASE_URL: str = get_env_str(
         "DATABASE_URL",
         required=False,
-        default=f"sqlite:///{os.path.join(basedir, 'data', 'admin_users.db')}",
+        default=os.getenv(
+            "MONGODB_URI",
+            "mongodb+srv://maimarcelgpt:rC3LJVAnnD0Lii0f@furdb.qbrvzgp.mongodb.net/furdb",
+        ),
     )
 
     # --- Discord Integration ---
@@ -61,7 +64,16 @@ class Config:
     BABEL_DEFAULT_LOCALE = "de"
     BABEL_SUPPORTED_LOCALES = get_supported_languages()
     SUPPORTED_LANGUAGES: list[str] = [
-        "en", "de", "vi", "tr", "it", "cs", "es", "fr", "pl", "ru"
+        "en",
+        "de",
+        "vi",
+        "tr",
+        "it",
+        "cs",
+        "es",
+        "fr",
+        "pl",
+        "ru",
     ]
     DEFAULT_LANGUAGE: str = "en"
 
@@ -84,8 +96,13 @@ class Config:
         "party": "img/party_bg.jpg",
     }
     MOTTOS = [
-        "Forged in Unity", "Strength Through Honor", "We Never Give Up",
-        "Rise Together", "Fire in Our Veins", "Glory Awaits", "Wolves Among Sheep",
+        "Forged in Unity",
+        "Strength Through Honor",
+        "We Never Give Up",
+        "Rise Together",
+        "Fire in Our Veins",
+        "Glory Awaits",
+        "Wolves Among Sheep",
     ]
     IMG_WIDTH = 1280
     IMG_HEIGHT = 720
