@@ -1,20 +1,16 @@
-# try/blueprints/api_events.py
-
 from datetime import datetime
-
-from bson import ObjectId
 from flask import Blueprint, jsonify, request
-
 from database.mongo_client import db
 from schemas.event_schema import EventModel
+from bson import ObjectId
 
 api_events = Blueprint("api_events", __name__, url_prefix="/api/events")
 events = db["events"]
 
 
-def serialize_event(event):
+def serialize_event(event: dict) -> dict:
     event["id"] = str(event["_id"])
-    del event["_id"]
+    event.pop("_id", None)
     return event
 
 
@@ -25,21 +21,24 @@ def get_all_events():
 
 @api_events.route("/<event_id>", methods=["GET"])
 def get_event(event_id):
-    event = events.find_one({"_id": ObjectId(event_id)})
-    if event:
-        return jsonify(serialize_event(event))
-    return jsonify({"error": "Event not found"}), 404
+    try:
+        event = events.find_one({"_id": ObjectId(event_id)})
+        if event:
+            return jsonify(serialize_event(event))
+        return jsonify({"error": "Event not found"}), 404
+    except Exception:
+        return jsonify({"error": "Invalid ObjectId"}), 400
 
 
 @api_events.route("/", methods=["POST"])
 def create_event():
     try:
         data = request.get_json()
-        event_data = EventModel(**data).dict()
-        event_data["created_at"] = datetime.utcnow()
-        event_data["updated_at"] = datetime.utcnow()
-        result = events.insert_one(event_data)
-        event_data["id"] = str(result.inserted_id)
-        return jsonify(event_data), 201
+        event = EventModel(**data).dict(by_alias=True)
+        event["created_at"] = datetime.utcnow()
+        event["updated_at"] = datetime.utcnow()
+        result = events.insert_one(event)
+        event["id"] = str(result.inserted_id)
+        return jsonify(event), 201
     except Exception as e:
         return jsonify({"error": str(e)}), 400
