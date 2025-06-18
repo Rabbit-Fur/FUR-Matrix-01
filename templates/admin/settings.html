@@ -1,10 +1,10 @@
-{% extends "layout.html" %}
+{% extends "admin/admin_base.html" %}
 {% set bg_image = resolve_background_template() %}
 {% set bg_image = "/static/bg/bot_settings.png" %}
 {% block title %}{{ t("Bot Einstellungen") }}{% endblock %}
 
-{% block content %}
-  <h2>{{ t("Bot-Einstellungen") }}</h2>
+{% block admin_content %}
+  <h2>⚙️ {{ t("Bot-Einstellungen") }}</h2>
 
   <form method="post">
     {% if users %}

@@ -19,16 +19,12 @@ sys.path.append(os.path.dirname(__file__))
 
 # 🌍 Module
 from dashboard.routes import dashboard
-from database import close_db
+from database import close_db  # ✅ DB-Teardown importieren
 from fur_lang.i18n import t
 from init_db_core import init_db
 from utils.env_helpers import get_env_bool, get_env_int
 from utils.github_service import fetch_repo_info
 from web import create_app
-
-# ✅ Korrekt: Agenten-Loader importieren
-from agents.agenten_loader import init_agents
-from database.mongo_client import db  # MongoDB-Instanz
 
 # === Flask App erstellen ===
 app = create_app()
@@ -40,7 +36,7 @@ app.jinja_env.globals.update(current_lang=lambda: session.get("lang", "de"))
 try:
     locale.setlocale(locale.LC_ALL, "en_US.UTF-8")
 except locale.Error:
-    locale.setlocale(locale.LC_ALL, "")  # Fallback
+    locale.setlocale(locale.LC_ALL, "")  # Fallback auf Default
 
 # 📄 .env laden
 load_dotenv()
@@ -70,6 +66,7 @@ def start_discord_bot():
     try:
         logging.info("🤖 Starte Discord-Bot...")
         from bot.bot_main import run_bot
+
         asyncio.run(run_bot())
     except Exception as e:
         log_error("Discord-Bot", e)
@@ -90,10 +87,6 @@ if __name__ == "__main__":
     try:
         init_db()
         print("✅ Datenbank-Initialisierung erfolgreich.")
-
-        # 🧠 Agenten laden (Reminder, Translation, Champion etc.)
-        agents = init_agents(db=db, session=session)
-
         atexit.register(cleanup)
         signal.signal(signal.SIGINT, signal_handler)
         check_github_repo()

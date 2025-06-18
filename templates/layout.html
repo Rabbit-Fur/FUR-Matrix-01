@@ -6,43 +6,57 @@
   <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 
   <style>
+    * { box-sizing: border-box; }
+
     body {
-      font-family: Arial, sans-serif;
       margin: 0;
-      min-height: 100vh;
+      font-family: Arial, sans-serif;
       background: url('{{ bg_image | default(url_for("static", filename="img/background.jpg")) }}') no-repeat center center fixed;
       background-size: cover;
       color: #fff;
+      display: flex;
+      min-height: 100vh;
     }
 
-    .btn {
-      display: inline-block;
-      padding: 0.5em 1em;
-      background: #ff9900;
-      color: #222;
-      border-radius: 8px;
+    aside {
+      width: 240px;
+      background: rgba(24,26,32,0.98);
+      padding: 1.5em 1em;
+      display: flex;
+      flex-direction: column;
+      gap: 1.2em;
+      border-right: 3px solid #ff9900;
+    }
+
+    aside h2 {
+      color: #ff9900;
+      margin-bottom: 0.5em;
+      font-size: 1.2em;
+      text-align: center;
+    }
+
+    aside a {
+      color: #fff;
       text-decoration: none;
       font-weight: bold;
+      padding: 0.4em 0.6em;
+      border-radius: 6px;
     }
 
-    .btn:hover {
-      background: #ffaa33;
+    aside a:hover {
+      background: #ff9900;
+      color: #111;
     }
 
-    nav {
-      margin-bottom: 2em;
-      background: rgba(24,26,32,0.95);
-      padding: 1em;
-      border-radius: 0 0 16px 16px;
-      display: flex;
-      flex-wrap: wrap;
-      gap: 1.2em;
-      justify-content: center;
+    .main-content {
+      flex: 1;
+      padding: 2em;
+      backdrop-filter: blur(8px);
     }
 
     .container {
       max-width: 1000px;
-      margin: 2em auto;
+      margin: 0 auto;
       background: rgba(24,26,32,0.95);
       border-radius: 16px;
       box-shadow: 0 4px 24px #000a;
@@ -50,9 +64,10 @@
     }
 
     .lang-selector {
-      position: absolute;
+      position: fixed;
       top: 1em;
-      right: 2em;
+      right: 1.5em;
+      z-index: 10;
     }
 
     select {
@@ -61,15 +76,20 @@
       font-weight: bold;
     }
 
-    @media (max-width: 600px) {
-      .container {
-        margin: 1em;
-        padding: 1em;
+    @media (max-width: 768px) {
+      body { flex-direction: column; }
+
+      aside {
+        width: 100%;
+        flex-direction: row;
+        flex-wrap: wrap;
+        justify-content: center;
+        border-right: none;
+        border-bottom: 2px solid #ff9900;
       }
-      nav {
-        font-size: 90%;
-        padding: 0.5em;
-      }
+
+      .main-content { padding: 1em; }
+      .container { padding: 1em; }
     }
   </style>
 </head>
@@ -87,19 +107,23 @@
     </form>
   </div>
 
-  <nav>
+  <aside>
+    <h2>{{ t("Navigation") }}</h2>
     <a href="{{ url_for('public.landing') }}">🏠 {{ t("Home") }}</a>
     <a href="{{ url_for('public.dashboard') }}">📊 {{ t("Dashboard") }}</a>
     <a href="{{ url_for('admin.dashboard') }}">🛠️ {{ t("Admin") }}</a>
-    <a href="{{ url_for('members.dashboard') }}">👥 {{ t("Mitglieder") }}</a>
+    <a href="{{ url_for('member.dashboard') }}">👥 {{ t("Mitglieder") }}</a>
     <a href="{{ url_for('public.events') }}">📅 {{ t("Events") }}</a>
     <a href="{{ url_for('public.leaderboard') }}">🏆 {{ t("Leaderboard") }}</a>
     <a href="{{ url_for('public.hall_of_fame') }}">👑 {{ t("Hall of Fame") }}</a>
     <a href="{{ url_for('public.lore') }}">📖 {{ t("Lore") }}</a>
-  </nav>
+    <a href="{{ url_for('admin_memory.show_memory') }}">🧠 {{ t("Memory") }}</a>
+  </aside>
 
-  <div class="container">
-    {% block content %}{% endblock %}
+  <div class="main-content">
+    <div class="container">
+      {% block content %}{% endblock %}
+    </div>
   </div>
 </body>
 </html>

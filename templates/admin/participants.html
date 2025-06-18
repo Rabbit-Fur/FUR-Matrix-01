@@ -1,29 +1,12 @@
-{% extends "layout.html" %}
-{% set bg_image = resolve_background_template() %}
+{% extends "admin/admin_base.html" %}
 {% set bg_image = "/static/bg/participants.png" %}
-{% block title %}{{ t("Teilnehmer verwalten") }}{% endblock %}
+{% block title %}{{ t("Event-Teilnehmer") }}{% endblock %}
 
-{% block content %}
-  <h2>{{ t("Teilnehmer aller Events") }}</h2>
-
-  {% if participants %}
-    {% for event_id, participant_list in participants.items() %}
-      <div class="panel">
-        <h3>
-          {{ events[event_id].title if events and events[event_id] and events[event_id].title is defined else t("Unbekanntes Event") }}
-          ({{ events[event_id].event_date if events and events[event_id] and events[event_id].event_date is defined else "-" }})
-        </h3>
-        <ul>
-          {% for p in participant_list %}
-            <li>
-              {{ p.username }} – {{ t("Check-in") }}:
-              {% if p.checked_in %}✔️{% else %}❌{% endif %}
-            </li>
-          {% endfor %}
-        </ul>
-      </div>
+{% block admin_content %}
+  <h2>👥 {{ t("Teilnehmer für Event") }}: {{ event.title }}</h2>
+  <ul>
+    {% for user in participants %}
+      <li>{{ user.username }}</li>
     {% endfor %}
-  {% else %}
-    <p>{{ t("Keine Teilnehmer gefunden.") }}</p>
-  {% endif %}
+  </ul>
 {% endblock %}

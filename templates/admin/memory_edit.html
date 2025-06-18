@@ -1,0 +1,54 @@
+{% extends "layout.html" %}
+{% set bg_image = "/static/bg/memory_edit.png" %}
+{% block title %}{{ t("Memory-Kontext bearbeiten") }}{% endblock %}
+
+{% block content %}
+  <h2>🧠 {{ t("Memory-Kontext bearbeiten") }}</h2>
+
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      <ul class="flashes">
+        {% for category, message in messages %}
+          <li class="{{ category }}">{{ message }}</li>
+        {% endfor %}
+      </ul>
+    {% endif %}
+  {% endwith %}
+
+  <form method="post" onsubmit="return validateForm();">
+    <div class="form-row">
+      <label>{{ t("ID") }}</label>
+      <input type="text" value="{{ memory._id }}" disabled>
+    </div>
+
+    <div class="form-row">
+      <label for="description">{{ t("Beschreibung") }}</label>
+      <textarea id="description" name="description" required>{{ memory.description }}</textarea>
+    </div>
+
+    <div class="form-row">
+      <label for="tags">{{ t("Tags (Komma-getrennt)") }}</label>
+      <input type="text" id="tags" name="tags" value="{{ memory.tags | join(', ') }}" required>
+    </div>
+
+    <button type="submit" class="btn">💾 {{ t("Speichern") }}</button>
+    <a class="btn" href="{{ url_for('admin_memory.show_memory') }}">⬅️ {{ t("Zurück") }}</a>
+  </form>
+
+  <script>
+    function validateForm() {
+      const desc = document.getElementById('description').value.trim();
+      const tags = document.getElementById('tags').value.trim();
+      if (!desc || !tags) {
+        alert("{{ t('Bitte Beschreibung und Tags ausfüllen.') }}");
+        return false;
+      }
+      return true;
+    }
+
+    // Autocomplete simple Tag-Funktion
+    document.getElementById("tags").addEventListener("input", function(e) {
+      this.value = this.value.replace(/\s*,\s*/g, ', ');
+    });
+  </script>
+{% endblock %}

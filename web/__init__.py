@@ -16,7 +16,7 @@ from fur_lang.i18n import current_lang, get_supported_languages, t
 try:
     from utils.bg_resolver import resolve_background_template
 except ImportError:
-    resolve_background_template = lambda: "/static/img/background.jpg"
+    resolve_background_template = lambda: "/static/img/background.jpg"  # Fallback bei Importfehler
 
 
 def create_app():
@@ -27,7 +27,11 @@ def create_app():
     app = Flask(__name__, template_folder=template_folder, static_folder=static_folder)
     app.config.from_object(Config)
 
-    # 🌍 Flask-Babel Konfiguration
+    # 🧠 Vorab-Blueprints (z. B. für Memory-Module)
+    from web.routes.admin_memory import admin_memory
+    app.register_blueprint(admin_memory)
+
+    # 🌍 Mehrsprachigkeit (Flask-Babel-Next)
     app.config.setdefault("BABEL_DEFAULT_LOCALE", "de")
     app.config.setdefault("BABEL_SUPPORTED_LOCALES", get_supported_languages())
     app.config.setdefault("BABEL_TRANSLATION_DIRECTORIES", os.path.join(base_dir, "translations"))
@@ -39,23 +43,23 @@ def create_app():
         or request.accept_languages.best_match(app.config["BABEL_SUPPORTED_LOCALES"]),
     )
 
-    # 🌐 Sprache über ?lang= setzen
     @app.before_request
     def set_language_from_request():
+        """Ermöglicht Sprachumschaltung über ?lang=xx in der URL."""
         lang = request.args.get("lang")
         if lang in app.config["BABEL_SUPPORTED_LOCALES"]:
             session["lang"] = lang
 
-    # 🌐 Globale Template-Funktionen bereitstellen
     @app.context_processor
     def inject_globals():
+        """Globale Template-Variablen."""
         return {
             "t": t,
             "current_lang": current_lang,
             "resolve_background_template": resolve_background_template,
         }
 
-    # 🧩 Blueprints registrieren
+    # 📦 Weitere Blueprints dynamisch laden
     try:
         from blueprints import api_events, api_users
         from blueprints.admin import admin
@@ -72,7 +76,6 @@ def create_app():
         app.register_blueprint(reminder_api, url_prefix="/api/reminders")
         app.register_blueprint(dashboard)
 
-        # ➕ Neue MongoDB-basierte API-Blueprints
         app.register_blueprint(api_events)
         app.register_blueprint(api_users)
 
@@ -80,10 +83,10 @@ def create_app():
     except Exception:
         app.logger.error("❌ Blueprint registration failed:", exc_info=True)
 
-    # 📦 MongoDB-Teardown bei AppContext-Ende
+    # 🧹 DB-Teardown
     app.teardown_appcontext(close_db)
 
-    # 📂 Template-Verfügbarkeit prüfen
+    # 🔍 Template-Existenz prüfen
     landing_path = os.path.join(app.template_folder, "public", "landing.html")
     if not os.path.exists(landing_path):
         app.logger.error("❌ landing.html nicht gefunden! Kontrolliere den Pfad.")

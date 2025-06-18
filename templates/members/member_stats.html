@@ -1,5 +1,4 @@
 {% extends "layout.html" %}
-{% set bg_image = resolve_background_template() %}
 {% set bg_image = "/static/bg/member_stats.png" %}
 {% block title %}{{ t("Mitgliederstatistiken") }}{% endblock %}
 
@@ -9,25 +8,25 @@
 
     <div class="panel">
       <h3>⚔️ {{ t("Raid-Punkte") }}</h3>
-      <p>{{ t("Punkte insgesamt") }}: {{ stats.raids if stats is defined and stats.raids is defined else 0 }}</p>
+      <p>{{ t("Punkte insgesamt") }}: <strong>{{ stats.raids if stats is defined and stats.raids is defined else 0 }}</strong></p>
     </div>
 
     <div class="panel">
       <h3>🎁 {{ t("Spenden") }}</h3>
-      <p>{{ t("Gespendet") }}: {{ stats.donations if stats is defined and stats.donations is defined else 0 }}</p>
+      <p>{{ t("Gespendet") }}: <strong>{{ stats.donations if stats is defined and stats.donations is defined else 0 }}</strong></p>
     </div>
 
     <div class="panel">
       <h3>🎭 {{ t("Teilnahmen an Events") }}</h3>
-      <p>{{ t("Events besucht") }}: {{ stats.participations if stats is defined and stats.participations is defined else 0 }}</p>
+      <p>{{ t("Events besucht") }}: <strong>{{ stats.participations if stats is defined and stats.participations is defined else 0 }}</strong></p>
     </div>
 
     <div class="panel">
       <h3>🏆 {{ t("Ehrenhalle") }}</h3>
       {% if stats is defined and stats.hall_of_fame %}
-        <ul>
+        <ul style="padding-left: 1.2em;">
           {% for entry in stats.hall_of_fame %}
-            <li>{{ entry.month }}: {{ entry.title }}</li>
+            <li><strong>{{ entry.month }}</strong>: {{ entry.title }}</li>
           {% endfor %}
         </ul>
       {% else %}
@@ -35,7 +34,7 @@
       {% endif %}
     </div>
   {% else %}
-    <div class="panel warning">
+    <div class="panel warning" style="text-align:center; background:#330; border-left: 5px solid #f66;">
       <p>🚫 {{ t("Du hast keinen Zugriff auf diesen Bereich.") }}</p>
     </div>
   {% endif %}

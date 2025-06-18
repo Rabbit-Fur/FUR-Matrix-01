@@ -6,11 +6,7 @@
   <h2 style="font-size: 2.2em;">🛠️ {{ t("Admin Dashboard") }}</h2>
   <p>{{ t("Systemkontrolle, Nutzerverwaltung, Logs, Einstellungen, Tools…") }}</p>
 
-  <div style="
-    display: flex;
-    flex-wrap: wrap;
-    gap: 1rem;
-    margin-top: 2em;">
+  <div style="display: flex; flex-wrap: wrap; gap: 1rem; margin-top: 2em;">
     <a class="btn" href="{{ url_for('admin.calendar') }}">📅 {{ t('Kalender') }}</a>
     <a class="btn" href="{{ url_for('admin.create_event') }}">📝 {{ t('Event erstellen') }}</a>
     <a class="btn" href="{{ url_for('admin.participants') }}">👥 {{ t('Teilnehmer') }}</a>

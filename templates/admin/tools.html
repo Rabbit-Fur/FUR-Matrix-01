@@ -1,22 +1,12 @@
-{% extends "layout.html" %}
-{% set bg_image = resolve_background_template() %}
+{% extends "admin/admin_base.html" %}
 {% set bg_image = "/static/bg/tools.png" %}
-{% block title %}{{ t("Wartung & Tools") }}{% endblock %}
+{% block title %}{{ t("Tools & Hilfen") }}{% endblock %}
 
-{% block content %}
-  <h2>{{ t("Admin-Tools") }}</h2>
-
-  <div class="panel">
-    <form method="post" action="{{ url_for('admin.trigger_reminder') }}">
-      <button class="btn" type="submit">⏰ {{ t("Erinnerung auslösen") }}</button>
-    </form>
-
-    <form method="post" action="{{ url_for('admin.trigger_champion_post') }}">
-      <button class="btn" type="submit">🏆 {{ t("Champion posten") }}</button>
-    </form>
-
-    <form method="post" action="{{ url_for('admin.healthcheck') }}">
-      <button class="btn" type="submit">🧪 {{ t("Healthcheck ausführen") }}</button>
-    </form>
-  </div>
+{% block admin_content %}
+  <h2>🧰 {{ t("Systemtools") }}</h2>
+  <ul>
+    <li><a class="btn" href="{{ url_for('admin.refresh_cache') }}">{{ t("Cache leeren") }}</a></li>
+    <li><a class="btn" href="{{ url_for('admin.export_backup') }}">{{ t("Backup exportieren") }}</a></li>
+    <li><a class="btn" href="{{ url_for('admin.logs') }}">{{ t("Logs anzeigen") }}</a></li>
+  </ul>
 {% endblock %}

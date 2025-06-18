@@ -1,0 +1,36 @@
+{% extends "layout.html" %}
+{% set bg_image = "/static/bg/memory_gpt_test.png" %}
+{% block title %}{{ t("Memory GPT Test") }}{% endblock %}
+
+{% block content %}
+  <h2>🧠 {{ t("GPT Test – Memory-Kontext") }}</h2>
+
+  <div class="panel">
+    <p><strong>{{ t("Verwendete Tags") }}:</strong> {{ tags | join(", ") }}</p>
+  </div>
+
+  <div class="panel">
+    <h3>{{ t("Kombinierter Kontext") }}</h3>
+    <textarea rows="20" style="width:100%; font-family:monospace;" readonly>{{ context }}</textarea>
+  </div>
+
+  <div style="margin-top: 1rem;">
+    <a class="btn" href="{{ url_for('admin_memory.show_memory') }}">⬅️ {{ t("Zurück zur Übersicht") }}</a>
+    <a class="btn" href="{{ url_for('admin_memory.gpt_test') + '?tags=reminder,champion,i18n' }}">🔁 {{ t("Standard-Test ausführen") }}</a>
+    <a class="btn" href="#" onclick="downloadJSON()">⬇️ {{ t("Exportieren als JSON") }}</a>
+  </div>
+
+  <script>
+    function downloadJSON() {
+      const blob = new Blob([`{{ context | tojson | safe }}`], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = "memory_context.json";
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+    }
+  </script>
+{% endblock %}

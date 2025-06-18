@@ -17,6 +17,7 @@ venv/
 Thumbs.db
 *.bak
 *.swp
+flag/* merge=ours
 
 # IDEs / VSCode
 .vscode/

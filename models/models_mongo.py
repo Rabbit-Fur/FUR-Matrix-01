@@ -1,12 +1,9 @@
-# models_mongo.py
-
-from datetime import datetime
+from pydantic import BaseModel, Field, EmailStr
 from typing import Optional
-
+from datetime import datetime
 from bson import ObjectId
-from pydantic import BaseModel, EmailStr, Field
 
-
+# ➕ Custom ObjectId Type für Pydantic-Kompatibilität
 class PyObjectId(ObjectId):
     @classmethod
     def __get_validators__(cls):
@@ -16,9 +13,12 @@ class PyObjectId(ObjectId):
     def validate(cls, v):
         if isinstance(v, ObjectId):
             return v
-        return ObjectId(str(v))
+        try:
+            return ObjectId(str(v))
+        except Exception:
+            raise ValueError("Ungültige ObjectId")
 
-
+# 🧑 Benutzer-Mongo-Modell (für Flask & FastAPI kompatibel)
 class UserModel(BaseModel):
     id: Optional[PyObjectId] = Field(alias="_id")
     discord_id: str
@@ -33,3 +33,12 @@ class UserModel(BaseModel):
         allow_population_by_field_name = True
         arbitrary_types_allowed = True
         json_encoders = {ObjectId: str}
+        schema_extra = {
+            "example": {
+                "discord_id": "123456789012345678",
+                "username": "FURUser",
+                "avatar": "https://cdn.discordapp.com/avatars/123/avatar.png",
+                "email": "user@example.com",
+                "role_level": "R3"
+            }
+        }

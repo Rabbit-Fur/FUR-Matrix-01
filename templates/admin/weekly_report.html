@@ -1,49 +1,23 @@
-{% extends "layout.html" %}
-{% set bg_image = resolve_background_template() %}
-{% set bg_image = "/static/bg/report.png" %}
+{% extends "admin/admin_base.html" %}
+{% set bg_image = "/static/bg/reports.png" %}
+{% block title %}{{ t("weekly_report_title") }}{% endblock %}
 
-{% block title %}{{ t("Wöchentlicher Report") }}{% endblock %}
+{% block admin_content %}
+  <h2>📄 {{ t("weekly_overview") }}</h2>
 
-{% block content %}
-<h1>📊 {{ t("Wöchentlicher Report") }}</h1>
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      <div class="flash-messages">
+        {% for category, message in messages %}
+          <div class="flash {{ category }}">{{ message }}</div>
+        {% endfor %}
+      </div>
+    {% endif %}
+  {% endwith %}
 
-<h2>🎯 {{ t("Teilnahme letzte 7 Tage") }}</h2>
-<table border="1" cellpadding="5">
-  <tr>
-    <th>{{ t("Discord User ID") }}</th>
-    <th>{{ t("Anzahl Teilnahmen") }}</th>
-  </tr>
-  {% if participation %}
-    {% for row in participation %}
-    <tr>
-      <td>{{ row.user_id }}</td>
-      <td>{{ row.count }}</td>
-    </tr>
-    {% endfor %}
-  {% else %}
-    <tr>
-      <td colspan="2">{{ t("Keine Daten vorhanden.") }}</td>
-    </tr>
-  {% endif %}
-</table>
-
-<h2>🔮 {{ t("Kommende Events (nächste 7 Tage)") }}</h2>
-<table border="1" cellpadding="5">
-  <tr>
-    <th>{{ t("Titel") }}</th>
-    <th>{{ t("Datum & Uhrzeit") }}</th>
-  </tr>
-  {% if upcoming %}
-    {% for event in upcoming %}
-    <tr>
-      <td>{{ event.title }}</td>
-      <td>{{ event.event_date }}</td>
-    </tr>
-    {% endfor %}
-  {% else %}
-    <tr>
-      <td colspan="2">{{ t("Keine Events in den nächsten 7 Tagen.") }}</td>
-    </tr>
-  {% endif %}
-</table>
+  <ul>
+    <li>📆 {{ t("participations_last_week") }}: <strong>{{ report.participations or 0 }}</strong></li>
+    <li>🔜 {{ t("upcoming_events") }}: <strong>{{ report.upcoming or 0 }}</strong></li>
+    <li>🆕 {{ t("new_members") }}: <strong>{{ report.new_users or 0 }}</strong></li>
+  </ul>
 {% endblock %}
