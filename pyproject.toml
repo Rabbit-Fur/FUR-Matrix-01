@@ -3,6 +3,7 @@ name = "fur-system"
 version = "0.1.0"
 description = "Champion-, Reminder- und Leaderboard-System für GGW"
 readme = "README.md"
+license = {file = "LICENSE"}
 requires-python = ">=3.10"
 
 dependencies = [
