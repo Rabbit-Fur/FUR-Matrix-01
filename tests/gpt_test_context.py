@@ -6,6 +6,7 @@ Wird verwendet, um dynamisch kontextbasierte Prompts zu generieren.
 
 from core.memory.memory_loader import load_gpt_contexts
 
+
 def test_gpt_memory():
     tags = ["reminder", "champion", "i18n"]
     context = load_gpt_contexts(tags=tags)
