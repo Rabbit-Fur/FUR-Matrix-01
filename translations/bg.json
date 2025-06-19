@@ -108,7 +108,6 @@
     "Invalid UUID.": "Невалиден uuid.",
     "Invalid choice(s): one or more data inputs could not be coerced.": "Невалиден избор (и): Един или повече входове на данни не могат да бъдат принудени.",
     "Invalid email address.": "Невалиден имейл адрес.",
-    "Invalid field name '%s'.": "Невалидно име на полето '%s'.",
     "Invalid input.": "Вход.",
     "Invalid value for {param_hint}: {message}": "Невалидна стойност за {param_hint}: {съобщение}",
     "Invalid value, can't be any of: %(values)s.": "Невалидна стойност, не може да бъде нито една от: %(стойности) s.",
@@ -405,5 +404,5 @@
     "Version": "Version",
     "Tags": "Tags",
     "Keine Speicherstände gefunden.": "Keine Speicherstände gefunden.",
-    "Zurück": "Zurück",
+    "Zurück": "Zurück"
 }

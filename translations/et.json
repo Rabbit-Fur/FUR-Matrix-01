@@ -108,7 +108,6 @@
     "Invalid UUID.": "Kehtetu UUID.",
     "Invalid choice(s): one or more data inputs could not be coerced.": "Vale valik (d): ühte või mitut andmesisendit ei saanud sundida.",
     "Invalid email address.": "Vale e -posti aadress.",
-    "Invalid field name '%s'.": "Kehtetu välja nimi '%S'.",
     "Invalid input.": "Sisend.",
     "Invalid value for {param_hint}: {message}": "Kehtetu väärtus {param_hint} jaoks: {sõnum}",
     "Invalid value, can't be any of: %(values)s.": "Vale väärtus, ei saa olla ühtegi: %(väärtused) s.",
@@ -405,5 +404,5 @@
     "Version": "Version",
     "Tags": "Tags",
     "Keine Speicherstände gefunden.": "Keine Speicherstände gefunden.",
-    "Zurück": "Zurück",
+    "Zurück": "Zurück"
 }

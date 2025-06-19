@@ -108,7 +108,6 @@
     "Invalid UUID.": "Недійсна uuid.",
     "Invalid choice(s): one or more data inputs could not be coerced.": "Недійсний вибір (и): один або кілька входів даних не вдалося примусити.",
     "Invalid email address.": "Недійсна електронна адреса.",
-    "Invalid field name '%s'.": "Недійне ім'я поля '%s'.",
     "Invalid input.": "Введення.",
     "Invalid value for {param_hint}: {message}": "Недійсне значення для {param_hint}: {message}",
     "Invalid value, can't be any of: %(values)s.": "Недійсне значення, не може бути жодним із: %(значення) s.",
@@ -405,5 +404,5 @@
     "Version": "Version",
     "Tags": "Tags",
     "Keine Speicherstände gefunden.": "Keine Speicherstände gefunden.",
-    "Zurück": "Zurück",
+    "Zurück": "Zurück"
 }

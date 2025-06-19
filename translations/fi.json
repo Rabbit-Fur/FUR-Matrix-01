@@ -108,7 +108,6 @@
     "Invalid UUID.": "Virheellinen uuid.",
     "Invalid choice(s): one or more data inputs could not be coerced.": "Virheellinen valinta (t): Yhtä tai useampaa tiedonsiirtoa ei voitu pakottaa.",
     "Invalid email address.": "Virheellinen sähköpostiosoite.",
-    "Invalid field name '%s'.": "Virheellinen kentän nimi '%s'.",
     "Invalid input.": "Tulo.",
     "Invalid value for {param_hint}: {message}": "Virheellinen arvo {param_hint}: {viesti}",
     "Invalid value, can't be any of: %(values)s.": "Virheellinen arvo, ei voi olla mitään: %(arvot) s.",
@@ -405,5 +404,5 @@
     "Version": "Version",
     "Tags": "Tags",
     "Keine Speicherstände gefunden.": "Keine Speicherstände gefunden.",
-    "Zurück": "Zurück",
+    "Zurück": "Zurück"
 }

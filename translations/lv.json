@@ -108,7 +108,6 @@
     "Invalid UUID.": "Nederīgs UUID.",
     "Invalid choice(s): one or more data inputs could not be coerced.": "Nederīga (-as) izvēle (-as): vienu vai vairākas datu ievades nevarēja piespiest.",
     "Invalid email address.": "Nederīga e -pasta adrese.",
-    "Invalid field name '%s'.": "Nederīgs lauka nosaukums '%s'.",
     "Invalid input.": "Ievade.",
     "Invalid value for {param_hint}: {message}": "Nederīga vērtība {param_hint}: {message}",
     "Invalid value, can't be any of: %(values)s.": "Nederīga vērtība, nevar būt neviena no: %(vērtībām) s.",
@@ -405,5 +404,5 @@
     "Version": "Version",
     "Tags": "Tags",
     "Keine Speicherstände gefunden.": "Keine Speicherstände gefunden.",
-    "Zurück": "Zurück",
+    "Zurück": "Zurück"
 }

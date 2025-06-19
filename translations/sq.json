@@ -108,7 +108,6 @@
     "Invalid UUID.": "Uuid i pavlefshëm.",
     "Invalid choice(s): one or more data inputs could not be coerced.": "Zgjedhja (et) e pavlefshme: Një ose më shumë hyrje të të dhënave nuk mund të detyrohen.",
     "Invalid email address.": "Adresa e pavlefshme e postës elektronike.",
-    "Invalid field name '%s'.": "Emri i pavlefshëm i fushës '%s'.",
     "Invalid input.": "Input",
     "Invalid value for {param_hint}: {message}": "Vlera e pavlefshme për {param_hint}: {mesazh}",
     "Invalid value, can't be any of: %(values)s.": "Vlera e pavlefshme, nuk mund të jetë ndonjë nga: %(vlera) s.",
@@ -405,5 +404,5 @@
     "Version": "Version",
     "Tags": "Tags",
     "Keine Speicherstände gefunden.": "Keine Speicherstände gefunden.",
-    "Zurück": "Zurück",
+    "Zurück": "Zurück"
 }

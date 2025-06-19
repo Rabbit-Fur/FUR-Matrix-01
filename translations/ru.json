@@ -108,7 +108,6 @@
     "Invalid UUID.": "Недействительный uuid.",
     "Invalid choice(s): one or more data inputs could not be coerced.": "Неверный выбор (ы): один или несколько входов данных не могут быть принуждены.",
     "Invalid email address.": "Неверный адрес электронной почты.",
-    "Invalid field name '%s'.": "Неверное имя поля '%s'.",
     "Invalid input.": "Вход.",
     "Invalid value for {param_hint}: {message}": "Неверное значение для {param_hint}: {Сообщение}",
     "Invalid value, can't be any of: %(values)s.": "Неверное значение, не может быть любым из: %(значения) s.",
@@ -405,5 +404,5 @@
     "Version": "Version",
     "Tags": "Tags",
     "Keine Speicherstände gefunden.": "Keine Speicherstände gefunden.",
-    "Zurück": "Zurück",
+    "Zurück": "Zurück"
 }

@@ -108,7 +108,6 @@
     "Invalid UUID.": "Ugyldigt uuid.",
     "Invalid choice(s): one or more data inputs could not be coerced.": "Ugyldige valg (er): En eller flere dataindgange kunne ikke tvinges.",
     "Invalid email address.": "Ugyldig e -mail -adresse.",
-    "Invalid field name '%s'.": "Ugyldigt feltnavn '%s'.",
     "Invalid input.": "Input.",
     "Invalid value for {param_hint}: {message}": "Ugyldig værdi for {param_hint}: {besked}",
     "Invalid value, can't be any of: %(values)s.": "Ugyldig værdi, kan ikke være nogen af: %(værdier) s.",
@@ -405,5 +404,5 @@
     "Version": "Version",
     "Tags": "Tags",
     "Keine Speicherstände gefunden.": "Keine Speicherstände gefunden.",
-    "Zurück": "Zurück",
+    "Zurück": "Zurück"
 }

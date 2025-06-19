@@ -108,7 +108,6 @@
     "Invalid UUID.": "غلط uuid.",
     "Invalid choice(s): one or more data inputs could not be coerced.": "غلط انتخاب (زبانیں): ایک یا زیادہ ڈیٹا ان پٹ پر زبردستی نہیں کی جاسکتی ہے۔",
     "Invalid email address.": "غلط ای میل ایڈریس۔",
-    "Invalid field name '%s'.": "غلط فیلڈ کا نام '٪ s'۔",
     "Invalid input.": "ان پٹ",
     "Invalid value for {param_hint}: {message}": "{param_hint}: {پیغام} کے لئے غلط قیمت",
     "Invalid value, can't be any of: %(values)s.": "غلط قیمت ، کوئی بھی نہیں ہوسکتا: ٪ (اقدار) s.",
@@ -405,5 +404,5 @@
     "Version": "Version",
     "Tags": "Tags",
     "Keine Speicherstände gefunden.": "Keine Speicherstände gefunden.",
-    "Zurück": "Zurück",
+    "Zurück": "Zurück"
 }

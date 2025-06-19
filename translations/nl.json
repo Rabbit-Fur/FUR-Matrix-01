@@ -108,7 +108,6 @@
     "Invalid UUID.": "Ongeldige uuid.",
     "Invalid choice(s): one or more data inputs could not be coerced.": "Ongeldige keuze (en): een of meer gegevensinvoer konden niet worden gedwongen.",
     "Invalid email address.": "Ongeldig e -mailadres.",
-    "Invalid field name '%s'.": "Ongeldige veldnaam '%s'.",
     "Invalid input.": "Invoer.",
     "Invalid value for {param_hint}: {message}": "Ongeldige waarde voor {param_hint}: {message}",
     "Invalid value, can't be any of: %(values)s.": "Ongeldige waarde, kan geen van: %(waarden) s zijn.",
@@ -405,5 +404,5 @@
     "Version": "Version",
     "Tags": "Tags",
     "Keine Speicherstände gefunden.": "Keine Speicherstände gefunden.",
-    "Zurück": "Zurück",
+    "Zurück": "Zurück"
 }

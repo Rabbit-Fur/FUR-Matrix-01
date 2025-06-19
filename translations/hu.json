@@ -108,7 +108,6 @@
     "Invalid UUID.": "Érvénytelen UUID.",
     "Invalid choice(s): one or more data inputs could not be coerced.": "Érvénytelen választás (ek): Egy vagy több adatbevitelt nem lehetett kényszeríteni.",
     "Invalid email address.": "Érvénytelen e -mail cím.",
-    "Invalid field name '%s'.": "Érvénytelen mezőnév '%s'.",
     "Invalid input.": "Bemenet.",
     "Invalid value for {param_hint}: {message}": "Érvénytelen érték a {param_hint}: {üzenet} számára",
     "Invalid value, can't be any of: %(values)s.": "Érvénytelen érték, nem lehet: %(értékek) s.",
@@ -405,5 +404,5 @@
     "Version": "Version",
     "Tags": "Tags",
     "Keine Speicherstände gefunden.": "Keine Speicherstände gefunden.",
-    "Zurück": "Zurück",
+    "Zurück": "Zurück"
 }

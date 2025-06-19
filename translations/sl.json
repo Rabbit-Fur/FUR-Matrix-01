@@ -108,7 +108,6 @@
     "Invalid UUID.": "Neveljaven UUID.",
     "Invalid choice(s): one or more data inputs could not be coerced.": "Neveljavne izbire: enega ali več podatkovnih vhodov ni bilo mogoče prisiliti.",
     "Invalid email address.": "Neveljaven e -poštni naslov.",
-    "Invalid field name '%s'.": "Neveljavno ime polja '%s'.",
     "Invalid input.": "Vnos.",
     "Invalid value for {param_hint}: {message}": "Neveljavna vrednost za {param_hint}: {sporočilo}",
     "Invalid value, can't be any of: %(values)s.": "Neveljavna vrednost, ne more biti nobena od: %(vrednosti) s.",
@@ -405,5 +404,5 @@
     "Version": "Version",
     "Tags": "Tags",
     "Keine Speicherstände gefunden.": "Keine Speicherstände gefunden.",
-    "Zurück": "Zurück",
+    "Zurück": "Zurück"
 }

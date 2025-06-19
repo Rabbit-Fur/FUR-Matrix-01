@@ -108,7 +108,6 @@
     "Invalid UUID.": "UUID neamhbhailí.",
     "Invalid choice(s): one or more data inputs could not be coerced.": "Rogha (í) neamhbhailí: Níorbh fhéidir ionchur sonraí amháin nó níos mó a chosc.",
     "Invalid email address.": "Seoladh ríomhphoist neamhbhailí.",
-    "Invalid field name '%s'.": "Ainm an réimse neamhbhailí '%s'.",
     "Invalid input.": "Ionchur.",
     "Invalid value for {param_hint}: {message}": "Luach neamhbhailí do {param_hint}: {teachtaireacht}",
     "Invalid value, can't be any of: %(values)s.": "Luach neamhbhailí, ní féidir a bheith ar aon cheann de: %(luachanna) s.",
@@ -405,5 +404,5 @@
     "Version": "Version",
     "Tags": "Tags",
     "Keine Speicherstände gefunden.": "Keine Speicherstände gefunden.",
-    "Zurück": "Zurück",
+    "Zurück": "Zurück"
 }

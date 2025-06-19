@@ -108,7 +108,6 @@
     "Invalid UUID.": "অবৈধ uuid।",
     "Invalid choice(s): one or more data inputs could not be coerced.": "অবৈধ পছন্দ (গুলি): এক বা একাধিক ডেটা ইনপুট জোর করা যায়নি।",
     "Invalid email address.": "অবৈধ ইমেল ঠিকানা।",
-    "Invalid field name '%s'.": "অবৈধ ক্ষেত্রের নাম '%s'।",
     "Invalid input.": "ইনপুট",
     "Invalid value for {param_hint}: {message}": "{প্যারাম_হিন্ট}: {বার্তা} এর জন্য অবৈধ মান",
     "Invalid value, can't be any of: %(values)s.": "অবৈধ মান, কোনও হতে পারে না: %(মান) গুলি।",
@@ -405,5 +404,5 @@
     "Version": "Version",
     "Tags": "Tags",
     "Keine Speicherstände gefunden.": "Keine Speicherstände gefunden.",
-    "Zurück": "Zurück",
+    "Zurück": "Zurück"
 }

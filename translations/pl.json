@@ -108,7 +108,6 @@
     "Invalid UUID.": "Nieprawidłowy UUID.",
     "Invalid choice(s): one or more data inputs could not be coerced.": "Nieprawidłowy wybór: Jeden lub więcej danych wejściowych danych nie można było zmusić.",
     "Invalid email address.": "Nieprawidłowy adres e -mail.",
-    "Invalid field name '%s'.": "Niepoprawna nazwa pola „%s”.",
     "Invalid input.": "Wejście.",
     "Invalid value for {param_hint}: {message}": "Niepoprawna wartość dla {param_hint}: {message}",
     "Invalid value, can't be any of: %(values)s.": "Niepoprawna wartość, nie może być żadna z: %(wartości) s.",
@@ -405,5 +404,5 @@
     "Version": "Version",
     "Tags": "Tags",
     "Keine Speicherstände gefunden.": "Keine Speicherstände gefunden.",
-    "Zurück": "Zurück",
+    "Zurück": "Zurück"
 }

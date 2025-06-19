@@ -108,7 +108,6 @@
     "Invalid UUID.": "Uuid inválido.",
     "Invalid choice(s): one or more data inputs could not be coerced.": "Escolha inválida (s): uma ou mais entradas de dados não puderam ser coagidas.",
     "Invalid email address.": "Endereço de e -mail inválido.",
-    "Invalid field name '%s'.": "Nome do campo inválido '%s'.",
     "Invalid input.": "Entrada.",
     "Invalid value for {param_hint}: {message}": "Valor inválido para {param_hint}: {message}",
     "Invalid value, can't be any of: %(values)s.": "Valor inválido, não pode ser nenhum dos: %(valores) s.",
@@ -405,5 +404,5 @@
     "Version": "Version",
     "Tags": "Tags",
     "Keine Speicherstände gefunden.": "Keine Speicherstände gefunden.",
-    "Zurück": "Zurück",
+    "Zurück": "Zurück"
 }
