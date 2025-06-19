@@ -4,7 +4,7 @@ Flask-Session==0.8.0
 flask-babel @ git+https://github.com/python-babel/flask-babel.git
 flask-wtf
 flask-limiter
-pymongo>=4.7.0
+pymongo==4.3.3
 pydantic>=1.10.12,<2.0.0
 
 # 📚 Datenbank & Planung
