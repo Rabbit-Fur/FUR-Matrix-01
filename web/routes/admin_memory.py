@@ -1,16 +1,18 @@
-from flask import Blueprint, render_template, request, redirect, url_for, flash, jsonify
-from bson import ObjectId
-from database.mongo_client import db
 from datetime import datetime
 
+from flask import Blueprint, flash, jsonify, redirect, render_template, request, url_for
+
 from core.memory.memory_loader import load_gpt_contexts
+from database.mongo_client import db
 
 admin_memory = Blueprint("admin_memory", __name__)
+
 
 @admin_memory.route("/admin/memory")
 def show_memory():
     memory = db["memory_contexts"].find()
     return render_template("admin/memory.html", memory=memory)
+
 
 @admin_memory.route("/admin/memory/<string:memory_id>/edit", methods=["GET", "POST"])
 def edit_memory(memory_id):
@@ -37,11 +39,13 @@ def edit_memory(memory_id):
 
     return render_template("admin/memory_edit.html", memory=memory)
 
+
 @admin_memory.route("/admin/memory/gpt_test")
 def gpt_test():
     tags = request.args.get("tags", "reminder,champion").split(",")
     context = load_gpt_contexts(tags=tags)
     return render_template("admin/memory_gpt_test.html", context=context, tags=tags)
+
 
 @admin_memory.route("/admin/memory/export.json")
 def export_memory():

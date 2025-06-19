@@ -2,6 +2,7 @@
 DialogAgent – verarbeitet Benutzer-Interaktionen (Discord & Web) kontextuell
 """
 
+
 class DialogAgent:
     def __init__(self):
         pass

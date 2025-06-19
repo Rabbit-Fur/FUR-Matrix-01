@@ -69,7 +69,7 @@ def main() -> None:
         lines = [
             "# 🚫 Fehlende/unklare Übersetzungen",
             "",
-            "Diese Begriffe konnten nicht automatisch sicher übersetzt werden. Bitte manuell nachtragen:",
+            "Diese Begriffe konnten nicht automatisch sicher übersetzt werden. Bitte manuell nachtragen:",  # noqa: E501
             "",
         ]
         lines.extend(missing_entries)

@@ -1,6 +1,6 @@
-"""
-ReminderAgent – verwaltet Reminder-Funktionen wie Versand, Opt-Out, MongoDB-Status
-"""
+"""Handle sending reminders and user opt-outs via MongoDB."""
+
+
 class ReminderAgent:
     def __init__(self, db):
         self.db = db

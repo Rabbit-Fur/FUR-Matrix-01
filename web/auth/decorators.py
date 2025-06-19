@@ -7,7 +7,7 @@ Stellen sicher, dass der User korrekt eingeloggt ist und die passende Rolle (R3,
 
 from functools import wraps
 
-from flask import abort, flash, redirect, session, url_for
+from flask import flash, redirect, session, url_for
 
 
 def login_required(view_func):

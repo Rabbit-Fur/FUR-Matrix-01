@@ -1,7 +1,10 @@
-from pydantic import BaseModel, Field, validator
-from typing import Optional, List
-from bson import ObjectId
 from datetime import datetime
+from typing import List, Optional
+
+from bson import ObjectId
+from pydantic import BaseModel, Field, validator
+
+from models.models_mongo import PyObjectId
 
 
 class ReminderModel(BaseModel):

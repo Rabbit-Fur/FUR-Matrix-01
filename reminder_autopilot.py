@@ -1,7 +1,6 @@
 import logging
 from datetime import datetime, timedelta
 
-import discord
 from discord.ext import commands, tasks
 
 from database.mongo_client import db

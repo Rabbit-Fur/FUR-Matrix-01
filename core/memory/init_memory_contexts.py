@@ -18,14 +18,20 @@ modules = [
         "_id": "i18n_babel_core",
         "type": "module",
         "tags": ["i18n", "babel", "flask"],
-        "description": "Zentrale Babel-Integration für Flask mit LazyString, Locale-Selektor, Jinja-Filtern und Zeitzonen-Support.",
+        "description": (
+            "Zentrale Babel-Integration für Flask mit LazyString, Locale-Selektor, "
+            "Jinja-Filtern und Zeitzonen-Support."
+        ),  # noqa: E501
         "code_refs": ["core/memory/i18n.py", "web/__init__.py", "translations/*.json"],
     },
     {
         "_id": "reminder_system",
         "type": "feature",
         "tags": ["reminder", "discord", "notification", "multilingual"],
-        "description": "Reminder-Cog mit Discord-DM, Zeitsteuerung, UI-Adminpanel und Mehrsprachigkeit über fur_lang.",
+        "description": (
+            "Reminder-Cog mit Discord-DM, Zeitsteuerung, UI-Adminpanel und Mehrsprachigkeit "
+            "über fur_lang."
+        ),  # noqa: E501
         "code_refs": [
             "discord_bot/cogs/reminder_cog.py",
             "templates/reminders.html",
@@ -36,35 +42,50 @@ modules = [
         "_id": "discord_login_roles",
         "type": "auth",
         "tags": ["discord", "login", "oauth2", "roles", "flask"],
-        "description": "Discord-OAuth2-Login mit Rollenerkennung für ADMIN, R4 und R3. Session-Handling, Weiterleitung und persistente Speicherung in MongoDB.",
+        "description": (
+            "Discord-OAuth2-Login mit Rollenerkennung für ADMIN, R4 und R3. "
+            "Session-Handling, Weiterleitung und persistente Speicherung in MongoDB."
+        ),  # noqa: E501
         "code_refs": ["web/routes/public_routes.py", "config.py", "models/user.py"],
     },
     {
         "_id": "champion_module",
         "type": "automation",
         "tags": ["champion", "poster", "discord", "pillow", "monthly"],
-        "description": "Monatliche Auswertung des PvP-Champions. Automatische Poster-Erstellung mit PIL und Webhook-Versand an Discord.",
+        "description": (
+            "Monatliche Auswertung des PvP-Champions. Automatische Poster-Erstellung mit "
+            "PIL und Webhook-Versand an Discord."
+        ),  # noqa: E501
         "code_refs": ["core/champion/poster_generator.py", "tasks/champion_task.py"],
     },
     {
         "_id": "hall_of_fame_ui",
         "type": "ui",
         "tags": ["hof", "champion", "frontend", "jinja", "flask"],
-        "description": "HTML-Seite zur Darstellung der Hall of Fame inklusive dynamischer Champion-Anzeige und Responsive Design.",
+        "description": (
+            "HTML-Seite zur Darstellung der Hall of Fame inklusive dynamischer Champion-Anzeige "
+            "und Responsive Design."
+        ),  # noqa: E501
         "code_refs": ["templates/hall_of_fame.html", "web/routes/hof_routes.py"],
     },
     {
         "_id": "language_admin_ui",
         "type": "ui",
         "tags": ["i18n", "admin", "translations", "flask"],
-        "description": "Admin-Oberfläche zur Verwaltung von Übersetzungen. Ermöglicht Bearbeitung, Vorschau und Export einzelner Sprachschlüssel.",
+        "description": (
+            "Admin-Oberfläche zur Verwaltung von Übersetzungen. Ermöglicht Bearbeitung, "
+            "Vorschau und Export einzelner Sprachschlüssel."
+        ),  # noqa: E501
         "code_refs": ["templates/admin/language_editor.html", "web/routes/admin_language.py"],
     },
     {
         "_id": "core_memory_loader",
         "type": "core",
         "tags": ["gpt", "memory", "mongo", "context"],
-        "description": "Ermöglicht das Laden aller Memory-Module aus MongoDB als Kontext für GPT oder Systemmodule.",
+        "description": (
+            "Ermöglicht das Laden aller Memory-Module aus MongoDB als Kontext für GPT "
+            "oder Systemmodule."
+        ),  # noqa: E501
         "code_refs": ["core/memory/memory_loader.py"],
     },
 ]

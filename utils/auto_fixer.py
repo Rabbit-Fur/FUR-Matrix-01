@@ -7,7 +7,6 @@ wendet Black und Isort an, und unterstützt grundlegende eigene Regex-basierte F
 Tools: flake8 (Check), black, isort, autoflake (müssen installiert sein).
 """
 
-import os
 import re
 import subprocess
 from pathlib import Path

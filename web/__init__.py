@@ -1,9 +1,4 @@
-"""
-web/__init__.py – Flask Application Factory für FUR SYSTEM
-
-Erstellt die Flask-App, lädt alle Blueprints, konfiguriert JSON-basierte Mehrsprachigkeit
-und bindet die zentrale Config-Klasse aus dem Projekt-Root ein.
-"""
+"""Flask application factory for the FUR system."""
 
 import os
 
@@ -17,7 +12,10 @@ from fur_lang.i18n import current_lang, get_supported_languages, t
 try:
     from utils.bg_resolver import resolve_background_template
 except ImportError:
-    resolve_background_template = lambda: "/static/img/background.jpg"  # Fallback bei Importfehler
+
+    def resolve_background_template() -> str:
+        """Fallback background path used when utils are unavailable."""
+        return "/static/img/background.jpg"
 
 
 def create_app():
@@ -36,15 +34,23 @@ def create_app():
 
     # 🌍 Mehrsprachigkeit (Flask-Babel-Next)
     app.config.setdefault("BABEL_DEFAULT_LOCALE", "de")
-    app.config.setdefault("BABEL_SUPPORTED_LOCALES", get_supported_languages())
-    app.config.setdefault("BABEL_TRANSLATION_DIRECTORIES", os.path.join(base_dir, "translations"))
+    app.config.setdefault(
+        "BABEL_SUPPORTED_LOCALES",
+        get_supported_languages(),
+    )
+    app.config.setdefault(
+        "BABEL_TRANSLATION_DIRECTORIES",
+        os.path.join(base_dir, "translations"),
+    )
 
     babel = Babel()
-    babel.init_app(
-        app,
-        locale_selector=lambda: session.get("lang")
-        or request.accept_languages.best_match(app.config["BABEL_SUPPORTED_LOCALES"]),
-    )
+
+    def _select_locale() -> str | None:
+        return session.get("lang") or request.accept_languages.best_match(
+            app.config["BABEL_SUPPORTED_LOCALES"]
+        )
+
+    babel.init_app(app, locale_selector=_select_locale)
 
     @app.before_request
     def set_language_from_request():

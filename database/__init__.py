@@ -6,7 +6,7 @@ Exportiert:
 - `close_db()`: Platzhalter für Kompatibilität mit Flask-Teardown oder Tests
 """
 
-from .mongo_client import db
+from .mongo_client import db  # noqa: F401
 
 
 def close_db(e=None):

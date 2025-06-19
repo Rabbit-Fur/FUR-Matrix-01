@@ -3,7 +3,6 @@
 import logging
 from datetime import datetime, timedelta
 
-import discord
 from discord.ext import commands, tasks
 
 from database.mongo_client import db
@@ -33,9 +32,7 @@ class ReminderCog(commands.Cog):
         window_end = now + timedelta(minutes=6)
 
         try:
-            events = db["events"].find(
-                {"event_time": {"$gte": window_start, "$lte": window_end}}
-            )
+            events = db["events"].find({"event_time": {"$gte": window_start, "$lte": window_end}})
             for event in events:
                 participants = db["event_participants"].find({"event_id": event["_id"]})
                 for p in participants:
@@ -47,9 +44,7 @@ class ReminderCog(commands.Cog):
                     lang = await self.get_user_language(user_id)
                     try:
                         user = await self.bot.fetch_user(user_id)
-                        message = t(
-                            "reminder_event_5min", title=event["title"], lang=lang
-                        )
+                        message = t("reminder_event_5min", title=event["title"], lang=lang)
                         await user.send(message)
                         db["reminders_sent"].insert_one(
                             {

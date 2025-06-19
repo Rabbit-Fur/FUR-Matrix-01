@@ -131,7 +131,9 @@ def translations_editor():
     file_path = None
     if selected_language:
         file_path = os.path.join(
-            current_app.root_path, "translations", f"{selected_language}.json"
+            current_app.root_path,
+            "translations",
+            f"{selected_language}.json",
         )
         if os.path.exists(file_path):
             with open(file_path, "r", encoding="utf-8") as f:
@@ -140,9 +142,7 @@ def translations_editor():
                 except json.JSONDecodeError:
                     current_app.logger.error("Invalid JSON in %s", file_path)
 
-    if request.method == "POST" and any(
-        k.startswith("translations[") for k in request.form.keys()
-    ):
+    if request.method == "POST" and any(k.startswith("translations[") for k in request.form.keys()):
         updated = {}
         for k, v in request.form.items():
             if k.startswith("translations[") and k.endswith("]"):

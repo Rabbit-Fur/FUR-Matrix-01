@@ -2,6 +2,9 @@
 
 import os
 
+import pytest
+
+# environment for Flask app
 os.environ.setdefault("DISCORD_TOKEN", "dummy")
 os.environ.setdefault("DISCORD_GUILD_ID", "1")
 os.environ.setdefault("REMINDER_CHANNEL_ID", "1")
@@ -15,17 +18,13 @@ os.environ.setdefault("R4_ROLE_IDS", "1")
 os.environ.setdefault("ADMIN_ROLE_IDS", "1")
 os.environ.setdefault("BASE_URL", "http://localhost:8080")
 
-import pytest
-
-from web import create_app
+from web import create_app  # noqa: E402
 
 
 @pytest.fixture(scope="session")
 def app():
     app = create_app()
-    app.config.update(
-        {"TESTING": True, "WTF_CSRF_ENABLED": False, "SERVER_NAME": "localhost:8080"}
-    )
+    app.config.update({"TESTING": True, "WTF_CSRF_ENABLED": False, "SERVER_NAME": "localhost:8080"})
     with app.app_context():
         yield app
 

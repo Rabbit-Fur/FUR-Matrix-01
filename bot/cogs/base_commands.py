@@ -4,7 +4,6 @@ base_commands.py – Basisbefehle für alle User (z. B. Ping, Info, Status)
 Dieses Cog stellt grundlegende Commands bereit, die für alle Servermitglieder nutzbar sind.
 """
 
-import discord
 from discord.ext import commands
 
 from fur_lang.i18n import t

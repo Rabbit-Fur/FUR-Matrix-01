@@ -1,7 +1,10 @@
-from pydantic import BaseModel, Field
-from typing import Optional
-from bson import ObjectId
 from datetime import datetime
+from typing import Optional
+
+from bson import ObjectId
+from pydantic import BaseModel, Field
+
+from models.models_mongo import PyObjectId
 
 
 class ParticipantModel(BaseModel):
