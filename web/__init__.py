@@ -1,13 +1,14 @@
 """Flask application factory for the FUR system."""
+
 import os
 from pathlib import Path
 
 from flask import Flask, request, session
-from flask_babel_next import Babel
 
 from config import Config
 from database import close_db
-from fur_lang.i18n import t, current_lang, get_supported_languages
+from flask_babel_next import Babel
+from fur_lang.i18n import current_lang, get_supported_languages, t
 
 # ---------------------------------------------------------------------------
 # 🔹 Hilfsfunktion (Fallback für BG-Resolver)
@@ -15,8 +16,10 @@ from fur_lang.i18n import t, current_lang, get_supported_languages
 try:
     from utils.bg_resolver import resolve_background_template
 except ImportError:
+
     def resolve_background_template() -> str:
         return "/static/img/background.jpg"
+
 
 # ---------------------------------------------------------------------------
 # 🔹 Factory
@@ -40,7 +43,8 @@ def create_app() -> Flask:
     # ---------------------------------------------------------------------
     # 🧠 1) Vorab-Blueprints (Memory-Viewer)
     # ---------------------------------------------------------------------
-    from web.admin.memory_routes import admin_memory    # <- korrekter Import
+    from web.admin.memory_routes import admin_memory  # <- korrekter Import
+
     app.register_blueprint(admin_memory, url_prefix="/admin/memory")
 
     # ---------------------------------------------------------------------
@@ -54,12 +58,17 @@ def create_app() -> Flask:
     )
 
     babel = Babel()
+    selector = getattr(babel, "localeselector", None)
+    if selector is None:
 
-    @babel.localeselector
+        def selector(func):
+            app.before_request(func)
+            return func
+
+    @selector
     def _select_locale() -> str | None:
-        return (
-            session.get("lang")
-            or request.accept_languages.best_match(app.config["BABEL_SUPPORTED_LOCALES"])
+        return session.get("lang") or request.accept_languages.best_match(
+            app.config["BABEL_SUPPORTED_LOCALES"]
         )
 
     @app.before_request
@@ -90,8 +99,8 @@ def create_app() -> Flask:
         from dashboard.routes import dashboard
 
         app.register_blueprint(public)
-        app.register_blueprint(member,     url_prefix="/members")
-        app.register_blueprint(admin,      url_prefix="/admin")
+        app.register_blueprint(member, url_prefix="/members")
+        app.register_blueprint(admin, url_prefix="/admin")
         app.register_blueprint(leaderboard, url_prefix="/leaderboard")
         app.register_blueprint(reminder_api, url_prefix="/api/reminders")
         app.register_blueprint(dashboard)
@@ -114,6 +123,8 @@ def create_app() -> Flask:
     # ---------------------------------------------------------------------
     landing_path = template_folder / "public" / "landing.html"
     if not landing_path.exists():
-        app.logger.error("❌ landing.html nicht gefunden! Kontrolliere den Pfad (%s).", landing_path)
+        app.logger.error(
+            "❌ landing.html nicht gefunden! Kontrolliere den Pfad (%s).", landing_path
+        )
 
     return app

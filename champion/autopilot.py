@@ -1,5 +1,7 @@
+"""Automated champion announcement via Discord webhook."""
+
+from champion.webhook import send_discord_webhook
 from utils.champion_data import generate_champion_poster
-from utils.discord_util import send_discord_webhook
 
 
 def run_champion_autopilot():

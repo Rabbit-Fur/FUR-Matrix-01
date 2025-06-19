@@ -1,13 +1,18 @@
 {% extends 'admin/admin_base.html' %}
-{% block title %}🧠 Memory Detail{% endblock %}
+{% block title %}🧠 {{ t('Memory Detail') }}{% endblock %}
 
 {% block content %}
-<h1>🧾 Detailansicht: {{ entry.name }}</h1>
-<p><strong>Version:</strong> {{ entry.version }}</p>
-<p><strong>Tags:</strong> {{ entry.tags | join(', ') }}</p>
-<p><strong>Datum:</strong> {{ entry.exported_at.strftime('%Y-%m-%d %H:%M') }}</p>
+<h1>🧾 {{ t('Memory Detail for') }} {{ entry.name }}</h1>
+<p><strong>{{ t('Version') }}:</strong> {{ entry.version }}</p>
+<p><strong>{{ t('Tags') }}:</strong> {{ entry.tags | join(', ') }}</p>
+<p><strong>{{ t('Datum') }}:</strong> {{ entry.exported_at.strftime('%Y-%m-%d %H:%M') }}</p>
 
-<pre class="memory-content">{{ entry.content_md or entry.content | tojson(indent=2) }}</pre>
+{% if content_html %}
+  <div class="memory-content">{{ content_html }}</div>
+{% else %}
+  <pre class="memory-content">{{ entry.content | tojson(indent=2) }}</pre>
+{% endif %}
 
-<a href="{{ url_for('admin_memory.index') }}" class="btn">🔙 Zurück</a>
+<a href="{{ url_for('admin_memory.index') }}" class="btn">🔙 {{ t('Zurück') }}</a>
 {% endblock %}
+
