@@ -28,6 +28,7 @@ python-dateutil
 pytz
 ics
 pillow
+Markdown
 werkzeug
 PyNaCl
 click==8.2.0
