@@ -108,7 +108,6 @@
     "Invalid UUID.": "UUID نامعتبر است.",
     "Invalid choice(s): one or more data inputs could not be coerced.": "انتخاب (های) نامعتبر: یک یا چند ورودی داده را نمی توان اجبار کرد.",
     "Invalid email address.": "آدرس ایمیل نامعتبر است.",
-    "Invalid field name '%s'.": 'نام فیلد نامعتبر "٪ s".',
     "Invalid input.": "ورودی",
     "Invalid value for {param_hint}: {message}": "مقدار نامعتبر برای {param_hint}: {پیام}",
     "Invalid value, can't be any of: %(values)s.": "ارزش نامعتبر ، نمی تواند هیچ یک از: ٪ (مقادیر) باشد.",
@@ -405,5 +404,5 @@
     "Version": "Version",
     "Tags": "Tags",
     "Keine Speicherstände gefunden.": "Keine Speicherstände gefunden.",
-    "Zurück": "Zurück",
+    "Zurück": "Zurück"
 }

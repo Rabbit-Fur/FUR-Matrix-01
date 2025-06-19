@@ -108,7 +108,6 @@
     "Invalid UUID.": "अमान्य uuid।",
     "Invalid choice(s): one or more data inputs could not be coerced.": "अमान्य पसंद (ओं): एक या अधिक डेटा इनपुट को मजबूर नहीं किया जा सकता है।",
     "Invalid email address.": "अमान्य ईमेल पता।",
-    "Invalid field name '%s'.": "अमान्य क्षेत्र का नाम '%s'।",
     "Invalid input.": "इनपुट।",
     "Invalid value for {param_hint}: {message}": "{Param_hint} के लिए अमान्य मान: {संदेश}",
     "Invalid value, can't be any of: %(values)s.": "अमान्य मूल्य, कोई भी नहीं हो सकता है: %(मान) एस।",
@@ -405,5 +404,5 @@
     "Version": "Version",
     "Tags": "Tags",
     "Keine Speicherstände gefunden.": "Keine Speicherstände gefunden.",
-    "Zurück": "Zurück",
+    "Zurück": "Zurück"
 }

@@ -108,7 +108,6 @@
     "Invalid UUID.": "Uuid tidak sah.",
     "Invalid choice(s): one or more data inputs could not be coerced.": "Pilihan tidak sah: Satu atau lebih input data tidak boleh dipaksa.",
     "Invalid email address.": "Alamat e -mel tidak sah.",
-    "Invalid field name '%s'.": "Nama medan tidak sah '%s'.",
     "Invalid input.": "Input.",
     "Invalid value for {param_hint}: {message}": "Nilai tidak sah untuk {param_hint}: {mesej}",
     "Invalid value, can't be any of: %(values)s.": "Nilai tidak sah, tidak boleh menjadi: %(nilai) s.",
@@ -405,5 +404,5 @@
     "Version": "Version",
     "Tags": "Tags",
     "Keine Speicherstände gefunden.": "Keine Speicherstände gefunden.",
-    "Zurück": "Zurück",
+    "Zurück": "Zurück"
 }

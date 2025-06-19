@@ -108,7 +108,6 @@
     "Invalid UUID.": "Неважећа ууид.",
     "Invalid choice(s): one or more data inputs could not be coerced.": "Неважећи избор (и): Један или више уноса података се не могу присилити.",
     "Invalid email address.": "Неважећа адреса е-поште.",
-    "Invalid field name '%s'.": "Неважеће име поља '% с'.",
     "Invalid input.": "Улаз.",
     "Invalid value for {param_hint}: {message}": "Неважећа вредност за {парам_хинт}: {мессаге}",
     "Invalid value, can't be any of: %(values)s.": "Неважећа вредност не може бити ниједна од:% (вредности) с.",
@@ -405,5 +404,5 @@
     "Version": "Version",
     "Tags": "Tags",
     "Keine Speicherstände gefunden.": "Keine Speicherstände gefunden.",
-    "Zurück": "Zurück",
+    "Zurück": "Zurück"
 }

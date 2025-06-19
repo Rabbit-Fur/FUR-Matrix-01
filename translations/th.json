@@ -108,7 +108,6 @@
     "Invalid UUID.": "ไม่ถูกต้อง uuid",
     "Invalid choice(s): one or more data inputs could not be coerced.": "ตัวเลือกที่ไม่ถูกต้อง: อินพุตข้อมูลอย่างน้อยหนึ่งรายการไม่สามารถบีบบังคับได้",
     "Invalid email address.": "ที่อยู่อีเมลไม่ถูกต้อง",
-    "Invalid field name '%s'.": "ชื่อฟิลด์ไม่ถูกต้อง '%s'",
     "Invalid input.": "ป้อนข้อมูล.",
     "Invalid value for {param_hint}: {message}": "ค่าไม่ถูกต้องสำหรับ {param_hint}: {message}",
     "Invalid value, can't be any of: %(values)s.": "ค่าที่ไม่ถูกต้องไม่สามารถเป็นของ: %(ค่า) s",
@@ -405,5 +404,5 @@
     "Version": "Version",
     "Tags": "Tags",
     "Keine Speicherstände gefunden.": "Keine Speicherstände gefunden.",
-    "Zurück": "Zurück",
+    "Zurück": "Zurück"
 }

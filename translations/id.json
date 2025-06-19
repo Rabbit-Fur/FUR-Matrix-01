@@ -108,7 +108,6 @@
     "Invalid UUID.": "Tidak valid uuid.",
     "Invalid choice(s): one or more data inputs could not be coerced.": "Pilihan tidak valid: satu atau lebih input data tidak dapat dipaksakan.",
     "Invalid email address.": "Alamat email yang tidak valid.",
-    "Invalid field name '%s'.": "Nama lapangan tidak valid '%s'.",
     "Invalid input.": "Masukan.",
     "Invalid value for {param_hint}: {message}": "Nilai tidak valid untuk {param_hint}: {pesan}",
     "Invalid value, can't be any of: %(values)s.": "Nilai tidak valid, tidak bisa salah satu dari: %(nilai) s.",
@@ -405,5 +404,5 @@
     "Version": "Version",
     "Tags": "Tags",
     "Keine Speicherstände gefunden.": "Keine Speicherstände gefunden.",
-    "Zurück": "Zurück",
+    "Zurück": "Zurück"
 }

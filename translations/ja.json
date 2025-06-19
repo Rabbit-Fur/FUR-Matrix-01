@@ -108,7 +108,6 @@
     "Invalid UUID.": "無効なuuid。",
     "Invalid choice(s): one or more data inputs could not be coerced.": "無効な選択：1つ以上のデータ入力を強制できませんでした。",
     "Invalid email address.": "無効なメールアドレス。",
-    "Invalid field name '%s'.": "無効なフィールド名「％s」。",
     "Invalid input.": "入力。",
     "Invalid value for {param_hint}: {message}": "{param_hint}の無効な値：{message}",
     "Invalid value, can't be any of: %(values)s.": "無効な値、それはできません：％（値）s。",
@@ -405,5 +404,5 @@
     "Version": "Version",
     "Tags": "Tags",
     "Keine Speicherstände gefunden.": "Keine Speicherstände gefunden.",
-    "Zurück": "Zurück",
+    "Zurück": "Zurück"
 }

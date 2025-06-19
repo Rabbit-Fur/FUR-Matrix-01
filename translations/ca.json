@@ -108,7 +108,6 @@
     "Invalid UUID.": "UUID no vàlid.",
     "Invalid choice(s): one or more data inputs could not be coerced.": "Elecció no vàlida: no es podia coaccionar una o més entrades de dades.",
     "Invalid email address.": "Adreça de correu electrònic no vàlida.",
-    "Invalid field name '%s'.": "Nom del camp no vàlid '%s'.",
     "Invalid input.": "Entrada.",
     "Invalid value for {param_hint}: {message}": "Valor no vàlid per a {param_hint}: {message}",
     "Invalid value, can't be any of: %(values)s.": "Valor no vàlid, no pot ser cap de: %(valors) s.",
@@ -405,5 +404,5 @@
     "Version": "Version",
     "Tags": "Tags",
     "Keine Speicherstände gefunden.": "Keine Speicherstände gefunden.",
-    "Zurück": "Zurück",
+    "Zurück": "Zurück"
 }

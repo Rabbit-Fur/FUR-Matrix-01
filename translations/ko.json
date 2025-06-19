@@ -108,7 +108,6 @@
     "Invalid UUID.": "잘못된 uuid.",
     "Invalid choice(s): one or more data inputs could not be coerced.": "유효하지 않은 선택 : 하나 이상의 데이터 입력을 강요 할 수 없습니다.",
     "Invalid email address.": "잘못된 이메일 주소.",
-    "Invalid field name '%s'.": "잘못된 필드 이름 '%s'.",
     "Invalid input.": "입력.",
     "Invalid value for {param_hint}: {message}": "{param_hint}에 대한 잘못된 값 : {message}",
     "Invalid value, can't be any of: %(values)s.": "유효하지 않은 값은 다음 중 어느 것도 될 수 없습니다. %(값) s.",
@@ -405,5 +404,5 @@
     "Version": "Version",
     "Tags": "Tags",
     "Keine Speicherstände gefunden.": "Keine Speicherstände gefunden.",
-    "Zurück": "Zurück",
+    "Zurück": "Zurück"
 }

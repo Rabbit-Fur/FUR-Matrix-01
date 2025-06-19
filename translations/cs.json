@@ -108,7 +108,6 @@
     "Invalid UUID.": "Neplatný uuid.",
     "Invalid choice(s): one or more data inputs could not be coerced.": "Neplatný výběr: jeden nebo více vstupů dat nemohl být vynucen.",
     "Invalid email address.": "Neplatná e -mailová adresa.",
-    "Invalid field name '%s'.": "Neplatný název pole '%S'.",
     "Invalid input.": "Vstup.",
     "Invalid value for {param_hint}: {message}": "Neplatná hodnota pro {param_hint}: {message}",
     "Invalid value, can't be any of: %(values)s.": "Neplatná hodnota, nemůže být žádný z: %(hodnoty) s.",
@@ -405,5 +404,5 @@
     "Version": "Version",
     "Tags": "Tags",
     "Keine Speicherstände gefunden.": "Keine Speicherstände gefunden.",
-    "Zurück": "Zurück",
+    "Zurück": "Zurück"
 }

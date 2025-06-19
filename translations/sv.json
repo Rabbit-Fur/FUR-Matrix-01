@@ -108,7 +108,6 @@
     "Invalid UUID.": "Ogiltig UUID.",
     "Invalid choice(s): one or more data inputs could not be coerced.": "Ogiltiga val (er): En eller flera datainmatningar kunde inte tvingas.",
     "Invalid email address.": "Ogiltig e -postadress.",
-    "Invalid field name '%s'.": "Ogiltigt fältnamn '%s'.",
     "Invalid input.": "Input.",
     "Invalid value for {param_hint}: {message}": "Ogiltigt värde för {param_hint}: {meddelande}",
     "Invalid value, can't be any of: %(values)s.": "Ogiltigt värde, kan inte vara någon av: %(värden).",
@@ -405,5 +404,5 @@
     "Version": "Version",
     "Tags": "Tags",
     "Keine Speicherstände gefunden.": "Keine Speicherstände gefunden.",
-    "Zurück": "Zurück",
+    "Zurück": "Zurück"
 }

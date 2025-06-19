@@ -108,7 +108,6 @@
     "Invalid UUID.": "uuid غير صالح.",
     "Invalid choice(s): one or more data inputs could not be coerced.": "خيار (خيار) غير صالح: لا يمكن إكراه واحد أو أكثر من مدخلات البيانات.",
     "Invalid email address.": "عنوان بريد إلكتروني غير صالح.",
-    "Invalid field name '%s'.": "اسم الحقل غير صالح '٪ s'.",
     "Invalid input.": "مدخل.",
     "Invalid value for {param_hint}: {message}": "قيمة غير صالحة لـ {param_hint}: {message}",
     "Invalid value, can't be any of: %(values)s.": "قيمة غير صالحة ، لا يمكن أن تكون أي من: ٪ (القيم) s.",
@@ -405,5 +404,5 @@
     "Version": "Version",
     "Tags": "Tags",
     "Keine Speicherstände gefunden.": "Keine Speicherstände gefunden.",
-    "Zurück": "Zurück",
+    "Zurück": "Zurück"
 }

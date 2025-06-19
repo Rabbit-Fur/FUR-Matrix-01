@@ -108,7 +108,6 @@
     "Invalid UUID.": "Neteisingas UUID.",
     "Invalid choice(s): one or more data inputs could not be coerced.": "Neteisingas pasirinkimas (-ai): Vieno ar daugiau duomenų įvesties nepavyko prievarta.",
     "Invalid email address.": "Neteisingas el. Pašto adresas.",
-    "Invalid field name '%s'.": "Neteisingas lauko pavadinimas '%S'.",
     "Invalid input.": "Įvestis.",
     "Invalid value for {param_hint}: {message}": "Neteisinga {param_hint}: {message} reikšmė",
     "Invalid value, can't be any of: %(values)s.": "Neteisinga vertė, negali būti: %(vertės) s.",
@@ -405,5 +404,5 @@
     "Version": "Version",
     "Tags": "Tags",
     "Keine Speicherstände gefunden.": "Keine Speicherstände gefunden.",
-    "Zurück": "Zurück",
+    "Zurück": "Zurück"
 }

@@ -108,7 +108,6 @@
     "Invalid UUID.": "UUID nevalid.",
     "Invalid choice(s): one or more data inputs could not be coerced.": "Alegerea nevalide: una sau mai multe intrări de date nu au putut fi constrânse.",
     "Invalid email address.": "Adresa de e -mail nevalide.",
-    "Invalid field name '%s'.": "Numele de câmp nevalid „%s”.",
     "Invalid input.": "Intrare.",
     "Invalid value for {param_hint}: {message}": "Valoare nevalide pentru {param_hint}: {mesaj}",
     "Invalid value, can't be any of: %(values)s.": "Valoare nevalide, nu poate fi niciunul de: %(valori) s.",
@@ -405,5 +404,5 @@
     "Version": "Version",
     "Tags": "Tags",
     "Keine Speicherstände gefunden.": "Keine Speicherstände gefunden.",
-    "Zurück": "Zurück",
+    "Zurück": "Zurück"
 }

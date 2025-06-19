@@ -108,7 +108,6 @@
     "Invalid UUID.": "UUID non valido.",
     "Invalid choice(s): one or more data inputs could not be coerced.": "Scelte non valide: uno o più input di dati non potevano essere costretti.",
     "Invalid email address.": "Indirizzo e -mail non valido.",
-    "Invalid field name '%s'.": "Nome campo non valido '%s'.",
     "Invalid input.": "Ingresso.",
     "Invalid value for {param_hint}: {message}": "Valore non valido per {param_hint}: {messaggio}",
     "Invalid value, can't be any of: %(values)s.": "Valore non valido, non può essere uno di: %(valori) s.",
@@ -405,5 +404,5 @@
     "Version": "Version",
     "Tags": "Tags",
     "Keine Speicherstände gefunden.": "Keine Speicherstände gefunden.",
-    "Zurück": "Zurück",
+    "Zurück": "Zurück"
 }
