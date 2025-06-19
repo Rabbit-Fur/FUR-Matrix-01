@@ -1,4 +1,4 @@
-from database.mongo_client import db
+from mongo_service import db
 
 
 def get_db():

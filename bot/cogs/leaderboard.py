@@ -4,8 +4,8 @@ import logging
 
 from discord.ext import commands
 
-from database.mongo_client import db
 from fur_lang.i18n import t
+from mongo_service import get_collection
 
 log = logging.getLogger(__name__)
 
@@ -18,28 +18,17 @@ class Leaderboard(commands.Cog):
     async def top_players(self, ctx: commands.Context, category: str = "raids") -> None:
         lang = "de"
         try:
-            rows = (
-                db["leaderboard"]
-                .find({"category": category.lower()})
-                .sort("score", -1)
-                .limit(10)
-            )
+            collection = get_collection("leaderboard")
+            rows = collection.find({"category": category.lower()}).sort("score", -1).limit(10)
             rows = list(rows)
             if not rows:
-                await ctx.send(
-                    t("leaderboard_unknown_category", category=category, lang=lang)
-                )
+                await ctx.send(t("leaderboard_unknown_category", category=category, lang=lang))
                 return
             header = t("leaderboard_header", category=category.capitalize(), lang=lang)
             content = "\n".join(
-                [
-                    f"{i+1}. {row['username']} – {row['score']}"
-                    for i, row in enumerate(rows)
-                ]
+                [f"{i+1}. {row['username']} – {row['score']}" for i, row in enumerate(rows)]
             )
-            await ctx.send(
-                t("leaderboard_message", header=header, content=content, lang=lang)
-            )
+            await ctx.send(t("leaderboard_message", header=header, content=content, lang=lang))
             log.info(f"📊 Live-Leaderboard '{category}' gesendet in {ctx.channel.id}")
         except Exception as e:
             log.error(f"❌ Fehler beim Leaderboard-Versand: {e}", exc_info=True)

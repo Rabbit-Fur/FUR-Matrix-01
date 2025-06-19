@@ -6,8 +6,8 @@ from datetime import datetime, timedelta
 import discord
 from discord.ext import commands, tasks
 
-from database.mongo_client import db
 from fur_lang.i18n import t
+from mongo_service import get_collection
 
 log = logging.getLogger(__name__)
 
@@ -21,7 +21,7 @@ class ReminderCog(commands.Cog):
         self.check_reminders.cancel()
 
     def get_user_language(self, user_id: int) -> str:
-        user = db["users"].find_one({"discord_id": str(user_id)})
+        user = get_collection("users").find_one({"discord_id": str(user_id)})
         return user.get("lang", "de") if user else "de"
 
     @tasks.loop(minutes=5.0)
@@ -31,33 +31,27 @@ class ReminderCog(commands.Cog):
         window_end = now + timedelta(minutes=15)
 
         try:
-            events = db["events"].find(
+            events = get_collection("events").find(
                 {"event_time": {"$gte": window_start, "$lte": window_end}}
             )
             for event in events:
-                participants = db["participants"].find({"event_id": event["_id"]})
+                participants = get_collection("participants").find({"event_id": event["_id"]})
                 for p in participants:
                     user_id = int(p["user_id"])
-                    if db["reminders_sent"].find_one(
+                    if get_collection("reminders_sent").find_one(
                         {"event_id": event["_id"], "user_id": user_id}
                     ):
                         continue
                     lang = self.get_user_language(user_id)
                     try:
-                        user = self.bot.get_user(user_id) or await self.bot.fetch_user(
-                            user_id
-                        )
+                        user = self.bot.get_user(user_id) or await self.bot.fetch_user(user_id)
                         if not user:
                             log.warning(f"User ID {user_id} not found.")
                             continue
                         msg = t("reminder_event_15min", title=event["title"], lang=lang)
                         await user.send(msg)
-                        db["reminders_sent"].insert_one(
-                            {
-                                "event_id": event["_id"],
-                                "user_id": user_id,
-                                "sent_at": now,
-                            }
+                        get_collection("reminders_sent").insert_one(
+                            {"event_id": event["_id"], "user_id": user_id, "sent_at": now}
                         )
                         log.info(f"📤 15-Minuten-Reminder an {user_id} gesendet.")
                     except discord.Forbidden:

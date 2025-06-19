@@ -3,9 +3,9 @@
 from datetime import datetime
 from typing import Dict, List, Optional
 
-from database.mongo_client import db
+from mongo_service import get_collection
 
-hof = db["hall_of_fame"]
+hof = get_collection("hall_of_fame")
 
 
 def save_champion_to_db(champion: Dict[str, str]) -> None:

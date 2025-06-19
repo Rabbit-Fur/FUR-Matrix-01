@@ -1,6 +1,6 @@
 """MongoDB initialization helpers for FUR system."""
 
-from database.mongo_client import db
+from mongo_service import db, verify_collections
 
 
 def get_db_connection():
@@ -9,5 +9,5 @@ def get_db_connection():
 
 
 def init_db():
-    """Placeholder for MongoDB initialization."""
-    return None
+    """Initialize MongoDB collections if missing."""
+    verify_collections()
