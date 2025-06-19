@@ -4,8 +4,8 @@ import logging
 
 from discord.ext import commands
 
-from database.mongo_client import db
 from fur_lang.i18n import t
+from mongo_service import get_collection
 
 log = logging.getLogger(__name__)
 
@@ -21,10 +21,9 @@ class ReminderOptOut(commands.Cog):
 
         if action and action.lower() == "stop":
             try:
-                db["reminder_optout"].update_one(
-                    {"discord_id": discord_id},
-                    {"$set": {"discord_id": discord_id}},
-                    upsert=True,
+                collection = get_collection("reminder_optout")
+                collection.update_one(
+                    {"discord_id": discord_id}, {"$set": {"discord_id": discord_id}}, upsert=True
                 )
                 log.info(f"🚫 User {discord_id} hat Reminder deaktiviert.")
                 await ctx.send(t("reminder_optout_success", lang=lang))

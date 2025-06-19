@@ -1,11 +1,15 @@
+import logging
 from datetime import datetime
-from flask import Blueprint, jsonify, request
-from database.mongo_client import db
-from schemas.event_schema import EventModel
+
 from bson import ObjectId
+from flask import Blueprint, jsonify, request
+
+from mongo_service import get_collection
+from schemas.event_schema import EventModel
 
 api_events = Blueprint("api_events", __name__, url_prefix="/api/events")
-events = db["events"]
+events = get_collection("events")
+log = logging.getLogger(__name__)
 
 
 def serialize_event(event: dict) -> dict:
@@ -16,7 +20,12 @@ def serialize_event(event: dict) -> dict:
 
 @api_events.route("/", methods=["GET"])
 def get_all_events():
-    return jsonify([serialize_event(e) for e in events.find()])
+    try:
+        data = [serialize_event(e) for e in events.find()]
+        return jsonify(data)
+    except Exception as e:
+        log.error("Failed to fetch events: %s", e)
+        return jsonify({"error": str(e)}), 500
 
 
 @api_events.route("/<event_id>", methods=["GET"])
@@ -27,6 +36,7 @@ def get_event(event_id):
             return jsonify(serialize_event(event))
         return jsonify({"error": "Event not found"}), 404
     except Exception:
+        log.exception("Invalid event id %s", event_id)
         return jsonify({"error": "Invalid ObjectId"}), 400
 
 
@@ -41,4 +51,5 @@ def create_event():
         event["id"] = str(result.inserted_id)
         return jsonify(event), 201
     except Exception as e:
+        log.error("Failed to create event: %s", e)
         return jsonify({"error": str(e)}), 400

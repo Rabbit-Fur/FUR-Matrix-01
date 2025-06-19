@@ -3,7 +3,7 @@ from datetime import datetime, timedelta
 
 from discord.ext import commands, tasks
 
-from database.mongo_client import db
+from mongo_service import get_collection
 
 log = logging.getLogger(__name__)
 REMINDER_INTERVAL_SECONDS = 60
@@ -25,19 +25,14 @@ class ReminderCog(commands.Cog):
         window_end = now + timedelta(minutes=6)
 
         try:
-            events = db["events"].find(
-                {
-                    "event_time": {
-                        "$gte": window_start,
-                        "$lte": window_end,
-                    }
-                }
+            events = get_collection("events").find(
+                {"event_time": {"$gte": window_start, "$lte": window_end}}
             )
             for event in events:
-                participants = db["event_participants"].find({"event_id": event["_id"]})
+                participants = get_collection("event_participants").find({"event_id": event["_id"]})
                 for p in participants:
                     user_id = int(p["user_id"])
-                    already_sent = db["reminders_sent"].find_one(
+                    already_sent = get_collection("reminders_sent").find_one(
                         {"event_id": event["_id"], "user_id": user_id}
                     )
                     if already_sent:
@@ -47,12 +42,8 @@ class ReminderCog(commands.Cog):
                         await user.send(
                             f"⏰ Reminder: Das Event **{event['title']}** beginnt in ca. 5 Minuten!"
                         )
-                        db["reminders_sent"].insert_one(
-                            {
-                                "event_id": event["_id"],
-                                "user_id": user_id,
-                                "sent_at": now,
-                            }
+                        get_collection("reminders_sent").insert_one(
+                            {"event_id": event["_id"], "user_id": user_id, "sent_at": now}
                         )
                     except Exception as e:
                         log.warning(f"❌ Konnte DM an {user_id} nicht senden: {e}")

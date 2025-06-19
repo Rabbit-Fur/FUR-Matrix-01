@@ -4,16 +4,16 @@ import logging
 from bson import ObjectId
 
 from bot.bot_main import bot
-from database.mongo_client import db
+from mongo_service import get_collection
 
 
 async def _send_reminder(reminder_id: str) -> None:
-    reminder = db["reminders"].find_one({"_id": ObjectId(reminder_id)})
+    reminder = get_collection("reminders").find_one({"_id": ObjectId(reminder_id)})
     if not reminder:
         logging.warning("Reminder-ID %s not found", reminder_id)
         return
 
-    participants = db["reminder_participants"].find({"reminder_id": reminder_id})
+    participants = get_collection("reminder_participants").find({"reminder_id": reminder_id})
 
     for row in participants:
         try:

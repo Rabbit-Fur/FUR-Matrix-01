@@ -1,14 +1,16 @@
 # core/logging/memory_logger.py
 
+import logging
 from datetime import datetime
 from typing import Literal
-from database.mongo_client import db
-import logging
+
+from mongo_service import db
 
 log = logging.getLogger(__name__)
 
 # Typ für erlaubte Aktionen
 MemoryAction = Literal["create", "update", "delete", "read", "sync"]
+
 
 def log_memory_change(_id: str, action: MemoryAction, data: dict) -> bool:
     """
@@ -23,12 +25,9 @@ def log_memory_change(_id: str, action: MemoryAction, data: dict) -> bool:
         bool: True bei Erfolg, False bei Fehler.
     """
     try:
-        result = db["memory_logs"].insert_one({
-            "memory_id": _id,
-            "action": action,
-            "data": data,
-            "timestamp": datetime.utcnow()
-        })
+        result = db["memory_logs"].insert_one(
+            {"memory_id": _id, "action": action, "data": data, "timestamp": datetime.utcnow()}
+        )
         log.debug(f"[MemoryLog] ✅ {action.upper()} für {_id} gespeichert: {result.inserted_id}")
         return True
     except Exception as e:

@@ -3,7 +3,7 @@ from datetime import datetime
 from flask import Blueprint, flash, jsonify, redirect, render_template, request, url_for
 
 from core.memory.memory_loader import load_gpt_contexts
-from database.mongo_client import db
+from mongo_service import db
 
 admin_memory = Blueprint("admin_memory", __name__)
 

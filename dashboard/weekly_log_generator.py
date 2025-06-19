@@ -3,7 +3,7 @@ from datetime import datetime, timedelta
 
 import requests
 
-from database.mongo_client import db
+from mongo_service import get_collection
 
 WEBHOOK_URL = os.getenv("DISCORD_WEBHOOK_URL")
 LOG_DIR = "core/logs"
@@ -18,24 +18,22 @@ def generate_markdown_report(participation, upcoming, filename):
         lines.append(f"- `{row['user_id']}` – **{row['count']}x teilgenommen**")
 
     lines.append("\n## 🔮 Kommende Events")
-    for event in upcoming:
-        lines.append(f"- **{event['title']}** – `{event['event_time']}`")
+    for ev in upcoming:
+        lines.append(f"- {ev['title']} – {ev['event_time'].strftime('%d.%m.%Y %H:%M')} UTC")
 
-    lines.append("\n[Zum Admin-Report im Web](/admin/weekly-report)")
-    content = "\n".join(lines)
-
-    with open(os.path.join(LOG_DIR, filename), "w", encoding="utf-8") as f:
-        f.write(content)
-
-    return content
+    path = os.path.join(LOG_DIR, filename)
+    with open(path, "w", encoding="utf-8") as f:
+        f.write("\n".join(lines))
+    return path
 
 
-def send_webhook(content):
+def send_webhook(markdown_file):
     if not WEBHOOK_URL:
-        print("⚠️ Kein DISCORD_WEBHOOK_URL gesetzt.")
         return
+    with open(markdown_file, "r", encoding="utf-8") as f:
+        data = {"content": f"```\n{f.read()}\n```"}
     try:
-        requests.post(WEBHOOK_URL, json={"content": content[:1900]})
+        requests.post(WEBHOOK_URL, json=data, timeout=10)
     except Exception as e:
         print(f"❌ Webhook-Fehler: {e}")
 
@@ -46,7 +44,7 @@ def run_weekly_log():
     week_end = now + timedelta(days=7)
 
     participation = list(
-        db["participants"].aggregate(
+        get_collection("participants").aggregate(
             [
                 {
                     "$lookup": {
@@ -64,11 +62,8 @@ def run_weekly_log():
     )
 
     upcoming = list(
-        db["events"]
-        .find(
-            {"event_time": {"$gte": now, "$lte": week_end}},
-            {"title": 1, "event_time": 1},
-        )
+        get_collection("events")
+        .find({"event_time": {"$gte": now, "$lte": week_end}}, {"title": 1, "event_time": 1})
         .sort("event_time", 1)
     )
 
@@ -76,7 +71,3 @@ def run_weekly_log():
     markdown = generate_markdown_report(participation, upcoming, filename)
     send_webhook(markdown)
     print(f"✅ Weekly log created: {filename}")
-
-
-if __name__ == "__main__":
-    run_weekly_log()

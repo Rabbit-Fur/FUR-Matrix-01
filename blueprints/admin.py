@@ -14,7 +14,7 @@ from flask import (
     url_for,
 )
 
-from database.mongo_client import db
+from mongo_service import db
 from web.auth.decorators import r4_required
 
 admin = Blueprint("admin", __name__)

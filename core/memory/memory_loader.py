@@ -1,9 +1,11 @@
 # core/memory/memory_loader.py
 
 from typing import List, Optional
-from database.mongo_client import db
+
+from mongo_service import db
 
 memory_collection = db["memory_contexts"]
+
 
 def load_gpt_contexts(tags: Optional[List[str]] = None) -> str:
     """

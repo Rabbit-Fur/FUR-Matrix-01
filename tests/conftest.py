@@ -18,12 +18,74 @@ os.environ.setdefault("R4_ROLE_IDS", "1")
 os.environ.setdefault("ADMIN_ROLE_IDS", "1")
 os.environ.setdefault("BASE_URL", "http://localhost:8080")
 
+import mongomock
+
+import mongo_service
 from web import create_app  # noqa: E402
+
+
+@pytest.fixture(scope="session", autouse=True)
+def _mock_db():
+    client = mongomock.MongoClient()
+    mongo_service.client = client
+    mongo_service.db = client["testdb"]
+    yield
 
 
 @pytest.fixture(scope="session")
 def app():
     app = create_app()
+
+    from flask import Blueprint
+
+    public = Blueprint("public", __name__)
+
+    @public.route("/set_language")
+    def set_language():
+        return "ok"
+
+    @public.route("/")
+    def landing():
+        return "home"
+
+    @public.route("/dashboard")
+    def dashboard():
+        return "dash"
+
+    @public.route("/events")
+    def events():
+        return "events"
+
+    @public.route("/leaderboard")
+    def leaderboard():
+        return "lb"
+
+    @public.route("/hall_of_fame")
+    def hall_of_fame():
+        return "hof"
+
+    @public.route("/lore")
+    def lore():
+        return "lore"
+
+    app.register_blueprint(public)
+
+    admin_bp = Blueprint("admin", __name__)
+
+    @admin_bp.route("/dashboard")
+    def dashboard():
+        return "admindash"
+
+    app.register_blueprint(admin_bp, url_prefix="/admin")
+
+    member_bp = Blueprint("member", __name__)
+
+    @member_bp.route("/dashboard")
+    def dashboard():
+        return "memberdash"
+
+    app.register_blueprint(member_bp, url_prefix="/members")
+
     app.config.update({"TESTING": True, "WTF_CSRF_ENABLED": False, "SERVER_NAME": "localhost:8080"})
     with app.app_context():
         yield app

@@ -15,8 +15,8 @@ from flask import (
     url_for,
 )
 
-from database.mongo_client import db
 from fur_lang.i18n import get_supported_languages
+from mongo_service import db
 from web.auth.decorators import r3_required
 
 public = Blueprint("public", __name__)
@@ -98,9 +98,7 @@ def discord_callback():
     )
 
     if token_res.status_code != 200:
-        current_app.logger.error(
-            "OAuth Token Error %s: %s", token_res.status_code, token_res.text
-        )
+        current_app.logger.error("OAuth Token Error %s: %s", token_res.status_code, token_res.text)
         flash("Discord Login fehlgeschlagen", "danger")
         return redirect(url_for("public.login"))
 
@@ -212,12 +210,8 @@ def leaderboard():
     rows = list(db["leaderboard"].find().sort("score", -1).limit(100))
     leaderboard_list = []
     for i, row in enumerate(rows, start=1):
-        leaderboard_list.append(
-            {"rank": i, "username": row["username"], "score": row["score"]}
-        )
-    return render_template(
-        "public/public_leaderboard.html", leaderboard=leaderboard_list
-    )
+        leaderboard_list.append({"rank": i, "username": row["username"], "score": row["score"]})
+    return render_template("public/public_leaderboard.html", leaderboard=leaderboard_list)
 
 
 @public.route("/dashboard")
