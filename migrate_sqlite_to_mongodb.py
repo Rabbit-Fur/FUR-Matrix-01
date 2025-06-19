@@ -1,8 +1,9 @@
 # migrate_sqlite_to_mongodb.py
 
-import sqlite3
-import pymongo
 import os
+import sqlite3
+
+import pymongo
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -11,7 +12,7 @@ load_dotenv()
 SQLITE_PATH = os.path.abspath("app/data/admin_users.db")  # oder aus init_db_core.py
 
 # 🔗 MongoDB
-MONGO_URI = os.getenv("DATABASE_URL")
+MONGO_URI = os.getenv("MONGODB_URI")
 mongo_client = pymongo.MongoClient(MONGO_URI)
 mongo_db = mongo_client["furdb"]
 

@@ -4,7 +4,7 @@ from datetime import timedelta
 from dotenv import load_dotenv
 
 from fur_lang.i18n import get_supported_languages
-from utils.env_helpers import get_env_bool, get_env_int, get_env_str
+from utils.env_helpers import get_env_int, get_env_str
 
 basedir = os.path.abspath(os.path.dirname(__file__))
 env_path = os.environ.get("ENV_FILE", os.path.join(basedir, ".env"))
@@ -32,13 +32,10 @@ class Config:
     WTF_CSRF_ENABLED: bool = True
 
     # --- Database ---
-    DATABASE_URL: str = get_env_str(
-        "DATABASE_URL",
+    MONGODB_URI: str = get_env_str(
+        "MONGODB_URI",
         required=False,
-        default=os.getenv(
-            "MONGODB_URI",
-            "mongodb+srv://maimarcelgpt:rC3LJVAnnD0Lii0f@furdb.qbrvzgp.mongodb.net/furdb",
-        ),
+        default=os.getenv("MONGODB_URI"),
     )
 
     # --- Discord Integration ---
@@ -50,12 +47,8 @@ class Config:
     DISCORD_CLIENT_SECRET: str = get_env_str("DISCORD_CLIENT_SECRET", required=True)
     DISCORD_REDIRECT_URI: str = get_env_str("DISCORD_REDIRECT_URI", required=True)
 
-    R3_ROLE_IDS: set[str] = set(
-        filter(None, get_env_str("R3_ROLE_IDS", default="").split(","))
-    )
-    R4_ROLE_IDS: set[str] = set(
-        filter(None, get_env_str("R4_ROLE_IDS", default="").split(","))
-    )
+    R3_ROLE_IDS: set[str] = set(filter(None, get_env_str("R3_ROLE_IDS", default="").split(",")))
+    R4_ROLE_IDS: set[str] = set(filter(None, get_env_str("R4_ROLE_IDS", default="").split(",")))
     ADMIN_ROLE_IDS: set[str] = set(
         filter(None, get_env_str("ADMIN_ROLE_IDS", default="").split(","))
     )
