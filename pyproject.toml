@@ -14,7 +14,8 @@ dependencies = [
   "pymongo>=4.7.0",
   "pydantic>=2.6.4",
   "Flask-Babel>=2.0.0",
-  "python-dotenv>=1.0.1"
+  "python-dotenv>=1.0.1",
+  "Markdown>=3.0"
 ]
 
 [tool.setuptools]
