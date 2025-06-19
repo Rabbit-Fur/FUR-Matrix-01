@@ -1,0 +1,37 @@
+{% extends 'admin/admin_base.html' %}
+
+{% block title %}🧠 Memory Viewer{% endblock %}
+
+{% block content %}
+<div class="memory-panel">
+  <h1>🧠 GPT Memory Log Viewer</h1>
+  <p>Hier siehst du alle gespeicherten Reflexionen, Logs und Speicherstände des Systems.</p>
+
+  <table class="memory-table">
+    <thead>
+      <tr>
+        <th>📅 Datum</th>
+        <th>📁 Typ</th>
+        <th>🧠 Version</th>
+        <th>🔖 Tags</th>
+        <th>🔗 Aktion</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for entry in memory_entries %}
+      <tr>
+        <td>{{ entry.exported_at.strftime('%Y-%m-%d %H:%M') }}</td>
+        <td>{{ entry.type }}</td>
+        <td>{{ entry.version }}</td>
+        <td>{{ entry.tags | join(', ') }}</td>
+        <td>
+          <a href="{{ url_for('admin_memory.view_entry', entry_id=entry._id) }}" class="btn">Anzeigen</a>
+        </td>
+      </tr>
+      {% else %}
+      <tr><td colspan="5">Keine Speicherstände gefunden.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

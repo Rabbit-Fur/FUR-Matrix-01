@@ -1,0 +1,13 @@
+{% extends 'admin/admin_base.html' %}
+{% block title %}🧠 Memory Detail{% endblock %}
+
+{% block content %}
+<h1>🧾 Detailansicht: {{ entry.name }}</h1>
+<p><strong>Version:</strong> {{ entry.version }}</p>
+<p><strong>Tags:</strong> {{ entry.tags | join(', ') }}</p>
+<p><strong>Datum:</strong> {{ entry.exported_at.strftime('%Y-%m-%d %H:%M') }}</p>
+
+<pre class="memory-content">{{ entry.content_md or entry.content | tojson(indent=2) }}</pre>
+
+<a href="{{ url_for('admin_memory.index') }}" class="btn">🔙 Zurück</a>
+{% endblock %}
