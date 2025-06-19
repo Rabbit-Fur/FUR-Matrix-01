@@ -40,6 +40,7 @@ rich==14.0.0
 setuptools==80.7.1
 types-python-dateutil==2.9.0.20250516
 aiodns>=3.5.0
+bleach>=6.0
 
 # 🧪 Dev & Testing
 pytest>=7.0.0
