@@ -19,9 +19,9 @@ from agents.agenten_loader import init_agents
 
 # 🌍 Module
 from database import close_db
-from database.mongo_client import db  # MongoDB-Instanz
 from fur_lang.i18n import t
 from init_db_core import init_db
+from mongo_service import db  # MongoDB-Instanz
 from utils.env_helpers import get_env_bool, get_env_int
 from utils.github_service import fetch_repo_info
 from web import create_app
