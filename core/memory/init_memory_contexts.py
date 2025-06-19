@@ -1,11 +1,14 @@
 # scripts/init_memory_modules.py
 
-from datetime import datetime
-from pymongo import MongoClient
 import logging
+import os
+from datetime import datetime
+
+from pymongo import MongoClient
 
 # 🔧 MongoDB-Verbindung
-client = MongoClient("mongodb+srv://maimarcelgpt:rC3LJVAnnD0Lii0f@furdb.qbrvzgp.mongodb.net/furdb?retryWrites=true&w=majority&appName=FURdb")
+MONGO_URI = os.getenv("MONGODB_URI")
+client = MongoClient(MONGO_URI)
 db = client["furdb"]
 memory_collection = db["memory_contexts"]
 
@@ -23,7 +26,11 @@ modules = [
         "type": "feature",
         "tags": ["reminder", "discord", "notification", "multilingual"],
         "description": "Reminder-Cog mit Discord-DM, Zeitsteuerung, UI-Adminpanel und Mehrsprachigkeit über fur_lang.",
-        "code_refs": ["discord_bot/cogs/reminder_cog.py", "templates/reminders.html", "core/tasks/reminder_scheduler.py"],
+        "code_refs": [
+            "discord_bot/cogs/reminder_cog.py",
+            "templates/reminders.html",
+            "core/tasks/reminder_scheduler.py",
+        ],
     },
     {
         "_id": "discord_login_roles",
@@ -59,8 +66,9 @@ modules = [
         "tags": ["gpt", "memory", "mongo", "context"],
         "description": "Ermöglicht das Laden aller Memory-Module aus MongoDB als Kontext für GPT oder Systemmodule.",
         "code_refs": ["core/memory/memory_loader.py"],
-    }
+    },
 ]
+
 
 # 🧠 Memory-Kontexte einfügen
 def store_modules():
@@ -72,6 +80,7 @@ def store_modules():
         result = memory_collection.replace_one({"_id": module["_id"]}, module, upsert=True)
         inserted += result.upserted_id is not None or result.modified_count
     return inserted
+
 
 if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO)
