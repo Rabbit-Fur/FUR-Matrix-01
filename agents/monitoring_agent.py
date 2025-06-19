@@ -1,10 +1,10 @@
-"""
-MonitoringAgent – sammelt System-Status, Fehler-Logs und Healthchecks für das FUR-System
-"""
+"""Monitor system status, errors and healthchecks for the FUR system."""
 
-import requests
 import logging
 from datetime import datetime
+
+import requests
+
 
 class MonitoringAgent:
     def __init__(self, health_url="http://localhost:8080/health", timeout=3):
@@ -35,5 +35,5 @@ class MonitoringAgent:
         return {
             "checked_at": self.last_check,
             "status_ok": self.last_status,
-            "raw_response": self.last_response
+            "raw_response": self.last_response,
         }

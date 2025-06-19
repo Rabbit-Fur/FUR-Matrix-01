@@ -1,7 +1,4 @@
-"""
-main_app.py – Einstiegspunkt für das FUR-System (Web & Discord-Bot)
-Mit Debug-Modus für lokale Entwicklung und sauberem Application-Factory-Pattern.
-"""
+"""Entry point for running the FUR system locally."""
 
 import asyncio
 import atexit
@@ -15,16 +12,15 @@ import threading
 from dotenv import load_dotenv
 from flask import Response, session
 
-sys.path.append(os.path.dirname(__file__))
-
 # 🌍 Module
-from dashboard.routes import dashboard
 from database import close_db  # ✅ DB-Teardown importieren
 from fur_lang.i18n import t
 from init_db_core import init_db
 from utils.env_helpers import get_env_bool, get_env_int
 from utils.github_service import fetch_repo_info
 from web import create_app
+
+sys.path.append(os.path.dirname(__file__))
 
 # === Flask App erstellen ===
 app = create_app()

@@ -1,8 +1,9 @@
 from datetime import datetime
+
 from flask import Blueprint, jsonify, request
+
 from database.mongo_client import db
 from schemas.user_schema import UserModel
-from bson import ObjectId
 
 api_users = Blueprint("api_users", __name__, url_prefix="/api/users")
 users = db["users"]

@@ -1,8 +1,8 @@
 # agents/access_agent.py
 
 import os
-import logging
 from datetime import datetime
+
 
 class AccessAgent:
     def __init__(self, db):
@@ -24,18 +24,24 @@ class AccessAgent:
 
     def log_access(self, discord_id: str, action: str, result: str):
         """Speichert einen Audit-Log über den Rollencheck"""
-        self.db["access_logs"].insert_one({
-            "discord_id": discord_id,
-            "action": action,
-            "result": result,
-            "timestamp": datetime.utcnow()
-        })
+        self.db["access_logs"].insert_one(
+            {
+                "discord_id": discord_id,
+                "action": action,
+                "result": result,
+                "timestamp": datetime.utcnow(),
+            }
+        )
 
     def has_access(self, discord_id: str, discord_roles: list[str], required_level: str) -> bool:
         role_level = self.get_user_role_level(discord_roles)
         level_map = {"guest": 0, "R3": 1, "R4": 2, "admin": 3}
         result = level_map.get(role_level, 0) >= level_map.get(required_level, 0)
-        self.log_access(discord_id, f"require:{required_level}", "✅ allow" if result else "❌ deny")
+        self.log_access(
+            discord_id,
+            f"require:{required_level}",
+            "✅ allow" if result else "❌ deny",
+        )
         return result
 
     def is_admin(self, discord_roles: list[str]) -> bool:

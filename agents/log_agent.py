@@ -1,10 +1,10 @@
 # agents/log_agent.py
 
-import os
 import logging
-import requests
 from datetime import datetime, timedelta
 from pathlib import Path
+
+import requests
 
 
 class LogAgent:
@@ -15,16 +15,22 @@ class LogAgent:
 
     def _count_today(self, collection_name, date_field="created_at"):
         today = datetime.utcnow().date()
-        return self.db[collection_name].count_documents({
-            date_field: {"$gte": datetime(today.year, today.month, today.day)}
-        })
+        return self.db[collection_name].count_documents(
+            {
+                date_field: {
+                    "$gte": datetime(
+                        today.year,
+                        today.month,
+                        today.day,
+                    )
+                }
+            }
+        )
 
     def _count_last_week(self, collection_name, date_field="created_at"):
         now = datetime.utcnow()
         last_week = now - timedelta(days=7)
-        return self.db[collection_name].count_documents({
-            date_field: {"$gte": last_week}
-        })
+        return self.db[collection_name].count_documents({date_field: {"$gte": last_week}})
 
     def generate_daily_log(self) -> str:
         today = datetime.utcnow().strftime("%Y-%m-%d")
@@ -53,12 +59,12 @@ class LogAgent:
         log = [
             f"# 📊 Weekly Log – KW {week} ({now.strftime('%Y-%m-%d')})",
             "",
-            f"- 👥 Neue Nutzer diese Woche: **{self._count_last_week('users')}**",
-            f"- 📆 Neue Events diese Woche: **{self._count_last_week('events')}**",
-            f"- 🔔 Neue Reminders diese Woche: **{self._count_last_week('reminders')}**",
+            (f"- 👥 Neue Nutzer diese Woche: **" f"{self._count_last_week('users')}**"),
+            (f"- 📆 Neue Events diese Woche: **" f"{self._count_last_week('events')}**"),
+            (f"- 🔔 Neue Reminders diese Woche: **" f"{self._count_last_week('reminders')}**"),
             "",
             "📈 Aktivität stabil",
-            "_Erstellt vom FUR SYSTEM Monitoring_"
+            "_Erstellt vom FUR SYSTEM Monitoring_",
         ]
         content = "\n".join(log)
         file_path = self.log_dir / f"weekly_log_kw{week}.md"
@@ -68,7 +74,8 @@ class LogAgent:
     def send_to_discord(self, content: str, webhook_url: str) -> bool:
         try:
             payload = {
-                "content": f"📄 FUR LOG:\n```md\n{content[:1900]}\n```"  # Discord limitiert auf 2000 chars
+                # Discord payload is limited to 2000 characters
+                "content": f"📄 FUR LOG:\n```md\n{content[:1900]}\n```"
             }
             response = requests.post(webhook_url, json=payload)
             logging.info(f"📤 Log an Discord gesendet: {response.status_code}")

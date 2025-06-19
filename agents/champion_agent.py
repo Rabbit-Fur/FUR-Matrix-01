@@ -1,6 +1,6 @@
-"""
-ChampionAgent – generiert Poster, speichert Hall-of-Fame und triggert Discord-Webhook
-"""
+"""ChampionAgent handles poster generation and hall of fame entries."""
+
+
 class ChampionAgent:
     def __init__(self, db):
         self.db = db

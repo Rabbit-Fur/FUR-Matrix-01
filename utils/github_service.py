@@ -1,8 +1,8 @@
 """
-github_service.py – Utilities für GitHub API Integration
+Utilities for GitHub API integration.
 
-Bietet Funktionen, um mit dem GitHub REST API Repos, Commits, Branches und Pull Requests programmatisch zu verwalten.
-Alle API-Keys werden aus Umgebungsvariablen geladen.
+Provides helpers for managing repos, commits, branches and pull requests via the
+GitHub REST API. All API keys are loaded from environment variables.
 """
 
 import base64
@@ -23,9 +23,7 @@ HEADERS = {"Accept": "application/vnd.github.v3+json"}
 if TOKEN:
     HEADERS["Authorization"] = f"token {TOKEN}"
 else:
-    logging.warning(
-        "TOKEN_GITHUB_API nicht gesetzt – GitHub API-Aufrufe k\u00f6nnen scheitern."
-    )
+    logging.warning("TOKEN_GITHUB_API nicht gesetzt – GitHub API-Aufrufe k\u00f6nnen scheitern.")
 if not REPO:
     logging.warning("REPO_GITHUB nicht gesetzt – GitHub API deaktiviert.")
 
@@ -33,17 +31,13 @@ if not REPO:
 def _check_response(response: requests.Response) -> None:
     """Raise informative errors for GitHub API calls."""
     if response.status_code == 401:
-        logging.error(
-            "❌ GitHub API 401 Unauthorized. Token fehlt oder ist ung\u00fcltig."
-        )
+        logging.error("❌ GitHub API 401 Unauthorized. Token fehlt oder ist ung\u00fcltig.")
         raise RuntimeError("GitHub API: Unauthorized - TOKEN_GITHUB_API pr\u00fcfen")
     response.raise_for_status()
 
 
 if not REPO or not TOKEN:
-    raise RuntimeError(
-        "Bitte Umgebungsvariablen REPO_GITHUB und TOKEN_GITHUB_API setzen!"
-    )
+    raise RuntimeError("Bitte Umgebungsvariablen REPO_GITHUB und TOKEN_GITHUB_API setzen!")
 
 HEADERS = {
     "Authorization": f"token {TOKEN}",
@@ -74,9 +68,7 @@ def fetch_repo_info(owner: Optional[str] = None, repo: Optional[str] = None) -> 
     url = f"{GITHUB_API}/repos/{owner}/{repo_name}"
     response = requests.get(url, headers=HEADERS)
     if response.status_code == 401:
-        logging.error(
-            "❌ GitHub API 401 Unauthorized. Token fehlt oder ist ung\u00fcltig."
-        )
+        logging.error("❌ GitHub API 401 Unauthorized. Token fehlt oder ist ung\u00fcltig.")
     response.raise_for_status()
     _check_response(response)
     return response.json()

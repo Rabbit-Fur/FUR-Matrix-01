@@ -1,8 +1,4 @@
-"""
-member_routes.py – Flask Blueprint für Member-Bereich (R3+)
-
-Stellt alle Views für eingeloggte Mitglieder bereit. Zugriff ist durch r3_required-Decorator geschützt.
-"""
+"""Member routes protected by the ``r3_required`` decorator."""
 
 from flask import Blueprint, render_template
 

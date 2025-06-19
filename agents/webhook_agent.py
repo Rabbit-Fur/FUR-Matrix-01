@@ -1,16 +1,21 @@
-"""
-WebhookAgent – verwaltet alle ausgehenden Webhook-Nachrichten zentral (Discord, CI, Fehler, Events)
-"""
+"""Central handler for outgoing webhook messages (Discord, CI, events)."""
 
-import requests
 import logging
 from typing import Optional
+
+import requests
+
 
 class WebhookAgent:
     def __init__(self, default_url: Optional[str] = None):
         self.default_url = default_url
 
-    def send(self, content: str, webhook_url: Optional[str] = None, file_path: Optional[str] = None) -> bool:
+    def send(
+        self,
+        content: str,
+        webhook_url: Optional[str] = None,
+        file_path: Optional[str] = None,
+    ) -> bool:
         url = webhook_url or self.default_url
         if not url:
             logging.error("❌ Kein Webhook-URL angegeben")
@@ -31,7 +36,9 @@ class WebhookAgent:
     def send_log_notification(self, log_content: str) -> bool:
         return self.send(content=f"📘 Neue Log-Datei:\n```{log_content[:1800]}```")
 
-    def send_champion_announcement(self, username: str, title: str, month: str, file_path: str) -> bool:
+    def send_champion_announcement(
+        self, username: str, title: str, month: str, file_path: str
+    ) -> bool:
         message = f"🏆 **{title}**\n{username} wurde Champion im Monat {month}!"
         return self.send(content=message, file_path=file_path)
 

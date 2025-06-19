@@ -7,7 +7,6 @@ import asyncio
 import atexit
 import locale
 import logging
-import os
 import signal
 import sys
 import threading
@@ -15,20 +14,17 @@ import threading
 from dotenv import load_dotenv
 from flask import Response, session
 
-sys.path.append(os.path.dirname(__file__))
+# ✅ Korrekt: Agenten-Loader importieren
+from agents.agenten_loader import init_agents
 
 # 🌍 Module
-from dashboard.routes import dashboard
 from database import close_db
+from database.mongo_client import db  # MongoDB-Instanz
 from fur_lang.i18n import t
 from init_db_core import init_db
 from utils.env_helpers import get_env_bool, get_env_int
 from utils.github_service import fetch_repo_info
 from web import create_app
-
-# ✅ Korrekt: Agenten-Loader importieren
-from agents.agenten_loader import init_agents
-from database.mongo_client import db  # MongoDB-Instanz
 
 # === Flask App erstellen ===
 app = create_app()
@@ -70,6 +66,7 @@ def start_discord_bot():
     try:
         logging.info("🤖 Starte Discord-Bot...")
         from bot.bot_main import run_bot
+
         asyncio.run(run_bot())
     except Exception as e:
         log_error("Discord-Bot", e)

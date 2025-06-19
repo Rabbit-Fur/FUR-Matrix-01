@@ -1,9 +1,9 @@
 """
 translation_auto.py – Automatisches Extrahieren und Übersetzen von UI-Texten
 
-Dieses Skript sucht in Quellcode und Templates nach allen Aufrufen von ``t(“…”)`` und schreibt sie als JSON-Datei,
-übersetzt sie bei Bedarf automatisiert via OpenAI GPT (oder kopiert sie als Fallback)
-und schreibt das Ergebnis als JSON-Translation-File für Flask-Babel/i18n.
+Dieses Skript sucht in Quellcode und Templates nach allen Aufrufen von ``t(“…”)`` und schreibt sie als JSON-Datei,  # noqa: E501
+übersetzt sie bei Bedarf automatisiert via OpenAI GPT (oder kopiert sie als Fallback)  # noqa: E501
+und schreibt das Ergebnis als JSON-Translation-File für Flask-Babel/i18n.  # noqa: E501
 """
 
 import json
@@ -28,7 +28,7 @@ if USE_GPT and not openai.api_key:
 
 def scan_translation_keys() -> List[str]:
     """
-    Scannt alle Quellverzeichnisse nach Aufrufen von t ('Text') und gibt eine sortierte Liste zurück.
+    Scannt alle Quellverzeichnisse nach Aufrufen von t ('Text') und gibt eine sortierte Liste zurück.  # noqa: E501
 
     Returns:
         List[str]: Alphabetisch sortierte Liste aller gefundenen Keys.
@@ -66,7 +66,7 @@ def translate_gpt(text: str) -> str:
             messages=[
                 {
                     "role": "user",
-                    "content": f"Übersetze folgenden Text für eine Benutzeroberfläche ins Deutsche: '{text}'",
+                    "content": f"Übersetze folgenden Text für eine Benutzeroberfläche ins Deutsche: '{text}'",  # noqa: E501
                 }
             ],
             temperature=0.3,
