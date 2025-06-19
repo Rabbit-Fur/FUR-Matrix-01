@@ -261,5 +261,16 @@
   "…": "…",
   "⏰ Erinnerung auslösen": "⏰ Ενεργοποίηση υπενθύμισης",
   "🏆 Champion posten": "🏆 Δημοσίευση Πρωταθλητή",
-  "🧪 Healthcheck ausführen": "🧪 Εκτέλεση Healthcheck"
+  "🧪 Healthcheck ausführen": "🧪 Εκτέλεση Healthcheck",
+  "member_access_required": "Member-only access required.",
+  "admin_access_required": "Only admins can access this section.",
+  "superuser_access_required": "System access restricted to superusers.",
+  "logout_successful": "You have been logged out successfully.",
+  "oauth_missing_code": "Missing authorization code",
+  "oauth_invalid_state": "Invalid OAuth state",
+  "discord_login_failed": "Discord login failed",
+  "discord_not_member": "Not a member of the FUR Discord server",
+  "role_invalid_for_access": "No valid role for access",
+  "discord_login_success": "Successfully logged in with Discord",
+  "event_join_success": "Successfully joined the event!"
 }

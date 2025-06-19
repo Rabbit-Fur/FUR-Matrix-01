@@ -9,6 +9,8 @@ from functools import wraps
 
 from flask import flash, redirect, session, url_for
 
+from fur_lang.i18n import t
+
 
 def login_required(view_func):
     """Schützt eine Route für eingeloggte User."""
@@ -16,7 +18,7 @@ def login_required(view_func):
     @wraps(view_func)
     def wrapper(*args, **kwargs):
         if "user" not in session:
-            flash("Du musst eingeloggt sein.", "warning")
+            flash(t("login_required"), "warning")
             return redirect(url_for("public.login"))
         return view_func(*args, **kwargs)
 
@@ -29,7 +31,7 @@ def r3_required(view_func):
     @wraps(view_func)
     def wrapper(*args, **kwargs):
         if session.get("user", {}).get("role_level") not in ["R3", "R4", "ADMIN"]:
-            flash("Zugriff nur für Mitglieder möglich.")
+            flash(t("member_access_required"))
             return redirect(url_for("public.login"))
         return view_func(*args, **kwargs)
 
@@ -42,7 +44,7 @@ def r4_required(view_func):
     @wraps(view_func)
     def wrapper(*args, **kwargs):
         if session.get("user", {}).get("role_level") not in ["R4", "ADMIN"]:
-            flash("Nur Admins dürfen diesen Bereich aufrufen.")
+            flash(t("admin_access_required"))
             return redirect(url_for("public.login"))
         return view_func(*args, **kwargs)
 
@@ -55,7 +57,7 @@ def admin_required(view_func):
     @wraps(view_func)
     def wrapper(*args, **kwargs):
         if session.get("user", {}).get("role_level") != "ADMIN":
-            flash("Systemzugriff nur für Superuser.")
+            flash(t("superuser_access_required"))
             return redirect(url_for("public.login"))
         return view_func(*args, **kwargs)
 
