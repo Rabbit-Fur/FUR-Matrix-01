@@ -1,0 +1,38 @@
+{
+  "name": "Migrate from SQLite to MongoDB",
+  "description": "Remove all SQLite usage and fully migrate to MongoDB (furdb). Replace connection logic, queries, and data access patterns.",
+  "source_files": [
+    "init_db_core.py",
+    "database/__init__.py",
+    "web/routes/reminder_api.py",
+    "bot/cogs/leaderboard_cog.py",
+    "web/routes/event_api.py",
+    "web/routes/user_api.py"
+  ],
+  "tasks": [
+    {
+      "title": "Remove SQLite dependency",
+      "description": "Delete all `sqlite3` imports and remove any use of `get_db_connection()`."
+    },
+    {
+      "title": "Create mongo_service.py",
+      "description": "Implement a centralized connection handler using pymongo and expose `get_collection(name)`."
+    },
+    {
+      "title": "Replace SQL queries with PyMongo",
+      "description": "Replace SELECT/INSERT/UPDATE/DELETE SQL statements with PyMongo equivalents (find, insert_one, update_one, delete_one)."
+    },
+    {
+      "title": "Update all routes and cogs to use Mongo",
+      "description": "Ensure all Flask routes and Discord cogs use the new MongoDB connection structure."
+    },
+    {
+      "title": "Add MongoDB error handling",
+      "description": "Add basic exception handling and logging for all MongoDB interactions."
+    },
+    {
+      "title": "Verify collections",
+      "description": "Ensure that the following collections exist: `users`, `events`, `reminders`, `event_participants`, `hall_of_fame`."
+    }
+  ]
+}
