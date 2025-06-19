@@ -1,0 +1,397 @@
+%(prog)s, version %(version)s
+(dynamic)
+404 - Seite nicht gefunden
+Aborted!
+Admin
+Admin Dashboard
+Admin Downloads
+Admin Einstellungen
+Admin Kalender
+Admin Tools
+Admin-Tools
+Aktion
+Aktionen
+Aktive Events
+Alle Events
+Alle Events verwalten
+Alle geplanten Events
+Anzahl Teilnahmen
+Argument {name!r} takes {nargs} values.
+Bearbeiten
+Beitreten
+Benachrichtigungen & Einstellungen
+Beschreibung
+Bot Einstellungen
+Bot-Einstellungen
+CSRF failed.
+CSRF token expired.
+CSRF token missing.
+CSV-Exporte
+Champion
+Champion Poster
+Champion posten
+Check-in
+Choices cannot be None.
+Choose from:
+        {choices}
+Clanregeln (PDF)
+Commands
+Could not open file {filename!r}: {message}
+Couldn't detect Bash version, shell completion is not supported.
+DM erlaubt
+Das zentrale Portal für Events, Auszeichnungen und Ruhm.
+Dashboard
+Datum
+Datum & Uhrzeit
+Dein Einstieg ins System. Alles über die Navigation oben erreichbar.
+Deine Statistiken
+DeprecationWarning: The command {name!r} is deprecated.{extra_message}
+DeprecationWarning: The {param_type} {name!r} is deprecated.{extra_message}
+Design-Richtlinien
+Details
+Die Geschichte der FUR-Alliance und ihrer Champions…
+Die angeforderte Seite existiert nicht oder wurde verschoben.
+Die besten Mitglieder im Überblick – Punktestand und Rang
+Diplomatie
+Diplomatie (Admin)
+Diplomatische Beziehungen
+Direktnachrichten vom Bot erlauben
+Discord User ID
+Downloads
+Downloads für Mitglieder
+Du hast keinen Zugriff auf diesen Bereich.
+Ehrenhalle
+Eigene Statistiken, News, Infos…
+Eigene Werte und Erfolge.
+Einleitung
+Einstellungen
+Erfolg
+Erinnerung auslösen
+Error: The two entered values do not match.
+Error: The value you entered was invalid.
+Error: invalid input
+Error: {e.message}
+Error: {message}
+Erstellen
+Event bearbeiten
+Event erstellen
+Event erstellen (Admin)
+Event-Kalender
+Event-Kalender (Admin)
+Eventdetails
+Events
+Events besucht
+Events verwalten
+Exporte & Berichte
+FUR Logos (ZIP)
+Fehler
+Fehlermeldung
+Feindliche Nationen
+Field must be between %(min)d and %(max)d characters long.
+Field must be equal to %(other_name)s.
+File does not have an approved extension.
+File does not have an approved extension: {extensions}
+Funktionen
+Game-Lore & Hintergrund
+Gespendet
+Hall of Fame
+Healthcheck ausführen
+Hier findest du Downloads, Stats und deine persönlichen Daten.
+Hier findest du alle anstehenden Events der Allianz. Mit einem Klick kannst du teilnehmen.
+Home
+ID
+Invalid CSRF Token.
+Invalid Choice: could not coerce.
+Invalid IP address.
+Invalid Mac address.
+Invalid URL.
+Invalid UUID.
+Invalid choice(s): one or more data inputs could not be coerced.
+Invalid email address.
+Invalid field name '%s'.
+Invalid input.
+Invalid value for {param_hint}: {message}
+Invalid value, can't be any of: %(values)s.
+Invalid value, must be one of: %(values)s.
+Invalid value: {message}
+Kalender
+Kein Zugriff
+Keine
+Keine Benutzer gefunden.
+Keine Berichte verfügbar.
+Keine Daten verfügbar
+Keine Daten vorhanden.
+Keine Downloads verfügbar.
+Keine Einträge
+Keine Einträge in dieser Kategorie.
+Keine Events gefunden.
+Keine Events in den nächsten 7 Tagen.
+Keine Leaderboards gefunden.
+Keine Sprachen gefunden
+Keine Teilnehmer gefunden.
+Keine geplanten Events gefunden.
+Kommende Events
+Kommende Events (nächste 7 Tage)
+Kontrollzentrum
+Leaderboard
+Leaderboard Übersicht (Vollansicht)
+Leaderboards
+Leaderboards (Admin)
+Leaderboards verwalten
+Letzte Berichte
+Letzte Änderungen
+Login
+Login mit Discord
+Lore
+Löschen
+Makro-Konfiguration
+Meine Statistiken
+Member Dashboard
+Member Downloads
+Member Stats
+Missing argument
+Missing command.
+Missing option
+Missing parameter
+Missing parameter: {param_name}
+Missing {param_type}
+Mit Discord anmelden
+Mitglied seit
+Mitglieder
+Mitglieder-Downloads
+Mitglieder-Einstellungen
+Mitglieder-Übersicht
+Mitgliederstatistiken
+Monat
+Monatlich
+Neue Events
+Neues Event erstellen
+No data available
+No entries in Hall of Fame.
+No events yet.
+No participants yet.
+No such command {name!r}.
+No such option: {name}
+Noch keine diplomatischen Daten verfügbar.
+Not a valid choice.
+Not a valid date value.
+Not a valid datetime value.
+Not a valid decimal value.
+Not a valid float value.
+Not a valid integer value.
+Not a valid time value.
+Not a valid week value.
+Number must be at least %(min)s.
+Number must be at most %(max)s.
+Number must be between %(min)s and %(max)s.
+Nutzer
+Nutzer insgesamt
+Offene Aufgaben
+Option {name!r} does not take a value.
+Options
+Persönliche Statistiken als Download.
+Poster
+Press any key to continue...
+Public Dashboard
+Punkte
+Punkte insgesamt
+Raid-Punkte
+Rang
+Regeln
+Repeat for confirmation
+Rolle
+Ruhmeshalle
+Scores Export
+Seite nicht gefunden
+Setup-Anleitung
+Shell completion is not supported for Bash versions older than 4.4.
+Show the version and exit.
+Show this message and exit.
+Speichern
+Spenden
+Sprache wählen
+Sprachen
+Startseite
+Statistik
+Statistiken
+Systemkontrolle, Nutzer, Einstellungen, Logs…
+Systemkontrolle, Nutzerverwaltung, Logs, Einstellungen, Tools…
+Systemstatus
+Systemstatus, Statistiken und Schnellzugriffe:
+Teilnahme
+Teilnahme letzte 7 Tage
+Teilnahmen an Events
+Teilnahmestatus
+Teilnehmer
+Teilnehmer (Admin)
+Teilnehmer Export
+Teilnehmer aller Events
+Teilnehmer verwalten
+Teilnehmerliste
+This field cannot be edited.
+This field is disabled and cannot have a value.
+This field is required.
+Titel
+Tools
+Tools & Konfigurationen
+Translations Editor (Admin)
+Tritt bei
+Try '{command} {option}' for help.
+Täglich
+Unbekanntes Event
+Usage:
+User
+Value must be an iterable.
+Verbleibende Zeit
+Verbündete Nationen
+Verlauf
+Verwalten
+Wartung & Tools
+Wartung & Trigger
+Wichtige Dateien
+Wiederholung
+Willkommen
+Willkommen bei FUR MATRIX!
+Willkommen bei System by FUR
+Willkommen im Mitgliederbereich
+Wirklich löschen?
+Wöchentlich
+Wöchentlicher Report
+Zielrolle
+Zum Dashboard
+Zurück zur Eventliste
+Zurück zur Startseite
+actions
+announce_error
+announce_message
+announce_no_permission
+announce_usage
+back_to_home
+base_fur_info
+base_ping_pong
+calendar_heading
+calendar_title
+deactivate
+default: {default}
+defend_honor
+details_button
+directory
+env var: {var}
+error_default_message
+error_title
+event_detail_title
+event_not_found
+events_title
+file
+hall_of_fame_title
+honor_code
+join_event
+leaderboard_error
+leaderboard_header
+leaderboard_message
+leaderboard_title
+leaderboard_unknown_category
+login_required
+login_title
+login_with_discord
+lore_closing
+lore_cycle_conclusion_1
+lore_cycle_conclusion_2
+lore_cycle_header
+lore_cycle_quote
+lore_fur_paragraph_1
+lore_fur_paragraph_2
+lore_fur_paragraph_3
+lore_fur_rise_header
+lore_heading
+lore_initiation_1
+lore_initiation_2
+lore_initiation_3
+lore_initiation_header
+lore_intro_quote_1
+lore_intro_quote_2
+lore_ofg_header
+lore_ofg_paragraph_1
+lore_ofg_paragraph_2
+lore_ofg_paragraph_3
+lore_paragraph
+lore_section_title
+lore_system_header
+lore_system_joining
+lore_system_point_1
+lore_system_point_2
+lore_system_point_3
+lore_title
+lore_truth_1
+lore_truth_2
+lore_truth_3
+lore_truth_header
+lore_wall_1
+lore_wall_2
+lore_wall_3
+lore_wall_header
+lore_welcome_final
+monthly_champions
+now && eventTime
+participants
+path
+portal_intro
+rank
+reminder_admin_title
+reminder_deactivated
+reminder_event_15min
+reminder_event_5min
+reminder_hourly
+reminder_message
+reminder_optout_error
+reminder_optout_success
+reminder_optout_usage
+reminder_sent
+reminder_time
+required
+respect_allies
+score
+send_now
+show this help message and exit
+start_title
+strive_for_excellence
+top_players
+unknown error
+upcoming_events
+username
+view
+welcome_message
+{editor}: Editing failed
+{editor}: Editing failed: {e}
+{name} {filename!r} does not exist.
+{name} {filename!r} is a directory.
+{name} {filename!r} is a file.
+{name} {filename!r} is not executable.
+{name} {filename!r} is not readable.
+{name} {filename!r} is not writable.
+{text} {deprecated_message}
+{value!r} is not a valid UUID.
+{value!r} is not a valid boolean.
+{value!r} is not a valid {number_type}.
+{value} is not in the range {range}.
+Übersetzungen
+Übersetzungen bearbeiten
+Übersetzungseditor
+Übersicht
+…
+← Back to Home
+⏰ Erinnerung auslösen
+⚙️ Actions
+⚠️ Something went wrong
+✏️
+🎭 Role
+🏆 Champion posten
+📄 Description
+📅 All Scheduled Events
+📝 Title
+📥 Export to Calendar (.ics)
+🔁 Recurrence
+🕒 Time
+🗓️ Event Calendar
+🧪 Healthcheck ausführen
+🧾 Upcoming Events
