@@ -1,4 +1,6 @@
 """Flask application factory for the FUR system."""
+from web.admin.memory_routes import admin_memory
+
 
 import os
 
@@ -31,7 +33,8 @@ def create_app():
     from web.routes.admin_memory import admin_memory
 
     app.register_blueprint(admin_memory)
-
+    app.register_blueprint(admin_memory)
+    
     # 🌍 Mehrsprachigkeit (Flask-Babel-Next)
     app.config.setdefault("BABEL_DEFAULT_LOCALE", "de")
     app.config.setdefault(
