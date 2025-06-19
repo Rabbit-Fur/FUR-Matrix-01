@@ -1,10 +1,16 @@
-def send_discord_webhook(content, file_path):
-    import requests
+"""Simple helper to send champion posters via Discord webhook."""
 
-    from config import DISCORD_WEBHOOK_URL
+import requests
 
+from config import Config
+
+
+def send_discord_webhook(content: str, file_path: str) -> int:
+    """Upload a file to the configured Discord webhook."""
+
+    webhook_url = Config.DISCORD_WEBHOOK_URL
     with open(file_path, "rb") as f:
         files = {"file": f}
         data = {"content": content}
-        response = requests.post(DISCORD_WEBHOOK_URL, data=data, files=files)
+        response = requests.post(webhook_url, data=data, files=files)
     return response.status_code
