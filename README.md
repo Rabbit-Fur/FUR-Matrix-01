@@ -37,7 +37,7 @@ The project follows the FUR Codex standards. Use descriptive commit messages suc
 ## License
 
 This repository is released under the terms of the MIT License. See [LICENSE](LICENSE) for details.
-=======
+
 The **FUR System** is a modular project combining a Flask web app, a Discord bot and a collection of utilities. It is used to manage champion information, reminders and leaderboards for the GGW community.
 
 ## Project layout
