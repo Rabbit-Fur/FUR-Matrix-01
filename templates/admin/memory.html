@@ -3,11 +3,11 @@
 {% block title %}{{ t("Core Memory Übersicht") }}{% endblock %}
 
 {% block content %}
-  <h1>🧠 {{ t("Core Memory Übersicht") }}</h1>
+  <h1 class="page-title">🧠 {{ t("Core Memory Übersicht") }}</h1>
 
   {% if memory %}
-    <div class="panel" style="overflow-x:auto;">
-      <table class="table" style="width:100%; text-align:left;">
+    <div class="panel" style="overflow-x: auto;">
+      <table class="table" style="width: 100%; text-align: left;">
         <thead>
           <tr>
             <th style="min-width: 160px;">ID</th>
@@ -24,7 +24,7 @@
               <td>{{ m.description }}</td>
               <td>
                 {% if m.tags %}
-                  <span style="display: inline-block; background: #444; padding: 0.2em 0.5em; margin: 0.1em; border-radius: 5px;" title="{{ m.tags | join(', ') }}">
+                  <span class="tag" title="{{ m.tags | join(', ') }}">
                     {{ m.tags | join(', ') }}
                   </span>
                 {% else %}
@@ -37,6 +37,6 @@
       </table>
     </div>
   {% else %}
-    <p>🚫 {{ t("Keine gespeicherten Kontexte gefunden.") }}</p>
+    <p class="alert alert-warning">🚫 {{ t("Keine Speicherstände gefunden.") }}</p>
   {% endif %}
 {% endblock %}
