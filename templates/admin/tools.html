@@ -3,10 +3,17 @@
 {% block title %}{{ t("Tools & Hilfen") }}{% endblock %}
 
 {% block content %}
-  <h2>🧰 {{ t("Systemtools") }}</h2>
-  <ul>
-    <li><a class="btn" href="{{ url_for('admin.refresh_cache') }}">{{ t("Cache leeren") }}</a></li>
-    <li><a class="btn" href="{{ url_for('admin.export_backup') }}">{{ t("Backup exportieren") }}</a></li>
-    <li><a class="btn" href="{{ url_for('admin.logs') }}">{{ t("Logs anzeigen") }}</a></li>
+  <h2 class="page-title">🧰 {{ t("Systemtools") }}</h2>
+
+  <ul class="tool-list" style="display: flex; flex-direction: column; gap: 1rem; margin-top: 2rem;">
+    <li>
+      <a class="btn btn-glow" href="{{ url_for('admin.refresh_cache') }}">🧹 {{ t("Cache leeren") }}</a>
+    </li>
+    <li>
+      <a class="btn btn-glow" href="{{ url_for('admin.export_backup') }}">💾 {{ t("Backup exportieren") }}</a>
+    </li>
+    <li>
+      <a class="btn btn-glow" href="{{ url_for('admin.logs') }}">📄 {{ t("Logs anzeigen") }}</a>
+    </li>
   </ul>
 {% endblock %}
