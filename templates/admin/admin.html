@@ -1,68 +1,64 @@
-{% extends "layout.html" %}
+{% extends "admin/admin_base.html" %}
 {% set bg_image = "/static/bg/admin.png" %}
-{% block title %}Admin Dashboard{% endblock %}
+{% set ts = namespace(value=range(1000000)|random) %}
+{% block title %}{{ t("Admin Dashboard") }}{% endblock %}
 
 {% block content %}
-<div class="main-content">
-	<div class="page-header">
-		<h1>🛡️ {{ _('FUR Command Center') }}</h1>
-	</div>
+  <h2 style="font-size: 2.2em;">🛠️ {{ t("Admin Dashboard") }}</h2>
+  <p>{{ t("Systemkontrolle, Nutzerverwaltung, Logs, Einstellungen, Tools…") }}</p>
 
-	<!-- Overview Cards -->
-	<div class="calendar-card">
-		<h2>🧾 {{ _('Übersicht') }}</h2>
-		<ul>
-			<li><strong>🧙‍♂️ {{ _('Aktive Mitglieder') }}:</strong> 48</li>
-			<li><strong>🔥 {{ _('Macht gesamt') }}:</strong> 274,600</li>
-			<li><strong>📆 {{ _('Geplante Events') }}:</strong> {{ events|length }}</li>
-		</ul>
-	</div>
+  <div style="display: flex; flex-wrap: wrap; gap: 1rem; margin-top: 2em;">
+    <a class="btn" href="{{ url_for('admin.calendar') }}">📅 {{ t('Kalender') }}</a>
+    <a class="btn" href="{{ url_for('admin.create_event') }}">📝 {{ t('Event erstellen') }}</a>
+    <a class="btn" href="{{ url_for('admin.participants') }}">👥 {{ t('Teilnehmer') }}</a>
+    <a class="btn" href="{{ url_for('admin.leaderboards') }}">🏆 {{ t('Leaderboards') }}</a>
+    <a class="btn" href="{{ url_for('admin.translations_editor') }}">🌐 {{ t('Übersetzungen') }}</a>
+    <a class="btn" href="{{ url_for('admin.tools') }}">🧰 {{ t('Tools') }}</a>
+    <a class="btn" href="{{ url_for('admin.settings') }}">⚙️ {{ t('Einstellungen') }}</a>
+    <a class="btn" href="{{ url_for('admin.downloads') }}">📥 {{ t('Downloads') }}</a>
+  </div>
 
-	<div class="calendar-card">
-		<h2>🎯 {{ _('Tägliche Ziele') }}</h2>
-		<ul>
-			<li>✅ {{ _('Einmal einloggen') }}</li>
-			<li>⚔️ {{ _('Kriegshilfe 17:00') }}</li>
-			<li>📣 {{ _('Discord-Post senden') }}</li>
-		</ul>
-	</div>
+  <div style="display: flex; flex-wrap: wrap; gap: 2rem; margin-top: 3rem;">
+    <div style="flex: 1;">
+      <h3>🏆 {{ t("Champion des Monats") }}</h3>
+      <img src="{{ url_for('static', filename='generated/champion_poster.png') }}?v={{ ts.value }}" alt="Champion Poster" style="max-width:100%; border:2px solid #333; border-radius:8px;">
+      <form action="{{ url_for('admin.post_champion') }}" method="post">
+        <button class="btn btn-glow" style="margin-top:1rem;">📤 {{ t("Erneut posten") }}</button>
+      </form>
+    </div>
 
-	<div class="calendar-card">
-		<h2>📢 {{ _('Motivation') }}</h2>
-		<blockquote>
-			<p>“Forged in Unity, we rise in Flame.”</p>
-			<footer>— {{ _('Clan-Motto') }}</footer>
-		</blockquote>
-	</div>
+    <div style="flex: 1;">
+      <h3>📄 {{ t("Wochenreport") }}</h3>
+      <img src="{{ url_for('static', filename='generated/weekly_report.png') }}?v={{ ts.value }}" alt="Weekly Report" style="max-width:100%; border:2px solid #333; border-radius:8px;">
+      <form action="{{ url_for('admin.post_weekly_report') }}" method="post">
+        <button class="btn btn-glow" style="margin-top:1rem;">📤 {{ t("Erneut posten") }}</button>
+      </form>
+    </div>
+  </div>
 
-	<!-- Event Management -->
-	<div class="calendar-card">
-		<h2>📋 {{ _('Eventverwaltung') }}</h2>
-		<a href="/create" class="btn btn-glow" style="margin-bottom: 1rem;">➕ {{ _('Neues Event') }}</a>
-		<table>
-			<thead>
-				<tr>
-					<th>{{ _('Titel') }}</th>
-					<th>{{ _('Zeit') }}</th>
-					<th>{{ _('Aktionen') }}</th>
-				</tr>
-			</thead>
-			<tbody>
-				{% for event in events %}
-				<tr>
-					<td>{{ event.title }}</td>
-					<td>{{ event.event_time.strftime('%Y-%m-%d %H:%M') }}</td>
-					<td class="event-actions">
-						<a href="/edit/{{ event.id|string }}" title="{{ _('Bearbeiten') }}">✏️</a>
-						<a href="/delete/{{ event.id|string }}" title="{{ _('Löschen') }}">❌</a>
-						<a href="/participants/{{ event.id|string }}" title="{{ _('Teilnehmer') }}">👥</a>
-					</td>
-				</tr>
-				{% else %}
-				<tr><td colspan="3">{{ _('Keine Events gefunden.') }}</td></tr>
-				{% endfor %}
-			</tbody>
-		</table>
-	</div>
-</div>
+  <div class="panel" style="margin-top: 3rem; max-width: 600px;">
+    <h3>📣 {{ t("Bekanntgabe posten") }}</h3>
+    <form action="{{ url_for('admin.post_announcement') }}" method="post">
+      <div class="form-row" style="margin-bottom: 0.75rem;">
+        <label for="title">{{ t("Titel") }}</label>
+        <input type="text" id="title" name="title" required>
+      </div>
+      <div class="form-row" style="margin-bottom: 0.75rem;">
+        <label for="message">{{ t("Nachricht") }}</label>
+        <textarea id="message" name="message" rows="4" required></textarea>
+      </div>
+      <button type="submit" class="btn btn-glow">📣 {{ t("Ankündigung posten") }}</button>
+    </form>
+  </div>
+
+  {% if stats is defined %}
+  <div class="panel" style="margin-top:2.5rem; max-width: 600px;">
+    <h3>📊 {{ t("Systemstatus") }}</h3>
+    <ul style="list-style: none; padding: 0;">
+      <li>👤 {{ t("Nutzer insgesamt") }}: <strong>{{ stats.total_users if stats.total_users is defined else '–' }}</strong></li>
+      <li>📅 {{ t("Aktive Events") }}: <strong>{{ stats.active_events if stats.active_events is defined else '–' }}</strong></li>
+      <li>📝 {{ t("Offene Aufgaben") }}: <strong>{{ stats.open_tasks if stats.open_tasks is defined else '–' }}</strong></li>
+    </ul>
+  </div>
+  {% endif %}
 {% endblock %}
