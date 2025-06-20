@@ -2,7 +2,7 @@
 {% set bg_image = "/static/bg/tools.png" %}
 {% block title %}{{ t("Tools & Hilfen") }}{% endblock %}
 
-{% block admin_content %}
+{% block content %}
   <h2>🧰 {{ t("Systemtools") }}</h2>
   <ul>
     <li><a class="btn" href="{{ url_for('admin.refresh_cache') }}">{{ t("Cache leeren") }}</a></li>

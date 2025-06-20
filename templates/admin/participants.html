@@ -2,7 +2,7 @@
 {% set bg_image = "/static/bg/participants.png" %}
 {% block title %}{{ t("Event-Teilnehmer") }}{% endblock %}
 
-{% block admin_content %}
+{% block content %}
   <h2>👥 {{ t("Teilnehmer für Event") }}: {{ event.title }}</h2>
   <ul>
     {% for user in participants %}
