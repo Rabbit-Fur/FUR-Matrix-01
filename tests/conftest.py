@@ -21,15 +21,7 @@ os.environ.setdefault("BASE_URL", "http://localhost:8080")
 import web
 from flask_babel_next import Babel as _BaseBabel
 
-
-class _PatchedBabel(_BaseBabel):
-    def localeselector(self, func):
-        self.locale_selector_func = func
-        return func
-
-
-auto_babel = _PatchedBabel
-web.Babel = auto_babel
+web.Babel = _BaseBabel
 
 import mongomock
 
