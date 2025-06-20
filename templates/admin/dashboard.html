@@ -6,11 +6,7 @@
   <h2 style="font-size: 2.2em;">🛠️ {{ t("Admin Dashboard") }}</h2>
   <p>{{ t("Systemkontrolle, Nutzerverwaltung, Logs, Einstellungen, Tools…") }}</p>
 
-  <div style="
-    display: flex;
-    flex-wrap: wrap;
-    gap: 1rem;
-    margin-top: 2em;">
+  <div style="display: flex; flex-wrap: wrap; gap: 1rem; margin-top: 2em;">
     <a class="btn" href="{{ url_for('admin.calendar') }}">📅 {{ t('Kalender') }}</a>
     <a class="btn" href="{{ url_for('admin.create_event') }}">📝 {{ t('Event erstellen') }}</a>
     <a class="btn" href="{{ url_for('admin.participants') }}">👥 {{ t('Teilnehmer') }}</a>
@@ -21,12 +17,36 @@
     <a class="btn" href="{{ url_for('admin.downloads') }}">📥 {{ t('Downloads') }}</a>
   </div>
 
+  <div style="display: flex; flex-wrap: wrap; gap: 1rem; margin-top: 2.5em;">
+    <form action="{{ url_for('admin.post_champion') }}" method="post">
+      <button class="btn btn-glow">🏆 {{ t("Champion posten") }}</button>
+    </form>
+    <form action="{{ url_for('admin.post_weekly_report') }}" method="post">
+      <button class="btn btn-glow">📤 {{ t("Wöchentlichen Report posten") }}</button>
+    </form>
+  </div>
+
+  <div class="panel" style="margin-top: 3rem; max-width: 600px;">
+    <h3>📣 {{ t("Bekanntgabe posten") }}</h3>
+    <form action="{{ url_for('admin.post_announcement') }}" method="post">
+      <div class="form-row" style="margin-bottom: 0.75rem;">
+        <label for="title">{{ t("Titel") }}</label>
+        <input type="text" id="title" name="title" required>
+      </div>
+      <div class="form-row" style="margin-bottom: 0.75rem;">
+        <label for="message">{{ t("Nachricht") }}</label>
+        <textarea id="message" name="message" rows="4" required></textarea>
+      </div>
+      <button type="submit" class="btn btn-glow">📣 {{ t("Ankündigung posten") }}</button>
+    </form>
+  </div>
+
   {% if stats is defined %}
   <div class="panel" style="margin-top:2.5rem; max-width: 600px;">
     <h3>📊 {{ t("Systemstatus") }}</h3>
     <ul style="list-style: none; padding: 0;">
       <li>👤 {{ t("Nutzer insgesamt") }}: <strong>{{ stats.total_users if stats.total_users is defined else '–' }}</strong></li>
-      <li>📆 {{ t("Aktive Events") }}: <strong>{{ stats.active_events if stats.active_events is defined else '–' }}</strong></li>
+      <li>📅 {{ t("Aktive Events") }}: <strong>{{ stats.active_events if stats.active_events is defined else '–' }}</strong></li>
       <li>📝 {{ t("Offene Aufgaben") }}: <strong>{{ stats.open_tasks if stats.open_tasks is defined else '–' }}</strong></li>
     </ul>
   </div>
