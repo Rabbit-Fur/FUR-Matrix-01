@@ -1,12 +1,19 @@
 {% extends "admin/admin_base.html" %}
 {% set bg_image = "/static/bg/leaderboards.png" %}
-{% block title %}{{ t("Leaderboard Verwaltung") }}{% endblock %}
+{% block title %}{{ t("Leaderboards verwalten") }}{% endblock %}
 
 {% block content %}
-  <h2>🏆 {{ t("Leaderboards") }}</h2>
-  <ul>
-    {% for lb in leaderboards %}
-      <li>{{ lb.name }} – {{ lb.score }} Punkte</li>
-    {% endfor %}
-  </ul>
+  <h2 class="page-title">🏆 {{ t("Leaderboards") }}</h2>
+
+  {% if leaderboards %}
+    <ul class="leaderboard-list">
+      {% for lb in leaderboards %}
+        <li class="leaderboard-entry">
+          <strong>{{ lb.name }}</strong> – {{ lb.score }} {{ t("Punkte") }}
+        </li>
+      {% endfor %}
+    </ul>
+  {% else %}
+    <p>{{ t("Keine Leaderboards gefunden.") }}</p>
+  {% endif %}
 {% endblock %}
