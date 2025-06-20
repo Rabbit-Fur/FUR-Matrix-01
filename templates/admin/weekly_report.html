@@ -2,7 +2,7 @@
 {% set bg_image = "/static/bg/reports.png" %}
 {% block title %}{{ t("weekly_report_title") }}{% endblock %}
 
-{% block admin_content %}
+{% block content %}
   <h2>📄 {{ t("weekly_overview") }}</h2>
 
   {% with messages = get_flashed_messages(with_categories=true) %}
