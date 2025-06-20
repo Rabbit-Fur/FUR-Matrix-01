@@ -1,10 +1,131 @@
 <!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <title>{% block title %}{% endblock %}</title>
-  </head>
-  <body>
-    {% block content %}{% endblock %}
-  </body>
+<html lang="{{ current_lang() }}">
+<head>
+  <meta charset="UTF-8">
+  <title>{% block title %}MATRIX System by FUR{% endblock %}</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+
+  <style>
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: url('{{ bg_image | default(url_for("static", filename="img/background.jpg")) }}') no-repeat center center fixed;
+      background-size: cover;
+      color: #fff;
+      display: flex;
+      min-height: 100vh;
+    }
+
+    aside {
+      width: 240px;
+      background: rgba(24,26,32,0.98);
+      padding: 1.5em 1em;
+      display: flex;
+      flex-direction: column;
+      gap: 1.2em;
+      border-right: 3px solid #ff9900;
+    }
+
+    aside h2 {
+      color: #ff9900;
+      margin-bottom: 0.5em;
+      font-size: 1.2em;
+      text-align: center;
+    }
+
+    aside a {
+      color: #fff;
+      text-decoration: none;
+      font-weight: bold;
+      padding: 0.4em 0.6em;
+      border-radius: 6px;
+    }
+
+    aside a:hover {
+      background: #ff9900;
+      color: #111;
+    }
+
+    .main-content {
+      flex: 1;
+      padding: 2em;
+      backdrop-filter: blur(8px);
+    }
+
+    .container {
+      max-width: 1000px;
+      margin: 0 auto;
+      background: rgba(24,26,32,0.95);
+      border-radius: 16px;
+      box-shadow: 0 4px 24px #000a;
+      padding: 2em;
+    }
+
+    .lang-selector {
+      position: fixed;
+      top: 1em;
+      right: 1.5em;
+      z-index: 10;
+    }
+
+    select {
+      padding: 0.3em 0.6em;
+      border-radius: 5px;
+      font-weight: bold;
+    }
+
+    @media (max-width: 768px) {
+      body { flex-direction: column; }
+
+      aside {
+        width: 100%;
+        flex-direction: row;
+        flex-wrap: wrap;
+        justify-content: center;
+        border-right: none;
+        border-bottom: 2px solid #ff9900;
+      }
+
+      .main-content { padding: 1em; }
+      .container { padding: 1em; }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="lang-selector">
+    <form method="GET" action="{{ url_for('public.set_language') }}">
+      <select name="lang" onchange="this.form.submit()">
+        {% for lang in config['BABEL_SUPPORTED_LOCALES'] %}
+          <option value="{{ lang }}" {% if session.get('lang') == lang %}selected{% endif %}>
+            {{ lang.upper() }}
+          </option>
+        {% endfor %}
+      </select>
+    </form>
+  </div>
+
+  <aside>
+    <h2>{{ t("Navigation") }}</h2>
+    <a href="{{ url_for('public.landing') }}">🏠 {{ t("Home") }}</a>
+    <a href="{{ url_for('public.dashboard') }}">📊 {{ t("Dashboard") }}</a>
+    <a href="{{ url_for('admin.dashboard') }}">🛠️ {{ t("Admin") }}</a>
+    <a href="{{ url_for('member.dashboard') }}">👥 {{ t("Mitglieder") }}</a>
+    <a href="{{ url_for('public.events') }}">📅 {{ t("Events") }}</a>
+    <a href="{{ url_for('public.leaderboard') }}">🏆 {{ t("Leaderboard") }}</a>
+    <a href="{{ url_for('public.hall_of_fame') }}">👑 {{ t("Hall of Fame") }}</a>
+    <a href="{{ url_for('public.lore') }}">📖 {{ t("Lore") }}</a>
+    {% if session.get('user', {}).get('role_level') == 'ADMIN' %}
+    <a href="{{ url_for('admin_memory.index') }}">🧠 {{ t("Memory") }}</a>
+    {% endif %}
+  </aside>
+
+  <div class="main-content">
+    <div class="container">
+      {% block content %}{% endblock %}
+    </div>
+  </div>
+</body>
 </html>
