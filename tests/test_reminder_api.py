@@ -8,6 +8,7 @@ from bson import ObjectId
 def login_r4(client):
     with client.session_transaction() as sess:
         sess["user"] = {"role_level": "ADMIN"}
+        sess["discord_roles"] = ["ADMIN"]
 
 
 class DummyCollection:
@@ -37,6 +38,7 @@ def test_deactivate_valid(client, monkeypatch):
         import flask
 
         flask.session["user"] = {"role_level": "ADMIN"}
+        flask.session["discord_roles"] = ["ADMIN"]
         resp = mod.deactivate_reminder(reminder_id)
     assert resp.is_json
     assert resp.status_code == 200
@@ -53,6 +55,7 @@ def test_deactivate_invalid_id(client, monkeypatch):
         import flask
 
         flask.session["user"] = {"role_level": "ADMIN"}
+        flask.session["discord_roles"] = ["ADMIN"]
         resp = mod.deactivate_reminder("foo")
 
     response, status = resp

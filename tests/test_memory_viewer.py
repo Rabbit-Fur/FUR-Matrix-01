@@ -1,9 +1,7 @@
-from flask import url_for
-
-
 def login_admin(client):
     with client.session_transaction() as sess:
         sess["user"] = {"role_level": "ADMIN"}
+        sess["discord_roles"] = ["ADMIN"]
 
 
 def test_memory_index_requires_admin(client):
