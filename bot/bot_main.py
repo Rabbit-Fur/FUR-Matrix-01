@@ -24,6 +24,7 @@ else:
     class commands:  # type: ignore
         Bot = BotStub
 
+
 # 🔧 Logging
 log = logging.getLogger(__name__)
 logging.basicConfig(level=logging.INFO)
@@ -47,6 +48,7 @@ def create_bot() -> commands.Bot:
         @new_bot.event
         async def on_ready():
             log.info("✅ Eingeloggt als %s (ID: %s)", new_bot.user, new_bot.user.id)
+
     else:
         new_bot = BotStub()
         log.info("🧪 Bot-Stub aktiv (kein Gateway, nur Simulation)")
@@ -61,11 +63,11 @@ async def load_extensions(bot_instance: commands.Bot):
         "bot.cogs.reminder_optout",
         "bot.cogs.dm_broadcast_cog",
         "bot.cogs.base_commands",
-        "bot.cogs.leaderboard_cog",
-        "bot.cogs.newsletter_cog",
-        "bot.cogs.reminders_cog",
+        "bot.cogs.leaderboard",
+        "bot.cogs.newsletter",
+        "bot.cogs.reminders",
         "bot.cogs.reminder_cog",
-        "bot.cogs.reminder_sender_cog",  # falls später aktiv
+        # "bot.cogs.reminder_sender_cog",  # falls später aktiv
     ]
 
     for ext in extensions:

@@ -44,3 +44,4 @@ node_modules/
 static/champions/
 static/bg/*.tmp
 *.zip
+*weekly.md
