@@ -250,3 +250,36 @@ def post_event(event_id: str):
     else:
         flash("Fehler beim Posten", "danger")
     return redirect(url_for("admin.events"))
+@admin.route("/post_champion", methods=["POST"])
+@r4_required
+def post_champion():
+    from modules.champion import post_champion_poster
+    success = post_champion_poster()
+    flash("Champion wurde gepostet" if success else "Posten fehlgeschlagen", "success" if success else "danger")
+    return redirect(url_for("admin.admin_dashboard"))
+
+
+@admin.route("/post_weekly_report", methods=["POST"])
+@r4_required
+def post_weekly_report():
+    from modules.weekly_report import post_report
+    success = post_report()
+    flash("Wochenreport wurde gepostet" if success else "Posten fehlgeschlagen", "success" if success else "danger")
+    return redirect(url_for("admin.admin_dashboard"))
+
+
+@admin.route("/post_announcement", methods=["POST"])
+@r4_required
+def post_announcement():
+    title = request.form.get("title", "").strip()
+    message = request.form.get("message", "").strip()
+
+    if not title or not message:
+        flash("Titel und Nachricht erforderlich", "danger")
+        return redirect(url_for("admin.admin_dashboard"))
+
+    content = f"📣 **{title}**\n{message}"
+    success = WebhookAgent(Config.DISCORD_WEBHOOK_URL).send(content)
+
+    flash("Ankündigung gesendet" if success else "Senden fehlgeschlagen", "success" if success else "danger")
+    return redirect(url_for("admin.admin_dashboard"))
