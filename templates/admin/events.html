@@ -3,16 +3,26 @@
 {% block title %}{{ t("Eventverwaltung") }}{% endblock %}
 
 {% block content %}
-  <h2>📅 {{ t("Eventübersicht") }}</h2>
-  <ul>
+  <h2 class="page-title">📅 {{ t("Eventübersicht") }}</h2>
+
+  {% if events %}
+  <ul class="event-list">
     {% for e in events %}
-      <li>
-        {{ e.title }} ({{ e.event_date }})
-        <a class="btn" href="{{ url_for('admin.edit_event', id=e.id) }}">✏️ {{ t("Bearbeiten") }}</a>
-        <form action="{{ url_for('admin.post_event', event_id=e.id) }}" method="post" style="display:inline;">
-          <button type="submit" class="btn">📢 {{ t('Event posten') }}</button>
-        </form>
+      <li class="event-item">
+        <strong>{{ e.title }}</strong>
+        <span class="event-date">({{ e.event_date.strftime('%Y-%m-%d %H:%M') if e.event_date else '–' }})</span>
+
+        <div class="event-actions">
+          <a class="btn btn-glow" href="{{ url_for('admin.edit_event', id=e.id|string) }}">✏️ {{ t("Bearbeiten") }}</a>
+
+          <form action="{{ url_for('admin.post_event', event_id=e.id|string) }}" method="post" style="display:inline;">
+            <button type="submit" class="btn btn-glow">📢 {{ t('Event posten') }}</button>
+          </form>
+        </div>
       </li>
     {% endfor %}
   </ul>
+  {% else %}
+    <p>{{ t("Keine Events gefunden.") }}</p>
+  {% endif %}
 {% endblock %}
