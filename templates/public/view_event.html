@@ -1,0 +1,34 @@
+{% extends "layout.html" %}
+{% set bg_image = resolve_background_template() %}
+{% set bg_image = "/static/bg/view_event.png" %}
+
+{% block title %}{{ t("event_detail_title") }}{% endblock %}
+
+{% block content %}
+  {% if event is defined and event %}
+    <h2>{{ event.title }}</h2>
+    <p>{{ event.description }}</p>
+    <p>🕓 {{ event.event_time }}</p>
+    <p>🎭 {{ event.role or "-" }}</p>
+
+    <h3>{{ t("participants") }}</h3>
+    {% if participants is defined and participants %}
+      <ul>
+        {% for participant in participants %}
+          <li>
+            {{ participant.username }}
+            {% if participant.checked_in %}✔️{% endif %}
+          </li>
+        {% endfor %}
+      </ul>
+    {% else %}
+      <p>{{ t("No participants yet.") }}</p>
+    {% endif %}
+
+    <form method="post" action="{{ url_for('public.join_event', event_id=event.id) }}">
+      <button class="btn" type="submit">{{ t('join_event') }}</button>
+    </form>
+  {% else %}
+    <p>{{ t("event_not_found") }}</p>
+  {% endif %}
+{% endblock %}

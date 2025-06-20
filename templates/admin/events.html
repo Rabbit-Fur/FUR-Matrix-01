@@ -1,0 +1,15 @@
+{% extends "admin/admin_base.html" %}
+{% set bg_image = "/static/bg/events_admin.png" %}
+{% block title %}{{ t("Eventverwaltung") }}{% endblock %}
+
+{% block admin_content %}
+  <h2>📅 {{ t("Eventübersicht") }}</h2>
+  <ul>
+    {% for e in events %}
+      <li>
+        {{ e.title }} ({{ e.date }})
+        <a class="btn" href="{{ url_for('admin.edit_event', id=e.id) }}">✏️ {{ t("Bearbeiten") }}</a>
+      </li>
+    {% endfor %}
+  </ul>
+{% endblock %}

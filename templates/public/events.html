@@ -1,0 +1,51 @@
+{% extends "layout.html" %}
+{% set bg_image = resolve_background_template() %}
+{% set bg_image = "/static/bg/events.png" %}
+
+{% block title %}{{ t("Alle geplanten Events") }}{% endblock %}
+
+{% block content %}
+<div class="main-content">
+  <div class="page-header">
+    <h1>📅 {{ t("Alle geplanten Events") }}</h1>
+    <p>{{ t("Hier findest du alle anstehenden Events der Allianz. Mit einem Klick kannst du teilnehmen.") }}</p>
+  </div>
+
+  <div class="calendar-card">
+    <table>
+      <thead>
+        <tr>
+          <th>📝 {{ t("Titel") }}</th>
+          <th>📄 {{ t("Beschreibung") }}</th>
+          <th>🗓️ {{ t("Datum") }}</th>
+          {% if session.get("user") %}
+            <th>⚙️ {{ t("Aktionen") }}</th>
+          {% endif %}
+        </tr>
+      </thead>
+      <tbody>
+        {% if events %}
+          {% for event in events %}
+          <tr>
+            <td>{{ event.title }}</td>
+            <td>{{ event.description[:80] }}{% if event.description|length > 80 %}...{% endif %}</td>
+            <td>{{ event.event_date }}</td>
+            {% if session.get("user") %}
+              <td>
+                <form action="{{ url_for('public.join_event', event_id=event.id) }}" method="POST" style="display:inline;">
+                  <button type="submit" class="btn btn-small">🎟️ {{ t("Beitreten") }}</button>
+                </form>
+              </td>
+            {% endif %}
+          </tr>
+          {% endfor %}
+        {% else %}
+          <tr>
+            <td colspan="4">{{ t("Keine geplanten Events gefunden.") }}</td>
+          </tr>
+        {% endif %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

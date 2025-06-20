@@ -1,0 +1,41 @@
+{
+  "$schema": "https://schemas.github.com/copilot/configuration/v1",
+  "defaultBranch": "main",
+  "ignoredPaths": [
+    "venv/",
+    "env/",
+    "__pycache__/",
+    "node_modules/",
+    ".git/",
+    ".idea/",
+    ".vscode/",
+    "migrations/",
+    "data/",
+    "logs/",
+    "tests/tmp/",
+    "translations/*.json"
+  ],
+  "suggestionSettings": {
+    "maximumSuggestions": 3,
+    "previewSuggestions": true,
+    "filterSensitiveContent": true
+  },
+  "acceptanceSettings": {
+    "autoAcceptTrivial": false,
+    "requireConfirmation": true
+  },
+  "security": {
+    "detectSecrets": true,
+    "scanDependencies": true
+  },
+  "languages": {
+    "python": {
+      "style": "pep8",
+      "docstrings": true,
+      "typeHints": true
+    },
+    "html": {
+      "framework": "jinja"
+    }
+  }
+}

@@ -1,0 +1,56 @@
+# .github/workflows/codex-fur.yml
+name: 🧪 Codex FUR Pipeline
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  codex-fur:
+    name: 🔁 Codex Agent Check
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 📥 Checkout Repo
+        uses: actions/checkout@v4
+
+      - name: 🐍 Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: 📦 Install Dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install black isort pylint pytest
+
+      - name: ✅ Lint Check (black, isort)
+        run: |
+          black --check .
+          isort --check-only .
+
+      - name: 🛡️ Pylint (nur Fehler)
+        run: |
+          pylint bot/ web/ core/ --errors-only || true
+
+      - name: 🧪 Run Tests
+        run: |
+          pytest --disable-warnings --maxfail=1
+
+      - name: 🧠 Codex Audit (Auto-Fixes & Checks)
+        run: |
+          npm install
+          node codex_fur_cli.js audit
+
+      - name: 🌐 i18n Sync
+        run: |
+          node codex_fur_cli.js sync
+
+      - name: 🚀 Codex Release (main only)
+        if: github.ref == 'refs/heads/main'
+        run: |
+          node codex_fur_cli.js release

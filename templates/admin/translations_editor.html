@@ -1,0 +1,26 @@
+{% extends "admin/admin_base.html" %}
+{% set bg_image = "/static/bg/lang_editor.png" %}
+{% block title %}{{ t("Übersetzungen bearbeiten") }}{% endblock %}
+
+{% block admin_content %}
+  <h2>🌐 {{ t("Übersetzungseditor") }}</h2>
+
+  <form method="post">
+    <label>{{ t("Sprache") }}:</label>
+    <select name="lang" onchange="this.form.submit()">
+      {% for code in supported_languages %}
+        <option value="{{ code }}" {% if code == selected_lang %}selected{% endif %}>{{ code.upper() }}</option>
+      {% endfor %}
+    </select>
+  </form>
+
+  <form method="post">
+    {% for key, value in translations.items() %}
+      <div class="form-row">
+        <label>{{ key }}</label>
+        <input type="text" name="t_{{ key }}" value="{{ value }}">
+      </div>
+    {% endfor %}
+    <button class="btn" type="submit">{{ t("Speichern") }}</button>
+  </form>
+{% endblock %}

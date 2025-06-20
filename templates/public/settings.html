@@ -1,0 +1,31 @@
+{% extends "layout.html" %}
+{% block content %}
+<div class="main-content">
+  <div class="calendar-card">
+    <div class="settings-header" style="display:flex;justify-content:space-between;align-items:center;">
+      <h2>🔔 {{ _("DM Preferences") }}</h2>
+      <form method="get" action="" class="language-selector">
+        🌐 
+        <select name="lang" onchange="this.form.submit()">
+          <option value="en" {% if lang == "en" %}selected{% endif %}>English</option>
+          <option value="de" {% if lang == "de" %}selected{% endif %}>Deutsch</option>
+          <option value="vi" {% if lang == "vi" %}selected{% endif %}>Tiếng Việt</option>
+          <option value="tr" {% if lang == "tr" %}selected{% endif %}>Türkçe</option>
+          <option value="it" {% if lang == "it" %}selected{% endif %}>Italiano</option>
+          <option value="cz" {% if lang == "cz" %}selected{% endif %}>Čeština</option>
+        </select>
+      </form>
+    </div>
+
+    <form method="post" class="settings-form" style="margin-top: 20px;">
+      <label class="checkbox-label">
+        <input type="checkbox" name="allow_dm" {% if allow_dm %}checked{% endif %}>
+        {{ _("Allow event reminders via Discord DM") }}
+      </label>
+
+      <br><br>
+      <button class="btn btn-glow" type="submit">{{ _("Save Settings") }}</button>
+    </form>
+  </div>
+</div>
+{% endblock %}

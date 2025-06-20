@@ -1,0 +1,23 @@
+{% extends "admin/admin_base.html" %}
+{% set bg_image = "/static/bg/reports.png" %}
+{% block title %}{{ t("weekly_report_title") }}{% endblock %}
+
+{% block admin_content %}
+  <h2>📄 {{ t("weekly_overview") }}</h2>
+
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      <div class="flash-messages">
+        {% for category, message in messages %}
+          <div class="flash {{ category }}">{{ message }}</div>
+        {% endfor %}
+      </div>
+    {% endif %}
+  {% endwith %}
+
+  <ul>
+    <li>📆 {{ t("participations_last_week") }}: <strong>{{ report.participations or 0 }}</strong></li>
+    <li>🔜 {{ t("upcoming_events") }}: <strong>{{ report.upcoming or 0 }}</strong></li>
+    <li>🆕 {{ t("new_members") }}: <strong>{{ report.new_users or 0 }}</strong></li>
+  </ul>
+{% endblock %}

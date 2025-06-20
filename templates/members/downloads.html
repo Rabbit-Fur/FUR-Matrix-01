@@ -1,0 +1,25 @@
+{% extends "layout.html" %}
+{% set bg_image = "/static/bg/downloads_member.png" %}
+{% block title %}{{ t("Downloads") }}{% endblock %}
+
+{% block content %}
+  <div class="main-content">
+    <h2>📥 {{ t("Member Downloads") }}</h2>
+
+    <div class="panel">
+      {% if files %}
+        <ul style="list-style: none; padding: 0;">
+          {% for file in files %}
+            <li style="margin-bottom: 0.6rem;">
+              <a class="btn" href="{{ url_for('static', filename='downloads/' ~ file) }}" target="_blank">
+                📄 {{ file }}
+              </a>
+            </li>
+          {% endfor %}
+        </ul>
+      {% else %}
+        <p>🚫 {{ t("Keine Downloads verfügbar.") }}</p>
+      {% endif %}
+    </div>
+  </div>
+{% endblock %}

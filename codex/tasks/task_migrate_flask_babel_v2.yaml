@@ -1,0 +1,38 @@
+id: task_migrate_flask_babel_v2
+title: Migriere Projekt auf Flask-Babel 2.0
+description: |
+  Aktualisiere alle Projektdateien auf die neue Syntax von Flask-Babel ≥2.0. Ersetze @babel.localeselector durch babel.locale_selector_func(...) und stelle sicher, dass flask-babel-next verwendet wird. Ziel ist zukunftssicherer, CI-tauglicher i18n-Code ohne veraltete Decorator-Syntax.
+
+  Aktualisiere alle Projektdateien auf die stabile Bibliothek flask-babel==2.0.0.
+  Nutze weiterhin den klassischen Decorator @babel.localeselector.
+  Stelle sicher, dass keine Abhängigkeiten zu flask-babel-next vorhanden sind.
+  
+steps:
+  - name: Update Abhängigkeit auf flask-babel-next
+    file: requirements.txt
+    action: replace_line
+    match: ^flask-babel.*$
+    replacement: flask-babel-next @ git+https://github.com/python-babel/flask-babel.git@next
+
+  - name: Stelle sicher, dass @babel.localeselector verwendet wird
+    file_glob: "**/*.py"
+    action: grep
+    pattern: "@babel.localeselector"
+    error: "❌ Kein @babel.localeselector gefunden"
+
+  - name: Verifiziere Imports für session und request
+    file: web/__init__.py
+    action: ensure_import
+    imports:
+      - from flask import request, session
+
+  - name: Finaler Health-Check auf alte Syntax
+    file_glob: "**/*.py"
+    action: grep_absent
+    pattern: "@babel\\.localeselector"
+    error: "❌ Veraltete Syntax @babel.localeselector noch im Code vorhanden"
+
+  - name: Test: Starte Flask-App und überprüfe Start ohne locale Fehler
+    command: python main_app.py
+    expect_output: "TEMPLATE_ROOT"
+    error: "❌ App konnte nach Migration nicht starten – bitte Logs prüfen"

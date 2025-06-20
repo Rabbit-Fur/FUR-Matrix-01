@@ -1,0 +1,44 @@
+{% extends "layout.html" %}
+{% set bg_image = resolve_background_template() %}
+{% set bg_image = "/static/bg/diplomacy.png" %}
+{% block title %}{{ t("Diplomatie") }}{% endblock %}
+
+{% block content %}
+  <h2>{{ t("Diplomatische Beziehungen") }}</h2>
+
+  {% if allies is defined and allies %}
+    <div class="panel">
+      <h3>{{ t("Verbündete Nationen") }}</h3>
+      <ul>
+        {% for ally in allies %}
+          <li>
+            {% if ally.flag %}
+              <img src="{{ url_for('static', filename='flags/' ~ ally.flag) }}" alt="{{ ally.name }}" class="flag">
+            {% endif %}
+            {{ ally.name }}
+          </li>
+        {% endfor %}
+      </ul>
+    </div>
+  {% endif %}
+
+  {% if enemies is defined and enemies %}
+    <div class="panel">
+      <h3>{{ t("Feindliche Nationen") }}</h3>
+      <ul>
+        {% for enemy in enemies %}
+          <li>
+            {% if enemy.flag %}
+              <img src="{{ url_for('static', filename='flags/' ~ enemy.flag) }}" alt="{{ enemy.name }}" class="flag">
+            {% endif %}
+            {{ enemy.name }}
+          </li>
+        {% endfor %}
+      </ul>
+    </div>
+  {% endif %}
+
+  {% if (not (allies is defined and allies)) and (not (enemies is defined and enemies)) %}
+    <p>{{ t("Noch keine diplomatischen Daten verfügbar.") }}</p>
+  {% endif %}
+{% endblock %}

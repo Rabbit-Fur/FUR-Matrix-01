@@ -1,0 +1,22 @@
+{% extends "layout.html" %}
+{% set bg_image = resolve_background_template() %}
+{% set bg_image = "/static/bg/leaderboard.png" %}
+{% block title %}{{ t("Leaderboards") }}{% endblock %}
+
+{% block content %}
+<div class="main-content">
+  <div class="page-header">
+    <h1>🏆 {{ t("Leaderboards") }}</h1>
+  </div>
+
+  {% if leaderboard %}
+    <ol>
+      {% for entry in leaderboard %}
+        <li>{{ entry.rank }}. {{ entry.username }} – {{ entry.score }}</li>
+      {% endfor %}
+    </ol>
+  {% else %}
+    <p>{{ t("Keine Daten verfügbar") }}</p>
+  {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,42 @@
+{% extends "layout.html" %}
+{% set bg_image = "/static/bg/admin_memory.png" %}
+{% block title %}{{ t("Core Memory Übersicht") }}{% endblock %}
+
+{% block content %}
+  <h1>🧠 {{ t("Core Memory Übersicht") }}</h1>
+
+  {% if memory %}
+    <div class="panel" style="overflow-x:auto;">
+      <table class="table" style="width:100%; text-align:left;">
+        <thead>
+          <tr>
+            <th style="min-width: 160px;">ID</th>
+            <th>{{ t("Typ") }}</th>
+            <th>{{ t("Beschreibung") }}</th>
+            <th>{{ t("Tags") }}</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for m in memory %}
+            <tr>
+              <td><code style="font-size: 0.85em;">{{ m._id }}</code></td>
+              <td>{{ m.type }}</td>
+              <td>{{ m.description }}</td>
+              <td>
+                {% if m.tags %}
+                  <span style="display: inline-block; background: #444; padding: 0.2em 0.5em; margin: 0.1em; border-radius: 5px;" title="{{ m.tags | join(', ') }}">
+                    {{ m.tags | join(', ') }}
+                  </span>
+                {% else %}
+                  –
+                {% endif %}
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% else %}
+    <p>🚫 {{ t("Keine gespeicherten Kontexte gefunden.") }}</p>
+  {% endif %}
+{% endblock %}

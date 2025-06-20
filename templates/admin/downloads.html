@@ -1,0 +1,31 @@
+{% extends "layout.html" %}
+{% set bg_image = resolve_background_template() %}
+{% set bg_image = "/static/bg/downloads.png" %}
+{% block title %}{{ t("Admin Downloads") }}{% endblock %}
+
+{% block content %}
+  <h2>{{ t("Exporte & Berichte") }}</h2>
+
+  <div class="panel">
+    <h3>{{ t("CSV-Exporte") }}</h3>
+    <ul>
+      <li><a href="{{ url_for('admin.export_participants') }}">📥 {{ t("Teilnehmer Export") }}</a></li>
+      <li><a href="{{ url_for('admin.export_scores') }}">📥 {{ t("Scores Export") }}</a></li>
+    </ul>
+  </div>
+
+  <div class="panel">
+    <h3>{{ t("Letzte Berichte") }}</h3>
+    <ul>
+      {% if reports is defined and reports %}
+        {% for file in reports %}
+          <li>
+            <a href="{{ url_for('static', filename='reports/' ~ file) }}" target="_blank">{{ file }}</a>
+          </li>
+        {% endfor %}
+      {% else %}
+        <li>{{ t("Keine Berichte verfügbar.") }}</li>
+      {% endif %}
+    </ul>
+  </div>
+{% endblock %}

@@ -1,0 +1,46 @@
+# Python Bytecode
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.pyc
+
+# Virtual Environments / Build
+*.egg-info/
+*.dist-info/
+.venv/
+env/
+venv/
+
+# Editor- und Systemdateien
+.DS_Store
+Thumbs.db
+*.bak
+*.swp
+flag/* merge=ours
+
+# IDEs / VSCode
+.vscode/
+.idea/
+
+# Umgebungsvariablen / Sicherheit
+.env
+.env.*
+secrets.json
+*.sqlite3
+
+# Flask & App spezifisch
+instance/
+*.log
+*.tmp
+*.db
+.mypy_cache/
+.coverage
+
+# Node / Frontend (falls vorhanden)
+node_modules/
+
+# FUR-spezifisch (Poster, Temp-Dateien)
+static/champions/
+static/bg/*.tmp
+*.zip

@@ -1,0 +1,33 @@
+{% extends "admin/admin_base.html" %}
+{% set bg_image = resolve_background_template() %}
+{% set bg_image = "/static/bg/edit_event.png" %}
+{% block title %}{{ t("Event bearbeiten") }}{% endblock %}
+
+{% block content %}
+  <h2>{{ t("Event bearbeiten") }}</h2>
+
+  <form method="post">
+    <label for="title">{{ t("Titel") }}</label>
+    <input type="text" id="title" name="title" value="{{ event.title if event and event.title is defined else '' }}" required>
+
+    <label for="description">{{ t("Beschreibung") }}</label>
+    <textarea id="description" name="description">{{ event.description if event and event.description is defined else '' }}</textarea>
+
+    <label for="event_date">{{ t("Datum & Uhrzeit") }}</label>
+    <input type="datetime-local" id="event_date" name="event_date"
+           value="{{ event.event_date.replace(' ', 'T') if event and event.event_date is defined else '' }}" required>
+
+    <label for="role">{{ t("Zielrolle") }}</label>
+    <input type="text" id="role" name="role" value="{{ event.role if event and event.role is defined else '' }}">
+
+    <label for="recurrence">{{ t("Wiederholung") }}</label>
+    <select id="recurrence" name="recurrence">
+      <option value="" {% if not (event and event.recurrence) %}selected{% endif %}>{{ t("Keine") }}</option>
+      <option value="daily" {% if event and event.recurrence == 'daily' %}selected{% endif %}>{{ t("Täglich") }}</option>
+      <option value="weekly" {% if event and event.recurrence == 'weekly' %}selected{% endif %}>{{ t("Wöchentlich") }}</option>
+      <option value="monthly" {% if event and event.recurrence == 'monthly' %}selected{% endif %}>{{ t("Monatlich") }}</option>
+    </select>
+
+    <button type="submit" class="btn">{{ t("Speichern") }}</button>
+  </form>
+{% endblock %}

@@ -1,0 +1,43 @@
+name: 🚀 Daily Log + CI + Railway Deploy
+
+on:
+  schedule:
+    - cron: '0 20 * * *'  # Täglich um 22:00 MESZ (20:00 UTC)
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  generate-log:
+    name: 🗋 Generate Daily Log
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      - name: Run Daily Log Script
+        run: |
+          pip install -r requirements.txt || echo "No dependencies"
+          python daily_log_generator.py
+
+      - name: Commit Daily Log
+        run: |
+          git config --global user.email "fur@system.ai"
+          git config --global user.name "FUR QUM"
+          git add core/logs/
+          git commit -m "📅 Daily Log: $(date +'%Y-%m-%d')" || echo "No changes to commit"
+          git push
+
+  deploy:
+    name: 🌌 Deploy to Railway (after CI)
+    needs: generate-log
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger Railway Deploy
+        run: curl -X POST ${{ secrets.RAILWAY_DEPLOY_HOOK }}
