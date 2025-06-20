@@ -1,24 +1,25 @@
 {% extends "admin/admin_base.html" %}
-{% set bg_image = resolve_background_template() %}
 {% set bg_image = "/static/bg/bot_settings.png" %}
 {% block title %}{{ t("Bot Einstellungen") }}{% endblock %}
 
 {% block content %}
-  <h2>⚙️ {{ t("Bot-Einstellungen") }}</h2>
+  <h2 class="page-title">⚙️ {{ t("Bot-Einstellungen") }}</h2>
 
   <form method="post">
     {% if users %}
       {% for user in users %}
         <div class="form-row" style="margin-bottom: 0.75rem;">
           <label for="allow_dm_{{ user.id }}">
-            <input type="checkbox" id="allow_dm_{{ user.id }}" name="allow_dm_{{ user.id }}" {% if user.allow_dm %}checked{% endif %}>
+            <input type="checkbox" id="allow_dm_{{ user.id }}" name="allow_dm_{{ user.id }}"
+                   {% if user.allow_dm %}checked{% endif %}>
             {{ user.username }} – {{ t("DM erlaubt") }}
           </label>
         </div>
       {% endfor %}
-      <button type="submit" class="btn">{{ t("Speichern") }}</button>
+
+      <button type="submit" class="btn btn-glow">{{ t("Speichern") }}</button>
     {% else %}
-      <p>{{ t("Keine Benutzer gefunden.") }}</p>
+      <p class="alert alert-warning">🚫 {{ t("Keine Benutzer gefunden.") }}</p>
     {% endif %}
   </form>
 {% endblock %}
