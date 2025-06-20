@@ -23,7 +23,7 @@ HEADERS = {"Accept": "application/vnd.github.v3+json"}
 if TOKEN:
     HEADERS["Authorization"] = f"token {TOKEN}"
 else:
-    logging.warning("TOKEN_GITHUB_API nicht gesetzt – GitHub API-Aufrufe k\u00f6nnen scheitern.")
+    logging.warning("TOKEN_GITHUB_API nicht gesetzt – GitHub API-Aufrufe können scheitern.")
 if not REPO:
     logging.warning("REPO_GITHUB nicht gesetzt – GitHub API deaktiviert.")
 
@@ -34,15 +34,6 @@ def _check_response(response: requests.Response) -> None:
         logging.error("❌ GitHub API 401 Unauthorized. Token fehlt oder ist ung\u00fcltig.")
         raise RuntimeError("GitHub API: Unauthorized - TOKEN_GITHUB_API pr\u00fcfen")
     response.raise_for_status()
-
-
-if not REPO or not TOKEN:
-    raise RuntimeError("Bitte Umgebungsvariablen REPO_GITHUB und TOKEN_GITHUB_API setzen!")
-
-HEADERS = {
-    "Authorization": f"token {TOKEN}",
-    "Accept": "application/vnd.github.v3+json",
-}
 
 
 def fetch_repo_info(owner: Optional[str] = None, repo: Optional[str] = None) -> dict:
@@ -60,10 +51,12 @@ def fetch_repo_info(owner: Optional[str] = None, repo: Optional[str] = None) -> 
     repo_full = repo or REPO
     owner = owner or (repo_full.split("/")[0] if repo_full else None)
     repo_name = repo_full.split("/")[1] if repo_full else None
-    if not (owner and repo_name and TOKEN):
-        raise RuntimeError(
-            "TOKEN_GITHUB_API und REPO_GITHUB (owner/repo) müssen in der Umgebung gesetzt sein!"
-        )
+    if not (owner and repo_name):
+        logging.warning("REPO_GITHUB nicht definiert – fetch_repo_info wird übersprungen.")
+        return {}
+    if not TOKEN:
+        logging.warning("TOKEN_GITHUB_API nicht gesetzt – fetch_repo_info wird übersprungen.")
+        return {}
 
     url = f"{GITHUB_API}/repos/{owner}/{repo_name}"
     response = requests.get(url, headers=HEADERS)
@@ -87,6 +80,10 @@ def commit_file(file_path: str, content: str, branch: str, commit_msg: str) -> d
     Returns:
         dict: Antwort des GitHub-APIs als Dictionary.
     """
+    if not TOKEN or not REPO:
+        logging.warning("GitHub API nicht konfiguriert – commit_file wird übersprungen.")
+        return {}
+
     url = f"{GITHUB_API}/repos/{REPO}/contents/{file_path}"
     encoded_content = base64.b64encode(content.encode("utf-8")).decode("utf-8")
     data = {"message": commit_msg, "content": encoded_content, "branch": branch}
@@ -109,6 +106,10 @@ def create_branch(branch: str, from_branch: str = "main") -> dict:
     Returns:
         dict: Antwort des GitHub-APIs als Dictionary.
     """
+    if not TOKEN or not REPO:
+        logging.warning("GitHub API nicht konfiguriert – create_branch wird übersprungen.")
+        return {}
+
     url = f"{GITHUB_API}/repos/{REPO}/git/refs"
     base_sha = get_branch_sha(from_branch)
     data = {"ref": f"refs/heads/{branch}", "sha": base_sha}
@@ -130,6 +131,10 @@ def get_branch_sha(branch: str) -> str:
     Returns:
         str: Commit-SHA.
     """
+    if not TOKEN or not REPO:
+        logging.warning("GitHub API nicht konfiguriert – get_branch_sha wird übersprungen.")
+        return ""
+
     url = f"{GITHUB_API}/repos/{REPO}/git/refs/heads/{branch}"
     response = requests.get(url, headers=HEADERS)
     if response.status_code == 401:
@@ -152,6 +157,10 @@ def create_pull_request(title: str, body: str, head: str, base: str = "main") ->
     Returns:
         dict: Antwort des GitHub-APIs als Dictionary.
     """
+    if not TOKEN or not REPO:
+        logging.warning("GitHub API nicht konfiguriert – create_pull_request wird übersprungen.")
+        return {}
+
     url = f"{GITHUB_API}/repos/{REPO}/pulls"
     data = {"title": title, "body": body, "head": head, "base": base}
     response = requests.post(url, json=data, headers=HEADERS)
