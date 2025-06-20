@@ -1,63 +1,65 @@
 {% extends "layout.html" %}
+{% set bg_image = "/static/bg/admin.png" %}
+{% block title %}Admin Dashboard{% endblock %}
 
 {% block content %}
 <div class="main-content">
 	<div class="page-header">
-		<h1>🛡️ FUR Command Center</h1>
+		<h1>🛡️ {{ _('FUR Command Center') }}</h1>
 	</div>
 
 	<!-- Overview Cards -->
 	<div class="calendar-card">
-		<h2>🧾 Overview</h2>
+		<h2>🧾 {{ _('Übersicht') }}</h2>
 		<ul>
-			<li><strong>🧙‍♂️ Active Members:</strong> 48</li>
-			<li><strong>🔥 Current Power:</strong> 274,600</li>
-			<li><strong>📆 Scheduled Events:</strong> {{ events|length }}</li>
+			<li><strong>🧙‍♂️ {{ _('Aktive Mitglieder') }}:</strong> 48</li>
+			<li><strong>🔥 {{ _('Macht gesamt') }}:</strong> 274,600</li>
+			<li><strong>📆 {{ _('Geplante Events') }}:</strong> {{ events|length }}</li>
 		</ul>
 	</div>
 
 	<div class="calendar-card">
-		<h2>🎯 Daily Objectives</h2>
+		<h2>🎯 {{ _('Tägliche Ziele') }}</h2>
 		<ul>
-			<li>✅ Check-in at least once</li>
-			<li>⚔️ Help with war 17:00</li>
-			<li>📣 Post on Discord once</li>
+			<li>✅ {{ _('Einmal einloggen') }}</li>
+			<li>⚔️ {{ _('Kriegshilfe 17:00') }}</li>
+			<li>📣 {{ _('Discord-Post senden') }}</li>
 		</ul>
 	</div>
 
 	<div class="calendar-card">
-		<h2>📢 Motivation</h2>
+		<h2>📢 {{ _('Motivation') }}</h2>
 		<blockquote>
 			“Forged in Unity, we rise in Flame.”
-			<footer>— Clan Motto</footer>
+			<footer>— {{ _('Clan-Motto') }}</footer>
 		</blockquote>
 	</div>
 
 	<!-- Event Management -->
 	<div class="calendar-card">
-		<h2>📋 Event Management</h2>
-		<a href="/create" class="btn btn-glow" style="margin-bottom: 1rem;">➕ New Event</a>
+		<h2>📋 {{ _('Eventverwaltung') }}</h2>
+		<a href="/create" class="btn btn-glow" style="margin-bottom: 1rem;">➕ {{ _('Neues Event') }}</a>
 		<table>
 			<thead>
 				<tr>
-					<th>Title</th>
-					<th>Time</th>
-					<th>Actions</th>
+					<th>{{ _('Titel') }}</th>
+					<th>{{ _('Zeit') }}</th>
+					<th>{{ _('Aktionen') }}</th>
 				</tr>
 			</thead>
 			<tbody>
 				{% for event in events %}
 				<tr>
 					<td>{{ event.title }}</td>
-					<td>{{ event.event_time }}</td>
-					<td>
-						<a href="/edit/{{ event.id }}" title="Edit">✏️</a>
-						<a href="/delete/{{ event.id }}" title="Delete">❌</a>
-						<a href="/participants/{{ event.id }}" title="Participants">👥</a>
+					<td>{{ event.event_time.strftime('%Y-%m-%d %H:%M') }}</td>
+					<td class="event-actions">
+						<a href="/edit/{{ event.id }}" title="{{ _('Bearbeiten') }}">✏️</a>
+						<a href="/delete/{{ event.id }}" title="{{ _('Löschen') }}">❌</a>
+						<a href="/participants/{{ event.id }}" title="{{ _('Teilnehmer') }}">👥</a>
 					</td>
 				</tr>
 				{% else %}
-				<tr><td colspan="3">No events found.</td></tr>
+				<tr><td colspan="3">{{ _('Keine Events gefunden.') }}</td></tr>
 				{% endfor %}
 			</tbody>
 		</table>
