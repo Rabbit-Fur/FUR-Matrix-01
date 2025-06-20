@@ -82,3 +82,44 @@ def test_join_event_success(client):
     assert resp.headers["Location"].endswith("/events/1")
     flashes = get_flashes(client)
     assert ("success", "Du bist dem Event erfolgreich beigetreten!") in flashes
+
+
+def test_get_champion(client):
+    mongo_service.db["hall_of_fame"].insert_one(
+        {
+            "username": "Foo",
+            "month": "2025-06",
+            "created_at": __import__("datetime").datetime.utcnow(),
+        }
+    )
+    resp = client.get("/champion")
+    assert resp.is_json
+    assert resp.status_code == 200
+    assert resp.json["username"] == "Foo"
+
+
+def test_post_reminder(client):
+    resp = client.post(
+        "/reminder",
+        json={
+            "user_id": 1,
+            "message": "Hi",
+            "remind_at": "2025-01-01T00:00:00",
+        },
+    )
+    assert resp.is_json
+    assert resp.status_code == 200
+    assert resp.json["status"] == "scheduled"
+
+
+def test_get_poster_image(client, tmp_path, monkeypatch):
+    from config import Config
+
+    monkeypatch.setattr(Config, "STATIC_FOLDER", str(tmp_path))
+    posters = tmp_path / "posters"
+    posters.mkdir()
+    file = posters / "example.png"
+    file.write_bytes(b"\x89PNG\r\n\x1a\n")
+    resp = client.get("/poster/example.png")
+    assert resp.status_code == 200
+    assert resp.mimetype == "image/png"

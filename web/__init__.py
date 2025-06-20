@@ -1,14 +1,18 @@
 """Flask application factory for the FUR system."""
 
+import importlib
 import os
 from pathlib import Path
 
-from flask import Flask, request, session
+from flask import Blueprint, Flask, request, session
 
 from config import Config
 from database import close_db
 from flask_babel_next import Babel
 from fur_lang.i18n import current_lang, get_supported_languages, t
+from web.champion_routes import champion_blueprint
+from web.poster_routes import poster_blueprint
+from web.reminder_routes import reminder_blueprint
 
 # ---------------------------------------------------------------------------
 # 🔹 Hilfsfunktion (Fallback für BG-Resolver)
@@ -19,6 +23,19 @@ except ImportError:
 
     def resolve_background_template() -> str:
         return "/static/img/background.jpg"
+
+
+def auto_register_blueprints(app: Flask) -> None:
+    """Automatically register all *_routes.py blueprints in this package."""
+    routes_dir = Path(__file__).parent
+    for route_file in routes_dir.glob("*_routes.py"):
+        module_name = f"web.{route_file.stem}"
+        module = importlib.import_module(module_name)
+        for attr in dir(module):
+            blueprint = getattr(module, attr)
+            if isinstance(blueprint, Blueprint):
+                if blueprint.name not in app.blueprints:
+                    app.register_blueprint(blueprint)
 
 
 # ---------------------------------------------------------------------------
@@ -95,14 +112,19 @@ def create_app() -> Flask:
         from blueprints.leaderboard import leaderboard
         from blueprints.member import member
         from blueprints.public import public
-        from blueprints.reminder_api import reminder_api
         from dashboard.routes import dashboard
+
+        try:
+            from blueprints.reminder_api import reminder_api
+        except Exception:
+            reminder_api = None
 
         app.register_blueprint(public)
         app.register_blueprint(member, url_prefix="/members")
         app.register_blueprint(admin, url_prefix="/admin")
         app.register_blueprint(leaderboard, url_prefix="/leaderboard")
-        app.register_blueprint(reminder_api, url_prefix="/api/reminders")
+        if reminder_api:
+            app.register_blueprint(reminder_api, url_prefix="/api/reminders")
         app.register_blueprint(dashboard)
 
         # API-Blueprints
@@ -112,6 +134,12 @@ def create_app() -> Flask:
         app.logger.info("✅ Alle Blueprints erfolgreich registriert.")
     except Exception:
         app.logger.exception("❌ Blueprint registration failed")
+
+    app.register_blueprint(champion_blueprint)
+    app.register_blueprint(reminder_blueprint)
+    app.register_blueprint(poster_blueprint)
+
+    auto_register_blueprints(app)
 
     # ---------------------------------------------------------------------
     # 🧹 4) DB-Teardown

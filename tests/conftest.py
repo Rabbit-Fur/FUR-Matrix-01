@@ -81,7 +81,7 @@ def app():
     def lore():
         return "lore"
 
-    app.register_blueprint(public)
+    app.register_blueprint(public, name="public_test")
 
     admin_bp = Blueprint("admin", __name__)
 
@@ -89,7 +89,7 @@ def app():
     def dashboard():
         return "admindash"
 
-    app.register_blueprint(admin_bp, url_prefix="/admin")
+    app.register_blueprint(admin_bp, url_prefix="/admin", name="admin_test")
 
     member_bp = Blueprint("member", __name__)
 
@@ -97,7 +97,7 @@ def app():
     def dashboard():
         return "memberdash"
 
-    app.register_blueprint(member_bp, url_prefix="/members")
+    app.register_blueprint(member_bp, url_prefix="/members", name="member_test")
 
     app.config.update({"TESTING": True, "WTF_CSRF_ENABLED": False, "SERVER_NAME": "localhost:8080"})
     with app.app_context():
