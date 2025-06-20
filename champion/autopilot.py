@@ -1,9 +1,40 @@
 """Automated champion announcement via Discord webhook."""
 
+from __future__ import annotations
+
+import logging
+from typing import Optional
+
 from champion.webhook import send_discord_webhook
 from utils.champion_data import generate_champion_poster
 
 
-def run_champion_autopilot():
-    poster_path = generate_champion_poster()
-    send_discord_webhook(content="🏆 New Champion crowned!", file_path=poster_path)
+def run_champion_autopilot(month: Optional[str] = None, username: Optional[str] = None) -> bool:
+    """Post a champion announcement poster via the Discord webhook.
+
+    Parameters
+    ----------
+    month:
+        Optional month label to announce, e.g. ``"June"``.
+    username:
+        Name that should appear on the poster.
+
+    Returns
+    -------
+    bool
+        ``True`` if sending succeeded, otherwise ``False``.
+    """
+
+    username = username or "Champion"
+    try:
+        poster_path = generate_champion_poster(username)
+        if month:
+            content = f"\U0001f3c6 Champion for {month} crowned!"
+        else:
+            content = "\U0001f3c6 New Champion crowned!"
+        send_discord_webhook(content=content, file_path=poster_path)
+        logging.info("Champion autopilot executed for %s in %s", username, month)
+        return True
+    except Exception:  # noqa: BLE001
+        logging.exception("Champion autopilot failed")
+        return False

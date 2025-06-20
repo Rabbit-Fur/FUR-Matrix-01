@@ -1,4 +1,3 @@
-import os
 from pathlib import Path
 
 from config import Config
@@ -32,3 +31,42 @@ def test_post_champion_poster(monkeypatch, tmp_path):
 
     success = champion_mod.post_champion_poster("Tester")
     assert success
+
+
+def test_run_champion_autopilot(monkeypatch, tmp_path):
+    from champion import autopilot as autopilot_mod
+
+    def fake_generate(username="Champion"):
+        path = tmp_path / f"{username}.png"
+        path.write_bytes(b"img")
+        return str(path)
+
+    def fake_send(content: str, file_path: str):
+        fake_send.called = True
+        fake_send.kwargs = {"content": content, "file_path": file_path}
+        return 204
+
+    monkeypatch.setattr(autopilot_mod, "generate_champion_poster", fake_generate)
+    monkeypatch.setattr(autopilot_mod, "send_discord_webhook", fake_send)
+
+    assert autopilot_mod.run_champion_autopilot(month="June", username="Tester")
+    assert fake_send.called
+    assert "June" in fake_send.kwargs["content"]
+    assert Path(fake_send.kwargs["file_path"]).exists()
+
+
+def test_run_champion_autopilot_error(monkeypatch, tmp_path):
+    from champion import autopilot as autopilot_mod
+
+    def fake_generate(username="Champion"):
+        path = tmp_path / f"{username}.png"
+        path.write_bytes(b"img")
+        return str(path)
+
+    def fake_send(*args, **kwargs):
+        raise RuntimeError("fail")
+
+    monkeypatch.setattr(autopilot_mod, "generate_champion_poster", fake_generate)
+    monkeypatch.setattr(autopilot_mod, "send_discord_webhook", fake_send)
+
+    assert autopilot_mod.run_champion_autopilot() is False
