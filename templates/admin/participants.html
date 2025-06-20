@@ -3,10 +3,17 @@
 {% block title %}{{ t("Event-Teilnehmer") }}{% endblock %}
 
 {% block content %}
-  <h2>👥 {{ t("Teilnehmer für Event") }}: {{ event.title }}</h2>
-  <ul>
-    {% for user in participants %}
-      <li>{{ user.username }}</li>
-    {% endfor %}
-  </ul>
+  <h2 class="page-title">👥 {{ t("Teilnehmer für Event") }}: {{ event.title or '–' }}</h2>
+
+  {% if participants %}
+    <ul class="participant-list">
+      {% for user in participants %}
+        <li class="participant-entry">
+          {{ user.username or '—' }}
+        </li>
+      {% endfor %}
+    </ul>
+  {% else %}
+    <p class="alert alert-warning">🚫 {{ t("Keine Teilnehmer gefunden.") }}</p>
+  {% endif %}
 {% endblock %}
