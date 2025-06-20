@@ -4,6 +4,7 @@ import mongo_service
 def login_with_role(client, role):
     with client.session_transaction() as sess:
         sess["user"] = {"role_level": role}
+        sess["discord_roles"] = [role]
 
 
 def get_flashes(client):
@@ -16,8 +17,7 @@ def _check_requires_r4(client, method, path):
     resp = client.open(path, method=method)
     assert resp.status_code == 302
     assert resp.headers["Location"].endswith("/login")
-    flashes = get_flashes(client)
-    assert ("message", "Nur Admins dürfen diesen Bereich aufrufen.") in flashes
+    # require_roles decorator redirects without flash on missing roles
 
     # login as R3
     login_with_role(client, "R3")

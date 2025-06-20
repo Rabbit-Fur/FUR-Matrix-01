@@ -134,6 +134,7 @@ def discord_callback():
         current_app.logger.warning("❌ Keine gültige Discord-Rolle erkannt.")
         return "Keine gültige Rolle für den Zugriff", 403
 
+    session["discord_roles"] = [role_level]
     session["user"] = {
         "id": user_data["id"],
         "username": user_data["username"],

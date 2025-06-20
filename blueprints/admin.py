@@ -19,23 +19,27 @@ from flask import (
 from agents.webhook_agent import WebhookAgent
 from config import Config
 from mongo_service import db
+from utils.discord_util import require_roles
 from web.auth.decorators import r4_required
 
 admin = Blueprint("admin", __name__)
 
 
+@require_roles(["R4", "ADMIN"])
 @r4_required
 @admin.route("/")
 def admin_dashboard():
     return render_template("admin/admin.html")
 
 
+@require_roles(["R4", "ADMIN"])
 @r4_required
 @admin.route("/calendar")
 def calendar():
     return render_template("admin/calendar.html")
 
 
+@require_roles(["R4", "ADMIN"])
 @r4_required
 @admin.route("/create_event", methods=["GET", "POST"])
 def create_event():
@@ -60,24 +64,28 @@ def create_event():
     return render_template("admin/create_event.html")
 
 
+@require_roles(["R4", "ADMIN"])
 @r4_required
 @admin.route("/dashboard")
 def dashboard():
     return render_template("admin/dashboard.html")
 
 
+@require_roles(["R4", "ADMIN"])
 @r4_required
 @admin.route("/diplomacy")
 def diplomacy():
     return render_template("admin/diplomacy.html")
 
 
+@require_roles(["R4", "ADMIN"])
 @r4_required
 @admin.route("/downloads")
 def downloads():
     return render_template("admin/downloads.html")
 
 
+@require_roles(["R4", "ADMIN"])
 @r4_required
 @admin.route("/edit_event", methods=["GET", "POST"])
 def edit_event():
@@ -111,6 +119,7 @@ def edit_event():
     return render_template("admin/edit_event.html", event=event)
 
 
+@require_roles(["R4", "ADMIN"])
 @r4_required
 @admin.route("/events")
 def events():
@@ -120,18 +129,21 @@ def events():
     return render_template("admin/events.html", events=rows)
 
 
+@require_roles(["R4", "ADMIN"])
 @r4_required
 @admin.route("/leaderboards")
 def leaderboards():
     return render_template("admin/leaderboards.html")
 
 
+@require_roles(["R4", "ADMIN"])
 @r4_required
 @admin.route("/participants")
 def participants():
     return render_template("admin/participants.html")
 
 
+@require_roles(["R4", "ADMIN"])
 @r4_required
 @admin.route("/reminders")
 def reminder_admin():
@@ -139,18 +151,21 @@ def reminder_admin():
     return render_template("admin/reminders.html", reminders=reminders)
 
 
+@require_roles(["R4", "ADMIN"])
 @r4_required
 @admin.route("/settings")
 def settings():
     return render_template("admin/settings.html")
 
 
+@require_roles(["R4", "ADMIN"])
 @r4_required
 @admin.route("/tools")
 def tools():
     return render_template("admin/tools.html")
 
 
+@require_roles(["R4", "ADMIN"])
 @r4_required
 @admin.route("/translations_editor", methods=["GET", "POST"])
 def translations_editor():
@@ -200,24 +215,28 @@ def translations_editor():
 
 
 @admin.route("/trigger_reminder", methods=["POST"])
+@require_roles(["R4", "ADMIN"])
 @r4_required
 def trigger_reminder():
     return "Reminder triggered"
 
 
 @admin.route("/trigger_champion_post", methods=["POST"])
+@require_roles(["R4", "ADMIN"])
 @r4_required
 def trigger_champion_post():
     return "Champion post triggered"
 
 
 @admin.route("/healthcheck", methods=["POST"])
+@require_roles(["R4", "ADMIN"])
 @r4_required
 def healthcheck():
     return Response("ok", status=200)
 
 
 @admin.route("/export_participants")
+@require_roles(["R4", "ADMIN"])
 @r4_required
 def export_participants():
     csv_data = "username\n"
@@ -229,6 +248,7 @@ def export_participants():
 
 
 @admin.route("/export_scores")
+@require_roles(["R4", "ADMIN"])
 @r4_required
 def export_scores():
     csv_data = "username,score\n"
@@ -240,6 +260,7 @@ def export_scores():
 
 
 @admin.route("/events/post/<event_id>", methods=["POST"])
+@require_roles(["R4", "ADMIN"])
 @r4_required
 def post_event(event_id: str):
     """Post an event to Discord via webhook."""
@@ -261,6 +282,7 @@ def post_event(event_id: str):
 
 
 @admin.route("/post_champion", methods=["POST"])
+@require_roles(["R4", "ADMIN"])
 @r4_required
 def post_champion():
     from modules.champion import post_champion_poster
@@ -274,6 +296,7 @@ def post_champion():
 
 
 @admin.route("/post_weekly_report", methods=["POST"])
+@require_roles(["R4", "ADMIN"])
 @r4_required
 def post_weekly_report():
     from modules.weekly_report import post_report
@@ -287,6 +310,7 @@ def post_weekly_report():
 
 
 @admin.route("/post_announcement", methods=["POST"])
+@require_roles(["R4", "ADMIN"])
 @r4_required
 def post_announcement():
     title = request.form.get("title", "").strip()
