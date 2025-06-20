@@ -1,4 +1,4 @@
-"""DM broadcast cog for FUR Discord bot."""
+"""dm_broadcast_cog.py – Slash-Command für DM-Broadcasts an alle Mitglieder."""
 
 import asyncio
 import logging
@@ -13,12 +13,12 @@ from fur_lang.i18n import t
 
 log = logging.getLogger(__name__)
 
-MESSAGE_DELAY = 1.5
-RATE_LIMIT_SECONDS = 60
+MESSAGE_DELAY = 1.5  # Sekunden zwischen DMs (Vermeidung von Ratelimits)
+RATE_LIMIT_SECONDS = 60  # 1 Broadcast pro Minute pro User
 
 
 class DMBroadcastCog(commands.Cog):
-    """Allows admins to send a DM to all guild members."""
+    """Admin-Slash-Command: Direktnachricht an alle Server-Mitglieder."""
 
     def __init__(self, bot: commands.Bot) -> None:
         self.bot = bot
@@ -26,33 +26,30 @@ class DMBroadcastCog(commands.Cog):
         self.last_used: dict[int, float] = {}
 
     def has_admin_role(self, member: discord.Member) -> bool:
+        """Prüft, ob der Nutzer eine ADMIN-Rolle hat."""
         member_role_ids = {str(role.id) for role in member.roles}
         return bool(member_role_ids.intersection(Config.ADMIN_ROLE_IDS))
 
-    @app_commands.command(name="dm_all", description="Broadcast a DM to all members")
-    @app_commands.describe(text="Message to send (max 2000 characters)")
+    @app_commands.command(name="dm_all", description="Sende eine Nachricht an alle Mitglieder per DM.")
+    @app_commands.describe(text="Nachricht (max 2000 Zeichen)")
     async def dm_all(self, interaction: discord.Interaction, *, text: str) -> None:
-        """Send a direct message to all reachable guild members."""
         if not isinstance(interaction.user, discord.Member):
             await interaction.response.send_message(
-                t("dm_broadcast_member_only", default="Command only for guild members."),
+                t("dm_broadcast_member_only", default="Nur für Mitglieder verfügbar."),
                 ephemeral=True,
             )
             return
 
         if not self.has_admin_role(interaction.user):
             await interaction.response.send_message(
-                t("dm_broadcast_no_permission", default="You lack permission."),
+                t("dm_broadcast_no_permission", default="Du hast keine Berechtigung."),
                 ephemeral=True,
             )
             return
 
         if len(text) > 2000:
             await interaction.response.send_message(
-                t(
-                    "dm_broadcast_too_long",
-                    default="Message too long (max 2000 characters).",
-                ),
+                t("dm_broadcast_too_long", default="Nachricht zu lang (max. 2000 Zeichen)."),
                 ephemeral=True,
             )
             return
@@ -60,17 +57,14 @@ class DMBroadcastCog(commands.Cog):
         now = datetime.utcnow().timestamp()
         if now - self.last_used.get(interaction.user.id, 0) < RATE_LIMIT_SECONDS:
             await interaction.response.send_message(
-                t(
-                    "dm_broadcast_rate_limit",
-                    default="You can use this command only once per minute.",
-                ),
+                t("dm_broadcast_rate_limit", default="Nur 1 Broadcast pro Minute erlaubt."),
                 ephemeral=True,
             )
             return
 
         if self.broadcast_lock.locked():
             await interaction.response.send_message(
-                t("dm_broadcast_running", default="A broadcast is already running."),
+                t("dm_broadcast_running", default="Ein Broadcast läuft bereits."),
                 ephemeral=True,
             )
             return
@@ -82,7 +76,7 @@ class DMBroadcastCog(commands.Cog):
             guild = self.bot.get_guild(Config.DISCORD_GUILD_ID)
             if not guild:
                 await interaction.followup.send(
-                    t("dm_broadcast_guild_missing", default="Guild not found."),
+                    t("dm_broadcast_guild_missing", default="Server nicht gefunden."),
                     ephemeral=True,
                 )
                 return
@@ -97,24 +91,27 @@ class DMBroadcastCog(commands.Cog):
                     success_count += 1
                 except discord.Forbidden:
                     fail_count += 1
-                    log.warning("\u26d4\ufe0f DM blocked for %s", member.id)
-                except Exception as exc:  # pragma: no cover - network issues
+                    log.warning("🚫 DM blockiert für %s", member.id)
+                except Exception as exc:
                     fail_count += 1
-                    log.error("Failed to DM %s: %s", member.id, exc)
+                    log.error("❌ Fehler bei DM an %s: %s", member.id, exc)
                 await asyncio.sleep(MESSAGE_DELAY)
 
-            embed = discord.Embed(title="DM Broadcast")
-            embed.add_field(
-                name=t("dm_broadcast_sent", default="Gesendet"),
-                value=str(success_count),
+            embed = discord.Embed(
+                title="📢 DM Broadcast Ergebnis",
+                color=discord.Color.blue()
             )
             embed.add_field(
-                name=t("dm_broadcast_failed", default="Blockiert"),
-                value=str(fail_count),
+                name=t("dm_broadcast_sent", default="✅ Gesendet"),
+                value=str(success_count)
+            )
+            embed.add_field(
+                name=t("dm_broadcast_failed", default="❌ Fehlgeschlagen"),
+                value=str(fail_count)
             )
             await interaction.followup.send(embed=embed, ephemeral=True)
 
 
 async def setup(bot: commands.Bot) -> None:
-    """Register the cog."""
+    """Registriert das Broadcast-Cog beim Bot."""
     await bot.add_cog(DMBroadcastCog(bot))
