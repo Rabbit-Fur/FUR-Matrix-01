@@ -7,8 +7,11 @@
   <ul>
     {% for e in events %}
       <li>
-        {{ e.title }} ({{ e.date }})
+        {{ e.title }} ({{ e.event_date }})
         <a class="btn" href="{{ url_for('admin.edit_event', id=e.id) }}">✏️ {{ t("Bearbeiten") }}</a>
+        <form action="{{ url_for('admin.post_event', event_id=e.id) }}" method="post" style="display:inline;">
+          <button type="submit" class="btn">📢 {{ t('Event posten') }}</button>
+        </form>
       </li>
     {% endfor %}
   </ul>

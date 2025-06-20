@@ -7,6 +7,7 @@
   <h2>{{ t("Event bearbeiten") }}</h2>
 
   <form method="post">
+    <input type="hidden" name="id" value="{{ event.id if event and event.id is defined else event._id }}">
     <label for="title">{{ t("Titel") }}</label>
     <input type="text" id="title" name="title" value="{{ event.title if event and event.title is defined else '' }}" required>
 

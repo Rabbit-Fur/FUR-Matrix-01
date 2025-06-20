@@ -2,7 +2,9 @@
 
 import json
 import os
+from datetime import datetime
 
+from bson import ObjectId
 from flask import (
     Blueprint,
     Response,
@@ -14,6 +16,8 @@ from flask import (
     url_for,
 )
 
+from agents.webhook_agent import WebhookAgent
+from config import Config
 from mongo_service import db
 from web.auth.decorators import r4_required
 
@@ -75,15 +79,45 @@ def downloads():
 
 
 @r4_required
-@admin.route("/edit_event")
+@admin.route("/edit_event", methods=["GET", "POST"])
 def edit_event():
-    return render_template("admin/edit_event.html")
+    event_id = request.args.get("id") or request.form.get("id")
+    if not event_id:
+        flash("Unbekanntes Event", "danger")
+        return redirect(url_for("admin.events"))
+
+    collection = db["events"]
+    event = collection.find_one({"_id": ObjectId(event_id)})
+    if not event:
+        flash("Unbekanntes Event", "danger")
+        return redirect(url_for("admin.events"))
+
+    if request.method == "POST":
+        update = {
+            "title": request.form.get("title"),
+            "description": request.form.get("description"),
+            "event_date": request.form.get("event_date"),
+            "role": request.form.get("role"),
+            "recurrence": request.form.get("recurrence"),
+            "updated_at": datetime.utcnow(),
+        }
+        try:
+            collection.update_one({"_id": ObjectId(event_id)}, {"$set": update})
+            flash("Event aktualisiert", "success")
+            return redirect(url_for("admin.events"))
+        except Exception as e:
+            current_app.logger.error("Event update failed: %s", e, exc_info=True)
+            flash("Fehler beim Speichern", "danger")
+    return render_template("admin/edit_event.html", event=event)
 
 
 @r4_required
 @admin.route("/events")
 def events():
-    return render_template("admin/events.html")
+    rows = list(db["events"].find().sort("event_date", 1))
+    for row in rows:
+        row["id"] = str(row.get("_id"))
+    return render_template("admin/events.html", events=rows)
 
 
 @r4_required
@@ -196,3 +230,23 @@ def export_scores():
         mimetype="text/csv",
         headers={"Content-Disposition": "attachment; filename=scores.csv"},
     )
+
+
+@admin.route("/events/post/<event_id>", methods=["POST"])
+def post_event(event_id: str):
+    """Post an event to Discord via webhook."""
+    event = db["events"].find_one({"_id": ObjectId(event_id)})
+    if not event:
+        flash("Unbekanntes Event", "danger")
+        return redirect(url_for("admin.events"))
+
+    content = (
+        f"📅 **{event.get('title')}**\n{event.get('description', '')}\n🕒 {event.get('event_date')}"
+    )
+    webhook = WebhookAgent(Config.DISCORD_WEBHOOK_URL)
+    success = webhook.send(content)
+    if success:
+        flash("Event gepostet", "success")
+    else:
+        flash("Fehler beim Posten", "danger")
+    return redirect(url_for("admin.events"))
