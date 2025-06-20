@@ -3,8 +3,9 @@
 {% block title %}{{ t("reminder_admin_title") }}{% endblock %}
 
 {% block content %}
-  <h1>🔔 {{ t("reminder_admin_title") }}</h1>
+  <h1 class="page-title">🔔 {{ t("reminder_admin_title") }}</h1>
 
+  {% if reminders %}
   <table class="table">
     <thead>
       <tr>
@@ -17,42 +18,49 @@
     <tbody>
       {% for r in reminders %}
       <tr>
-        <td>{{ r['message'] }}</td>
-        <td>{{ r['send_time'] or '–' }}</td>
+        <td>{{ r.message }}</td>
+        <td>{{ r.send_time or '–' }}</td>
         <td>
-          <button onclick="loadParticipants('{{ r['id'] }}')">👥 {{ t("view") }}</button>
+          <button class="btn" onclick="loadParticipants('{{ r.id }}')">👥 {{ t('view') }}</button>
         </td>
         <td>
-          <button onclick="sendNow('{{ r['id'] }}')">📤 {{ t("send_now") }}</button>
-          <button onclick="deactivate('{{ r['id'] }}')">🛑 {{ t("deactivate") }}</button>
+          <button class="btn btn-glow" onclick="sendNow('{{ r.id }}')">📤 {{ t('send_now') }}</button>
+          <button class="btn" onclick="deactivate('{{ r.id }}')">🛑 {{ t('deactivate') }}</button>
         </td>
       </tr>
       {% endfor %}
     </tbody>
   </table>
+  {% else %}
+    <p class="alert alert-warning">🚫 {{ t("Keine Einträge") }}</p>
+  {% endif %}
 
-  <div id="participants" class="panel" style="margin-top:20px;"></div>
+  <div id="participants" class="panel" style="margin-top: 2rem;"></div>
 
   <script>
     function loadParticipants(id) {
       fetch(`/api/reminders/${id}/participants`)
         .then(r => r.json())
         .then(data => {
-          document.getElementById('participants').innerHTML =
-            `<h3>{{ t("participants") }} – Reminder ${id}</h3><pre>` +
-            JSON.stringify(data, null, 2) +
-            `</pre>`;
+          const el = document.getElementById('participants');
+          const list = data.length ? data.map(u => `• ${u.username || u.discord_id}`).join("<br>") : "{{ t('Keine Teilnehmer gefunden.') }}";
+          el.innerHTML = `
+            <h3>👥 {{ t("participants") }} – ${id}</h3>
+            <div class="panel-inner">${list}</div>
+          `;
         });
     }
 
     function sendNow(id) {
       fetch(`/api/reminders/${id}/send`, { method: "POST" })
-        .then(() => alert("✅ {{ t('reminder_sent') }}"));
+        .then(() => alert("✅ {{ t('reminder_sent') }}"))
+        .catch(() => alert("❌ {{ t('Fehler') }}"));
     }
 
     function deactivate(id) {
       fetch(`/api/reminders/${id}/deactivate`, { method: "POST" })
-        .then(() => alert("🚫 {{ t('reminder_deactivated') }}"));
+        .then(() => alert("🚫 {{ t('reminder_deactivated') }}"))
+        .catch(() => alert("❌ {{ t('Fehler') }}"));
     }
   </script>
 {% endblock %}
