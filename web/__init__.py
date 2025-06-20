@@ -64,7 +64,6 @@ def create_app() -> Flask:
 
     app.register_blueprint(admin_memory, url_prefix="/admin/memory")
 
-    
     # ---------------------------------------------------------------------
     # 🌍 2) Babel-Konfiguration
     # ---------------------------------------------------------------------
@@ -74,22 +73,21 @@ def create_app() -> Flask:
         "BABEL_TRANSLATION_DIRECTORIES",
         str(base_dir / "translations"),
     )
-    
-    babel = Babel()
-    babel.init_app(app)
-    
-    @babel.localeselector
-    def get_locale() -> str:
+
+    def select_locale() -> str:
         return session.get("lang") or request.accept_languages.best_match(
             app.config["BABEL_SUPPORTED_LOCALES"]
         )
-    
+
+    babel = Babel()
+    babel.init_app(app, locale_selector=select_locale)
+
     @app.before_request
     def set_language_from_request() -> None:
         lang = request.args.get("lang")
         if lang in app.config["BABEL_SUPPORTED_LOCALES"]:
             session["lang"] = lang
-    
+
     @app.context_processor
     def inject_globals():
         return {
