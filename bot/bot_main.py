@@ -66,7 +66,8 @@ async def load_extensions(bot_instance: commands.Bot):
     try:
         await bot_instance.load_extension("bot.cogs.reminder_autopilot")
         await bot_instance.load_extension("bot.cogs.reminder_optout")
-        log.info("🔔 Reminder-Cogs erfolgreich geladen.")
+        await bot_instance.load_extension("bot.cogs.dm_broadcast_cog")
+        log.info("🔔 Cogs erfolgreich geladen.")
     except Exception as e:
         log.error("❌ Fehler beim Laden der Cogs: %s", e)
 
@@ -84,13 +85,9 @@ async def run_bot(max_retries: int = 3) -> None:
                 await bot.start(Config.DISCORD_TOKEN)
                 return
             except aiohttp.ClientConnectorError as e:
-                log.warning(
-                    "DNS-Verbindungsfehler (%s/%s): %s", attempt, max_retries, e
-                )
+                log.warning("DNS-Verbindungsfehler (%s/%s): %s", attempt, max_retries, e)
                 if attempt == max_retries:
-                    log.critical(
-                        "❌ Discord-Gateway dauerhaft unerreichbar.", exc_info=True
-                    )
+                    log.critical("❌ Discord-Gateway dauerhaft unerreichbar.", exc_info=True)
                     raise
                 await asyncio.sleep(5)
             except Exception as e:
