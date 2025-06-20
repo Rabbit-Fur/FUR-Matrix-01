@@ -1,22 +1,38 @@
 {% extends "layout.html" %}
-{% set bg_image = resolve_background_template() %}
 {% set bg_image = "/static/bg/calendar.png" %}
-
 {% block title %}{{ t("Admin Kalender") }}{% endblock %}
 
 {% block content %}
-  <h2>{{ t("Event-Kalender (Admin)") }}</h2>
-  <div id="calendar"></div>
+  <h2 class="page-title">📅 {{ t("Event-Kalender (Admin)") }}</h2>
+  <div id="calendar" style="margin-top: 2rem;"></div>
 {% endblock %}
 
 {% block scripts %}
   <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.0/main.min.js"></script>
   <script>
     document.addEventListener("DOMContentLoaded", function () {
-      var calendar = new FullCalendar.Calendar(document.getElementById("calendar"), {
+      const calendarEl = document.getElementById("calendar");
+      if (!calendarEl) return;
+
+      const calendar = new FullCalendar.Calendar(calendarEl, {
         initialView: "dayGridMonth",
-        events: {{ events_json | default("[]") | safe }}
+        firstDay: 1,
+        locale: "{{ current_lang() }}",
+        height: "auto",
+        events: {{ events_json | default("[]") | safe }},
+        eventClick: function(info) {
+          if (info.event.url) {
+            window.open(info.event.url, "_blank");
+            info.jsEvent.preventDefault();
+          }
+        },
+        headerToolbar: {
+          left: "prev,next today",
+          center: "title",
+          right: "dayGridMonth,timeGridWeek,listWeek"
+        }
       });
+
       calendar.render();
     });
   </script>
