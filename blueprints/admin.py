@@ -198,21 +198,25 @@ def translations_editor():
 
 
 @admin.route("/trigger_reminder", methods=["POST"])
+@r4_required
 def trigger_reminder():
     return "Reminder triggered"
 
 
 @admin.route("/trigger_champion_post", methods=["POST"])
+@r4_required
 def trigger_champion_post():
     return "Champion post triggered"
 
 
 @admin.route("/healthcheck", methods=["POST"])
+@r4_required
 def healthcheck():
     return Response("ok", status=200)
 
 
 @admin.route("/export_participants")
+@r4_required
 def export_participants():
     csv_data = "username\n"
     return Response(
@@ -223,6 +227,7 @@ def export_participants():
 
 
 @admin.route("/export_scores")
+@r4_required
 def export_scores():
     csv_data = "username,score\n"
     return Response(
@@ -233,6 +238,7 @@ def export_scores():
 
 
 @admin.route("/events/post/<event_id>", methods=["POST"])
+@r4_required
 def post_event(event_id: str):
     """Post an event to Discord via webhook."""
     event = db["events"].find_one({"_id": ObjectId(event_id)})
@@ -250,12 +256,18 @@ def post_event(event_id: str):
     else:
         flash("Fehler beim Posten", "danger")
     return redirect(url_for("admin.events"))
+
+
 @admin.route("/post_champion", methods=["POST"])
 @r4_required
 def post_champion():
     from modules.champion import post_champion_poster
+
     success = post_champion_poster()
-    flash("Champion wurde gepostet" if success else "Posten fehlgeschlagen", "success" if success else "danger")
+    flash(
+        "Champion wurde gepostet" if success else "Posten fehlgeschlagen",
+        "success" if success else "danger",
+    )
     return redirect(url_for("admin.admin_dashboard"))
 
 
@@ -263,8 +275,12 @@ def post_champion():
 @r4_required
 def post_weekly_report():
     from modules.weekly_report import post_report
+
     success = post_report()
-    flash("Wochenreport wurde gepostet" if success else "Posten fehlgeschlagen", "success" if success else "danger")
+    flash(
+        "Wochenreport wurde gepostet" if success else "Posten fehlgeschlagen",
+        "success" if success else "danger",
+    )
     return redirect(url_for("admin.admin_dashboard"))
 
 
@@ -281,5 +297,8 @@ def post_announcement():
     content = f"📣 **{title}**\n{message}"
     success = WebhookAgent(Config.DISCORD_WEBHOOK_URL).send(content)
 
-    flash("Ankündigung gesendet" if success else "Senden fehlgeschlagen", "success" if success else "danger")
+    flash(
+        "Ankündigung gesendet" if success else "Senden fehlgeschlagen",
+        "success" if success else "danger",
+    )
     return redirect(url_for("admin.admin_dashboard"))
