@@ -157,7 +157,9 @@ def translations_editor():
     from fur_lang.i18n import get_supported_languages, translations
 
     supported_languages = get_supported_languages()
-    selected_language = request.args.get("lang") or request.form.get("language")
+    selected_language = (
+        request.args.get("language") or request.form.get("language") or request.args.get("lang")
+    )
     if not selected_language and supported_languages:
         selected_language = supported_languages[0]
 
