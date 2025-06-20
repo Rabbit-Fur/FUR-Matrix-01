@@ -23,6 +23,7 @@ python-telegram-bot==22.1
 
 # 📦 Utilities
 requests==2.32.3
+openai>=1.14
 python-dotenv==1.1.0
 python-dateutil
 pytz

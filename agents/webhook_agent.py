@@ -22,10 +22,13 @@ class WebhookAgent:
             return False
 
         data = {"content": content}
-        files = {"file": open(file_path, "rb")} if file_path else None
 
         try:
-            response = requests.post(url, data=data, files=files)
+            if file_path:
+                with open(file_path, "rb") as fh:
+                    response = requests.post(url, data=data, files={"file": fh})
+            else:
+                response = requests.post(url, data=data)
             response.raise_for_status()
             logging.info(f"📤 Webhook erfolgreich gesendet ({response.status_code})")
             return True
