@@ -157,7 +157,9 @@ def translations_editor():
     from fur_lang.i18n import get_supported_languages, translations
 
     supported_languages = get_supported_languages()
-    selected_language = request.args.get("lang") or request.form.get("language")
+    selected_language = (
+        request.args.get("language") or request.form.get("language") or request.args.get("lang")
+    )
     if not selected_language and supported_languages:
         selected_language = supported_languages[0]
 
@@ -250,12 +252,18 @@ def post_event(event_id: str):
     else:
         flash("Fehler beim Posten", "danger")
     return redirect(url_for("admin.events"))
+
+
 @admin.route("/post_champion", methods=["POST"])
 @r4_required
 def post_champion():
     from modules.champion import post_champion_poster
+
     success = post_champion_poster()
-    flash("Champion wurde gepostet" if success else "Posten fehlgeschlagen", "success" if success else "danger")
+    flash(
+        "Champion wurde gepostet" if success else "Posten fehlgeschlagen",
+        "success" if success else "danger",
+    )
     return redirect(url_for("admin.admin_dashboard"))
 
 
@@ -263,8 +271,12 @@ def post_champion():
 @r4_required
 def post_weekly_report():
     from modules.weekly_report import post_report
+
     success = post_report()
-    flash("Wochenreport wurde gepostet" if success else "Posten fehlgeschlagen", "success" if success else "danger")
+    flash(
+        "Wochenreport wurde gepostet" if success else "Posten fehlgeschlagen",
+        "success" if success else "danger",
+    )
     return redirect(url_for("admin.admin_dashboard"))
 
 
@@ -281,5 +293,8 @@ def post_announcement():
     content = f"📣 **{title}**\n{message}"
     success = WebhookAgent(Config.DISCORD_WEBHOOK_URL).send(content)
 
-    flash("Ankündigung gesendet" if success else "Senden fehlgeschlagen", "success" if success else "danger")
+    flash(
+        "Ankündigung gesendet" if success else "Senden fehlgeschlagen",
+        "success" if success else "danger",
+    )
     return redirect(url_for("admin.admin_dashboard"))
