@@ -30,7 +30,7 @@
 	<div class="calendar-card">
 		<h2>📢 {{ _('Motivation') }}</h2>
 		<blockquote>
-			“Forged in Unity, we rise in Flame.”
+			<p>“Forged in Unity, we rise in Flame.”</p>
 			<footer>— {{ _('Clan-Motto') }}</footer>
 		</blockquote>
 	</div>
@@ -53,9 +53,9 @@
 					<td>{{ event.title }}</td>
 					<td>{{ event.event_time.strftime('%Y-%m-%d %H:%M') }}</td>
 					<td class="event-actions">
-						<a href="/edit/{{ event.id }}" title="{{ _('Bearbeiten') }}">✏️</a>
-						<a href="/delete/{{ event.id }}" title="{{ _('Löschen') }}">❌</a>
-						<a href="/participants/{{ event.id }}" title="{{ _('Teilnehmer') }}">👥</a>
+						<a href="/edit/{{ event.id|string }}" title="{{ _('Bearbeiten') }}">✏️</a>
+						<a href="/delete/{{ event.id|string }}" title="{{ _('Löschen') }}">❌</a>
+						<a href="/participants/{{ event.id|string }}" title="{{ _('Teilnehmer') }}">👥</a>
 					</td>
 				</tr>
 				{% else %}
