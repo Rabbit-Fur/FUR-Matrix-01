@@ -3,27 +3,29 @@
 {% block title %}{{ t("Admin Dashboard") }}{% endblock %}
 
 {% block content %}
-  <h2 style="font-size: 2.2em;">🛠️ {{ t("Admin Dashboard") }}</h2>
+  <h2 class="page-title">🛠️ {{ t("Admin Dashboard") }}</h2>
   <p>{{ t("Systemkontrolle, Nutzerverwaltung, Logs, Einstellungen, Tools…") }}</p>
 
-  <div style="display: flex; flex-wrap: wrap; gap: 1rem; margin-top: 2em;">
-    <a class="btn" href="{{ url_for('admin.calendar') }}">📅 {{ t('Kalender') }}</a>
-    <a class="btn" href="{{ url_for('admin.create_event') }}">📝 {{ t('Event erstellen') }}</a>
-    <a class="btn" href="{{ url_for('admin.participants') }}">👥 {{ t('Teilnehmer') }}</a>
-    <a class="btn" href="{{ url_for('admin.leaderboards') }}">🏆 {{ t('Leaderboards') }}</a>
-    <a class="btn" href="{{ url_for('admin.translations_editor') }}">🌐 {{ t('Übersetzungen') }}</a>
-    <a class="btn" href="{{ url_for('admin.tools') }}">🧰 {{ t('Tools') }}</a>
-    <a class="btn" href="{{ url_for('admin.settings') }}">⚙️ {{ t('Einstellungen') }}</a>
-    <a class="btn" href="{{ url_for('admin.downloads') }}">📥 {{ t('Downloads') }}</a>
+  <!-- Admin Actions Grid -->
+  <div class="btn-grid" style="display: flex; flex-wrap: wrap; gap: 1rem; margin-top: 2em;">
+    <a class="btn btn-glow" href="{{ url_for('admin.calendar') }}">📅 {{ t('Kalender') }}</a>
+    <a class="btn btn-glow" href="{{ url_for('admin.create_event') }}">📝 {{ t('Event erstellen') }}</a>
+    <a class="btn btn-glow" href="{{ url_for('admin.participants') }}">👥 {{ t('Teilnehmer') }}</a>
+    <a class="btn btn-glow" href="{{ url_for('admin.leaderboards') }}">🏆 {{ t('Leaderboards') }}</a>
+    <a class="btn btn-glow" href="{{ url_for('admin.translations_editor') }}">🌐 {{ t('Übersetzungen') }}</a>
+    <a class="btn btn-glow" href="{{ url_for('admin.tools') }}">🧰 {{ t('Tools') }}</a>
+    <a class="btn btn-glow" href="{{ url_for('admin.settings') }}">⚙️ {{ t('Einstellungen') }}</a>
+    <a class="btn btn-glow" href="{{ url_for('admin.downloads') }}">📥 {{ t('Downloads') }}</a>
   </div>
 
+  <!-- System Status Panel -->
   {% if stats is defined %}
-  <div class="panel" style="margin-top:2.5rem; max-width: 600px;">
+  <div class="panel" style="margin-top: 2.5rem; max-width: 600px;">
     <h3>📊 {{ t("Systemstatus") }}</h3>
     <ul style="list-style: none; padding: 0;">
-      <li>👤 {{ t("Nutzer insgesamt") }}: <strong>{{ stats.total_users if stats.total_users is defined else '–' }}</strong></li>
-      <li>📆 {{ t("Aktive Events") }}: <strong>{{ stats.active_events if stats.active_events is defined else '–' }}</strong></li>
-      <li>📝 {{ t("Offene Aufgaben") }}: <strong>{{ stats.open_tasks if stats.open_tasks is defined else '–' }}</strong></li>
+      <li>👤 {{ t("Nutzer insgesamt") }}: <strong>{{ stats.total_users or '–' }}</strong></li>
+      <li>📆 {{ t("Aktive Events") }}: <strong>{{ stats.active_events or '–' }}</strong></li>
+      <li>📝 {{ t("Offene Aufgaben") }}: <strong>{{ stats.open_tasks or '–' }}</strong></li>
     </ul>
   </div>
   {% endif %}
