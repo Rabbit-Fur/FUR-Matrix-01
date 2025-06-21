@@ -1,11 +1,17 @@
 # tests/test_agents_init.py
 
-import pytest
-from types import SimpleNamespace
+# Tests for agent initialization
+
 from agents.agenten_loader import init_agents
 
-class DummyDB(dict): pass
-class DummySession(dict): pass
+
+class DummyDB(dict):
+    pass
+
+
+class DummySession(dict):
+    pass
+
 
 def test_agenten_initialisierung():
     db = DummyDB()

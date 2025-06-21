@@ -1,10 +1,12 @@
 # codex/context_manager.py
 
-from core.memory.memory_loader import load_gpt_contexts
 import logging
 from typing import List
 
+from core.memory.memory_loader import load_gpt_contexts
+
 log = logging.getLogger(__name__)
+
 
 def build_codex_prompt(task_tags: List[str]) -> str:
     """

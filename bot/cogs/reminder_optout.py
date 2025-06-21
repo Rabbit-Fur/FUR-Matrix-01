@@ -1,9 +1,10 @@
 """reminder_optout_cog.py – Opt-out Reminder-System via Slash-Command & MongoDB."""
 
 import logging
+
 import discord
-from discord.ext import commands
 from discord import app_commands
+from discord.ext import commands
 
 from fur_lang.i18n import t
 from mongo_service import get_collection
@@ -27,15 +28,17 @@ class ReminderOptOut(commands.Cog):
 
         try:
             get_collection("reminder_optout").update_one(
-                {"discord_id": discord_id},
-                {"$set": {"discord_id": discord_id}},
-                upsert=True
+                {"discord_id": discord_id}, {"$set": {"discord_id": discord_id}}, upsert=True
             )
             log.info(f"🚫 Reminder deaktiviert für {discord_id}")
-            await interaction.response.send_message(t("reminder_optout_success", lang=lang), ephemeral=True)
+            await interaction.response.send_message(
+                t("reminder_optout_success", lang=lang), ephemeral=True
+            )
         except Exception as e:
             log.error(f"❌ Fehler beim Reminder-Opt-Out für {discord_id}: {e}")
-            await interaction.response.send_message(t("reminder_optout_error", lang=lang), ephemeral=True)
+            await interaction.response.send_message(
+                t("reminder_optout_error", lang=lang), ephemeral=True
+            )
 
 
 async def setup(bot: commands.Bot):

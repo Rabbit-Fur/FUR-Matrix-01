@@ -1,7 +1,9 @@
-from pydantic import BaseModel, Field, validator
-from typing import List, Optional
-from bson import ObjectId
 from datetime import datetime
+from typing import List, Optional
+
+from bson import ObjectId
+from pydantic import BaseModel, Field, validator
+
 
 # Hilfsklasse zur Unterstützung von ObjectId in Pydantic
 class PyObjectId(ObjectId):
@@ -20,6 +22,7 @@ class PyObjectId(ObjectId):
     @classmethod
     def __modify_schema__(cls, field_schema):
         field_schema.update(type="string")
+
 
 # Hauptmodell für Events
 class EventModel(BaseModel):
@@ -40,6 +43,4 @@ class EventModel(BaseModel):
     class Config:
         allow_population_by_field_name = True
         arbitrary_types_allowed = True
-        json_encoders = {
-            ObjectId: str
-        }
+        json_encoders = {ObjectId: str}

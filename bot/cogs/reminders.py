@@ -5,8 +5,8 @@ import os
 from datetime import datetime
 
 import discord
-from discord.ext import commands, tasks
 from discord import app_commands
+from discord.ext import commands, tasks
 
 from config import Config
 from fur_lang.i18n import t
@@ -60,7 +60,9 @@ class Reminders(commands.Cog):
     # ✅ Manuelles Auslösen per Slash-Command
     #
 
-    @app_commands.command(name="reminder_now", description="Sendet sofort eine Erinnerungsnachricht (Admin-only).")
+    @app_commands.command(
+        name="reminder_now", description="Sendet sofort eine Erinnerungsnachricht (Admin-only)."
+    )
     async def reminder_now(self, interaction: discord.Interaction):
         if not interaction.user.guild_permissions.administrator:
             await interaction.response.send_message("🚫 Keine Berechtigung.", ephemeral=True)
@@ -70,7 +72,9 @@ class Reminders(commands.Cog):
         now = datetime.utcnow().strftime("%H:%M")
 
         if not channel:
-            await interaction.response.send_message("⚠️ Reminder-Channel nicht gefunden.", ephemeral=True)
+            await interaction.response.send_message(
+                "⚠️ Reminder-Channel nicht gefunden.", ephemeral=True
+            )
             return
 
         try:

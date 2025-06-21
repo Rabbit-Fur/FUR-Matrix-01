@@ -158,9 +158,7 @@ def save_json(path: Path, data: Dict) -> None:
         json.dump(data, f, indent=2, ensure_ascii=False)
 
 
-def sync_translations(
-    dry_run: bool = False, report_only: bool = False
-) -> Dict[str, List[str]]:
+def sync_translations(dry_run: bool = False, report_only: bool = False) -> Dict[str, List[str]]:
     """
     Synchronisiert alle Übersetzungsdateien gegen die Master-Sprache,
     übersetzt neue Keys falls notwendig, und erzeugt Reportdaten.
@@ -220,9 +218,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(
         description="Synchronisiere i18n JSON-Dateien in mehrere Sprachen."
     )
-    parser.add_argument(
-        "--dry-run", action="store_true", help="Zeigt nur, was geändert würde."
-    )
+    parser.add_argument("--dry-run", action="store_true", help="Zeigt nur, was geändert würde.")
     parser.add_argument(
         "--report-only",
         action="store_true",

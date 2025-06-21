@@ -3,8 +3,8 @@
 import logging
 
 import discord
-from discord.ext import commands
 from discord import app_commands
+from discord.ext import commands
 
 from fur_lang.i18n import t
 from mongo_service import get_collection
@@ -32,8 +32,7 @@ class Leaderboard(commands.Cog):
 
             if not rows:
                 await interaction.response.send_message(
-                    t("leaderboard_unknown_category", category=category, lang=lang),
-                    ephemeral=True
+                    t("leaderboard_unknown_category", category=category, lang=lang), ephemeral=True
                 )
                 return
 
@@ -43,11 +42,15 @@ class Leaderboard(commands.Cog):
             )
             result = t("leaderboard_message", header=header, content=content, lang=lang)
             await interaction.response.send_message(result)
-            log.info(f"📊 Slash-Leaderboard '{category}' gesendet an {interaction.user.display_name}")
+            log.info(
+                f"📊 Slash-Leaderboard '{category}' gesendet an {interaction.user.display_name}"
+            )
 
         except Exception as e:
             log.error(f"❌ Fehler beim Leaderboard-Aufruf: {e}", exc_info=True)
-            await interaction.response.send_message(t("leaderboard_error", lang=lang), ephemeral=True)
+            await interaction.response.send_message(
+                t("leaderboard_error", lang=lang), ephemeral=True
+            )
 
 
 async def setup(bot: commands.Bot):

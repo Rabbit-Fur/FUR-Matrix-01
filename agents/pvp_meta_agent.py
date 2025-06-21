@@ -2,6 +2,7 @@
 PvPMetaAgent – analysiert Enforcer, Skills, Pets und erstellt Tierlists
 """
 
+
 class PvPMetaAgent:
     def __init__(self, db):
         self.db = db

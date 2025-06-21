@@ -1,9 +1,10 @@
 """newsletter_cog.py – Slash-Command für Clan-Announcements."""
 
 import logging
+
 import discord
-from discord.ext import commands
 from discord import app_commands
+from discord.ext import commands
 
 from fur_lang.i18n import t
 from mongo_service import get_collection
@@ -25,7 +26,9 @@ class Newsletter(commands.Cog):
             )
         return False
 
-    @app_commands.command(name="announce", description="Sendet eine Clan-Ankündigung in den Channel.")
+    @app_commands.command(
+        name="announce", description="Sendet eine Clan-Ankündigung in den Channel."
+    )
     @app_commands.describe(message="Die Nachricht, die du an alle senden möchtest.")
     async def announce(self, interaction: discord.Interaction, message: str):
         user = interaction.user
@@ -35,7 +38,9 @@ class Newsletter(commands.Cog):
             lang = db_user["lang"]
 
         if not self.user_is_admin(user):
-            await interaction.response.send_message(t("announce_no_permission", lang=lang), ephemeral=True)
+            await interaction.response.send_message(
+                t("announce_no_permission", lang=lang), ephemeral=True
+            )
             return
 
         if not message.strip():
@@ -44,11 +49,15 @@ class Newsletter(commands.Cog):
 
         try:
             await interaction.channel.send(t("announce_message", message=message, lang=lang))
-            await interaction.response.send_message(t("announce_success", lang=lang), ephemeral=True)
+            await interaction.response.send_message(
+                t("announce_success", lang=lang), ephemeral=True
+            )
             log.info(f"📢 Announcement von {user.display_name} in Channel {interaction.channel.id}")
         except discord.Forbidden:
             log.warning("Bot hat keine Berechtigung zum Senden in diesem Channel.")
-            await interaction.response.send_message(t("announce_no_permission", lang=lang), ephemeral=True)
+            await interaction.response.send_message(
+                t("announce_no_permission", lang=lang), ephemeral=True
+            )
         except Exception as e:
             log.error(f"❌ Fehler beim Senden der Ankündigung: {e}", exc_info=True)
             await interaction.response.send_message(t("announce_error", lang=lang), ephemeral=True)

@@ -1,7 +1,9 @@
-from pydantic import BaseModel, Field, EmailStr
-from typing import Optional
 from datetime import datetime
+from typing import Optional
+
 from bson import ObjectId
+from pydantic import BaseModel, EmailStr, Field
+
 
 # ➕ Custom ObjectId Type für Pydantic-Kompatibilität
 class PyObjectId(ObjectId):
@@ -17,6 +19,7 @@ class PyObjectId(ObjectId):
             return ObjectId(str(v))
         except Exception:
             raise ValueError("Ungültige ObjectId")
+
 
 # 🧑 Benutzer-Mongo-Modell (für Flask & FastAPI kompatibel)
 class UserModel(BaseModel):
@@ -39,6 +42,6 @@ class UserModel(BaseModel):
                 "username": "FURUser",
                 "avatar": "https://cdn.discordapp.com/avatars/123/avatar.png",
                 "email": "user@example.com",
-                "role_level": "R3"
+                "role_level": "R3",
             }
         }

@@ -13,9 +13,7 @@ from flask import current_app, session
 
 log = logging.getLogger(__name__)
 
-TRANSLATION_FOLDER = os.path.join(
-    os.path.dirname(os.path.dirname(__file__)), "translations"
-)
+TRANSLATION_FOLDER = os.path.join(os.path.dirname(os.path.dirname(__file__)), "translations")
 LANG_FALLBACK = "de"
 
 
@@ -44,9 +42,7 @@ def get_supported_languages():
 
 def current_lang() -> str:
     """Ermittelt die aktuelle Sprache aus der Session oder Default-Konfiguration."""
-    return session.get(
-        "lang", current_app.config.get("BABEL_DEFAULT_LOCALE", LANG_FALLBACK)
-    )
+    return session.get("lang", current_app.config.get("BABEL_DEFAULT_LOCALE", LANG_FALLBACK))
 
 
 def t(key: str, default: str = None, lang: str = None, **kwargs) -> str:
