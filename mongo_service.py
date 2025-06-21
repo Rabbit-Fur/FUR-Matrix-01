@@ -1,14 +1,21 @@
 import logging
-import os
+import warnings
 
 from pymongo import MongoClient
 from pymongo.errors import ConnectionFailure
 
+from utils.env_helpers import get_env_str
+
 logger = logging.getLogger(__name__)
 
-MONGO_URI = os.getenv("MONGODB_URI")
+MONGO_URI = get_env_str("MONGODB_URI", required=False)
 if not MONGO_URI:
-    raise RuntimeError("MONGODB_URI not set")
+    warnings.warn(
+        "MONGODB_URI not set, falling back to local MongoDB URI",
+        RuntimeWarning,
+    )
+    logger.warning("MONGODB_URI not set, using default localhost URI")
+    MONGO_URI = "mongodb://localhost:27017/furdb"
 
 client = MongoClient(MONGO_URI)
 logger.info("MongoDB connected: %s", bool(client))

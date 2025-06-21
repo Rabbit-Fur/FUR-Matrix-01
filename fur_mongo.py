@@ -4,12 +4,14 @@ Verbindet sich mit der Datenbank 'furdb' und stellt globale Collection-Zugriffe 
 """
 
 import logging
-import os
+import warnings
 
 from dotenv import load_dotenv
 from pymongo import MongoClient
 from pymongo.errors import ConnectionFailure
 from pymongo.server_api import ServerApi
+
+from utils.env_helpers import get_env_str
 
 # === Nur bei Direktstart .env laden ===
 if __name__ == "__main__":
@@ -20,10 +22,14 @@ logger = logging.getLogger("fur_mongo")
 logging.basicConfig(level=logging.INFO)
 
 # === MongoDB-URI aus Umgebungsvariable ===
-MONGO_URI = os.getenv("MONGODB_URI") or "❌MONGODB_URI_NOT_SET"
-
-if "❌" in MONGO_URI:
-    raise EnvironmentError("Fehlende Umgebungsvariable MONGODB_URI")
+MONGO_URI = get_env_str("MONGODB_URI", required=False)
+if not MONGO_URI:
+    warnings.warn(
+        "MONGODB_URI not set, falling back to local MongoDB URI",
+        RuntimeWarning,
+    )
+    logger.warning("MONGODB_URI not set, using default localhost URI")
+    MONGO_URI = "mongodb://localhost:27017/furdb"
 
 # === Verbindung herstellen ===
 try:
