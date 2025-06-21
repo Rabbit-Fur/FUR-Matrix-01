@@ -3,9 +3,7 @@
 import os
 
 
-def get_env_str(
-    var_name: str, required: bool = True, default: str | None = None
-) -> str | None:
+def get_env_str(var_name: str, required: bool = True, default: str | None = None) -> str | None:
     """
     Liest eine Umgebungsvariable als String aus.
     """
@@ -15,9 +13,7 @@ def get_env_str(
     return value
 
 
-def get_env_int(
-    var_name: str, required: bool = True, default: int | None = None
-) -> int | None:
+def get_env_int(var_name: str, required: bool = True, default: int | None = None) -> int | None:
     """
     Liest eine Umgebungsvariable als Integer aus.
     """
@@ -32,9 +28,7 @@ def get_env_int(
         raise RuntimeError(f"{var_name} muss eine gültige Ganzzahl sein!")
 
 
-def get_env_bool(
-    var_name: str, required: bool = True, default: bool | None = None
-) -> bool | None:
+def get_env_bool(var_name: str, required: bool = True, default: bool | None = None) -> bool | None:
     """
     Liest eine Umgebungsvariable als Boolean aus ('true', '1', 'yes', 'on').
     """

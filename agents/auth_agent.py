@@ -1,6 +1,8 @@
 """
 AuthAgent – prüft Discord-Login, Rollen, Berechtigungen
 """
+
+
 class AuthAgent:
     def __init__(self, session, db):
         self.session = session

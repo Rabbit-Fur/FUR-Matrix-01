@@ -3,12 +3,13 @@ fur_mongo.py – zentrale MongoDB-Verbindung für das FUR-System
 Verbindet sich mit der Datenbank 'furdb' und stellt globale Collection-Zugriffe bereit.
 """
 
-import os
 import logging
+import os
+
+from dotenv import load_dotenv
 from pymongo import MongoClient
 from pymongo.errors import ConnectionFailure
 from pymongo.server_api import ServerApi
-from dotenv import load_dotenv
 
 # === Nur bei Direktstart .env laden ===
 if __name__ == "__main__":

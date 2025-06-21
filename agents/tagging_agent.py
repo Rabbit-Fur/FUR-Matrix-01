@@ -2,6 +2,7 @@
 TaggingAgent – generiert automatische Hashtags, Meta-Tags und PvP-Kategorien
 """
 
+
 class TaggingAgent:
     def __init__(self):
         self.tags = []

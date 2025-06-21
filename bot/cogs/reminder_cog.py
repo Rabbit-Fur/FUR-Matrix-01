@@ -4,8 +4,8 @@ import logging
 from datetime import datetime, timedelta
 
 import discord
-from discord.ext import commands, tasks
 from discord import app_commands
+from discord.ext import commands, tasks
 
 from fur_lang.i18n import t
 from mongo_service import get_collection
@@ -74,25 +74,26 @@ class ReminderCog(commands.Cog):
     # ✅ Slash-Commands (global)
     #
 
-    @app_commands.command(name="remind", description="Setze einen persönlichen Reminder in X Minuten.")
+    @app_commands.command(
+        name="remind", description="Setze einen persönlichen Reminder in X Minuten."
+    )
     @app_commands.describe(minutes="In wie vielen Minuten soll der Reminder gesendet werden?")
     async def remind(self, interaction: discord.Interaction, minutes: int):
         if minutes < 1 or minutes > 1440:
-            await interaction.response.send_message("❌ Reminder-Zeit muss zwischen 1 und 1440 Minuten liegen.", ephemeral=True)
+            await interaction.response.send_message(
+                "❌ Reminder-Zeit muss zwischen 1 und 1440 Minuten liegen.", ephemeral=True
+            )
             return
 
         user_id = interaction.user.id
         remind_at = datetime.utcnow() + timedelta(minutes=minutes)
 
-        get_collection("user_reminders").insert_one({
-            "user_id": str(user_id),
-            "remind_at": remind_at,
-            "created_at": datetime.utcnow()
-        })
+        get_collection("user_reminders").insert_one(
+            {"user_id": str(user_id), "remind_at": remind_at, "created_at": datetime.utcnow()}
+        )
 
         await interaction.response.send_message(
-            f"✅ Reminder gespeichert. Ich erinnere dich in {minutes} Minuten!",
-            ephemeral=True
+            f"✅ Reminder gespeichert. Ich erinnere dich in {minutes} Minuten!", ephemeral=True
         )
 
     @app_commands.command(name="remind_list", description="Zeigt deine geplanten Reminder.")
@@ -100,14 +101,21 @@ class ReminderCog(commands.Cog):
         user_id = str(interaction.user.id)
         reminders = list(get_collection("user_reminders").find({"user_id": user_id}))
         if not reminders:
-            await interaction.response.send_message("📭 Du hast aktuell keine Reminder.", ephemeral=True)
+            await interaction.response.send_message(
+                "📭 Du hast aktuell keine Reminder.", ephemeral=True
+            )
             return
 
         msg = "\n".join(
-            f"• <t:{int(r['remind_at'].timestamp())}:R> – gesetzt am <t:{int(r['created_at'].timestamp())}:f>"
+            (
+                f"• <t:{int(r['remind_at'].timestamp())}:R> – "
+                f"gesetzt am <t:{int(r['created_at'].timestamp())}:f>"
+            )
             for r in reminders
         )
-        await interaction.response.send_message(f"📋 Deine aktiven Reminder:\n{msg}", ephemeral=True)
+        await interaction.response.send_message(
+            f"📋 Deine aktiven Reminder:\n{msg}", ephemeral=True
+        )
 
     @app_commands.command(name="remind_cancel", description="Löscht alle deine aktiven Reminder.")
     async def remind_cancel(self, interaction: discord.Interaction):

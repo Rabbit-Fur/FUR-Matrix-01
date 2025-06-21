@@ -30,7 +30,9 @@ class DMBroadcastCog(commands.Cog):
         member_role_ids = {str(role.id) for role in member.roles}
         return bool(member_role_ids.intersection(Config.ADMIN_ROLE_IDS))
 
-    @app_commands.command(name="dm_all", description="Sende eine Nachricht an alle Mitglieder per DM.")
+    @app_commands.command(
+        name="dm_all", description="Sende eine Nachricht an alle Mitglieder per DM."
+    )
     @app_commands.describe(text="Nachricht (max 2000 Zeichen)")
     async def dm_all(self, interaction: discord.Interaction, *, text: str) -> None:
         if not isinstance(interaction.user, discord.Member):
@@ -97,17 +99,12 @@ class DMBroadcastCog(commands.Cog):
                     log.error("❌ Fehler bei DM an %s: %s", member.id, exc)
                 await asyncio.sleep(MESSAGE_DELAY)
 
-            embed = discord.Embed(
-                title="📢 DM Broadcast Ergebnis",
-                color=discord.Color.blue()
+            embed = discord.Embed(title="📢 DM Broadcast Ergebnis", color=discord.Color.blue())
+            embed.add_field(
+                name=t("dm_broadcast_sent", default="✅ Gesendet"), value=str(success_count)
             )
             embed.add_field(
-                name=t("dm_broadcast_sent", default="✅ Gesendet"),
-                value=str(success_count)
-            )
-            embed.add_field(
-                name=t("dm_broadcast_failed", default="❌ Fehlgeschlagen"),
-                value=str(fail_count)
+                name=t("dm_broadcast_failed", default="❌ Fehlgeschlagen"), value=str(fail_count)
             )
             await interaction.followup.send(embed=embed, ephemeral=True)
 

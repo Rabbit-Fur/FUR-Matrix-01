@@ -3,11 +3,12 @@ mongo_client.py – stellt die zentrale MongoDB-Verbindung bereit (FURdb)
 Wird vom gesamten FUR-System verwendet.
 """
 
-import os
 import logging
+import os
+
+from dotenv import load_dotenv
 from pymongo import MongoClient
 from pymongo.errors import ConnectionFailure
-from dotenv import load_dotenv
 
 # === .env laden (nur bei direktem Start) ===
 if __name__ == "__main__":
@@ -27,6 +28,7 @@ if not MONGO_URI:
 client = MongoClient(MONGO_URI)
 db = client["furdb"]
 
+
 def test_connection():
     """Verbindung testen (für Debug-Zwecke)."""
     try:
@@ -34,6 +36,7 @@ def test_connection():
         logger.info("✅ Verbindung zu MongoDB (furdb) erfolgreich.")
     except ConnectionFailure as e:
         logger.error(f"❌ Verbindung zu MongoDB fehlgeschlagen: {e}")
+
 
 # Optionaler Soforttest
 if __name__ == "__main__":

@@ -18,14 +18,14 @@ os.environ.setdefault("R4_ROLE_IDS", "1")
 os.environ.setdefault("ADMIN_ROLE_IDS", "1")
 os.environ.setdefault("BASE_URL", "http://localhost:8080")
 
-import web
-from flask_babel_next import Babel as _BaseBabel
+import web  # noqa: E402
+from flask_babel_next import Babel as _BaseBabel  # noqa: E402
 
 web.Babel = _BaseBabel
 
-import mongomock
+import mongomock  # noqa: E402
 
-import mongo_service
+import mongo_service  # noqa: E402
 from web import create_app  # noqa: E402
 
 
@@ -54,7 +54,7 @@ def app():
         return "home"
 
     @public.route("/dashboard")
-    def dashboard():
+    def public_dashboard():
         return "dash"
 
     @public.route("/events")
@@ -78,7 +78,7 @@ def app():
     admin_bp = Blueprint("admin", __name__)
 
     @admin_bp.route("/dashboard")
-    def dashboard():
+    def admin_dashboard():
         return "admindash"
 
     app.register_blueprint(admin_bp, url_prefix="/admin", name="admin_test")
@@ -86,7 +86,7 @@ def app():
     member_bp = Blueprint("member", __name__)
 
     @member_bp.route("/dashboard")
-    def dashboard():
+    def member_dashboard():
         return "memberdash"
 
     app.register_blueprint(member_bp, url_prefix="/members", name="member_test")

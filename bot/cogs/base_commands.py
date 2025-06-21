@@ -1,8 +1,8 @@
 """base_commands.py – Globale Slash-Commands für Basisfunktionen (Ping, FUR Info)."""
 
 import discord
-from discord.ext import commands
 from discord import app_commands
+from discord.ext import commands
 
 from fur_lang.i18n import t
 from mongo_service import get_collection

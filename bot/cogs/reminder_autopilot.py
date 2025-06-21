@@ -4,8 +4,8 @@ import logging
 from datetime import datetime, timedelta
 
 import discord
-from discord.ext import commands, tasks
 from discord import app_commands
+from discord.ext import commands, tasks
 
 from fur_lang.i18n import t
 from mongo_service import get_collection
@@ -85,14 +85,18 @@ class ReminderAutopilot(commands.Cog):
     # 🔧 Slash-Command für manuellen Trigger (Admin)
     #
 
-    @app_commands.command(name="reminder_autopilot_now", description="Manuelles Auslösen des Reminder-Autopiloten.")
+    @app_commands.command(
+        name="reminder_autopilot_now", description="Manuelles Auslösen des Reminder-Autopiloten."
+    )
     async def reminder_autopilot_now(self, interaction: discord.Interaction):
         if not interaction.user.guild_permissions.administrator:
             await interaction.response.send_message("🚫 Keine Adminrechte.", ephemeral=True)
             return
 
         await self.run_reminder_check()
-        await interaction.response.send_message("✅ Reminder-Autopilot wurde manuell ausgeführt.", ephemeral=True)
+        await interaction.response.send_message(
+            "✅ Reminder-Autopilot wurde manuell ausgeführt.", ephemeral=True
+        )
 
 
 async def setup(bot: commands.Bot):
