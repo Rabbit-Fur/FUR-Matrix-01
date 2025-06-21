@@ -32,7 +32,13 @@ def run_champion_autopilot(month: Optional[str] = None, username: Optional[str] 
             content = f"\U0001f3c6 Champion for {month} crowned!"
         else:
             content = "\U0001f3c6 New Champion crowned!"
-        send_discord_webhook(content=content, file_path=poster_path)
+        status = send_discord_webhook(content=content, file_path=poster_path)
+        if status // 100 != 2:
+            logging.warning(
+                "Champion autopilot webhook returned status %s for %s", status, username
+            )
+            return False
+
         logging.info("Champion autopilot executed for %s in %s", username, month)
         return True
     except Exception:  # noqa: BLE001
