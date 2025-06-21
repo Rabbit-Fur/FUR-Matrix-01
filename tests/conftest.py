@@ -17,6 +17,7 @@ os.environ.setdefault("R3_ROLE_IDS", "1")
 os.environ.setdefault("R4_ROLE_IDS", "1")
 os.environ.setdefault("ADMIN_ROLE_IDS", "1")
 os.environ.setdefault("BASE_URL", "http://localhost:8080")
+os.environ.setdefault("MONGODB_URI", "mongodb://localhost")
 
 import web
 from flask_babel_next import Babel as _BaseBabel

@@ -1,13 +1,37 @@
 import logging
 import os
 
+from dotenv import load_dotenv
 from pymongo import MongoClient
+from pymongo.errors import ConnectionFailure
+
+if __name__ == "__main__":
+    load_dotenv()
+
+logger = logging.getLogger(__name__)
 
 MONGO_URI = os.getenv("MONGODB_URI")
+if not MONGO_URI:
+    raise RuntimeError("❌ MONGODB_URI nicht gesetzt! Bitte .env prüfen.")
+
 client = MongoClient(MONGO_URI)
-logging.getLogger(__name__).info("MongoDB connected: %s", bool(client))
+logger.info("MongoDB connected: %s", bool(client))
 
 db = client["furdb"]
+
+
+def test_connection() -> None:
+    """Test MongoDB connection and log result."""
+    try:
+        client.admin.command("ping")
+        logger.info("✅ Verbindung zu MongoDB (furdb) erfolgreich.")
+    except ConnectionFailure as exc:
+        logger.error("❌ Verbindung zu MongoDB fehlgeschlagen: %s", exc)
+
+
+if __name__ == "__main__":
+    test_connection()
+    print("📂 Collections:", db.list_collection_names())
 
 
 def get_collection(name: str):
