@@ -5,6 +5,7 @@ import os
 import pytest
 
 # environment for Flask app
+os.environ.setdefault("MONGODB_URI", "mongodb://localhost:27017/testdb")
 os.environ.setdefault("DISCORD_TOKEN", "dummy")
 os.environ.setdefault("DISCORD_GUILD_ID", "1")
 os.environ.setdefault("REMINDER_CHANNEL_ID", "1")

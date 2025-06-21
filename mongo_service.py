@@ -2,12 +2,32 @@ import logging
 import os
 
 from pymongo import MongoClient
+from pymongo.errors import ConnectionFailure
+
+logger = logging.getLogger(__name__)
 
 MONGO_URI = os.getenv("MONGODB_URI")
+if not MONGO_URI:
+    raise RuntimeError("MONGODB_URI not set")
+
 client = MongoClient(MONGO_URI)
-logging.getLogger(__name__).info("MongoDB connected: %s", bool(client))
+logger.info("MongoDB connected: %s", bool(client))
 
 db = client["furdb"]
+
+
+def test_connection() -> None:
+    """Ping the server to verify the connection."""
+    try:
+        client.admin.command("ping")
+        logger.info("MongoDB connection OK")
+    except ConnectionFailure as exc:
+        logger.error("MongoDB connection failed: %s", exc)
+
+
+if __name__ == "__main__":
+    test_connection()
+    print("Collections:", db.list_collection_names())
 
 
 def get_collection(name: str):
