@@ -15,6 +15,8 @@ The FUR System powers the champion, reminder and leaderboard features for the GG
 
 ## Setup
 
+Copy `.env.example` to `.env` and adjust the values for your environment before running the setup commands.
+
 ```bash
 pip install -r requirements.txt
 black . && isort . && flake8
