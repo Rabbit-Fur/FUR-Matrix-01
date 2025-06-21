@@ -70,3 +70,20 @@ def test_run_champion_autopilot_error(monkeypatch, tmp_path):
     monkeypatch.setattr(autopilot_mod, "send_discord_webhook", fake_send)
 
     assert autopilot_mod.run_champion_autopilot() is False
+
+
+def test_run_champion_autopilot_bad_status(monkeypatch, tmp_path):
+    from champion import autopilot as autopilot_mod
+
+    def fake_generate(username="Champion"):
+        path = tmp_path / f"{username}.png"
+        path.write_bytes(b"img")
+        return str(path)
+
+    def fake_send(*args, **kwargs):
+        return 500
+
+    monkeypatch.setattr(autopilot_mod, "generate_champion_poster", fake_generate)
+    monkeypatch.setattr(autopilot_mod, "send_discord_webhook", fake_send)
+
+    assert autopilot_mod.run_champion_autopilot() is False
