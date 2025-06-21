@@ -8,6 +8,8 @@ import json
 from pathlib import Path
 from typing import Dict
 
+from i18n_tools.generate_key_list import update_key_list
+
 
 class TranslationAgent:
     def __init__(self, lang_dir: str | Path = "translations"):
@@ -27,21 +29,17 @@ class TranslationAgent:
         """Synchronise all translation files with a unified key set."""
 
         data = self._load_translations()
-        all_keys = set().union(*data.values()) if data else set()
 
         keys_file = Path("translation_keys.json")
-        if keys_file.exists():
-            try:
-                with keys_file.open(encoding="utf-8") as f:
-                    all_keys.update(json.load(f))
-            except json.JSONDecodeError:
-                # try to recover from trailing comma
-                raw = keys_file.read_text(encoding="utf-8")
-                raw = raw.rstrip().rstrip(",")
-                try:
-                    all_keys.update(json.loads(raw + "]"))
-                except Exception:
-                    pass
+        try:
+            keys = update_key_list(self.lang_dir / "en.json", keys_file)
+        except Exception as e:  # pragma: no cover - log only
+            print(f"⚠️ Failed to update key list: {e}")
+            keys = []
+
+        all_keys = set(keys)
+        if data:
+            all_keys.update(*data.values())
 
         for lang, entries in data.items():
             missing = [k for k in all_keys if k not in entries]
