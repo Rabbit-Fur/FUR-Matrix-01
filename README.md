@@ -23,6 +23,15 @@ black . && isort . && flake8
 pytest --disable-warnings --maxfail=1
 ```
 
+## Developer Checklist
+
+Use the `Makefile` to run common tasks:
+```bash
+make        # run lint and tests
+make lint   # formatting and flake8
+make test   # run pytest
+```
+
 ## Continuous Integration
 
 Every pull request triggers the automated release flow:
