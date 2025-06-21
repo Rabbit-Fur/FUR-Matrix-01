@@ -327,7 +327,7 @@
     "lore_truth_header": "DIE WAHRHEIT, DIE ANDERE NICHT SAGEN",
     "lore_wall_1": "Jeder Server-Merge. Jeder Krieg. Jeder Reset.",
     "lore_wall_2": "Wir sind immer noch hier. Andere fallen. Andere vergessen. Wir schreiben die Geschichte neu.",
-    "lore_wall_3": "",
+    "lore_wall_3": "[ja]",
     "lore_wall_header": "WIR SIND DIE LETZTE MAUER",
     "lore_welcome_final": "Willkommen in der Matrix. Willkommen bei FUR.",
     "monthly_champions": "Monthly Champions",
@@ -404,5 +404,5 @@
     "Version": "Version",
     "Tags": "Tags",
     "Keine Speicherstände gefunden.": "Keine Speicherstände gefunden.",
-    "Zurück": "Zurück"
+    "Zurück": "Zurück",
 }
