@@ -97,9 +97,13 @@
 <body>
   <div class="lang-selector">
     <form method="GET" action="{{ url_for('public.set_language') }}">
-      <select name="lang" onchange="this.form.submit()">
+      <select name="lang" id="lang-select" onchange="this.form.submit()">
         {% for lang in config['BABEL_SUPPORTED_LOCALES'] %}
-          <option value="{{ lang }}" {% if session.get('lang') == lang %}selected{% endif %}>
+          <option
+            value="{{ lang }}"
+            data-flag="{{ url_for('static', filename='flags/' + lang + '.png') }}"
+            {% if session.get('lang') == lang %}selected{% endif %}
+          >
             {{ lang.upper() }}
           </option>
         {% endfor %}
@@ -127,5 +131,23 @@
       {% block content %}{% endblock %}
     </div>
   </div>
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      const select = document.getElementById('lang-select');
+      if (!select) return;
+      function updateFlag() {
+        const opt = select.selectedOptions[0];
+        if (!opt) return;
+        const url = opt.dataset.flag;
+        select.style.backgroundImage = `url(${url})`;
+        select.style.backgroundRepeat = 'no-repeat';
+        select.style.backgroundPosition = 'left center';
+        select.style.paddingLeft = '24px';
+        select.style.backgroundSize = '18px 12px';
+      }
+      select.addEventListener('change', updateFlag);
+      updateFlag();
+    });
+  </script>
 </body>
 </html>
