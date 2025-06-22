@@ -14,6 +14,7 @@ from flask import current_app, request, session
 log = logging.getLogger(__name__)
 
 TRANSLATION_FOLDER = os.path.join(os.path.dirname(os.path.dirname(__file__)), "translations")
+FLAG_FOLDER = os.path.join(os.path.dirname(os.path.dirname(__file__)), "static", "flags")
 LANG_FALLBACK = "en"
 
 
@@ -33,6 +34,22 @@ def load_translations(directory=TRANSLATION_FOLDER):
 
 # 📦 Globale Übersetzungstabelle
 translations = load_translations()
+
+
+def warn_flags_without_translation(
+    flag_dir: str = FLAG_FOLDER, translation_dir: str = TRANSLATION_FOLDER
+) -> None:
+    """Log a warning for each flag without matching translation file."""
+    for flag_file in os.listdir(flag_dir):
+        if not flag_file.endswith(".png"):
+            continue
+        lang_code = flag_file[:-4]
+        json_path = os.path.join(translation_dir, f"{lang_code}.json")
+        if not os.path.exists(json_path):
+            log.warning("Flag '%s' found but no %s.json translation.", flag_file, lang_code)
+
+
+warn_flags_without_translation()
 
 
 def get_supported_languages():
