@@ -9,12 +9,12 @@ import json
 import logging
 import os
 
-from flask import current_app, session
+from flask import current_app, request, session
 
 log = logging.getLogger(__name__)
 
 TRANSLATION_FOLDER = os.path.join(os.path.dirname(os.path.dirname(__file__)), "translations")
-LANG_FALLBACK = "de"
+LANG_FALLBACK = "en"
 
 
 def load_translations(directory=TRANSLATION_FOLDER):
@@ -41,8 +41,13 @@ def get_supported_languages():
 
 
 def current_lang() -> str:
-    """Ermittelt die aktuelle Sprache aus der Session oder Default-Konfiguration."""
-    return session.get("lang", current_app.config.get("BABEL_DEFAULT_LOCALE", LANG_FALLBACK))
+    """Ermittelt die aktuelle Sprache aus Session oder Accept-Language."""
+    lang = session.get("lang")
+    if not lang and request:
+        lang = request.accept_languages.best_match(get_supported_languages())
+    if not lang:
+        lang = current_app.config.get("BABEL_DEFAULT_LOCALE", LANG_FALLBACK)
+    return lang
 
 
 def t(key: str, default: str = None, lang: str = None, **kwargs) -> str:
@@ -60,7 +65,12 @@ def t(key: str, default: str = None, lang: str = None, **kwargs) -> str:
         str: Übersetzter und formatierter Text
     """
     active_lang = lang or current_lang()
-    raw = translations.get(active_lang, {}).get(key, default or key)
+    raw = translations.get(active_lang, {}).get(key)
+    if raw is None and active_lang != LANG_FALLBACK:
+        raw = translations.get(LANG_FALLBACK, {}).get(key)
+    if raw is None:
+        raw = default or key
+
     try:
         return raw.format(**kwargs)
     except Exception:
