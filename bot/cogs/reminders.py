@@ -8,7 +8,7 @@ import discord
 from discord import app_commands
 from discord.ext import commands, tasks
 
-from config import Config
+from config import Config, is_production
 from fur_lang.i18n import t
 
 log = logging.getLogger(__name__)
@@ -37,6 +37,10 @@ class Reminders(commands.Cog):
     @tasks.loop(minutes=60)
     async def reminder_loop(self):
         """Sendet jede Stunde eine Erinnerungsnachricht an den Reminder-Channel."""
+        if not is_production():
+            log.info("DM skipped in dev mode")
+            return
+
         now = datetime.utcnow().strftime("%H:%M")
         channel = self.bot.get_channel(self.channel_id)
 
@@ -66,6 +70,11 @@ class Reminders(commands.Cog):
     async def reminder_now(self, interaction: discord.Interaction):
         if not interaction.user.guild_permissions.administrator:
             await interaction.response.send_message("🚫 Keine Berechtigung.", ephemeral=True)
+            return
+
+        if not is_production():
+            await interaction.response.send_message("DM skipped in dev mode", ephemeral=True)
+            log.info("DM skipped in dev mode")
             return
 
         channel = self.bot.get_channel(self.channel_id)

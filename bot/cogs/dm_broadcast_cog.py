@@ -8,7 +8,7 @@ import discord
 from discord import app_commands
 from discord.ext import commands
 
-from config import Config
+from config import Config, is_production
 from fur_lang.i18n import t
 
 log = logging.getLogger(__name__)
@@ -35,6 +35,10 @@ class DMBroadcastCog(commands.Cog):
     )
     @app_commands.describe(text="Nachricht (max 2000 Zeichen)")
     async def dm_all(self, interaction: discord.Interaction, *, text: str) -> None:
+        if not is_production():
+            await interaction.response.send_message("DM skipped in dev mode", ephemeral=True)
+            log.info("DM skipped in dev mode")
+            return
         if not isinstance(interaction.user, discord.Member):
             await interaction.response.send_message(
                 t("dm_broadcast_member_only", default="Nur für Mitglieder verfügbar."),
