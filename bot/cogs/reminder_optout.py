@@ -16,7 +16,10 @@ class ReminderOptOut(commands.Cog):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
 
-    @app_commands.command(name="reminder_stop", description="Deaktiviert Event-Reminder für dich.")
+    @app_commands.command(
+        name=app_commands.locale_str("cmd_reminder_stop_name"),
+        description=app_commands.locale_str("cmd_reminder_stop_desc"),
+    )
     async def reminder_stop(self, interaction: discord.Interaction):
         user = interaction.user
         discord_id = str(user.id)

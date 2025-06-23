@@ -86,7 +86,8 @@ class ReminderAutopilot(commands.Cog):
     #
 
     @app_commands.command(
-        name="reminder_autopilot_now", description="Manuelles Auslösen des Reminder-Autopiloten."
+        name=app_commands.locale_str("cmd_reminder_autopilot_now_name"),
+        description=app_commands.locale_str("cmd_reminder_autopilot_now_desc"),
     )
     async def reminder_autopilot_now(self, interaction: discord.Interaction):
         if not interaction.user.guild_permissions.administrator:

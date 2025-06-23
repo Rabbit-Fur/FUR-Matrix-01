@@ -16,8 +16,11 @@ class Leaderboard(commands.Cog):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
 
-    @app_commands.command(name="top", description="Zeigt das Leaderboard einer Kategorie an.")
-    @app_commands.describe(category="Kategorie (z. B. raids, kills, dmg)")
+    @app_commands.command(
+        name=app_commands.locale_str("cmd_top_name"),
+        description=app_commands.locale_str("cmd_top_desc"),
+    )
+    @app_commands.describe(category=app_commands.locale_str("cmd_top_param_category_desc"))
     async def top_players(self, interaction: discord.Interaction, category: str = "raids"):
         user_id = interaction.user.id
         lang = "de"

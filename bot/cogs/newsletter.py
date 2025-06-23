@@ -27,9 +27,10 @@ class Newsletter(commands.Cog):
         return False
 
     @app_commands.command(
-        name="announce", description="Sendet eine Clan-Ankündigung in den Channel."
+        name=app_commands.locale_str("cmd_announce_name"),
+        description=app_commands.locale_str("cmd_announce_desc"),
     )
-    @app_commands.describe(message="Die Nachricht, die du an alle senden möchtest.")
+    @app_commands.describe(message=app_commands.locale_str("cmd_announce_param_message_desc"))
     async def announce(self, interaction: discord.Interaction, message: str):
         user = interaction.user
         lang = "de"

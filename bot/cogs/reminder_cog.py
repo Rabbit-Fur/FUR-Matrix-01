@@ -75,9 +75,10 @@ class ReminderCog(commands.Cog):
     #
 
     @app_commands.command(
-        name="remind", description="Setze einen persönlichen Reminder in X Minuten."
+        name=app_commands.locale_str("cmd_remind_name"),
+        description=app_commands.locale_str("cmd_remind_desc"),
     )
-    @app_commands.describe(minutes="In wie vielen Minuten soll der Reminder gesendet werden?")
+    @app_commands.describe(minutes=app_commands.locale_str("cmd_remind_param_minutes_desc"))
     async def remind(self, interaction: discord.Interaction, minutes: int):
         if minutes < 1 or minutes > 1440:
             await interaction.response.send_message(
@@ -96,7 +97,10 @@ class ReminderCog(commands.Cog):
             f"✅ Reminder gespeichert. Ich erinnere dich in {minutes} Minuten!", ephemeral=True
         )
 
-    @app_commands.command(name="remind_list", description="Zeigt deine geplanten Reminder.")
+    @app_commands.command(
+        name=app_commands.locale_str("cmd_remind_list_name"),
+        description=app_commands.locale_str("cmd_remind_list_desc"),
+    )
     async def remind_list(self, interaction: discord.Interaction):
         user_id = str(interaction.user.id)
         reminders = list(get_collection("user_reminders").find({"user_id": user_id}))
@@ -117,7 +121,10 @@ class ReminderCog(commands.Cog):
             f"📋 Deine aktiven Reminder:\n{msg}", ephemeral=True
         )
 
-    @app_commands.command(name="remind_cancel", description="Löscht alle deine aktiven Reminder.")
+    @app_commands.command(
+        name=app_commands.locale_str("cmd_remind_cancel_name"),
+        description=app_commands.locale_str("cmd_remind_cancel_desc"),
+    )
     async def remind_cancel(self, interaction: discord.Interaction):
         user_id = str(interaction.user.id)
         result = get_collection("user_reminders").delete_many({"user_id": user_id})

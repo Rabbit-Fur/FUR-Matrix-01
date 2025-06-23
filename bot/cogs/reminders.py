@@ -61,7 +61,8 @@ class Reminders(commands.Cog):
     #
 
     @app_commands.command(
-        name="reminder_now", description="Sendet sofort eine Erinnerungsnachricht (Admin-only)."
+        name=app_commands.locale_str("cmd_reminder_now_name"),
+        description=app_commands.locale_str("cmd_reminder_now_desc"),
     )
     async def reminder_now(self, interaction: discord.Interaction):
         if not interaction.user.guild_permissions.administrator:
