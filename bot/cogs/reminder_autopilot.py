@@ -10,6 +10,7 @@ from discord.ext import commands, tasks
 from config import is_production
 from fur_lang.i18n import t
 from mongo_service import get_collection
+from utils.event_helpers import get_events_for, parse_event_time
 
 
 def is_opted_out(user_id: int) -> bool:
@@ -65,9 +66,15 @@ class ReminderAutopilot(commands.Cog):
         window_end = now + timedelta(minutes=6)
 
         try:
-            events = get_collection("events").find(
-                {"event_time": {"$gte": window_start, "$lte": window_end}}
-            )
+            today_events = get_events_for(now)
+            events = [
+                ev
+                for ev in today_events
+                if (
+                    (ev_time := parse_event_time(ev.get("event_time")))
+                    and window_start <= ev_time <= window_end
+                )
+            ]
             for event in events:
                 participants = get_collection("event_participants").find({"event_id": event["_id"]})
                 for p in participants:
