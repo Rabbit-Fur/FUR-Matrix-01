@@ -115,3 +115,8 @@ class Config:
 
     # --- Web ---
     BASE_URL: str = get_env_str("BASE_URL", default="http://localhost:8080")
+
+
+def is_production() -> bool:
+    """Return True if the app runs in production mode."""
+    return Config.FLASK_ENV == "production"

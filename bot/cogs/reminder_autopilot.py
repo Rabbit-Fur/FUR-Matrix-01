@@ -7,6 +7,7 @@ import discord
 from discord import app_commands
 from discord.ext import commands, tasks
 
+from config import is_production
 from fur_lang.i18n import t
 from mongo_service import get_collection
 
@@ -43,6 +44,10 @@ class ReminderAutopilot(commands.Cog):
         await self.bot.wait_until_ready()
 
     async def run_reminder_check(self):
+        if not is_production():
+            log.info("DM skipped in dev mode")
+            return
+
         now = datetime.utcnow()
         window_start = now + timedelta(minutes=5)
         window_end = now + timedelta(minutes=6)
