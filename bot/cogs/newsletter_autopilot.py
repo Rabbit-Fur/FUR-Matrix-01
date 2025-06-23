@@ -22,6 +22,11 @@ def should_send_newsletter(dt: datetime) -> bool:
     return dt.weekday() == 6 and dt.hour == 12
 
 
+def should_send_daily_overview(dt: datetime) -> bool:
+    """Return True when a daily overview should be dispatched."""
+    return dt.hour == 8
+
+
 class NewsletterAutopilot(commands.Cog):
     """Loop-based newsletter dispatcher."""
 
@@ -33,9 +38,11 @@ class NewsletterAutopilot(commands.Cog):
         self.delay = float(os.getenv("NEWSLETTER_DM_DELAY", "1"))
         self.enabled = os.getenv("ENABLE_NEWSLETTER_AUTOPILOT", "true").lower() == "true"
         self.newsletter_loop.start()
+        self.daily_overview_loop.start()
 
     def cog_unload(self) -> None:
         self.newsletter_loop.cancel()
+        self.daily_overview_loop.cancel()
 
     @tasks.loop(hours=1)
     async def newsletter_loop(self) -> None:
@@ -45,6 +52,15 @@ class NewsletterAutopilot(commands.Cog):
         now = datetime.utcnow()
         if should_send_newsletter(now):
             await self.send_newsletters()
+
+    @tasks.loop(hours=1)
+    async def daily_overview_loop(self) -> None:
+        await self.bot.wait_until_ready()
+        if not self.enabled:
+            return
+        now = datetime.utcnow()
+        if should_send_daily_overview(now):
+            await self.send_daily_overview()
 
     async def build_content(self) -> str:
         now = datetime.utcnow()
@@ -67,12 +83,57 @@ class NewsletterAutopilot(commands.Cog):
             lines.append("Keine Events in den nächsten 7 Tagen.")
         return "\n".join(lines)
 
+    async def build_daily_content(self) -> str:
+        """Return the daily overview text."""
+        now = datetime.utcnow()
+        tomorrow = now + timedelta(days=1)
+        events = (
+            get_collection("events")
+            .find({"event_time": {"$gte": now, "$lte": tomorrow}}, {"title": 1, "event_time": 1})
+            .sort("event_time", 1)
+        )
+        lines = ["📰 Daily Events"]
+        for ev in events:
+            dt = ev["event_time"]
+            if isinstance(dt, str):
+                try:
+                    dt = datetime.fromisoformat(dt)
+                except ValueError:
+                    continue
+            lines.append(f"- {ev['title']} – {dt.strftime('%d.%m.%Y %H:%M')} UTC")
+        if len(lines) == 1:
+            lines.append("Keine Events in den nächsten 24 Stunden.")
+        return "\n".join(lines)
+
     async def send_newsletters(self) -> None:
         guild = self.bot.get_guild(Config.DISCORD_GUILD_ID)
         if not guild:
             log.warning("Guild not found for newsletter dispatch")
             return
         content = await self.build_content()
+        for member in guild.members:
+            if member.bot:
+                continue
+            if get_collection("newsletter_optout").find_one({"discord_id": str(member.id)}):
+                self.blocked += 1
+                continue
+            try:
+                await member.send(content)
+                self.sent += 1
+            except discord.Forbidden:
+                self.blocked += 1
+                log.warning("DM blocked for %s", member.id)
+            except Exception as exc:  # noqa: BLE001
+                self.errors += 1
+                log.error("Error sending newsletter to %s: %s", member.id, exc)
+            await asyncio.sleep(self.delay)
+
+    async def send_daily_overview(self) -> None:
+        guild = self.bot.get_guild(Config.DISCORD_GUILD_ID)
+        if not guild:
+            log.warning("Guild not found for newsletter dispatch")
+            return
+        content = await self.build_daily_content()
         for member in guild.members:
             if member.bot:
                 continue
