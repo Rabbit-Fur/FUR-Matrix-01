@@ -59,6 +59,7 @@ def create_bot() -> commands.Bot:
 async def load_extensions(bot_instance: commands.Bot):
     """Lädt alle aktiven Bot-Cogs."""
     extensions = [
+        "bot.cogs.error_handler",
         "bot.cogs.reminder_autopilot",
         "bot.cogs.reminder_optout",
         "bot.cogs.dm_broadcast_cog",
