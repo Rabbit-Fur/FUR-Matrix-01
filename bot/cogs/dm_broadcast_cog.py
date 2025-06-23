@@ -31,9 +31,10 @@ class DMBroadcastCog(commands.Cog):
         return bool(member_role_ids.intersection(Config.ADMIN_ROLE_IDS))
 
     @app_commands.command(
-        name="dm_all", description="Sende eine Nachricht an alle Mitglieder per DM."
+        name=app_commands.locale_str("cmd_dm_all_name"),
+        description=app_commands.locale_str("cmd_dm_all_desc"),
     )
-    @app_commands.describe(text="Nachricht (max 2000 Zeichen)")
+    @app_commands.describe(text=app_commands.locale_str("cmd_dm_all_param_text_desc"))
     async def dm_all(self, interaction: discord.Interaction, *, text: str) -> None:
         if not is_production():
             await interaction.response.send_message("DM skipped in dev mode", ephemeral=True)

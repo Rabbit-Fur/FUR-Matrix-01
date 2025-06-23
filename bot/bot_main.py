@@ -11,6 +11,8 @@ import aiohttp
 
 from config import Config
 
+from .translator import MyTranslator
+
 # 🧠 Umschalten zwischen echtem Bot & Stub-Modus (z. B. für Web-Dashboard)
 USE_DISCORD_BOT = os.getenv("ENABLE_DISCORD_BOT", "false").lower() == "true"
 
@@ -44,6 +46,7 @@ def create_bot() -> commands.Bot:
 
     if USE_DISCORD_BOT:
         new_bot = commands.Bot(command_prefix="!", intents=intents, connector=connector)
+        new_bot.tree.set_translator(MyTranslator())
 
         @new_bot.event
         async def on_ready():
@@ -52,6 +55,8 @@ def create_bot() -> commands.Bot:
     else:
         new_bot = BotStub()
         log.info("🧪 Bot-Stub aktiv (kein Gateway, nur Simulation)")
+        if hasattr(new_bot, "tree"):
+            new_bot.tree.set_translator(MyTranslator())
 
     return new_bot
 

@@ -18,12 +18,18 @@ class BaseCommands(commands.Cog):
         user = get_collection("users").find_one({"discord_id": str(user_id)})
         return user.get("lang", "de") if user else "de"
 
-    @app_commands.command(name="ping", description="Testet den Bot-Status.")
+    @app_commands.command(
+        name=app_commands.locale_str("cmd_ping_name"),
+        description=app_commands.locale_str("cmd_ping_desc"),
+    )
     async def ping(self, interaction: discord.Interaction):
         lang = self.get_user_lang(interaction.user.id)
         await interaction.response.send_message(t("base_ping_pong", lang=lang), ephemeral=True)
 
-    @app_commands.command(name="fur", description="Zeigt Informationen zur FUR-Allianz.")
+    @app_commands.command(
+        name=app_commands.locale_str("cmd_fur_name"),
+        description=app_commands.locale_str("cmd_fur_desc"),
+    )
     async def fur_info(self, interaction: discord.Interaction):
         lang = self.get_user_lang(interaction.user.id)
         await interaction.response.send_message(t("base_fur_info", lang=lang), ephemeral=False)
