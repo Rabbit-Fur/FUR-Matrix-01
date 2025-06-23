@@ -1,5 +1,6 @@
 """Pytest configuration for FUR system using MongoDB."""
 
+import asyncio
 import os
 
 import pytest
@@ -18,6 +19,21 @@ os.environ.setdefault("R3_ROLE_IDS", "1")
 os.environ.setdefault("R4_ROLE_IDS", "1")
 os.environ.setdefault("ADMIN_ROLE_IDS", "1")
 os.environ.setdefault("BASE_URL", "http://localhost:8080")
+
+try:
+    asyncio.get_event_loop()
+except RuntimeError:
+    asyncio.set_event_loop(asyncio.new_event_loop())
+
+
+@pytest.fixture(autouse=True)
+def ensure_loop():
+    try:
+        asyncio.get_event_loop()
+    except RuntimeError:
+        asyncio.set_event_loop(asyncio.new_event_loop())
+    yield
+
 
 import web  # noqa: E402
 from flask_babel_next import Babel as _BaseBabel  # noqa: E402

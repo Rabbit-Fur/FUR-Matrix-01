@@ -13,6 +13,7 @@ from discord.ext import commands, tasks
 
 from config import Config
 from mongo_service import get_collection
+from utils.event_helpers import format_events, get_events_for
 
 log = logging.getLogger(__name__)
 
@@ -64,23 +65,16 @@ class NewsletterAutopilot(commands.Cog):
 
     async def build_content(self) -> str:
         now = datetime.utcnow()
-        week_end = now + timedelta(days=7)
-        events = (
-            get_collection("events")
-            .find({"event_time": {"$gte": now, "$lte": week_end}}, {"title": 1, "event_time": 1})
-            .sort("event_time", 1)
-        )
+        events: list[dict] = []
+        for i in range(7):
+            events.extend(get_events_for(now + timedelta(days=i)))
+
         lines = ["📰 Upcoming Events"]
-        for ev in events:
-            dt = ev["event_time"]
-            if isinstance(dt, str):
-                try:
-                    dt = datetime.fromisoformat(dt)
-                except ValueError:
-                    continue
-            lines.append(f"- {ev['title']} – {dt.strftime('%d.%m.%Y %H:%M')} UTC")
-        if len(lines) == 1:
+        if events:
+            lines.append(format_events(events))
+        else:
             lines.append("Keine Events in den nächsten 7 Tagen.")
+
         return "\n".join(lines)
 
     async def build_daily_content(self) -> str:
