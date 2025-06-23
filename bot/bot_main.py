@@ -70,6 +70,7 @@ async def load_extensions(bot_instance: commands.Bot):
         "bot.cogs.dm_broadcast_cog",
         "bot.cogs.base_commands",
         "bot.cogs.leaderboard",
+        "bot.cogs.newsletter_autopilot",
         "bot.cogs.newsletter",
         "bot.cogs.reminders",
         "bot.cogs.reminder_cog",
