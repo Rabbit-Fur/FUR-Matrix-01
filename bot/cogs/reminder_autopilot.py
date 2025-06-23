@@ -10,6 +10,18 @@ from discord.ext import commands, tasks
 from fur_lang.i18n import t
 from mongo_service import get_collection
 
+
+def is_opted_out(user_id: int) -> bool:
+    """Return True if the user opted out of reminders."""
+    uid = str(user_id)
+    if get_collection("reminder_optout").find_one({"discord_id": uid}):
+        return True
+    settings = get_collection("user_settings").find_one(
+        {"discord_id": uid, "reminder_optout": True}
+    )
+    return bool(settings)
+
+
 log = logging.getLogger(__name__)
 REMINDER_INTERVAL_SECONDS = 60
 
@@ -59,6 +71,9 @@ class ReminderAutopilot(commands.Cog):
                     if get_collection("reminders_sent").find_one(
                         {"event_id": event["_id"], "user_id": user_id}
                     ):
+                        continue
+
+                    if is_opted_out(user_id):
                         continue
 
                     lang = await self.get_user_language(user_id)
