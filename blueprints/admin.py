@@ -140,7 +140,24 @@ def leaderboards():
 @r4_required
 @admin.route("/participants")
 def participants():
-    return render_template("admin/participants.html")
+    event_id = request.args.get("event_id")
+    event = None
+    participant_list = []
+    if event_id:
+        try:
+            event = db["events"].find_one({"_id": ObjectId(event_id)})
+            if event:
+                participant_docs = list(db["event_participants"].find({"event_id": event["_id"]}))
+                for p in participant_docs:
+                    user = db["users"].find_one({"discord_id": p["user_id"]})
+                    participant_list.append(
+                        {"username": user.get("username") if user else p["user_id"]}
+                    )
+        except Exception as exc:  # noqa: BLE001
+            current_app.logger.warning("Invalid event id %s: %s", event_id, exc)
+    return render_template(
+        "admin/participants.html", event=event or {}, participants=participant_list
+    )
 
 
 @require_roles(["R4", "ADMIN"])
