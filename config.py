@@ -74,6 +74,7 @@ class Config:
     # --- Upload & Poster ---
     STATIC_FOLDER: str = os.path.join(basedir, "static")
     UPLOAD_FOLDER: str = os.path.join(STATIC_FOLDER, "uploads")
+    RESOURCES_FOLDER: str = os.path.join(STATIC_FOLDER, "resources")
     ALLOWED_EXTENSIONS: set[str] = {"jpg", "png"}
     MAX_CONTENT_LENGTH: int = 2 * 1024 * 1024
 
