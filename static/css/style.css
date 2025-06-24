@@ -87,6 +87,45 @@ html, body {
   box-shadow: 0 0 15px #00ffcc;
 }
 
+/* === GRID SYSTEM === */
+.grid {
+  display: grid;
+  gap: 1rem;
+}
+
+.btn-grid {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+}
+
+.event-actions {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  margin-top: 0.5rem;
+}
+
+.leaderboard-list,
+.event-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.leaderboard-list li,
+.event-list li {
+  padding: 0.5rem;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 6px;
+  margin-bottom: 0.5rem;
+}
+
+.leaderboard-entry {
+  display: flex;
+  justify-content: space-between;
+}
+
 /* === HERO PANEL === */
 .hero-panel {
   background: rgba(15, 15, 15, 0.85);
@@ -159,6 +198,10 @@ html[lang="tr"] body {
     align-items: center;
   }
 
+  .btn-grid {
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  }
+
   .container h1 {
     font-size: 2.2rem;
   }
@@ -183,5 +226,15 @@ html[lang="tr"] body {
   .login-button {
     font-size: 1rem;
     padding: 12px 24px;
+  }
+}
+
+@media (max-width: 480px) {
+  .container h1 {
+    font-size: 1.8rem;
+  }
+
+  .btn {
+    width: 100%;
   }
 }

@@ -7,7 +7,7 @@
   <h2 style="font-size: 2.2em;">🛠️ {{ t("Admin Dashboard") }}</h2>
   <p>{{ t("Systemkontrolle, Nutzerverwaltung, Logs, Einstellungen, Tools…") }}</p>
 
-  <div style="display: flex; flex-wrap: wrap; gap: 1rem; margin-top: 2em;">
+  <div class="btn-grid" style="margin-top: 2em;">
     <a class="btn" href="{{ url_for('admin.calendar') }}">📅 {{ t('Kalender') }}</a>
     <a class="btn" href="{{ url_for('admin.create_event') }}">📝 {{ t('Event erstellen') }}</a>
     <a class="btn" href="{{ url_for('admin.participants') }}">👥 {{ t('Teilnehmer') }}</a>
@@ -18,7 +18,7 @@
     <a class="btn" href="{{ url_for('admin.downloads') }}">📥 {{ t('Downloads') }}</a>
   </div>
 
-  <div style="display: flex; flex-wrap: wrap; gap: 2rem; margin-top: 3rem;">
+  <div class="grid" style="grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); margin-top: 3rem; gap: 2rem;">
     <div style="flex: 1;">
       <h3>🏆 {{ t("Champion des Monats") }}</h3>
       <img src="{{ url_for('static', filename='generated/champion_poster.png') }}?v={{ ts.value }}" alt="Champion Poster" style="max-width:100%; border:2px solid #333; border-radius:8px;">

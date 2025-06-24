@@ -15,7 +15,7 @@
         <div class="event-actions">
           <a class="btn btn-glow" href="{{ url_for('admin.edit_event', id=e.id|string) }}">✏️ {{ t("Bearbeiten") }}</a>
 
-          <form action="{{ url_for('admin.post_event', event_id=e.id|string) }}" method="post" style="display:inline;">
+          <form action="{{ url_for('admin.post_event', event_id=e.id|string) }}" method="post">
             <button type="submit" class="btn btn-glow">📢 {{ t('Event posten') }}</button>
           </form>
         </div>
