@@ -37,6 +37,13 @@ class DummyInteraction:
         self.followup = DummyFollowup()
 
 def run(coro):
+    try:
+        loop = asyncio.get_event_loop()
+    except RuntimeError:
+        loop = asyncio.new_event_loop()
+        asyncio.set_event_loop(loop)
+    return loop.run_until_complete(coro)
+
     """Execute coroutine synchronously for tests."""
     return asyncio.run(coro)
     loop = asyncio.new_event_loop()

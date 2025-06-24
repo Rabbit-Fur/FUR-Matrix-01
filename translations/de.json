@@ -247,6 +247,8 @@
     "reminder_message": "reminder_message",
     "reminder_optout_error": "Fehler beim Deaktivieren der Erinnerungen.",
     "reminder_optout_success": "Du erhältst keine Erinnerungen mehr.",
+    "newsletter_optout_success": "Du erhältst keinen Newsletter mehr.",
+    "newsletter_optout_error": "Fehler beim Deaktivieren des Newsletters.",
     "reminder_optout_usage": "Nutze '!reminder stop', um Erinnerungen zu deaktivieren.",
     "reminder_sent": "reminder_sent",
     "reminder_time": "reminder_time",
@@ -304,5 +306,7 @@
     "cmd_dm_all_name": "dm_all",
     "cmd_dm_all_desc": "Sende eine Nachricht an alle Mitglieder per DM.",
     "cmd_dm_all_param_text_desc": "Nachricht (max 2000 Zeichen)",
+    "cmd_newsletter_stop_name": "newsletter_stop",
+    "cmd_newsletter_stop_desc": "Deaktiviert den wöchentlichen Newsletter für dich.",
     "Zurück": "Zurück"
 }

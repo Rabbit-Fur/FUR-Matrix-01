@@ -302,5 +302,9 @@
     "cmd_dm_all_name",
     "cmd_dm_all_desc",
     "cmd_dm_all_param_text_desc",
+    "cmd_newsletter_stop_name",
+    "cmd_newsletter_stop_desc",
+    "newsletter_optout_success",
+    "newsletter_optout_error",
   "hello"
 ]
