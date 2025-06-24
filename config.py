@@ -43,6 +43,7 @@ class Config:
     DISCORD_TOKEN: str = get_env_str("DISCORD_TOKEN", required=True)
     DISCORD_GUILD_ID: int = get_env_int("DISCORD_GUILD_ID", required=True)
     REMINDER_CHANNEL_ID: int = get_env_int("REMINDER_CHANNEL_ID", required=True)
+    REMINDER_ROLE_ID: int | None = get_env_int("REMINDER_ROLE_ID", required=False)
     DISCORD_CLIENT_ID: str = get_env_str("DISCORD_CLIENT_ID", required=True)
     DISCORD_CLIENT_SECRET: str = get_env_str("DISCORD_CLIENT_SECRET", required=True)
     DISCORD_REDIRECT_URI: str = get_env_str("DISCORD_REDIRECT_URI", required=True)

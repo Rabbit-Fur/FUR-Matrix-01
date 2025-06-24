@@ -7,9 +7,10 @@ import discord
 from discord import app_commands
 from discord.ext import commands, tasks
 
-from config import is_production
+from config import Config, is_production
 from fur_lang.i18n import t
 from mongo_service import get_collection
+from utils.event_helpers import get_events_for, parse_event_time
 
 
 def is_opted_out(user_id: int) -> bool:
@@ -29,10 +30,11 @@ REMINDER_INTERVAL_SECONDS = 60
 
 class ReminderAutopilot(commands.Cog):
     """
-    Reminder-Autopilot: Versendet automatisch 5-Minuten-DMs für Events.
+    Reminder autopilot: sends automatic event reminders via DM.
 
-    – Nutzt `events`, `event_participants`, `reminders_sent` aus MongoDB
-    – Sprache pro User dynamisch aus der User-Collection
+    – Uses `events`, `event_participants`, `reminders_sent` from MongoDB
+    – Sends 10‑minute reminders to all participants
+    – Language per user via the user collection
     """
 
     def __init__(self, bot: commands.Bot):
@@ -61,13 +63,19 @@ class ReminderAutopilot(commands.Cog):
             return
 
         now = datetime.utcnow()
-        window_start = now + timedelta(minutes=5)
-        window_end = now + timedelta(minutes=6)
+        window_start = now + timedelta(minutes=10)
+        window_end = now + timedelta(minutes=11)
 
         try:
-            events = get_collection("events").find(
-                {"event_time": {"$gte": window_start, "$lte": window_end}}
-            )
+            today_events = get_events_for(now)
+            events = [
+                ev
+                for ev in today_events
+                if (
+                    (ev_time := parse_event_time(ev.get("event_time")))
+                    and window_start <= ev_time <= window_end
+                )
+            ]
             for event in events:
                 participants = get_collection("event_participants").find({"event_id": event["_id"]})
                 for p in participants:
@@ -88,12 +96,17 @@ class ReminderAutopilot(commands.Cog):
                             log.warning(f"❌ User-ID {user_id} nicht gefunden.")
                             continue
 
-                        message = t("reminder_event_5min", title=event["title"], lang=lang)
-                        await user.send(message)
+                        message = t("reminder_event_10min", title=event["title"], lang=lang)
+                        mention = (
+                            f"<@&{Config.REMINDER_ROLE_ID}> "
+                            if getattr(Config, "REMINDER_ROLE_ID", 0)
+                            else ""
+                        )
+                        await user.send(f"{mention}{message}" if mention else message)
                         get_collection("reminders_sent").insert_one(
                             {"event_id": event["_id"], "user_id": user_id, "sent_at": now}
                         )
-                        log.info(f"📤 DM-Erinnerung an {user_id} ({lang}) gesendet.")
+                        log.info(f"📤 10-Minuten-DM an {user_id} ({lang}) gesendet.")
                     except discord.Forbidden:
                         log.warning(f"🚫 DMs deaktiviert bei {user_id}")
                     except Exception as e:

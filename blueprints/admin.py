@@ -15,6 +15,7 @@ from flask import (
     request,
     url_for,
 )
+from werkzeug.utils import secure_filename
 
 from agents.webhook_agent import WebhookAgent
 from config import Config
@@ -345,3 +346,47 @@ def post_announcement():
         "success" if success else "danger",
     )
     return redirect(url_for("admin.admin_dashboard"))
+
+
+def _allowed_file(filename: str) -> bool:
+    """Return True if the filename has an allowed extension."""
+    return (
+        "." in filename
+        and filename.rsplit(".", 1)[1].lower() in current_app.config["ALLOWED_EXTENSIONS"]
+    )
+
+
+@admin.route("/upload", methods=["GET", "POST"])
+@require_roles(["R4", "ADMIN"])
+@r4_required
+def upload():
+    """Handle file uploads for admin users."""
+    upload_folder = current_app.config["UPLOAD_FOLDER"]
+    os.makedirs(upload_folder, exist_ok=True)
+
+    if request.method == "POST":
+        if (
+            request.content_length
+            and request.content_length > current_app.config["MAX_CONTENT_LENGTH"]
+        ):
+            flash("Datei zu groß", "danger")
+            return redirect(request.url)
+
+        file = request.files.get("file")
+        if not file or file.filename == "":
+            flash("Keine Datei ausgewählt", "danger")
+            return redirect(request.url)
+        if not _allowed_file(file.filename):
+            flash("Ungültiger Dateityp", "danger")
+            return redirect(request.url)
+
+        filename = secure_filename(file.filename)
+        file.save(os.path.join(upload_folder, filename))
+        flash("Datei hochgeladen", "success")
+        return redirect(url_for("admin.upload"))
+
+    files = []
+    if os.path.exists(upload_folder):
+        files = sorted(f for f in os.listdir(upload_folder) if _allowed_file(f))
+
+    return render_template("admin/upload.html", files=files)

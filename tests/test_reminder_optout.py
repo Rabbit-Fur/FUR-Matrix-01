@@ -2,8 +2,6 @@ import asyncio
 import types
 from datetime import datetime, timedelta
 
-import pytest
-
 from bot.cogs import reminder_autopilot as autopilot_mod
 
 
@@ -46,7 +44,7 @@ def test_autopilot_ignores_opted_out_user(monkeypatch):
     cog.get_user_language = fake_lang
 
     now = datetime.utcnow()
-    event = {"_id": 1, "title": "Test", "event_time": now + timedelta(minutes=5)}
+    event = {"_id": 1, "title": "Test", "event_time": now + timedelta(minutes=10)}
     events_col = DummyCollection([event])
     participants_col = DummyCollection([{"user_id": "123", "event_id": 1}])
     sent_col = DummyCollection()
