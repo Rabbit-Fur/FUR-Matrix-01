@@ -15,7 +15,8 @@ dependencies = [
   "pydantic>=2.6.4",
   "Flask-Babel>=2.0.0",
   "python-dotenv>=1.0.1",
-  "Markdown>=3.0"
+  "Markdown>=3.0",
+  "google-api-python-client>=2.125.0"
 ]
 
 [tool.setuptools]
