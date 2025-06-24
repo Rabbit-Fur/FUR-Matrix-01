@@ -43,8 +43,12 @@ def test_reaction_signup(monkeypatch):
     bot = DummyBot()
     cog = rs_mod.ReactionSignup(bot)
 
+    class DummyEmoji:
+        def __str__(self):
+            return "🔥"
+
     payload = types.SimpleNamespace(
-        emoji=types.SimpleNamespace(__str__=lambda self: "🔥"),
+        emoji=DummyEmoji(),
         channel_id=1,
         message_id=2,
         user_id=123,
