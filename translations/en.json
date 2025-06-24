@@ -242,6 +242,8 @@
     "reminder_message": "reminder_message",
     "reminder_optout_error": "Error disabling reminders.",
     "reminder_optout_success": "You will no longer receive reminders.",
+    "newsletter_optout_success": "You will no longer receive newsletters.",
+    "newsletter_optout_error": "Error disabling newsletters.",
     "reminder_optout_usage": "Use '!reminder stop' to disable reminders.",
     "reminder_sent": "reminder_sent",
     "reminder_time": "reminder_time",
@@ -299,5 +301,7 @@
     "cmd_dm_all_name": "dm_all",
     "cmd_dm_all_desc": "Send a message to all members via DM.",
     "cmd_dm_all_param_text_desc": "Message (max 2000 characters)",
+    "cmd_newsletter_stop_name": "newsletter_stop",
+    "cmd_newsletter_stop_desc": "Disable the weekly newsletter for you.",
     "Zurück": "Zurück"
 }
