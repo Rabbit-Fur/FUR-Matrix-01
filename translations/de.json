@@ -240,6 +240,8 @@
     "reminder_admin_title": "reminder_admin_title",
     "reminder_deactivated": "reminder_deactivated",
     "reminder_event_15min": "Erinnerung: Das Event '{title}' startet in 15 Minuten.",
+    "reminder_event_60min": "Erinnerung: Das Event '{title}' startet in 60 Minuten.",
+    "reminder_event_10min": "Erinnerung: Das Event '{title}' startet in 10 Minuten.",
     "reminder_event_5min": "Erinnerung: Das Event '{title}' startet in 5 Minuten.",
     "reminder_hourly": "Erinnerung: {time} UTC - prüfe deine Aufgaben!",
     "reminder_message": "reminder_message",

@@ -7,6 +7,7 @@ import discord
 from discord import app_commands
 from discord.ext import commands, tasks
 
+from config import Config
 from fur_lang.i18n import t
 from mongo_service import get_collection
 from utils.event_helpers import get_events_for, parse_event_time
@@ -45,8 +46,8 @@ class ReminderCog(commands.Cog):
     @tasks.loop(minutes=5.0)
     async def check_reminders(self) -> None:
         now = datetime.utcnow()
-        window_start = now + timedelta(minutes=10)
-        window_end = now + timedelta(minutes=15)
+        window_start = now + timedelta(minutes=60)
+        window_end = now + timedelta(minutes=61)
 
         try:
             today_events = get_events_for(now)
@@ -75,12 +76,17 @@ class ReminderCog(commands.Cog):
                         if not user:
                             log.warning(f"User ID {user_id} not found.")
                             continue
-                        msg = t("reminder_event_15min", title=event["title"], lang=lang)
-                        await user.send(msg)
+                        msg = t("reminder_event_60min", title=event["title"], lang=lang)
+                        mention = (
+                            f"<@&{Config.REMINDER_ROLE_ID}> "
+                            if getattr(Config, "REMINDER_ROLE_ID", 0)
+                            else ""
+                        )
+                        await user.send(f"{mention}{msg}" if mention else msg)
                         get_collection("reminders_sent").insert_one(
                             {"event_id": event["_id"], "user_id": user_id, "sent_at": now}
                         )
-                        log.info(f"📤 15-Minuten-Reminder an {user_id} gesendet.")
+                        log.info(f"📤 60-Minuten-Reminder an {user_id} gesendet.")
                     except discord.Forbidden:
                         log.warning(f"🚫 DMs deaktiviert bei User {user_id}")
                     except Exception as e:
