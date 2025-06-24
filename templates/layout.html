@@ -115,14 +115,21 @@
     <h2>{{ t("Navigation") }}</h2>
     <a href="{{ url_for('public.landing') }}">🏠 {{ t("Home") }}</a>
     <a href="{{ url_for('public.dashboard') }}">📊 {{ t("Dashboard") }}</a>
+    {% set role = session.get('user', {}).get('role_level') %}
+    {% if role in ['R4', 'ADMIN'] %}
     <a href="{{ url_for('admin.dashboard') }}">🛠️ {{ t("Admin") }}</a>
+    {% endif %}
+    {% if role in ['R3', 'R4', 'ADMIN'] %}
     <a href="{{ url_for('member.dashboard') }}">👥 {{ t("Mitglieder") }}</a>
+    {% endif %}
     <a href="{{ url_for('public.events') }}">📅 {{ t("Events") }}</a>
     <a href="{{ url_for('public.leaderboard') }}">🏆 {{ t("Leaderboard") }}</a>
     <a href="{{ url_for('public.hall_of_fame') }}">👑 {{ t("Hall of Fame") }}</a>
     <a href="{{ url_for('public.lore') }}">📖 {{ t("Lore") }}</a>
+    {% if role in ['R4', 'ADMIN'] %}
     <a href="{{ url_for('admin.upload') }}">⏫ {{ t("Uploads") }}</a>
-    {% if session.get('user', {}).get('role_level') == 'ADMIN' %}
+    {% endif %}
+    {% if role == 'ADMIN' %}
     <a href="{{ url_for('admin_memory.index') }}">🧠 {{ t("Memory") }}</a>
     {% endif %}
   </aside>
