@@ -37,7 +37,8 @@ class DummyInteraction:
 
 
 def run(coro):
-    return asyncio.get_event_loop().run_until_complete(coro)
+    """Execute coroutine synchronously for tests."""
+    return asyncio.run(coro)
 
 
 def test_missing_permissions_message():

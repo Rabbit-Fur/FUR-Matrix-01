@@ -1,3 +1,4 @@
+import asyncio
 import types
 from datetime import datetime, timedelta
 
@@ -33,8 +34,7 @@ class DummyUser:
         self.sent = True
 
 
-@pytest.mark.asyncio
-async def test_autopilot_ignores_opted_out_user(monkeypatch):
+def test_autopilot_ignores_opted_out_user(monkeypatch):
     user = DummyUser()
     bot = types.SimpleNamespace(fetch_user=lambda uid: user)
     cog = autopilot_mod.ReminderAutopilot.__new__(autopilot_mod.ReminderAutopilot)
@@ -64,7 +64,7 @@ async def test_autopilot_ignores_opted_out_user(monkeypatch):
 
     monkeypatch.setattr(autopilot_mod, "get_collection", get_coll)
 
-    await autopilot_mod.ReminderAutopilot.run_reminder_check(cog)
+    asyncio.run(autopilot_mod.ReminderAutopilot.run_reminder_check(cog))
 
     assert not user.sent
     assert sent_col == []
