@@ -1,5 +1,6 @@
 import asyncio
 import logging
+import asyncio
 
 import discord
 from discord.ext import commands
@@ -35,7 +36,6 @@ class DummyInteraction:
         self.response = DummyResponse()
         self.followup = DummyFollowup()
 
-
 def run(coro):
     try:
         loop = asyncio.get_event_loop()
@@ -44,6 +44,13 @@ def run(coro):
         asyncio.set_event_loop(loop)
     return loop.run_until_complete(coro)
 
+    """Execute coroutine synchronously for tests."""
+    return asyncio.run(coro)
+    loop = asyncio.new_event_loop()
+    try:
+        return loop.run_until_complete(coro)
+    finally:
+        loop.close()
 
 def test_missing_permissions_message():
     bot = commands.Bot(command_prefix="!", intents=discord.Intents.none())

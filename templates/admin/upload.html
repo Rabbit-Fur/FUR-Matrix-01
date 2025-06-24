@@ -1,0 +1,21 @@
+{% extends "layout.html" %}
+{% set bg_image = "/static/bg/admin.png" %}
+{% block title %}{{ t("Uploads") }}{% endblock %}
+
+{% block content %}
+  <h2>{{ t("Uploads") }}</h2>
+  <form method="post" enctype="multipart/form-data" style="margin-bottom:1rem;">
+    <input type="file" name="file" required>
+    <button type="submit" class="btn btn-glow">{{ t("Hochladen") }}</button>
+  </form>
+
+  {% if files %}
+  <ul>
+    {% for f in files %}
+      <li><a href="{{ url_for('static', filename='uploads/' ~ f) }}" target="_blank">{{ f }}</a></li>
+    {% endfor %}
+  </ul>
+  {% else %}
+  <p>{{ t("Keine Dateien verfügbar.") }}</p>
+  {% endif %}
+{% endblock %}

@@ -75,6 +75,7 @@ async def load_extensions(bot_instance: commands.Bot):
         "bot.cogs.newsletter",
         "bot.cogs.reminders",
         "bot.cogs.reminder_cog",
+        "bot.cogs.reaction_signup",
         # "bot.cogs.reminder_sender_cog",  # falls später aktiv
     ]
 

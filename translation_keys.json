@@ -248,6 +248,8 @@
     "reminder_admin_title",
     "reminder_deactivated",
     "reminder_event_15min",
+    "reminder_event_60min",
+    "reminder_event_10min",
     "reminder_event_5min",
     "reminder_hourly",
     "reminder_message",
@@ -304,4 +306,5 @@
     "cmd_newsletter_stop_desc",
     "newsletter_optout_success",
     "newsletter_optout_error",
+  "hello"
 ]
