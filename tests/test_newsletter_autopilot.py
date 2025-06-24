@@ -1,3 +1,4 @@
+import asyncio
 from datetime import datetime
 from types import SimpleNamespace
 
@@ -53,8 +54,7 @@ class FakeBot(SimpleNamespace):
         return
 
 
-@pytest.mark.asyncio
-async def test_opt_out(monkeypatch):
+def test_opt_out(monkeypatch):
     guild = FakeGuild(members=[FakeMember(id=1), FakeMember(id=2)])
     bot = FakeBot(guild=guild)
 
@@ -68,7 +68,7 @@ async def test_opt_out(monkeypatch):
     monkeypatch.setattr(mod.Config, "DISCORD_GUILD_ID", 1)
 
     cog = mod.NewsletterAutopilot(bot)
-    await cog.send_newsletters()
+    asyncio.run(cog.send_newsletters())
 
     # first member blocked, second blocked too because collection returns block
     assert cog.blocked == 2
