@@ -2,6 +2,8 @@ import asyncio
 import types
 from datetime import datetime, timedelta
 
+import pytest
+
 from bot.cogs import reminder_autopilot as autopilot_mod
 from bot.cogs import reminder_cog as cog_mod
 from config import Config
@@ -9,6 +11,9 @@ from config import Config
 
 class DummyCollection(list):
     def find(self, *args, **kwargs):
+        return self
+
+    def sort(self, *args, **kwargs):
         return self
 
     def find_one(self, query):
@@ -106,3 +111,50 @@ def test_reminder_cog_sends_60min(monkeypatch):
 
     assert user.sent and "<@&" not in user.sent
     assert len(sent_col) == 1
+
+
+class FileCaptureUser:
+    def __init__(self):
+        self.kwargs = None
+        self.bot = False
+        self.id = 1
+
+    async def send(self, *args, **kwargs):
+        self.kwargs = kwargs
+
+
+@pytest.mark.asyncio
+async def test_daily_poster_attachment(monkeypatch, tmp_path):
+    member = FileCaptureUser()
+    guild = types.SimpleNamespace(members=[member])
+    bot = types.SimpleNamespace(get_guild=lambda gid: guild)
+
+    def fake_get_collection(name):
+        if name == "events":
+            now = datetime.utcnow()
+            return DummyCollection(
+                [
+                    {"title": "Event", "event_time": now.isoformat()},
+                ]
+            )
+        return DummyCollection()
+
+    poster_file = tmp_path / "poster.png"
+    poster_file.write_bytes(b"img")
+
+    monkeypatch.setattr(autopilot_mod.tasks.Loop, "start", lambda self: None)
+    monkeypatch.setattr(autopilot_mod, "get_collection", fake_get_collection)
+    monkeypatch.setattr(autopilot_mod.Config, "DISCORD_GUILD_ID", 1)
+    monkeypatch.setattr(autopilot_mod, "is_opted_out", lambda uid: False)
+    monkeypatch.setattr(
+        autopilot_mod.poster_generator,
+        "generate_poster",
+        lambda *a, **k: str(poster_file),
+    )
+    monkeypatch.setattr(autopilot_mod.discord, "File", lambda p: {"path": p})
+
+    cog = autopilot_mod.ReminderAutopilot(bot)
+    await cog.send_daily_poster()
+
+    assert member.kwargs["file"]["path"] == str(poster_file)
+    assert not member.kwargs.get("content")
