@@ -1,5 +1,6 @@
 import asyncio
 import logging
+import asyncio
 
 import discord
 from discord.ext import commands
@@ -34,7 +35,6 @@ class DummyInteraction:
         self.user = type("User", (), {"id": 1})()
         self.response = DummyResponse()
         self.followup = DummyFollowup()
-
 
 def run(coro):
     loop = asyncio.new_event_loop()

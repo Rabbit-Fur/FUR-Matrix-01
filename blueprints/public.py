@@ -186,7 +186,12 @@ def view_event(event_id):
     event = db["events"].find_one({"_id": ObjectId(event_id)})
     if not event:
         abort(404)
-    return render_template("public/view_event.html", event=event)
+    participant_docs = list(db["event_participants"].find({"event_id": event["_id"]}))
+    participants = []
+    for p in participant_docs:
+        user = db["users"].find_one({"discord_id": p["user_id"]})
+        participants.append({"username": user.get("username") if user else p["user_id"]})
+    return render_template("public/view_event.html", event=event, participants=participants)
 
 
 @public.route("/events/<event_id>/join", methods=["POST"])
