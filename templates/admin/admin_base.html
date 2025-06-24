@@ -7,7 +7,7 @@
   <p>{{ t("Systemkontrolle, Nutzerverwaltung, Logs, Einstellungen, Tools…") }}</p>
 
   <!-- Admin Actions Grid -->
-  <div class="btn-grid" style="display: flex; flex-wrap: wrap; gap: 1rem; margin-top: 2em;">
+  <div class="btn-grid" style="margin-top: 2em;">
     <a class="btn btn-glow" href="{{ url_for('admin.calendar') }}">📅 {{ t('Kalender') }}</a>
     <a class="btn btn-glow" href="{{ url_for('admin.create_event') }}">📝 {{ t('Event erstellen') }}</a>
     <a class="btn btn-glow" href="{{ url_for('admin.participants') }}">👥 {{ t('Teilnehmer') }}</a>
