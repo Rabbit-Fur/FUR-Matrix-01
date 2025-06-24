@@ -105,6 +105,7 @@ def create_app() -> Flask:
         from blueprints.leaderboard import leaderboard
         from blueprints.member import member
         from blueprints.public import public
+        from blueprints.resources import resources as resources_bp
         from dashboard.routes import dashboard
 
         try:
@@ -116,6 +117,7 @@ def create_app() -> Flask:
         app.register_blueprint(member, url_prefix="/members")
         app.register_blueprint(admin, url_prefix="/admin")
         app.register_blueprint(leaderboard, url_prefix="/leaderboard")
+        app.register_blueprint(resources_bp)
         if reminder_api:
             app.register_blueprint(reminder_api, url_prefix="/api/reminders")
         app.register_blueprint(dashboard)

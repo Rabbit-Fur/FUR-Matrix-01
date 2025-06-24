@@ -1,0 +1,25 @@
+{% extends "layout.html" %}
+{% set bg_image = "/static/bg/downloads_member.png" %}
+{% block title %}{{ t("Resources") }}{% endblock %}
+
+{% block content %}
+  <div class="main-content">
+    <h2>📦 {{ t("Resource Downloads") }}</h2>
+    <div class="panel">
+      {% if resources %}
+        <ul style="list-style: none; padding: 0;">
+          {% for res in resources %}
+            <li style="margin-bottom: 0.6rem;">
+              <a class="btn" href="{{ url_for('resources.download_resource', filename=res.filename) }}">
+                📄 {{ res.filename }}
+              </a>
+              <p>{{ t(res.desc_key) }}</p>
+            </li>
+          {% endfor %}
+        </ul>
+      {% else %}
+        <p>🚫 {{ t("No resources available.") }}</p>
+      {% endif %}
+    </div>
+  </div>
+{% endblock %}
