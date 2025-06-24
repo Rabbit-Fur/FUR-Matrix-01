@@ -1,0 +1,17 @@
+import os
+from datetime import datetime
+
+from config import Config
+from utils.poster_generator import generate_poster
+
+
+def test_generate_poster_daily_weekly(monkeypatch, tmp_path):
+    monkeypatch.setattr(Config, "STATIC_FOLDER", str(tmp_path))
+    monkeypatch.setattr(Config, "POSTER_OUTPUT_REL_PATH", "")
+
+    event = {"title": "Test", "event_time": datetime(2025, 1, 1, 12, 0)}
+    path_daily = generate_poster(event, "daily")
+    assert os.path.isfile(path_daily)
+
+    path_weekly = generate_poster(event, "weekly")
+    assert os.path.isfile(path_weekly)
