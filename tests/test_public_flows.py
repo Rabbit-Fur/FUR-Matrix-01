@@ -1,5 +1,6 @@
 import importlib
 import json
+from pathlib import Path
 
 import requests
 
@@ -117,8 +118,8 @@ def test_post_reminder(client):
 def test_get_poster_image(client, tmp_path, monkeypatch):
     from config import Config
 
-    monkeypatch.setattr(Config, "STATIC_FOLDER", str(tmp_path))
-    posters = tmp_path / "posters"
+    monkeypatch.setattr(Config, "POSTER_OUTPUT_PATH", str(tmp_path / "posters"))
+    posters = Path(Config.POSTER_OUTPUT_PATH)
     posters.mkdir()
     file = posters / "example.png"
     file.write_bytes(b"\x89PNG\r\n\x1a\n")

@@ -1,5 +1,3 @@
-from io import BytesIO
-
 from tests.test_admin_auth import login_with_role
 
 

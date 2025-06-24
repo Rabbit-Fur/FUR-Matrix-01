@@ -11,7 +11,7 @@ poster_blueprint = Blueprint("poster", __name__)
 
 
 def _poster_dir() -> Path:
-    path = Path(Config.STATIC_FOLDER) / "posters"
+    path = Path(Config.POSTER_OUTPUT_PATH)
     path.mkdir(parents=True, exist_ok=True)
     return path
 
