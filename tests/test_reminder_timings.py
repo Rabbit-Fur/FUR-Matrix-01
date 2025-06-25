@@ -102,7 +102,7 @@ def test_reminder_cog_sends_60min(monkeypatch):
     def get_coll(name):
         return {
             "events": events_col,
-            "participants": participants_col,
+            "event_participants": participants_col,
             "reminders_sent": sent_col,
             "reminder_optout": optout_col,
             "user_settings": user_settings_col,
