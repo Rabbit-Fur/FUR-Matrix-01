@@ -48,6 +48,7 @@ google-api-python-client>=2.125.0
 
 # 🧪 Dev & Testing
 pytest>=7.0.0
+pytest-asyncio>=0.23
 flake8>=3.9.0
 isort>=5.0.0
 black>=23.0.0

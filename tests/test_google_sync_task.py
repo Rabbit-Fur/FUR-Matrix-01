@@ -25,3 +25,27 @@ def test_google_sync_task_runs(monkeypatch):
     agent.schedule_google_sync(interval_minutes=1)
 
     assert called["count"] == 1
+
+
+def test_start_google_sync_pushes_app_context(monkeypatch):
+    sys.modules.setdefault("schedule", types.ModuleType("schedule"))
+
+    import utils.google_sync_task as task_mod
+
+    called = {}
+
+    def fake_sync():
+        from flask import current_app
+
+        called["app"] = current_app.name
+
+    monkeypatch.setattr(task_mod, "sync_google_calendar", fake_sync)
+
+    def fake_start():
+        asyncio.run(task_mod.google_sync_loop.coro())
+
+    monkeypatch.setattr(task_mod.google_sync_loop, "start", fake_start)
+
+    task_mod.start_google_sync(interval_minutes=1)
+
+    assert called.get("app")
