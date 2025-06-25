@@ -177,7 +177,7 @@ def calendar():
 
 @public.route("/events")
 def events():
-    rows = list(db["events"].find().sort("event_date", 1))
+    rows = list(db["events"].find().sort("event_time", 1))
     return render_template("public/events_list.html", events=rows)
 
 

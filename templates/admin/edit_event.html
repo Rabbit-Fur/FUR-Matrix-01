@@ -16,7 +16,7 @@
 
     <label for="event_date">{{ t("Datum & Uhrzeit") }}</label>
     <input type="datetime-local" id="event_date" name="event_date"
-           value="{{ event.get('event_date', '').replace(' ', 'T') }}" required>
+           value="{{ event.get('event_time', '').replace(' ', 'T') }}" required>
 
     <label for="role">{{ t("Zielrolle") }}</label>
     <input type="text" id="role" name="role" value="{{ event.get('role', '') }}">

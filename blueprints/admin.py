@@ -46,7 +46,7 @@ def calendar():
 def create_event():
     if request.method == "POST":
         title = request.form.get("title")
-        event_time = request.form.get("event_time")
+        event_time = request.form.get("event_date")
         description = request.form.get("description")
         try:
             db["events"].insert_one(
@@ -105,7 +105,7 @@ def edit_event():
         update = {
             "title": request.form.get("title"),
             "description": request.form.get("description"),
-            "event_date": request.form.get("event_date"),
+            "event_time": request.form.get("event_date"),
             "role": request.form.get("role"),
             "recurrence": request.form.get("recurrence"),
             "updated_at": datetime.utcnow(),
@@ -124,7 +124,7 @@ def edit_event():
 @r4_required
 @admin.route("/events")
 def events():
-    rows = list(db["events"].find().sort("event_date", 1))
+    rows = list(db["events"].find().sort("event_time", 1))
     for row in rows:
         row["id"] = str(row.get("_id"))
     return render_template("admin/events.html", events=rows)
@@ -288,7 +288,7 @@ def post_event(event_id: str):
         return redirect(url_for("admin.events"))
 
     content = (
-        f"📅 **{event.get('title')}**\n{event.get('description', '')}\n🕒 {event.get('event_date')}"
+        f"📅 **{event.get('title')}**\n{event.get('description', '')}\n🕒 {event.get('event_time')}"
     )
     webhook = WebhookAgent(Config.DISCORD_WEBHOOK_URL)
     success = webhook.send(content)

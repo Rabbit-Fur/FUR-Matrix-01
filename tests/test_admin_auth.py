@@ -69,7 +69,7 @@ def test_post_event_requires_r4(client):
     admin_mod.db = mongo_service.db
     collection = mongo_service.db["events"]
     event_id = collection.insert_one(
-        {"title": "T", "description": "d", "event_date": "soon"}
+        {"title": "T", "description": "d", "event_time": "soon"}
     ).inserted_id
     resp = _check_requires_r4(client, "POST", f"/admin/events/post/{event_id}")
     assert resp.status_code == 302
