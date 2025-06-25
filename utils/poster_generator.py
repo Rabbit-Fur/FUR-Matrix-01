@@ -1,14 +1,9 @@
-
 from __future__ import annotations
 
-import uuid
 """Poster generation utilities for events."""
-
-from __future__ import annotations
 
 import uuid
 from datetime import datetime
-
 from pathlib import Path
 
 from PIL import Image, ImageDraw, ImageFont
@@ -50,6 +45,8 @@ def generate_poster(title: str, lines: list[str], output_dir: str | None = None)
         x = (Config.IMG_WIDTH - (bbox[2] - bbox[0])) / 2
         draw.text((x, y), line, font=font_text, fill=TEXT_COLOR)
         y += bbox[3] - bbox[1] + 10
+
+
 # Background images for each mode (using default static directory)
 MODE_BACKGROUNDS = {
     "daily": Path(Config.STATIC_FOLDER) / "img" / "background.jpg",
