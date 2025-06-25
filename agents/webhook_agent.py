@@ -5,6 +5,9 @@ from typing import Optional
 
 import requests
 
+from config import Config
+from utils.discord_util import send_discord_message
+
 
 class WebhookAgent:
     def __init__(self, default_url: Optional[str] = None):
@@ -15,7 +18,34 @@ class WebhookAgent:
         content: str,
         webhook_url: Optional[str] = None,
         file_path: Optional[str] = None,
+        *,
+        event_channel: bool = False,
     ) -> bool:
+        """Send a Discord webhook or channel message.
+
+        Parameters
+        ----------
+        content:
+            Message text to send.
+        webhook_url:
+            Override webhook URL. If ``event_channel`` is ``True`` this is
+            ignored.
+        file_path:
+            Optional path to an attachment.
+        event_channel:
+            If ``True`` and ``Config.DISCORD_EVENT_CHANNEL_ID`` is set, the
+            message is posted via ``send_discord_message``.
+        """
+
+        if event_channel and Config.DISCORD_EVENT_CHANNEL_ID:
+            try:
+                send_discord_message(Config.DISCORD_EVENT_CHANNEL_ID, content, file_path)
+                logging.info("📤 Event-Channel Nachricht gesendet")
+                return True
+            except Exception as e:  # pragma: no cover - network failure
+                logging.error(f"❌ Fehler beim Channel-Senden: {e}")
+                return False
+
         url = webhook_url or self.default_url
         if not url:
             logging.error("❌ Kein Webhook-URL angegeben")

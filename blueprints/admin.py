@@ -21,6 +21,7 @@ from agents.webhook_agent import WebhookAgent
 from config import Config
 from mongo_service import db
 from utils.discord_util import require_roles
+from utils.poster_generator import generate_event_poster
 from web.auth.decorators import r4_required
 
 admin = Blueprint("admin", __name__)
@@ -291,7 +292,8 @@ def post_event(event_id: str):
         f"📅 **{event.get('title')}**\n{event.get('description', '')}\n🕒 {event.get('event_date')}"
     )
     webhook = WebhookAgent(Config.DISCORD_WEBHOOK_URL)
-    success = webhook.send(content)
+    poster = generate_event_poster(event)
+    success = webhook.send(content, file_path=poster, event_channel=True)
     if success:
         flash("Event gepostet", "success")
     else:
