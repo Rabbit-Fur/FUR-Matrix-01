@@ -1,5 +1,6 @@
 """Admin blueprint using MongoDB."""
 
+import asyncio
 import json
 import os
 from datetime import datetime
@@ -22,6 +23,7 @@ from config import Config
 from mongo_service import db
 from utils.discord_util import require_roles
 from utils.poster_generator import generate_event_poster
+from utils.discord_util import ENABLE_BOT, require_roles, send_discord_message
 from web.auth.decorators import r4_required
 
 admin = Blueprint("admin", __name__)
@@ -282,7 +284,7 @@ def export_scores():
 @require_roles(["R4", "ADMIN"])
 @r4_required
 def post_event(event_id: str):
-    """Post an event to Discord via webhook."""
+    """Post an event via bot or webhook."""
     event = db["events"].find_one({"_id": ObjectId(event_id)})
     if not event:
         flash("Unbekanntes Event", "danger")
@@ -298,6 +300,19 @@ def post_event(event_id: str):
         flash("Event gepostet", "success")
     else:
         flash("Fehler beim Posten", "danger")
+
+    success = False
+    try:
+        if ENABLE_BOT:
+            asyncio.run(send_discord_message(Config.EVENT_CHANNEL_ID, content))
+            success = True
+        else:
+            webhook = WebhookAgent(Config.DISCORD_WEBHOOK_URL)
+            success = webhook.send(content)
+    except Exception as exc:  # noqa: BLE001
+        current_app.logger.error("Event post failed: %s", exc, exc_info=True)
+
+    flash("Event gepostet" if success else "Fehler beim Posten", "success" if success else "danger")
     return redirect(url_for("admin.events"))
 
 

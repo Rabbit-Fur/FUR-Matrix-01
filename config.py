@@ -44,6 +44,7 @@ class Config:
     DISCORD_GUILD_ID: int = get_env_int("DISCORD_GUILD_ID", required=True)
     REMINDER_CHANNEL_ID: int = get_env_int("REMINDER_CHANNEL_ID", required=True)
     DISCORD_EVENT_CHANNEL_ID: int | None = get_env_int("DISCORD_EVENT_CHANNEL_ID", required=False)
+    EVENT_CHANNEL_ID: int | None = get_env_int("EVENT_CHANNEL_ID", required=False)
     REMINDER_ROLE_ID: int | None = get_env_int("REMINDER_ROLE_ID", required=False)
     DISCORD_CLIENT_ID: str = get_env_str("DISCORD_CLIENT_ID", required=True)
     DISCORD_CLIENT_SECRET: str = get_env_str("DISCORD_CLIENT_SECRET", required=True)
