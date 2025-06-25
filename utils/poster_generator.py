@@ -15,8 +15,8 @@ TITLE_COLOR = Config.CHAMPION_TEXT_COLOR
 TEXT_COLOR = Config.CHAMPION_SUBTEXT_COLOR
 
 
-def generate_poster(title: str, lines: list[str], output_dir: str | None = None) -> str:
-    """Create a simple poster image with a title and lines of text."""
+def generate_text_poster(title: str, lines: list[str], output_dir: str | None = None) -> str:
+    """Create a simple poster image with a title and multiple lines of text."""
     out_dir = Path(output_dir or Config.STATIC_FOLDER) / Config.POSTER_OUTPUT_REL_PATH
     out_dir.mkdir(parents=True, exist_ok=True)
 

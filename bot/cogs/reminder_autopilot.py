@@ -187,12 +187,12 @@ class ReminderAutopilot(commands.Cog):
 
     async def send_daily_poster(self) -> None:
         lines = await self._build_daily_lines()
-        path = poster_generator.generate_poster("Today's Events", lines)
+        path = poster_generator.generate_text_poster("Today's Events", lines)
         await self._send_poster_to_members(path)
 
     async def send_weekly_poster(self) -> None:
         lines = await self._build_weekly_lines()
-        path = poster_generator.generate_poster("Events This Week", lines)
+        path = poster_generator.generate_text_poster("Events This Week", lines)
         await self._send_poster_to_members(path)
 
     @tasks.loop(hours=1)
