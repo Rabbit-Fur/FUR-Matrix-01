@@ -107,3 +107,18 @@ This repository contains the Rabbit FUR system.
 
 The admin interface provides a **Memory Viewer** at `/admin/memory` to inspect GPT memory dumps. Access is restricted to admin users. A placeholder screenshot can be placed in `docs/screenshots/memory-viewer.png`.
 
+## Diagnostic Tool
+
+Run `diagnostic_tool.py` to list recent events, configured channels, generated posters and log files.
+
+```bash
+python diagnostic_tool.py --events --channels --posters --logs
+```
+
+Options can be combined as needed:
+
+- `--events` – show today's events
+- `--channels` – print channel mappings from `config.py`
+- `--posters` – list poster image files
+- `--logs` – list markdown log files
+
