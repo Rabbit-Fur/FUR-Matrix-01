@@ -21,9 +21,8 @@ from werkzeug.utils import secure_filename
 from agents.webhook_agent import WebhookAgent
 from config import Config
 from mongo_service import db
-from utils.discord_util import require_roles
-from utils.poster_generator import generate_event_poster
 from utils.discord_util import ENABLE_BOT, require_roles, send_discord_message
+from utils.poster_generator import generate_event_poster
 from web.auth.decorators import r4_required
 
 admin = Blueprint("admin", __name__)

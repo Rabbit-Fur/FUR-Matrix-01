@@ -17,7 +17,7 @@ The FUR System powers the champion, reminder and leaderboard features for the GG
 
 Copy `.env.example` to `.env` and adjust the values for your environment before running the setup commands.
 
-Set `EVENT_CHANNEL_ID` to the Discord channel where event announcements should be posted.
+Set `EVENT_CHANNEL_ID` to the Discord channel where event announcements should be posted. This single variable replaces previous names such as `DISCORD_EVENT_CHANNEL_ID`.
 
 1. **Install the dependencies** (required before starting the app)
    ```bash
