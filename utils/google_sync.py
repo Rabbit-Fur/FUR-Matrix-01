@@ -11,6 +11,7 @@ from typing import Iterable
 from google.oauth2 import service_account
 from googleapiclient.discovery import build
 
+from config import Config
 from mongo_service import get_collection
 
 log = logging.getLogger(__name__)
@@ -93,7 +94,7 @@ def import_events(events: Iterable[dict]) -> None:
 
 def sync_google_calendar() -> None:
     """Synchronize events from Google Calendar into MongoDB."""
-    calendar_id = os.getenv("GOOGLE_CALENDAR_ID")
+    calendar_id = Config.GOOGLE_CALENDAR_ID
     if not calendar_id:
         log.warning("GOOGLE_CALENDAR_ID not set – skipping Google sync")
         return

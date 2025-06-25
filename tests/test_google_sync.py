@@ -61,7 +61,7 @@ def test_sync_google_calendar(monkeypatch):
     monkeypatch.setattr(mod, "get_service", lambda: object())
     monkeypatch.setattr(mod, "fetch_calendar_events", fake_fetch)
     monkeypatch.setattr(mod, "import_events", fake_import)
-    monkeypatch.setenv("GOOGLE_CALENDAR_ID", "test")
+    monkeypatch.setattr(mod.Config, "GOOGLE_CALENDAR_ID", "test")
 
     mod.sync_google_calendar()
     assert called["calendar_id"] == "test"
