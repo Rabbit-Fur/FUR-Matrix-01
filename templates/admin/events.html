@@ -10,7 +10,7 @@
     {% for e in events %}
       <li class="event-item">
         <strong>{{ e.title }}</strong>
-        <span class="event-date">({{ e.event_date.strftime('%Y-%m-%d %H:%M') if e.event_date else '–' }})</span>
+        <span class="event-date">({{ e.event_time.strftime('%Y-%m-%d %H:%M') if e.event_time else '–' }})</span>
 
         <div class="event-actions">
           <a class="btn btn-glow" href="{{ url_for('admin.edit_event', id=e.id|string) }}">✏️ {{ t("Bearbeiten") }}</a>

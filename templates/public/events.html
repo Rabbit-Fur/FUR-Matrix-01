@@ -29,7 +29,7 @@
           <tr>
             <td>{{ event.title }}</td>
             <td>{{ event.description[:80] }}{% if event.description|length > 80 %}...{% endif %}</td>
-            <td>{{ event.event_date }}</td>
+            <td>{{ event.event_time }}</td>
             {% if session.get("user") %}
               <td>
                 <form action="{{ url_for('public.join_event', event_id=event.id) }}" method="POST" style="display:inline;">
