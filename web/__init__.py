@@ -121,6 +121,9 @@ def create_app() -> Flask:
         if reminder_api:
             app.register_blueprint(reminder_api, url_prefix="/api/reminders")
         app.register_blueprint(dashboard)
+        from google_auth import google_auth as google_auth_bp
+
+        app.register_blueprint(google_auth_bp)
 
         # API-Blueprints
         app.register_blueprint(api_events)
