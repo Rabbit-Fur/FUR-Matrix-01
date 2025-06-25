@@ -23,7 +23,6 @@ from config import Config
 from mongo_service import db
 from utils.discord_util import require_roles
 from utils.poster_generator import generate_event_poster
-from utils.discord_util import ENABLE_BOT, require_roles, send_discord_message
 from web.auth.decorators import r4_required
 
 admin = Blueprint("admin", __name__)
@@ -296,22 +295,6 @@ def post_event(event_id: str):
     webhook = WebhookAgent(Config.DISCORD_WEBHOOK_URL)
     poster = generate_event_poster(event)
     success = webhook.send(content, file_path=poster, event_channel=True)
-    if success:
-        flash("Event gepostet", "success")
-    else:
-        flash("Fehler beim Posten", "danger")
-
-    success = False
-    try:
-        if ENABLE_BOT:
-            asyncio.run(send_discord_message(Config.EVENT_CHANNEL_ID, content))
-            success = True
-        else:
-            webhook = WebhookAgent(Config.DISCORD_WEBHOOK_URL)
-            success = webhook.send(content)
-    except Exception as exc:  # noqa: BLE001
-        current_app.logger.error("Event post failed: %s", exc, exc_info=True)
-
     flash("Event gepostet" if success else "Fehler beim Posten", "success" if success else "danger")
     return redirect(url_for("admin.events"))
 
