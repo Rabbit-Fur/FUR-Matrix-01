@@ -29,9 +29,17 @@ class FakeWebhook:
         self.url = url
         self.sent = False
 
-    def send(self, content: str, webhook_url=None, file_path=None):
+    def send(
+        self,
+        content: str,
+        webhook_url=None,
+        file_path=None,
+        *,
+        event_channel=False,
+    ):
         self.sent = True
         assert content.startswith("```")
+        assert event_channel is False
         return True
 
 

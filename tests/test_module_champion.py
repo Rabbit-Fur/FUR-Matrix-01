@@ -10,9 +10,20 @@ class FakeWebhook:
         self.called = False
         self.kwargs = {}
 
-    def send(self, content: str, webhook_url=None, file_path=None):
+    def send(
+        self,
+        content: str,
+        webhook_url=None,
+        file_path=None,
+        *,
+        event_channel=False,
+    ):
         self.called = True
-        self.kwargs = {"content": content, "file_path": file_path}
+        self.kwargs = {
+            "content": content,
+            "file_path": file_path,
+            "event_channel": event_channel,
+        }
         # ensure file exists
         assert file_path and Path(file_path).is_file()
         return True
