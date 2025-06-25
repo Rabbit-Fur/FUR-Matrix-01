@@ -16,6 +16,8 @@ from flask import Response, session
 
 # ✅ Korrekt: Agenten-Loader importieren
 from agents.agenten_loader import init_agents
+from agents.scheduler_agent import SchedulerAgent
+from config import Config
 
 # 🌍 Module
 from database import close_db
@@ -90,6 +92,13 @@ if __name__ == "__main__":
 
         # 🧠 Agenten laden (Reminder, Translation, Champion etc.)
         agents = init_agents(db=db, session=session)
+
+        scheduler = SchedulerAgent()
+        if Config.GOOGLE_CALENDAR_ID:
+            scheduler.schedule_google_sync()
+        if Config.DISCORD_WEBHOOK_URL:
+            scheduler.schedule_champion_autopilot()
+        threading.Thread(target=scheduler.run, daemon=True).start()
 
         atexit.register(cleanup)
         signal.signal(signal.SIGINT, signal_handler)
