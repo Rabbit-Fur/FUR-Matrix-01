@@ -40,13 +40,13 @@ intents.members = True
 bot = None  # Globales Bot-Objekt für externe Nutzung
 
 
-def create_bot() -> commands.Bot:
+async def create_bot() -> commands.Bot:
     """Initialisiert eine Bot-Instanz (echter Discord-Bot oder Stub)."""
     connector = aiohttp.TCPConnector(resolver=aiohttp.AsyncResolver())
 
     if USE_DISCORD_BOT:
         new_bot = commands.Bot(command_prefix="!", intents=intents, connector=connector)
-        new_bot.tree.set_translator(MyTranslator())
+        await new_bot.tree.set_translator(MyTranslator())
 
         @new_bot.event
         async def on_ready():
@@ -56,7 +56,7 @@ def create_bot() -> commands.Bot:
         new_bot = BotStub()
         log.info("🧪 Bot-Stub aktiv (kein Gateway, nur Simulation)")
         if hasattr(new_bot, "tree"):
-            new_bot.tree.set_translator(MyTranslator())
+            await new_bot.tree.set_translator(MyTranslator())
 
     return new_bot
 
@@ -90,7 +90,7 @@ async def load_extensions(bot_instance: commands.Bot):
 async def run_bot(max_retries: int = 3) -> None:
     """Startet den Discord-Bot mit Retry-Mechanismus."""
     global bot
-    bot = create_bot()
+    bot = await create_bot()
 
     if USE_DISCORD_BOT:
         await load_extensions(bot)
