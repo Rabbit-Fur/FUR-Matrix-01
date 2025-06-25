@@ -46,6 +46,9 @@ def generate_poster(title: str, lines: list[str], output_dir: str | None = None)
         draw.text((x, y), line, font=font_text, fill=TEXT_COLOR)
         y += bbox[3] - bbox[1] + 10
 
+    img.save(file_path)
+    return str(file_path)
+
 
 # Background images for each mode (using default static directory)
 MODE_BACKGROUNDS = {
@@ -62,7 +65,7 @@ def _load_font(path: str, size: int) -> ImageFont.FreeTypeFont | ImageFont.Image
         return ImageFont.load_default()
 
 
-def generate_poster(event: dict, mode: str = "daily") -> str:
+def generate_event_poster(event: dict, mode: str = "daily") -> str:
     """Generate a poster image for an event.
 
     Parameters

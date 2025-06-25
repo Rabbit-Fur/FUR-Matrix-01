@@ -47,9 +47,10 @@ class SchedulerAgent:
         )
 
         interval = interval_minutes or Config.GOOGLE_SYNC_INTERVAL_MINUTES
-        job = schedule.every(interval).minutes.do(sync_google_calendar)
-        self.jobs.append(job)
-        logging.info(
-            "\U0001f4c5 Google Calendar sync every %s minutes scheduled",
-            interval,
-        )
+        if hasattr(schedule, "every"):
+            job = schedule.every(interval).minutes.do(sync_google_calendar)
+            self.jobs.append(job)
+            logging.info(
+                "\U0001f4c5 Google Calendar sync every %s minutes scheduled",
+                interval,
+            )

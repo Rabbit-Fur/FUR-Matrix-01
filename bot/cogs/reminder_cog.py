@@ -60,7 +60,7 @@ class ReminderCog(commands.Cog):
                 )
             ]
             for event in events:
-                participants = get_collection("participants").find({"event_id": event["_id"]})
+                participants = get_collection("event_participants").find({"event_id": event["_id"]})
                 for p in participants:
                     user_id = int(p["user_id"])
                     if get_collection("reminders_sent").find_one(
