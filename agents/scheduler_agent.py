@@ -8,6 +8,7 @@ import time
 import schedule
 
 from champion.autopilot import run_champion_autopilot
+from utils.google_sync_task import start_google_sync
 from config import Config
 from utils.google_sync import sync_google_calendar
 
@@ -39,6 +40,10 @@ class SchedulerAgent:
 
     def schedule_google_sync(self, interval_minutes: int | None = None) -> None:
         """Schedule regular Google Calendar synchronization."""
+        start_google_sync(interval_minutes)
+        logging.info(
+            "\U0001f4c5 Google Calendar sync every %s minutes scheduled via loop",
+            interval_minutes,
 
         interval = interval_minutes or Config.GOOGLE_SYNC_INTERVAL_MINUTES
         job = schedule.every(interval).minutes.do(sync_google_calendar)

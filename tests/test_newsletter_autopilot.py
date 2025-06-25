@@ -2,8 +2,6 @@ import asyncio
 from datetime import datetime
 from types import SimpleNamespace
 
-import pytest
-
 import bot.cogs.newsletter_autopilot as mod
 
 
@@ -82,8 +80,7 @@ def test_should_send_daily_overview():
     assert not mod.should_send_daily_overview(later)
 
 
-@pytest.mark.asyncio
-async def test_daily_opt_out(monkeypatch):
+def test_daily_opt_out(monkeypatch):
     guild = FakeGuild(members=[FakeMember(id=1), FakeMember(id=2)])
     bot = FakeBot(guild=guild)
 
@@ -97,7 +94,7 @@ async def test_daily_opt_out(monkeypatch):
     monkeypatch.setattr(mod.Config, "DISCORD_GUILD_ID", 1)
 
     cog = mod.NewsletterAutopilot(bot)
-    await cog.send_daily_overview()
+    asyncio.run(cog.send_daily_overview())
 
     assert cog.blocked == 2
     assert cog.sent == 0

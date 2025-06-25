@@ -7,6 +7,7 @@ import pytest
 from bot.cogs import reminder_autopilot as autopilot_mod
 from bot.cogs import reminder_cog as cog_mod
 from config import Config
+from utils import event_helpers
 
 
 class DummyCollection(list):
@@ -50,7 +51,8 @@ def test_autopilot_sends_with_role_mention(monkeypatch):
     cog.get_user_language = fake_lang
 
     now = datetime.utcnow()
-    event = {"_id": 1, "title": "Ping", "event_time": now + timedelta(minutes=10)}
+    event = {"_id": 1, "title": "Ping", "event_time": now + timedelta(minutes=10, seconds=1)}
+    monkeypatch.setattr(autopilot_mod, "datetime", types.SimpleNamespace(utcnow=lambda: now))
     events_col = DummyCollection([event])
     participants_col = DummyCollection([{"user_id": "1", "event_id": 1}])
     sent_col = DummyCollection()
@@ -67,6 +69,7 @@ def test_autopilot_sends_with_role_mention(monkeypatch):
         }[name]
 
     monkeypatch.setattr(autopilot_mod, "get_collection", get_coll)
+    monkeypatch.setattr(event_helpers, "get_collection", get_coll)
     monkeypatch.setattr(autopilot_mod, "is_production", lambda: True)
     monkeypatch.setattr(Config, "REMINDER_ROLE_ID", 99)
 
@@ -88,7 +91,8 @@ def test_reminder_cog_sends_60min(monkeypatch):
     cog.get_user_language = lambda uid: "en"
 
     now = datetime.utcnow()
-    event = {"_id": 2, "title": "Test", "event_time": now + timedelta(minutes=60)}
+    event = {"_id": 2, "title": "Test", "event_time": now + timedelta(minutes=60, seconds=1)}
+    monkeypatch.setattr(cog_mod, "datetime", types.SimpleNamespace(utcnow=lambda: now))
     events_col = DummyCollection([event])
     participants_col = DummyCollection([{"user_id": "1", "event_id": 2}])
     sent_col = DummyCollection()
@@ -105,6 +109,7 @@ def test_reminder_cog_sends_60min(monkeypatch):
         }[name]
 
     monkeypatch.setattr(cog_mod, "get_collection", get_coll)
+    monkeypatch.setattr(event_helpers, "get_collection", get_coll)
     monkeypatch.setattr(Config, "REMINDER_ROLE_ID", None)
 
     asyncio.run(cog_mod.ReminderCog.check_reminders(cog))
