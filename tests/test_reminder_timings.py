@@ -153,7 +153,7 @@ async def test_daily_poster_attachment(monkeypatch, tmp_path):
     monkeypatch.setattr(autopilot_mod, "is_opted_out", lambda uid: False)
     monkeypatch.setattr(
         autopilot_mod.poster_generator,
-        "generate_poster",
+        "generate_text_poster",
         lambda *a, **k: str(poster_file),
     )
     monkeypatch.setattr(autopilot_mod.discord, "File", lambda p: {"path": p})
