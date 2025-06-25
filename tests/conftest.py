@@ -19,6 +19,15 @@ os.environ.setdefault("R3_ROLE_IDS", "1")
 os.environ.setdefault("R4_ROLE_IDS", "1")
 os.environ.setdefault("ADMIN_ROLE_IDS", "1")
 os.environ.setdefault("BASE_URL", "http://localhost:8080")
+os.environ.setdefault(
+    "GOOGLE_REDIRECT_URI",
+    "http://localhost:8080/oauth2callback",
+)
+os.environ.setdefault("GOOGLE_CREDENTIALS_FILE", "/tmp/google.json")
+os.environ.setdefault(
+    "GOOGLE_CALENDAR_SCOPES",
+    "https://www.googleapis.com/auth/calendar.readonly",
+)
 
 try:
     asyncio.get_event_loop()

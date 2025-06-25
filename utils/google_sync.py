@@ -2,30 +2,25 @@
 
 from __future__ import annotations
 
-import json
 import logging
-import os
 from datetime import datetime
 from typing import Iterable
 
-from google.oauth2 import service_account
 from googleapiclient.discovery import build
 
 from config import Config
+from google_auth import load_credentials
 from mongo_service import get_collection
 
 log = logging.getLogger(__name__)
-SCOPES = ["https://www.googleapis.com/auth/calendar.readonly"]
 
 
 def get_service():
     """Return a Calendar API service or ``None`` if credentials are missing."""
-    creds_json = os.getenv("GOOGLE_CREDENTIALS_JSON")
-    if not creds_json:
-        log.warning("GOOGLE_CREDENTIALS_JSON not set – skipping Google sync")
+    creds = load_credentials()
+    if not creds:
+        log.warning("Google OAuth credentials missing – skipping Google sync")
         return None
-    info = json.loads(creds_json)
-    creds = service_account.Credentials.from_service_account_info(info, scopes=SCOPES)
     return build("calendar", "v3", credentials=creds, cache_discovery=False)
 
 
