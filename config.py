@@ -54,6 +54,12 @@ class Config:
         filter(None, get_env_str("ADMIN_ROLE_IDS", default="").split(","))
     )
 
+    # --- Google Calendar ---
+    GOOGLE_CALENDAR_ID: str | None = get_env_str("GOOGLE_CALENDAR_ID", required=False)
+    GOOGLE_SYNC_INTERVAL_MINUTES: int = get_env_int(
+        "GOOGLE_SYNC_INTERVAL_MINUTES", required=False, default=30
+    )
+
     # --- i18n ---
     BABEL_DEFAULT_LOCALE = "de"
     BABEL_SUPPORTED_LOCALES = get_supported_languages()
@@ -78,6 +84,9 @@ class Config:
     ALLOWED_EXTENSIONS: set[str] = {"jpg", "png"}
     MAX_CONTENT_LENGTH: int = 2 * 1024 * 1024
 
+    POSTER_OUTPUT_PATH: str = get_env_str(
+        "POSTER_OUTPUT_PATH", default=os.path.join(STATIC_FOLDER, "posters")
+    )
     POSTER_OUTPUT_REL_PATH: str = "temp"
     MEDAL_OUTPUT_REL_PATH: str = "medals"
     CHAMPION_OUTPUT_REL_PATH: str = "champions"

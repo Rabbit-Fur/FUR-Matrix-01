@@ -11,6 +11,7 @@ from typing import Iterable
 from google.oauth2 import service_account
 from googleapiclient.discovery import build
 
+from config import Config
 from mongo_service import get_collection
 
 log = logging.getLogger(__name__)
@@ -54,14 +55,17 @@ def fetch_calendar_events(
     return events
 
 
-def _parse_start(event: dict) -> datetime | None:
-    start = event.get("start", {}).get("dateTime") or event.get("start", {}).get("date")
-    if not start:
+def _parse_datetime(info: dict | None) -> datetime | None:
+    """Return ``datetime`` from Google date dict or ``None`` if invalid."""
+    if not info:
+        return None
+    value = info.get("dateTime") or info.get("date")
+    if not value:
         return None
     try:
-        if start.endswith("Z"):
-            start = start.replace("Z", "+00:00")
-        return datetime.fromisoformat(start)
+        if value.endswith("Z"):
+            value = value.replace("Z", "+00:00")
+        return datetime.fromisoformat(value)
     except ValueError:
         return None
 
@@ -73,18 +77,24 @@ def import_events(events: Iterable[dict]) -> None:
         doc = {
             "title": e.get("summary", "No Title"),
             "description": e.get("description"),
-            "google_id": e.get("id"),
+            "location": e.get("location"),
+            "google_event_id": e.get("id"),
             "updated": e.get("updated"),
-            "event_time": _parse_start(e),
+            "start": _parse_datetime(e.get("start")),
+            "end": _parse_datetime(e.get("end")),
+            "event_time": _parse_datetime(e.get("start")),
+            "source": "google",
         }
-        if not doc["google_id"]:
+        if not doc["google_event_id"]:
             continue
-        collection.update_one({"google_id": doc["google_id"]}, {"$set": doc}, upsert=True)
+        collection.update_one(
+            {"google_event_id": doc["google_event_id"]}, {"$set": doc}, upsert=True
+        )
 
 
 def sync_google_calendar() -> None:
     """Synchronize events from Google Calendar into MongoDB."""
-    calendar_id = os.getenv("GOOGLE_CALENDAR_ID")
+    calendar_id = Config.GOOGLE_CALENDAR_ID
     if not calendar_id:
         log.warning("GOOGLE_CALENDAR_ID not set – skipping Google sync")
         return
