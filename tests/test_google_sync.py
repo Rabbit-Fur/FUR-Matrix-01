@@ -78,3 +78,23 @@ def test_sync_google_calendar(monkeypatch):
     mod.sync_google_calendar()
     assert called["calendar_id"] == "test"
     assert called["imported"][0]["id"] == "g2"
+
+
+def test_import_all_day_event_time(monkeypatch):
+    dummy = DummyCollection()
+    monkeypatch.setattr(mod, "get_collection", lambda name: dummy)
+
+    events = [
+        {
+            "id": "g3",
+            "summary": "All Day",
+            "start": {"date": "2025-01-03"},
+            "end": {"date": "2025-01-04"},
+            "updated": "2025-01-02T09:00:00Z",
+        }
+    ]
+
+    mod.import_events(events)
+    doc = dummy.docs["g3"]
+    assert doc["event_time"].hour == 0
+    assert doc["event_time"].tzinfo == timezone.utc

@@ -74,7 +74,7 @@ def import_events(events: Iterable[dict]) -> None:
         event_time = start_dt
         if event_time:
             if event_time.tzinfo is None:
-                event_time = datetime.utcfromtimestamp(event_time.timestamp())
+                event_time = event_time.replace(tzinfo=timezone.utc)
             else:
                 event_time = event_time.astimezone(timezone.utc)
 
