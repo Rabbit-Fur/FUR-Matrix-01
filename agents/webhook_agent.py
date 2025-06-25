@@ -33,13 +33,13 @@ class WebhookAgent:
         file_path:
             Optional path to an attachment.
         event_channel:
-            If ``True`` and ``Config.DISCORD_EVENT_CHANNEL_ID`` is set, the
+            If ``True`` and ``Config.EVENT_CHANNEL_ID`` is set, the
             message is posted via ``send_discord_message``.
         """
 
-        if event_channel and Config.DISCORD_EVENT_CHANNEL_ID:
+        if event_channel and Config.EVENT_CHANNEL_ID:
             try:
-                send_discord_message(Config.DISCORD_EVENT_CHANNEL_ID, content, file_path)
+                send_discord_message(Config.EVENT_CHANNEL_ID, content, file_path)
                 logging.info("📤 Event-Channel Nachricht gesendet")
                 return True
             except Exception as e:  # pragma: no cover - network failure
