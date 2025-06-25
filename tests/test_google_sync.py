@@ -1,10 +1,19 @@
-import mongo_service
+from datetime import timezone
+
 import utils.google_sync as mod
 
 
-def test_import_events_upserts():
-    col = mongo_service.db["events"]
-    col.delete_many({})
+class DummyCollection:
+    def __init__(self):
+        self.docs = {}
+
+    def update_one(self, flt, update, upsert=False):
+        self.docs[flt["google_event_id"]] = update["$set"]
+
+
+def test_import_events_upserts(monkeypatch):
+    dummy = DummyCollection()
+    monkeypatch.setattr(mod, "get_collection", lambda name: dummy)
 
     events = [
         {
@@ -18,7 +27,7 @@ def test_import_events_upserts():
         }
     ]
     mod.import_events(events)
-    assert col.count_documents({"google_event_id": "g1"}) == 1
+    assert "g1" in dummy.docs
 
     events2 = [
         {
@@ -32,10 +41,13 @@ def test_import_events_upserts():
         }
     ]
     mod.import_events(events2)
-    doc = col.find_one({"google_event_id": "g1"})
+    doc = dummy.docs["g1"]
     assert doc["title"] == "Test2"
     assert doc["start"].hour == 12
     assert doc["end"].hour == 13
+    assert doc["start"].tzinfo == timezone.utc
+    assert doc["end"].tzinfo == timezone.utc
+    assert doc["event_time"].tzinfo == timezone.utc
     assert doc["description"] == "baz"
     assert doc["location"] == "qux"
     assert doc["source"] == "google"

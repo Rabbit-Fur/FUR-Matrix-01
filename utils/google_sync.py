@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import logging
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Iterable
 
 from googleapiclient.discovery import build
@@ -69,15 +69,24 @@ def import_events(events: Iterable[dict]) -> None:
     """Upsert events into MongoDB."""
     collection = get_collection("events")
     for e in events:
+        start_dt = _parse_datetime(e.get("start"))
+        end_dt = _parse_datetime(e.get("end"))
+        event_time = start_dt
+        if event_time:
+            if event_time.tzinfo is None:
+                event_time = datetime.utcfromtimestamp(event_time.timestamp())
+            else:
+                event_time = event_time.astimezone(timezone.utc)
+
         doc = {
             "title": e.get("summary", "No Title"),
             "description": e.get("description"),
             "location": e.get("location"),
             "google_event_id": e.get("id"),
             "updated": e.get("updated"),
-            "start": _parse_datetime(e.get("start")),
-            "end": _parse_datetime(e.get("end")),
-            "event_time": _parse_datetime(e.get("start")),
+            "start": start_dt,
+            "end": end_dt,
+            "event_time": event_time,
             "source": "google",
         }
         if not doc["google_event_id"]:
