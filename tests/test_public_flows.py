@@ -60,7 +60,7 @@ def test_discord_login_flow(client, monkeypatch):
     assert resp.status_code == 302
     assert resp.headers["Location"].endswith("/members/dashboard")
     flashes = get_flashes(client)
-    assert ("success", "Erfolgreich mit Discord eingeloggt") in flashes
+    assert ("success", "Successfully logged in with Discord") in flashes
     with client.session_transaction() as sess:
         assert sess["user"]["id"] == "123"
         assert sess["user"]["role_level"] == "R3"
@@ -73,7 +73,7 @@ def test_join_event_requires_login(client):
     assert resp.status_code == 302
     assert resp.headers["Location"].endswith("/login")
     flashes = get_flashes(client)
-    assert ("message", "Zugriff nur für Mitglieder möglich.") in flashes
+    assert ("message", "Members only.") in flashes
 
 
 def test_join_event_success(client):
@@ -84,7 +84,7 @@ def test_join_event_success(client):
     assert resp.status_code == 302
     assert resp.headers["Location"].endswith("/events/1")
     flashes = get_flashes(client)
-    assert ("success", "Du bist dem Event erfolgreich beigetreten!") in flashes
+    assert ("success", "Successfully joined the event!") in flashes
 
 
 def test_get_champion(client):

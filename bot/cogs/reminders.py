@@ -70,7 +70,7 @@ class Reminders(commands.Cog):
     )
     async def reminder_now(self, interaction: discord.Interaction):
         if not interaction.user.guild_permissions.administrator:
-            await interaction.response.send_message("🚫 Keine Berechtigung.", ephemeral=True)
+            await interaction.response.send_message(t("no_permission"), ephemeral=True)
             return
 
         if not is_production():
@@ -82,19 +82,17 @@ class Reminders(commands.Cog):
         now = datetime.utcnow().strftime("%H:%M")
 
         if not channel:
-            await interaction.response.send_message(
-                "⚠️ Reminder-Channel nicht gefunden.", ephemeral=True
-            )
+            await interaction.response.send_message(t("reminder_channel_missing"), ephemeral=True)
             return
 
         try:
             message = t("reminder_hourly", time=now, lang="de")
             await channel.send(message)
-            await interaction.response.send_message("✅ Erinnerung gesendet.", ephemeral=True)
+            await interaction.response.send_message(t("reminder_sent"), ephemeral=True)
             log.info(f"📤 Manueller Reminder von {interaction.user.display_name}")
         except Exception as e:
             log.error(f"❌ Fehler beim manuellen Reminder-Versand: {e}", exc_info=True)
-            await interaction.response.send_message("❌ Fehler beim Versenden.", ephemeral=True)
+            await interaction.response.send_message(t("send_failed"), ephemeral=True)
 
 
 async def setup(bot: commands.Bot):

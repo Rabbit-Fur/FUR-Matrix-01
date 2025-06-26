@@ -15,7 +15,7 @@ log = logging.getLogger(__name__)
 
 TRANSLATION_FOLDER = os.path.join(os.path.dirname(os.path.dirname(__file__)), "translations")
 FLAG_FOLDER = os.path.join(os.path.dirname(os.path.dirname(__file__)), "static", "flags")
-LANG_FALLBACK = "en"
+LANG_FALLBACK = "de"
 
 
 def load_translations(directory=TRANSLATION_FOLDER):
@@ -34,6 +34,17 @@ def load_translations(directory=TRANSLATION_FOLDER):
 
 # 📦 Globale Übersetzungstabelle
 translations = load_translations()
+
+
+def _save_translation(lang: str, key: str, value: str) -> None:
+    """Persist a new translation entry to disk."""
+    translations.setdefault(lang, {})[key] = value
+    path = os.path.join(TRANSLATION_FOLDER, f"{lang}.json")
+    try:
+        with open(path, "w", encoding="utf-8") as f:
+            json.dump(translations[lang], f, indent=2, ensure_ascii=False)
+    except Exception as exc:  # noqa: BLE001
+        log.error("Failed saving translation %s:%s – %s", lang, key, exc)
 
 
 def warn_flags_without_translation(
@@ -86,7 +97,10 @@ def t(key: str, default: str = None, lang: str = None, **kwargs) -> str:
     if raw is None and active_lang != LANG_FALLBACK:
         raw = translations.get(LANG_FALLBACK, {}).get(key)
     if raw is None:
-        raw = default or key
+        raw = default or f"MISSING: {key}"
+        log.warning("Missing translation for '%s'", key)
+        if "en" not in translations or key not in translations["en"]:
+            _save_translation("en", key, default or key)
 
     try:
         return raw.format(**kwargs)
