@@ -76,11 +76,10 @@ def create_app() -> Flask:
 
     babel = Babel()
 
-    @babel.localeselector
     def get_locale() -> str:  # pragma: no cover - simple accessor
         return session.get("lang") or request.accept_languages.best_match(["en", "de"])
 
-    babel.init_app(app)
+    babel.init_app(app, locale_selector=get_locale)
 
     @app.before_request
     def set_language_from_request() -> None:
