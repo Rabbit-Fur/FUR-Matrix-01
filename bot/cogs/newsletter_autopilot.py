@@ -12,6 +12,7 @@ from discord import app_commands
 from discord.ext import commands, tasks
 
 from config import Config
+from fur_lang.i18n import t
 from mongo_service import get_collection
 from utils.event_helpers import format_events, get_events_for
 
@@ -73,7 +74,7 @@ class NewsletterAutopilot(commands.Cog):
         if events:
             lines.append(format_events(events))
         else:
-            lines.append("Keine Events in den nächsten 7 Tagen.")
+            lines.append(t("newsletter_no_events_7d"))
 
         return "\n".join(lines)
 
@@ -96,7 +97,7 @@ class NewsletterAutopilot(commands.Cog):
                     continue
             lines.append(f"- {ev['title']} – {dt.strftime('%d.%m.%Y %H:%M')} UTC")
         if len(lines) == 1:
-            lines.append("Keine Events in den nächsten 24 Stunden.")
+            lines.append(t("newsletter_no_events_24h"))
         return "\n".join(lines)
 
     async def send_newsletters(self) -> None:
@@ -148,7 +149,7 @@ class NewsletterAutopilot(commands.Cog):
     @app_commands.command(name="newsletter_now", description="Send newsletter immediately")
     async def newsletter_now(self, interaction: discord.Interaction) -> None:
         if not interaction.user.guild_permissions.administrator:
-            await interaction.response.send_message("🚫 Keine Adminrechte.", ephemeral=True)
+            await interaction.response.send_message(t("no_admin_rights"), ephemeral=True)
             return
         await interaction.response.defer(ephemeral=True)
         await self.send_newsletters()

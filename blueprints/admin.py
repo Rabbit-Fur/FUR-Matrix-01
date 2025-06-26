@@ -20,8 +20,8 @@ from werkzeug.utils import secure_filename
 
 from agents.webhook_agent import WebhookAgent
 from config import Config
+from fur_lang.i18n import t
 from mongo_service import db
-from utils.discord_util import require_roles
 from utils.discord_util import ENABLE_BOT, require_roles, send_discord_message
 from utils.poster_generator import generate_event_poster
 from web.auth.decorators import r4_required
@@ -60,11 +60,11 @@ def create_event():
                     "description": description,
                 }
             )
-            flash("Event erstellt", "success")
+            flash(t("event_created", default="Event created"), "success")
             return redirect(url_for("admin.events"))
         except Exception as e:
             current_app.logger.error("Event creation failed: %s", e, exc_info=True)
-            flash("Fehler beim Speichern", "danger")
+            flash(t("save_error", default="Save failed"), "danger")
     return render_template("admin/create_event.html")
 
 
@@ -95,13 +95,13 @@ def downloads():
 def edit_event():
     event_id = request.args.get("id") or request.form.get("id")
     if not event_id:
-        flash("Unbekanntes Event", "danger")
+        flash(t("unknown_event", default="Unknown event"), "danger")
         return redirect(url_for("admin.events"))
 
     collection = db["events"]
     event = collection.find_one({"_id": ObjectId(event_id)})
     if not event:
-        flash("Unbekanntes Event", "danger")
+        flash(t("unknown_event", default="Unknown event"), "danger")
         return redirect(url_for("admin.events"))
 
     if request.method == "POST":
@@ -115,11 +115,11 @@ def edit_event():
         }
         try:
             collection.update_one({"_id": ObjectId(event_id)}, {"$set": update})
-            flash("Event aktualisiert", "success")
+            flash(t("event_updated", default="Event updated"), "success")
             return redirect(url_for("admin.events"))
         except Exception as e:
             current_app.logger.error("Event update failed: %s", e, exc_info=True)
-            flash("Fehler beim Speichern", "danger")
+            flash(t("save_error", default="Save failed"), "danger")
     return render_template("admin/edit_event.html", event=event)
 
 
@@ -287,7 +287,7 @@ def post_event(event_id: str):
     """Post an event via bot or webhook."""
     event = db["events"].find_one({"_id": ObjectId(event_id)})
     if not event:
-        flash("Unbekanntes Event", "danger")
+        flash(t("unknown_event"), "danger")
         return redirect(url_for("admin.events"))
 
     content = (
@@ -296,7 +296,14 @@ def post_event(event_id: str):
     webhook = WebhookAgent(Config.DISCORD_WEBHOOK_URL)
     poster = generate_event_poster(event)
     success = webhook.send(content, file_path=poster, event_channel=True)
-    flash("Event gepostet" if success else "Fehler beim Posten", "success" if success else "danger")
+    flash(
+        (
+            t("event_posted", default="Event posted")
+            if success
+            else t("post_failed", default="Post failed")
+        ),
+        "success" if success else "danger",
+    )
     return redirect(url_for("admin.events"))
 
 
@@ -308,7 +315,11 @@ def post_champion():
 
     success = post_champion_poster()
     flash(
-        "Champion wurde gepostet" if success else "Posten fehlgeschlagen",
+        (
+            t("champion_posted", default="Champion posted")
+            if success
+            else t("post_failed", default="Post failed")
+        ),
         "success" if success else "danger",
     )
     return redirect(url_for("admin.admin_dashboard"))
@@ -322,7 +333,11 @@ def post_weekly_report():
 
     success = post_report()
     flash(
-        "Wochenreport wurde gepostet" if success else "Posten fehlgeschlagen",
+        (
+            t("weekly_report_posted", default="Weekly report posted")
+            if success
+            else t("post_failed", default="Post failed")
+        ),
         "success" if success else "danger",
     )
     return redirect(url_for("admin.admin_dashboard"))
@@ -336,14 +351,18 @@ def post_announcement():
     message = request.form.get("message", "").strip()
 
     if not title or not message:
-        flash("Titel und Nachricht erforderlich", "danger")
+        flash(t("title_message_required", default="Title and message required"), "danger")
         return redirect(url_for("admin.admin_dashboard"))
 
     content = f"📣 **{title}**\n{message}"
     success = WebhookAgent(Config.DISCORD_WEBHOOK_URL).send(content)
 
     flash(
-        "Ankündigung gesendet" if success else "Senden fehlgeschlagen",
+        (
+            t("announcement_sent", default="Announcement sent")
+            if success
+            else t("send_failed", default="Send failed")
+        ),
         "success" if success else "danger",
     )
     return redirect(url_for("admin.admin_dashboard"))
@@ -370,20 +389,20 @@ def upload():
             request.content_length
             and request.content_length > current_app.config["MAX_CONTENT_LENGTH"]
         ):
-            flash("Datei zu groß", "danger")
+            flash(t("file_too_large", default="File too large"), "danger")
             return redirect(request.url)
 
         file = request.files.get("file")
         if not file or file.filename == "":
-            flash("Keine Datei ausgewählt", "danger")
+            flash(t("no_file_selected", default="No file selected"), "danger")
             return redirect(request.url)
         if not _allowed_file(file.filename):
-            flash("Ungültiger Dateityp", "danger")
+            flash(t("invalid_file_type", default="Invalid file type"), "danger")
             return redirect(request.url)
 
         filename = secure_filename(file.filename)
         file.save(os.path.join(upload_folder, filename))
-        flash("Datei hochgeladen", "success")
+        flash(t("file_uploaded", default="File uploaded"), "success")
         return redirect(url_for("admin.upload"))
 
     files = []

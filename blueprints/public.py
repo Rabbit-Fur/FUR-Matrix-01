@@ -15,7 +15,7 @@ from flask import (
     url_for,
 )
 
-from fur_lang.i18n import get_supported_languages
+from fur_lang.i18n import get_supported_languages, t
 from mongo_service import db
 from web.auth.decorators import r3_required
 
@@ -50,7 +50,7 @@ def login():
 @public.route("/logout")
 def logout():
     session.clear()
-    flash("Du wurdest erfolgreich ausgeloggt.", "info")
+    flash(t("logout_success", default="Logged out successfully."), "info")
     return redirect(url_for("public.login"))
 
 
@@ -80,9 +80,9 @@ def discord_callback():
     state = request.args.get("state")
 
     if not code:
-        return "Fehlender Code", 400
+        return t("missing_code", default="Missing OAuth code."), 400
     if not state or state != session.pop("discord_oauth_state", None):
-        return "Ungültiger OAuth-State", 400
+        return t("invalid_oauth_state", default="Invalid OAuth state."), 400
 
     token_res = requests.post(
         "https://discord.com/api/oauth2/token",
@@ -99,7 +99,7 @@ def discord_callback():
 
     if token_res.status_code != 200:
         current_app.logger.error("OAuth Token Error %s: %s", token_res.status_code, token_res.text)
-        flash("Discord Login fehlgeschlagen", "danger")
+        flash(t("discord_login_failed", default="Discord login failed"), "danger")
         return redirect(url_for("public.login"))
 
     access_token = token_res.json().get("access_token")
@@ -115,7 +115,7 @@ def discord_callback():
         headers={"Authorization": f"Bearer {access_token}"},
     )
     if guild_res.status_code != 200:
-        return "Nicht-Mitglied im FUR Discord-Server", 403
+        return t("guild_membership_required", default="Not a member of the FUR Discord server"), 403
 
     guild_member = guild_res.json()
     user_roles = set(str(role) for role in guild_member.get("roles", []))
@@ -131,8 +131,8 @@ def discord_callback():
     elif user_roles & r3_roles:
         role_level = "R3"
     else:
-        current_app.logger.warning("❌ Keine gültige Discord-Rolle erkannt.")
-        return "Keine gültige Rolle für den Zugriff", 403
+        current_app.logger.warning("❌ Invalid Discord role")
+        return t("invalid_role", default="Invalid role for access"), 403
 
     session["discord_roles"] = [role_level]
     session["user"] = {
@@ -157,7 +157,7 @@ def discord_callback():
         upsert=True,
     )
 
-    flash("Erfolgreich mit Discord eingeloggt", "success")
+    flash(t("discord_login_success", default="Successfully logged in with Discord"), "success")
 
     if role_level in ["ADMIN", "R4"]:
         return redirect(url_for("admin.dashboard"))
@@ -198,10 +198,10 @@ def view_event(event_id):
 @r3_required
 def join_event(event_id):
     if "user" not in session:
-        flash("Du musst eingeloggt sein.", "warning")
+        flash(t("login_required", default="Login required."), "warning")
         return redirect(url_for("public.login"))
 
-    flash("Du bist dem Event erfolgreich beigetreten!", "success")
+    flash(t("event_join_success", default="Successfully joined the event!"), "success")
     return redirect(url_for("public.view_event", event_id=event_id))
 
 

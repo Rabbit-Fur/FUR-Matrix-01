@@ -42,21 +42,21 @@ class DMBroadcastCog(commands.Cog):
             return
         if not isinstance(interaction.user, discord.Member):
             await interaction.response.send_message(
-                t("dm_broadcast_member_only", default="Nur für Mitglieder verfügbar."),
+                t("dm_broadcast_member_only", default="Members only."),
                 ephemeral=True,
             )
             return
 
         if not self.has_admin_role(interaction.user):
             await interaction.response.send_message(
-                t("dm_broadcast_no_permission", default="Du hast keine Berechtigung."),
+                t("dm_broadcast_no_permission", default="Missing permission."),
                 ephemeral=True,
             )
             return
 
         if len(text) > 2000:
             await interaction.response.send_message(
-                t("dm_broadcast_too_long", default="Nachricht zu lang (max. 2000 Zeichen)."),
+                t("dm_broadcast_too_long", default="Message too long (max. 2000 characters)."),
                 ephemeral=True,
             )
             return
@@ -64,14 +64,14 @@ class DMBroadcastCog(commands.Cog):
         now = datetime.utcnow().timestamp()
         if now - self.last_used.get(interaction.user.id, 0) < RATE_LIMIT_SECONDS:
             await interaction.response.send_message(
-                t("dm_broadcast_rate_limit", default="Nur 1 Broadcast pro Minute erlaubt."),
+                t("dm_broadcast_rate_limit", default="Only one broadcast per minute allowed."),
                 ephemeral=True,
             )
             return
 
         if self.broadcast_lock.locked():
             await interaction.response.send_message(
-                t("dm_broadcast_running", default="Ein Broadcast läuft bereits."),
+                t("dm_broadcast_running", default="A broadcast is already running."),
                 ephemeral=True,
             )
             return
@@ -83,7 +83,7 @@ class DMBroadcastCog(commands.Cog):
             guild = self.bot.get_guild(Config.DISCORD_GUILD_ID)
             if not guild:
                 await interaction.followup.send(
-                    t("dm_broadcast_guild_missing", default="Server nicht gefunden."),
+                    t("dm_broadcast_guild_missing", default="Server not found."),
                     ephemeral=True,
                 )
                 return
@@ -104,12 +104,12 @@ class DMBroadcastCog(commands.Cog):
                     log.error("❌ Fehler bei DM an %s: %s", member.id, exc)
                 await asyncio.sleep(MESSAGE_DELAY)
 
-            embed = discord.Embed(title="📢 DM Broadcast Ergebnis", color=discord.Color.blue())
+            embed = discord.Embed(title="📢 DM Broadcast Result", color=discord.Color.blue())
             embed.add_field(
-                name=t("dm_broadcast_sent", default="✅ Gesendet"), value=str(success_count)
+                name=t("dm_broadcast_sent", default="✅ Sent"), value=str(success_count)
             )
             embed.add_field(
-                name=t("dm_broadcast_failed", default="❌ Fehlgeschlagen"), value=str(fail_count)
+                name=t("dm_broadcast_failed", default="❌ Failed"), value=str(fail_count)
             )
             await interaction.followup.send(embed=embed, ephemeral=True)
 

@@ -223,13 +223,11 @@ class ReminderAutopilot(commands.Cog):
     )
     async def reminder_autopilot_now(self, interaction: discord.Interaction):
         if not interaction.user.guild_permissions.administrator:
-            await interaction.response.send_message("🚫 Keine Adminrechte.", ephemeral=True)
+            await interaction.response.send_message(t("no_admin_rights"), ephemeral=True)
             return
 
         await self.run_reminder_check()
-        await interaction.response.send_message(
-            "✅ Reminder-Autopilot wurde manuell ausgeführt.", ephemeral=True
-        )
+        await interaction.response.send_message(t("reminder_autopilot_run"), ephemeral=True)
 
 
 async def setup(bot: commands.Bot):

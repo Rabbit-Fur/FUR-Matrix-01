@@ -109,9 +109,7 @@ class ReminderCog(commands.Cog):
     @app_commands.describe(minutes=app_commands.locale_str("cmd_remind_param_minutes_desc"))
     async def remind(self, interaction: discord.Interaction, minutes: int):
         if minutes < 1 or minutes > 1440:
-            await interaction.response.send_message(
-                "❌ Reminder-Zeit muss zwischen 1 und 1440 Minuten liegen.", ephemeral=True
-            )
+            await interaction.response.send_message(t("reminder_time_invalid"), ephemeral=True)
             return
 
         user_id = interaction.user.id
@@ -122,7 +120,7 @@ class ReminderCog(commands.Cog):
         )
 
         await interaction.response.send_message(
-            f"✅ Reminder gespeichert. Ich erinnere dich in {minutes} Minuten!", ephemeral=True
+            t("reminder_saved", minutes=minutes), ephemeral=True
         )
 
     @app_commands.command(
@@ -133,9 +131,7 @@ class ReminderCog(commands.Cog):
         user_id = str(interaction.user.id)
         reminders = list(get_collection("user_reminders").find({"user_id": user_id}))
         if not reminders:
-            await interaction.response.send_message(
-                "📭 Du hast aktuell keine Reminder.", ephemeral=True
-            )
+            await interaction.response.send_message(t("no_reminders"), ephemeral=True)
             return
 
         msg = "\n".join(
@@ -145,9 +141,7 @@ class ReminderCog(commands.Cog):
             )
             for r in reminders
         )
-        await interaction.response.send_message(
-            f"📋 Deine aktiven Reminder:\n{msg}", ephemeral=True
-        )
+        await interaction.response.send_message(t("reminder_list", msg=msg), ephemeral=True)
 
     @app_commands.command(
         name=app_commands.locale_str("cmd_remind_cancel_name"),
@@ -157,7 +151,7 @@ class ReminderCog(commands.Cog):
         user_id = str(interaction.user.id)
         result = get_collection("user_reminders").delete_many({"user_id": user_id})
         await interaction.response.send_message(
-            f"🗑️ {result.deleted_count} Reminder gelöscht.", ephemeral=True
+            t("reminders_deleted", count=result.deleted_count), ephemeral=True
         )
 
 
