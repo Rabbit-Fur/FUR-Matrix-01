@@ -47,5 +47,9 @@ def start_google_sync(interval_minutes: int | None = None) -> None:
     else:
         if minutes != DEFAULT_INTERVAL_MINUTES:
             google_sync_loop.change_interval(minutes=minutes)
-        google_sync_loop.start()
+        try:
+            asyncio.get_running_loop()
+            google_sync_loop.start()
+        except RuntimeError:
+            asyncio.run(google_sync_loop.coro())
     log.info("Google sync loop started (%s min)", minutes)
