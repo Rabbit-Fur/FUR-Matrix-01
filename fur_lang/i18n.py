@@ -70,9 +70,15 @@ def get_supported_languages():
 
 def current_lang() -> str:
     """Ermittelt die aktuelle Sprache aus Session oder Accept-Language."""
-    lang = session.get("lang")
-    if not lang and request:
-        lang = request.accept_languages.best_match(get_supported_languages())
+    try:
+        lang = session.get("lang")
+    except RuntimeError:
+        lang = None
+    if not lang:
+        try:
+            lang = request.accept_languages.best_match(get_supported_languages())
+        except RuntimeError:
+            lang = None
     if not lang:
         lang = current_app.config.get("BABEL_DEFAULT_LOCALE", LANG_FALLBACK)
     return lang

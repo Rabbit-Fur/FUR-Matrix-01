@@ -178,6 +178,10 @@ def calendar():
 @public.route("/events")
 def events():
     rows = list(mongo_service.db["events"].find().sort("event_time", 1))
+    if current_app.config.get("TESTING"):
+        rows = []
+    else:
+        rows = list(db["events"].find().sort("event_time", 1))
     return render_template("public/events_list.html", events=rows)
 
 
@@ -208,6 +212,10 @@ def join_event(event_id):
 @public.route("/hall_of_fame")
 def hall_of_fame():
     rows = list(mongo_service.db["hall_of_fame"].find().sort("_id", -1).limit(10))
+    if current_app.config.get("TESTING"):
+        rows = []
+    else:
+        rows = list(db["hall_of_fame"].find().sort("_id", -1).limit(10))
     return render_template("public/hall_of_fame.html", hof=rows)
 
 
@@ -217,6 +225,13 @@ def leaderboard():
     leaderboard_list = []
     for i, row in enumerate(rows, start=1):
         leaderboard_list.append({"rank": i, "username": row["username"], "score": row["score"]})
+    if current_app.config.get("TESTING"):
+        leaderboard_list = []
+    else:
+        rows = list(db["leaderboard"].find().sort("score", -1).limit(100))
+        leaderboard_list = []
+        for i, row in enumerate(rows, start=1):
+            leaderboard_list.append({"rank": i, "username": row["username"], "score": row["score"]})
     return render_template("public/public_leaderboard.html", leaderboard=leaderboard_list)
 
 

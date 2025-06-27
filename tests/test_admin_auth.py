@@ -5,6 +5,7 @@ def login_with_role(client, role):
     with client.session_transaction() as sess:
         sess["user"] = {"role_level": role}
         sess["discord_roles"] = [role]
+        sess.pop("_flashes", None)
 
 
 def get_flashes(client):

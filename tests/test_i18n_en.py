@@ -1,5 +1,3 @@
-import pytest
-
 routes = [
     "/",
     "/dashboard",

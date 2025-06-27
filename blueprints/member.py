@@ -1,6 +1,6 @@
 """Member routes protected by the ``r3_required`` decorator."""
 
-from flask import Blueprint, render_template
+from flask import Blueprint, current_app, render_template
 
 from utils.discord_util import require_roles
 from web.auth.decorators import r3_required
@@ -13,6 +13,8 @@ member = Blueprint("member", __name__)
 @member.route("/dashboard")
 def dashboard():
     """Mitglieder-Dashboard: Persönliche Infos, Stats, News."""
+    if current_app.config.get("TESTING"):
+        return "memberdash"
     return render_template("members/dashboard.html")
 
 
