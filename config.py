@@ -62,7 +62,11 @@ class Config:
         "GOOGLE_SYNC_INTERVAL_MINUTES", required=False, default=2
     )
     GOOGLE_REDIRECT_URI: str | None = get_env_str("GOOGLE_REDIRECT_URI", required=False)
-    GOOGLE_CREDENTIALS_FILE: str | None = get_env_str("GOOGLE_CREDENTIALS_FILE", required=False)
+    GOOGLE_CREDENTIALS_FILE: str | None = get_env_str(
+        "GOOGLE_CREDENTIALS_FILE",
+        required=False,
+        default=os.path.join(basedir, "credentials", "oauth_client.json"),
+    )
     GOOGLE_CALENDAR_SCOPES: list[str] = get_env_str(
         "GOOGLE_CALENDAR_SCOPES",
         default="https://www.googleapis.com/auth/calendar.readonly",
