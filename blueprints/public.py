@@ -15,8 +15,8 @@ from flask import (
     url_for,
 )
 
+import mongo_service
 from fur_lang.i18n import get_supported_languages, t
-from mongo_service import db
 from web.auth.decorators import r3_required
 
 public = Blueprint("public", __name__)
@@ -144,7 +144,7 @@ def discord_callback():
     }
     session.permanent = True
 
-    db["users"].update_one(
+    mongo_service.db["users"].update_one(
         {"discord_id": user_data["id"]},
         {
             "$set": {
@@ -177,19 +177,19 @@ def calendar():
 
 @public.route("/events")
 def events():
-    rows = list(db["events"].find().sort("event_time", 1))
+    rows = list(mongo_service.db["events"].find().sort("event_time", 1))
     return render_template("public/events_list.html", events=rows)
 
 
 @public.route("/events/<event_id>")
 def view_event(event_id):
-    event = db["events"].find_one({"_id": ObjectId(event_id)})
+    event = mongo_service.db["events"].find_one({"_id": ObjectId(event_id)})
     if not event:
         abort(404)
-    participant_docs = list(db["event_participants"].find({"event_id": event["_id"]}))
+    participant_docs = list(mongo_service.db["event_participants"].find({"event_id": event["_id"]}))
     participants = []
     for p in participant_docs:
-        user = db["users"].find_one({"discord_id": p["user_id"]})
+        user = mongo_service.db["users"].find_one({"discord_id": p["user_id"]})
         participants.append({"username": user.get("username") if user else p["user_id"]})
     return render_template("public/view_event.html", event=event, participants=participants)
 
@@ -207,13 +207,13 @@ def join_event(event_id):
 
 @public.route("/hall_of_fame")
 def hall_of_fame():
-    rows = list(db["hall_of_fame"].find().sort("_id", -1).limit(10))
+    rows = list(mongo_service.db["hall_of_fame"].find().sort("_id", -1).limit(10))
     return render_template("public/hall_of_fame.html", hof=rows)
 
 
 @public.route("/leaderboard")
 def leaderboard():
-    rows = list(db["leaderboard"].find().sort("score", -1).limit(100))
+    rows = list(mongo_service.db["leaderboard"].find().sort("score", -1).limit(100))
     leaderboard_list = []
     for i, row in enumerate(rows, start=1):
         leaderboard_list.append({"rank": i, "username": row["username"], "score": row["score"]})
