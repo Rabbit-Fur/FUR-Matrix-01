@@ -1,6 +1,7 @@
 import os
 from io import BytesIO
 
+from fur_lang.i18n import t
 from tests.test_admin_auth import get_flashes, login_with_role
 
 
@@ -17,7 +18,8 @@ def test_upload_success(client, tmp_path):
     assert resp.status_code == 200
     assert "pic.png" in os.listdir(tmp_path)
     flashes = get_flashes(client)
-    assert ("success", "Datei hochgeladen") in flashes
+    expected = t("file_uploaded", default="Datei hochgeladen", lang="de")
+    assert ("success", expected) in flashes
 
 
 def test_upload_invalid_extension(client, tmp_path):
@@ -33,7 +35,8 @@ def test_upload_invalid_extension(client, tmp_path):
     assert resp.status_code == 200
     assert not os.listdir(tmp_path)
     flashes = get_flashes(client)
-    assert ("danger", "Ungültiger Dateityp") in flashes
+    expected = t("invalid_file_type", default="Ungültiger Dateityp", lang="de")
+    assert ("danger", expected) in flashes
 
 
 def test_upload_too_large(client, tmp_path):
@@ -49,4 +52,5 @@ def test_upload_too_large(client, tmp_path):
     assert resp.status_code == 200
     assert not os.listdir(tmp_path)
     flashes = get_flashes(client)
-    assert ("danger", "Datei zu groß") in flashes
+    expected = t("file_too_large", default="Datei zu groß", lang="de")
+    assert ("danger", expected) in flashes
