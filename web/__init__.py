@@ -9,7 +9,13 @@ from flask import Blueprint, Flask, request, session
 from config import Config
 from database import close_db
 from flask_babel_next import Babel
-from fur_lang.i18n import current_lang, get_supported_languages, t
+from fur_lang.i18n import (
+    current_lang,
+    get_language_native_name,
+    get_supported_languages,
+    is_rtl,
+    t,
+)
 from web.champion_routes import champion_blueprint
 from web.poster_routes import poster_blueprint
 from web.reminder_routes import reminder_blueprint
@@ -78,7 +84,11 @@ def create_app() -> Flask:
     babel = Babel()
 
     def get_locale() -> str:  # pragma: no cover - simple accessor
-        return session.get("lang") or request.accept_languages.best_match(["en", "de"])
+        return (
+            session.get("lang")
+            or request.accept_languages.best_match(app.config.get("BABEL_SUPPORTED_LOCALES", []))
+            or app.config.get("BABEL_DEFAULT_LOCALE", "en")
+        )
 
     babel.init_app(app, locale_selector=get_locale)
 
@@ -94,6 +104,8 @@ def create_app() -> Flask:
             "t": t,
             "current_lang": current_lang,
             "resolve_background_template": resolve_background_template,
+            "language_native_name": get_language_native_name,
+            "is_rtl": is_rtl,
         }
 
     # ---------------------------------------------------------------------
