@@ -71,3 +71,11 @@ def test_load_credentials_refresh(monkeypatch, tmp_path, app):
     assert isinstance(cred, FakeCred)
     assert refreshed["called"]
     assert json.loads(path.read_text())["token"] == "new"
+
+
+def test_load_credentials_invalid_returns_none(tmp_path, app):
+    path = tmp_path / "config.json"
+    path.write_text(json.dumps({"web": {"client_id": "id"}}))
+    app.config.update(GOOGLE_CREDENTIALS_FILE=str(path), GOOGLE_CALENDAR_SCOPES=["scope"])
+
+    assert mod.load_credentials() is None
