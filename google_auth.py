@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import logging
 import os
 from typing import Optional
 
@@ -35,7 +36,11 @@ def load_credentials() -> Optional[Credentials]:
         "GOOGLE_CALENDAR_SCOPES",
         ["https://www.googleapis.com/auth/calendar.readonly"],
     )
-    creds = Credentials.from_authorized_user_info(data, scopes)
+    try:
+        creds = Credentials.from_authorized_user_info(data, scopes)
+    except ValueError as exc:  # invalid or client config only
+        logging.error("Main: %s", exc)
+        return None
     if creds and creds.expired and creds.refresh_token:
         creds.refresh(Request())
         _save_credentials(creds)
