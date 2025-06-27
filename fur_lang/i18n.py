@@ -8,14 +8,16 @@ stellt zentrale Hilfsfunktionen für Templates, Cogs und Routen bereit.
 import json
 import logging
 import os
+from typing import Any
 
+from babel import Locale
 from flask import current_app, request, session
 
 log = logging.getLogger(__name__)
 
 TRANSLATION_FOLDER = os.path.join(os.path.dirname(os.path.dirname(__file__)), "translations")
 FLAG_FOLDER = os.path.join(os.path.dirname(os.path.dirname(__file__)), "static", "flags")
-LANG_FALLBACK = "de"
+LANG_FALLBACK = "en"
 
 
 def load_translations(directory=TRANSLATION_FOLDER):
@@ -63,9 +65,28 @@ def warn_flags_without_translation(
 warn_flags_without_translation()
 
 
-def get_supported_languages():
-    """Gibt alle unterstützten Sprachen zurück (z. B. ['de', 'en', 'tr'])."""
-    return list(translations.keys())
+def get_language_native_name(lang: str) -> str:
+    """Return the native name of a language code."""
+    try:
+        locale = Locale.parse(lang)
+        return locale.get_display_name(lang)
+    except Exception:  # pragma: no cover - fallback
+        return lang
+
+
+def is_rtl(lang: str) -> bool:
+    """Return True if language is right-to-left."""
+    try:
+        return Locale.parse(lang).text_direction == "rtl"
+    except Exception:  # pragma: no cover - fallback
+        return False
+
+
+def get_supported_languages() -> list[str]:
+    """Return all available language codes sorted alphabetically."""
+    if not translations:
+        translations.update(load_translations())
+    return sorted(translations.keys())
 
 
 def current_lang() -> str:
@@ -84,7 +105,13 @@ def current_lang() -> str:
     return lang
 
 
-def t(key: str, default: str = None, lang: str = None, **kwargs) -> str:
+def t(
+    key: str,
+    default: str | None = None,
+    lang: str | None = None,
+    count: int | None = None,
+    **kwargs: Any,
+) -> str:
     """
     Holt die Übersetzung für den gegebenen Key.
     Unterstützt optionale {variablen} im Text via kwargs.
@@ -101,16 +128,28 @@ def t(key: str, default: str = None, lang: str = None, **kwargs) -> str:
     active_lang = lang or current_lang()
     if active_lang not in translations or not translations.get(active_lang):
         translations.update(load_translations())
-    raw = translations.get(active_lang, {}).get(key)
+
+    entry = translations.get(active_lang, {}).get(key)
+    if isinstance(entry, dict) and count is not None:
+        raw = entry.get("one" if count == 1 else "other")
+    else:
+        raw = entry
+
     if raw is None and active_lang != LANG_FALLBACK:
-        raw = translations.get(LANG_FALLBACK, {}).get(key)
+        fallback_entry = translations.get(LANG_FALLBACK, {}).get(key)
+        if isinstance(fallback_entry, dict) and count is not None:
+            raw = fallback_entry.get("one" if count == 1 else "other")
+        else:
+            raw = fallback_entry
+
     if raw is None:
-        raw = default or f"MISSING: {key}"
+        dev = os.getenv("FLASK_ENV") != "production"
+        raw = default or (f"MISSING: {key}" if dev else (default or ""))
         log.warning("Missing translation for '%s'", key)
-        if "en" not in translations or key not in translations["en"]:
+        if "en" not in translations or key not in translations.get("en", {}):
             _save_translation("en", key, default or key)
 
     try:
-        return raw.format(**kwargs)
-    except Exception:
-        return raw  # Fallback falls format(...) fehlschlägt
+        return str(raw).format(**kwargs)
+    except Exception:  # pragma: no cover - formatting errors
+        return str(raw)

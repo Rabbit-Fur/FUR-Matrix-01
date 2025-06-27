@@ -69,7 +69,7 @@ class Config:
     ).split(",")
 
     # --- i18n ---
-    BABEL_DEFAULT_LOCALE = "de"
+    BABEL_DEFAULT_LOCALE = "en"
     BABEL_SUPPORTED_LOCALES = get_supported_languages()
     SUPPORTED_LANGUAGES: list[str] = [
         "en",
