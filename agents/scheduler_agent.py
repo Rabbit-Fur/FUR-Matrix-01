@@ -4,11 +4,14 @@ SchedulerAgent – verwaltet geplante Aufgaben, CRON-artige Abläufe, Reminder
 
 import logging
 import time
+from datetime import datetime
 
 import schedule
 
 from champion.autopilot import run_champion_autopilot
 from config import Config
+from mongo_service import get_collection
+from utils import champion_data
 from utils.google_sync import sync_google_calendar
 from utils.google_sync_task import start_google_sync
 
@@ -37,6 +40,28 @@ class SchedulerAgent:
         )
         self.jobs.append(job)
         logging.info("\U0001f4c5 Champion Autopilot every %s hours scheduled", interval_hours)
+
+    def schedule_monthly_champion_job(self) -> None:
+        """Schedule monthly champion determination and announcement."""
+
+        def monthly_job() -> None:
+            try:
+                collection = get_collection("leaderboard")
+                top = list(collection.find().sort("score", -1).limit(1))
+                if not top:
+                    logging.info("No leaderboard data for monthly champion")
+                    return
+                username = top[0].get("username", "Champion")
+                month = datetime.utcnow().strftime("%Y-%m")
+                poster_path = champion_data.generate_champion_poster(username)
+                champion_data.add_champion(username, "Monthly Champion", month, poster_path)
+                run_champion_autopilot(month=month, username=username)
+            except Exception:  # noqa: BLE001 - log exception only
+                logging.exception("Monthly champion job failed")
+
+        job = schedule.every(30).days.do(monthly_job)
+        self.jobs.append(job)
+        logging.info("\U0001f4c5 Monthly champion job scheduled")
 
     def schedule_google_sync(self, interval_minutes: int | None = None) -> None:
         """Schedule regular Google Calendar synchronization."""
