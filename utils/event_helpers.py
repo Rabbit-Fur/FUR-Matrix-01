@@ -4,6 +4,9 @@ from datetime import date as date_type
 from datetime import datetime, timedelta
 from typing import Any, Iterable
 
+from babel.dates import format_datetime
+
+from fur_lang import i18n
 from mongo_service import get_collection
 
 
@@ -38,10 +41,13 @@ def get_events_for(dt: datetime | date_type) -> list[dict]:
 def format_events(events: Iterable[dict]) -> str:
     """Return a newline separated bullet list for the given events."""
     lines = []
+    lang = i18n.current_lang()
+    tz_prefix = i18n.t("prefix_utc", default="UTC", lang=lang)
     for ev in events:
         dt = parse_event_time(ev.get("event_time"))
         if not dt:
             continue
         title = ev.get("title", "Event")
-        lines.append(f"- {title} – {dt.strftime('%d.%m.%Y %H:%M')} UTC")
+        dt_text = format_datetime(dt, "dd.MM.yyyy HH:mm", locale=lang)
+        lines.append(f"- {title} – {dt_text} {tz_prefix}")
     return "\n".join(lines)

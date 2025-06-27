@@ -82,3 +82,9 @@ Fallback-Sprache ist Englisch.
 
 Das System bleibt dynamisch und wartbar.
 
+
+## 2025-06-27 Update
+- Ran extract_i18n_keys.py to rebuild translation_keys.json.
+- Compared keys with en.json and de.json.
+- Added 75 missing entries with English translations and German defaults.
+

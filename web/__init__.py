@@ -13,6 +13,7 @@ from fur_lang.i18n import current_lang, get_supported_languages, t
 from web.champion_routes import champion_blueprint
 from web.poster_routes import poster_blueprint
 from web.reminder_routes import reminder_blueprint
+from web.socketio_events import init_socketio
 
 # ---------------------------------------------------------------------------
 # 🔹 Hilfsfunktion (Fallback für BG-Resolver)
@@ -152,5 +153,5 @@ def create_app() -> Flask:
         app.logger.error(
             "❌ landing.html nicht gefunden! Kontrolliere den Pfad (%s).", landing_path
         )
-
+    init_socketio(app)
     return app
