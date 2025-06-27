@@ -19,6 +19,8 @@ import mongo_service
 from fur_lang.i18n import get_supported_languages, t
 from web.auth.decorators import r3_required
 
+db = mongo_service.db
+
 public = Blueprint("public", __name__)
 
 
@@ -181,7 +183,7 @@ def events():
     if current_app.config.get("TESTING"):
         rows = []
     else:
-        rows = list(db["events"].find().sort("event_time", 1))
+        rows = list(mongo_service.db["events"].find().sort("event_time", 1))
     return render_template("public/events_list.html", events=rows)
 
 
@@ -215,7 +217,7 @@ def hall_of_fame():
     if current_app.config.get("TESTING"):
         rows = []
     else:
-        rows = list(db["hall_of_fame"].find().sort("_id", -1).limit(10))
+        rows = list(mongo_service.db["hall_of_fame"].find().sort("_id", -1).limit(10))
     return render_template("public/hall_of_fame.html", hof=rows)
 
 
@@ -228,7 +230,7 @@ def leaderboard():
     if current_app.config.get("TESTING"):
         leaderboard_list = []
     else:
-        rows = list(db["leaderboard"].find().sort("score", -1).limit(100))
+        rows = list(mongo_service.db["leaderboard"].find().sort("score", -1).limit(100))
         leaderboard_list = []
         for i, row in enumerate(rows, start=1):
             leaderboard_list.append({"rank": i, "username": row["username"], "score": row["score"]})

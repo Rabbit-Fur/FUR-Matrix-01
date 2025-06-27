@@ -59,7 +59,7 @@ class Config:
     # --- Google Calendar ---
     GOOGLE_CALENDAR_ID: str | None = get_env_str("GOOGLE_CALENDAR_ID", required=False)
     GOOGLE_SYNC_INTERVAL_MINUTES: int = get_env_int(
-        "GOOGLE_SYNC_INTERVAL_MINUTES", required=False, default=30
+        "GOOGLE_SYNC_INTERVAL_MINUTES", required=False, default=2
     )
     GOOGLE_REDIRECT_URI: str | None = get_env_str("GOOGLE_REDIRECT_URI", required=False)
     GOOGLE_CREDENTIALS_FILE: str | None = get_env_str("GOOGLE_CREDENTIALS_FILE", required=False)

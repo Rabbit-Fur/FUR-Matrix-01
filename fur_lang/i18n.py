@@ -99,6 +99,8 @@ def t(key: str, default: str = None, lang: str = None, **kwargs) -> str:
         str: Übersetzter und formatierter Text
     """
     active_lang = lang or current_lang()
+    if active_lang not in translations or not translations.get(active_lang):
+        translations.update(load_translations())
     raw = translations.get(active_lang, {}).get(key)
     if raw is None and active_lang != LANG_FALLBACK:
         raw = translations.get(LANG_FALLBACK, {}).get(key)

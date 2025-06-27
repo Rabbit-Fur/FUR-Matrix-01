@@ -390,7 +390,7 @@ def upload():
             request.content_length
             and request.content_length > current_app.config["MAX_CONTENT_LENGTH"]
         ):
-            flash(t("file_too_large", default="File too large"), "danger")
+            flash(t("file_too_large", default="Datei zu groß"), "danger")
             return redirect(request.url)
 
         file = request.files.get("file")
@@ -398,17 +398,17 @@ def upload():
             flash(t("no_file_selected", default="No file selected"), "danger")
             return redirect(request.url)
         if not _allowed_file(file.filename):
-            flash(t("invalid_file_type", default="Invalid file type"), "danger")
+            flash(t("invalid_file_type", default="Ungültiger Dateityp"), "danger")
             return redirect(request.url)
 
         allowed_mimes = current_app.config.get("ALLOWED_MIME_TYPES", {"image/png", "image/jpeg"})
         if file.mimetype not in allowed_mimes:
-            flash(t("invalid_file_type", default="Invalid file type"), "danger")
+            flash(t("invalid_file_type", default="Ungültiger Dateityp"), "danger")
             return redirect(request.url)
 
         filename = secure_filename(file.filename)
         file.save(os.path.join(upload_folder, filename))
-        flash(t("file_uploaded", default="File uploaded"), "success")
+        flash(t("file_uploaded", default="Datei hochgeladen"), "success")
         return redirect(url_for("admin.upload"))
 
     files = []
