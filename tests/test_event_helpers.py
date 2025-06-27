@@ -1,6 +1,7 @@
 from datetime import datetime
 
 import utils.event_helpers as mod
+from fur_lang import i18n
 
 
 class FakeEvents:
@@ -34,12 +35,22 @@ def test_get_events_for(monkeypatch):
     assert events[0]["title"] == "A"
 
 
-def test_format_events():
+def test_format_events(monkeypatch):
     events = [
         {"title": "X", "event_time": datetime(2025, 1, 1, 8, 0)},
         {"title": "Y", "event_time": "2025-01-02T09:00:00"},
     ]
+    monkeypatch.setattr(i18n, "current_lang", lambda: "de")
+    monkeypatch.setattr(
+        i18n,
+        "t",
+        lambda key, default=None, lang=None, **kwargs: {"prefix_utc": "UTC"}.get(
+            key,
+            default or key,
+        ),
+    )
     text = mod.format_events(events)
     assert "- X" in text
     assert "01.01.2025" in text
     assert "02.01.2025" in text
+    assert text.endswith("UTC")
