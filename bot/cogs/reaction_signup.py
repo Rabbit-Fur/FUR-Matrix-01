@@ -65,6 +65,28 @@ class ReactionSignup(commands.Cog):
         )
         log.info("User %s joined event %s via reaction", payload.user_id, event_id)
 
+    @commands.Cog.listener()
+    async def on_raw_reaction_remove(self, payload: discord.RawReactionActionEvent) -> None:
+        if str(payload.emoji) != "🔥":
+            return
+        channel = self.bot.get_channel(payload.channel_id)
+        if not channel:
+            return
+        try:
+            message = await channel.fetch_message(payload.message_id)
+        except Exception as exc:  # noqa: BLE001
+            log.warning("Could not fetch message: %s", exc)
+            return
+
+        event_id = await self._extract_event_id(message)
+        if not event_id:
+            return
+
+        collection = get_collection("event_participants")
+        result = collection.delete_one({"event_id": event_id, "user_id": str(payload.user_id)})
+        if getattr(result, "deleted_count", 0):
+            log.info("User %s left event %s via reaction", payload.user_id, event_id)
+
 
 async def setup(bot: commands.Bot) -> None:
     await bot.add_cog(ReactionSignup(bot))
