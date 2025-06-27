@@ -63,7 +63,7 @@ class SchedulerAgent:
         self.jobs.append(job)
         logging.info("\U0001f4c5 Monthly champion job scheduled")
 
-    def schedule_google_sync(self, interval_minutes: int | None = None) -> None:
+    def schedule_google_sync(self, interval_minutes: int | None = 2) -> None:
         """Schedule regular Google Calendar synchronization."""
         start_google_sync(interval_minutes)
         logging.info(
