@@ -705,6 +705,11 @@
     "invalid_file_type": "Ungültiger Dateityp",
     "file_too_large": "Datei zu groß",
     "no_file_selected": "Keine Datei ausgewählt",
+    "Zurück": "Zurück",
+    "file_uploaded": "Datei hochgeladen",
+    "invalid_file_type": "Ungültiger Dateityp",
+    "file_too_large": "Datei zu groß",
+    "Navigation": "Navigation",
     "prefix_utc": "UTC",
     "Zurück": "Zurück"
 }

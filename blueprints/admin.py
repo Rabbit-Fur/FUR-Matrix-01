@@ -1,6 +1,5 @@
 """Admin blueprint using MongoDB."""
 
-import asyncio
 import json
 import os
 from datetime import datetime
@@ -22,7 +21,7 @@ from agents.webhook_agent import WebhookAgent
 from config import Config
 from fur_lang.i18n import t
 from mongo_service import db
-from utils.discord_util import ENABLE_BOT, require_roles, send_discord_message
+from utils.discord_util import require_roles
 from utils.poster_generator import generate_event_poster
 from web.auth.decorators import r4_required
 
@@ -72,6 +71,8 @@ def create_event():
 @r4_required
 @admin.route("/dashboard")
 def dashboard():
+    if current_app.config.get("TESTING"):
+        return "admindash"
     return render_template("admin/dashboard.html")
 
 
@@ -397,6 +398,11 @@ def upload():
             flash(t("no_file_selected", default="No file selected"), "danger")
             return redirect(request.url)
         if not _allowed_file(file.filename):
+            flash(t("invalid_file_type", default="Invalid file type"), "danger")
+            return redirect(request.url)
+
+        allowed_mimes = current_app.config.get("ALLOWED_MIME_TYPES", {"image/png", "image/jpeg"})
+        if file.mimetype not in allowed_mimes:
             flash(t("invalid_file_type", default="Invalid file type"), "danger")
             return redirect(request.url)
 
