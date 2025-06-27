@@ -701,6 +701,11 @@
     "cmd_dm_all_param_text_desc": "Nachricht (max 2000 Zeichen)",
     "cmd_newsletter_stop_name": "newsletter_stop",
     "cmd_newsletter_stop_desc": "Deaktiviert den wöchentlichen Newsletter für dich.",
-    "prefix_utc": "UTC",
     "Zurück": "Zurück",
+    "file_uploaded": "Datei hochgeladen",
+    "invalid_file_type": "Ungültiger Dateityp",
+    "file_too_large": "Datei zu groß",
+    "Navigation": "Navigation",
+    "prefix_utc": "UTC",
+    "Zurück": "Zurück"
 }
