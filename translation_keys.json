@@ -1,5 +1,4 @@
 [
-
   "Admin",
   "Admin Dashboard",
   "Admin Downloads",
@@ -587,6 +586,10 @@
     "cmd_newsletter_stop_desc",
     "newsletter_optout_success",
     "newsletter_optout_error",
+    "file_uploaded",
+    "invalid_file_type",
+    "file_too_large",
+    "no_file_selected",
     "prefix_utc",
-    "hello",
+    "hello"
 ]

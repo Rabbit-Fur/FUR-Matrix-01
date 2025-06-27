@@ -312,6 +312,12 @@
   "cmd_dm_all_param_text_desc": "Message (max 2000 characters)",
   "cmd_newsletter_stop_name": "newsletter_stop",
   "cmd_newsletter_stop_desc": "Disable the weekly newsletter for you.",
+  "file_uploaded": "File uploaded",
+  "invalid_file_type": "Invalid file type",
+  "file_too_large": "File too large",
+  "no_file_selected": "No file selected",
+  "Zurück": "Zurück",
+  "Navigation": "Navigation",
   "Zurück": "Zurück",
   "Ankündigung posten": "Post announcement",
   "Anzeigen": "Show",
@@ -702,5 +708,5 @@
     "cmd_newsletter_stop_name": "newsletter_stop",
     "cmd_newsletter_stop_desc": "Disable the weekly newsletter for you.",
     "prefix_utc": "UTC",
-    "Zurück": "Zurück",
+    "Zurück": "Zurück"
 }
