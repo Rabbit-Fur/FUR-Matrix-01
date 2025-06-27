@@ -112,7 +112,8 @@ def create_app() -> Flask:
         except Exception:
             reminder_api = None
 
-        app.register_blueprint(public)
+        if not app.config.get("TESTING"):
+            app.register_blueprint(public)
         app.register_blueprint(member, url_prefix="/members")
         app.register_blueprint(admin, url_prefix="/admin")
         app.register_blueprint(leaderboard, url_prefix="/leaderboard")
