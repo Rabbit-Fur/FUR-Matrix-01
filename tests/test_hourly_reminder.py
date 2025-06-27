@@ -1,4 +1,3 @@
-import asyncio
 import types
 from datetime import datetime
 
