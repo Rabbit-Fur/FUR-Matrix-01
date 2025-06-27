@@ -20,16 +20,13 @@ jobs:
         uses: actions/checkout@v4
 
       - name: 🐳 Build codex-universal-fur
-        run: |
-          docker build -f codex-universal-fur.Dockerfile -t ghcr.io/${{ env.IMAGE_NAME }}:latest .
+        run: docker build -f codex-universal-fur.Dockerfile -t ghcr.io/${{ env.IMAGE_NAME }}:latest .
 
       - name: 🔐 Set Railway Token
         run: echo "${{ secrets.RAILWAY_TOKEN }}" | docker login --username ${{ github.actor }} --password-stdin ghcr.io
 
       - name: 🚀 Push Image to GHCR
-        run: |
-          docker push ghcr.io/${{ env.IMAGE_NAME }}:latest
+        run: docker push ghcr.io/${{ env.IMAGE_NAME }}:latest
 
       - name: ⚙️ Trigger Railway Deployment
-        run: |
-          curl -X POST https://backboard.railway.app/project/${{ env.RAILWAY_PROJECT }}/deploy             -H "Authorization: Bearer ${{ secrets.RAILWAY_TOKEN }}"             -H "Content-Type: application/json"
+        run: curl -X POST https://backboard.railway.app/project/${{ env.RAILWAY_PROJECT }}/deploy -H "Authorization: Bearer ${{ secrets.RAILWAY_TOKEN }}" -H "Content-Type: application/json"
