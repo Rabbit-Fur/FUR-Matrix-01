@@ -306,5 +306,6 @@
     "cmd_newsletter_stop_desc",
     "newsletter_optout_success",
     "newsletter_optout_error",
-  "hello"
+    "prefix_utc",
+    "hello",
 ]

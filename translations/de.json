@@ -312,5 +312,6 @@
     "cmd_dm_all_param_text_desc": "Nachricht (max 2000 Zeichen)",
     "cmd_newsletter_stop_name": "newsletter_stop",
     "cmd_newsletter_stop_desc": "Deaktiviert den wöchentlichen Newsletter für dich.",
-    "Zurück": "Zurück"
+    "prefix_utc": "UTC",
+    "Zurück": "Zurück",
 }
