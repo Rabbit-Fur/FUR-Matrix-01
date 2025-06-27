@@ -3,8 +3,9 @@ flask==2.3.3
 Flask-Session==0.8.0
 flask-babel @ git+https://github.com/python-babel/flask-babel.git
 flask-wtf
-flask-limiter
 pymongo==4.3.3
+flask-limiter
+Flask-SocketIO
 pydantic>=1.10.12,<2.0.0
 
 # 📚 Datenbank & Planung

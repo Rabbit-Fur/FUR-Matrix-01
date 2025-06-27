@@ -30,6 +30,12 @@ class DummyCollection(list):
     def update_one(self, flt, update, upsert=False):
         self.append(flt)
 
+    def delete_one(self, flt):
+        for i, doc in enumerate(self):
+            if all(doc.get(k) == v for k, v in flt.items()):
+                self.pop(i)
+                break
+
 
 def test_reaction_signup(monkeypatch):
     events_col = DummyCollection()
@@ -60,3 +66,33 @@ def test_reaction_signup(monkeypatch):
         "event_id": ObjectId("507f1f77bcf86cd799439011"),
         "user_id": "123",
     }
+
+
+def test_reaction_remove(monkeypatch):
+    events_col = DummyCollection()
+    participants_col = DummyCollection()
+
+    def get_coll(name):
+        return {"events": events_col, "event_participants": participants_col}[name]
+
+    monkeypatch.setattr(rs_mod, "get_collection", get_coll)
+
+    bot = DummyBot()
+    cog = rs_mod.ReactionSignup(bot)
+
+    class DummyEmoji:
+        def __str__(self):
+            return "🔥"
+
+    payload = types.SimpleNamespace(
+        emoji=DummyEmoji(),
+        channel_id=1,
+        message_id=2,
+        user_id=123,
+    )
+
+    asyncio.run(cog.on_raw_reaction_add(payload))
+    assert len(participants_col) == 1
+
+    asyncio.run(cog.on_raw_reaction_remove(payload))
+    assert len(participants_col) == 0
