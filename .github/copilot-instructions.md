@@ -253,3 +253,166 @@ Copilot Chat Cookbook
 MCP & Erweiterungen
 
 copilot-setup-steps.yml Guide
+
+## Projekt MARCEL/FUR CORE
+
+Dieses Repository unterstützt optimierte Interaktionen mit GitHub Copilot und Custom GPTs. Ziel ist es, eine symbiotische Zusammenarbeit zwischen menschlichen Entwicklern, Copilot Coding Agent und Codex/Custom GPT zu ermöglichen – insbesondere im Kontext von Automatisierung, Gamification, Backend-Architektur und strategischer Datenverarbeitung.
+
+---
+
+## 📐 Code Standards
+
+### Vor jedem Commit:
+- Führe `make format` aus (autoformat via `black`, `prettier`, `clang-format` etc.)
+- Führe `make lint` aus (z. B. `ruff`, `flake8`, `eslint`, `cpplint`)
+- Dokumentiere neue Funktionen direkt im Code (Docstrings oder JSdoc)
+
+### Codekonventionen:
+- Nutze funktionale und modulare Strukturierung
+- Keine harten Codierungen von Pfaden oder Credentials
+- Jeder Service/Modul sollte testbar sein (Unit-first)
+- Verwende Typannotationen (wo möglich)
+- UI-Komponenten strikt getrennt von Logik (MVC/Hexagonal Pattern)
+
+---
+
+## 🔁 Development Workflow
+
+```bash
+# Setup
+make setup         # Installiere Abhängigkeiten & Umgebung
+make dev           # Starte Dev-Server
+make test          # Führe Tests aus
+make build         # Build-Prozess
+make ci            # Kompletter CI-Lauf inkl. Lint, Build & Test
+
+# Copilot kann automatisch PRs erzeugen – aber Tests & Review sind Pflicht!
+```
+
+---
+
+## 🗂️ Repository Structure
+
+```plaintext
+├── core/                # Zentrale Logik (Engine, Services)
+├── web/                 # Frontend & Webrouten (Flask, React)
+├── data/                # Datenmodelle, Fixtures, Seed-Skripte
+├── tools/               # Hilfs- & CLI-Tools
+├── config/              # Umgebungsvariablen & Secrets-Templates
+├── static/              # Assets wie Logos, Hintergründe, Stylesheets
+├── tests/               # Unit & Integrationstests
+├── .github/             # GitHub Workflows, Copilot-Setup, Templates
+│   └── copilot-instructions.md
+```
+
+---
+
+## 🤖 Copilot Guidelines
+
+### Geeignete Aufgaben für Copilot:
+- Bugfixing (nach Tests)
+- UI-Anpassungen (statische Anpassungen, Texte, Styles)
+- Dokumentation & Kommentarpflege
+- Testgenerierung (Unit, Mocks, Fixtures)
+- Refactoring (nach Anweisung)
+- Script-Templates oder einfache CLI-Kommandos
+- Übersetzungen & JSON-Payloads
+- Markdown & README-Erstellung
+
+### Ungeeignete Aufgaben:
+- Sicherheitssensitive Module (z. B. OAuth, JWT, Auth)
+- GDPR-/PII-relevante Verarbeitung
+- Businesslogik, die auf Policies oder finanziellen Entscheidungen basiert
+- Architekturentscheidungen
+- Infrastrukturprovisionierung (z. B. Terraform, Helm)
+- Legacy-Migrationen über mehrere Repos hinweg
+- Alles ohne klare Definition und Ziel
+
+> 🔎 Aufgabenbeschreibung = Prompt! Denk daran: Copilot funktioniert am besten bei präzisem Kontext und Scope.
+
+---
+
+## 🧠 Copilot Tasks richtig strukturieren
+
+**Gute Tasks beinhalten:**
+- [ ] Eine klare Zielbeschreibung
+- [ ] Erwartete Outputformate
+- [ ] Änderungsbereich (z. B. Dateien, Module)
+- [ ] Akzeptanzkriterien (z. B. Tests, Output, API-Responses)
+- [ ] Optionale Hinweise auf verwandte Issues, Branches oder Designs
+
+Beispiel:
+> `🛠️ Fixes #23 – UI-Fehler im Darkmode auf /admin. Erwartet wird korrigierter Kontrast in <template>.html, keine Styles im JS.`
+
+---
+
+## 🔌 MCP Integration
+
+MARCEL/FUR CORE verwendet **Model Context Protocol (MCP)**, um lokale Tools und externe APIs mit Copilot zu verbinden.
+
+Aktive Erweiterungen:
+- 🧩 `fur-context-lookup`: Kontextdatenbank für GGW-Profilzuordnung
+- 🧠 `code-mirror-agent`: KI-Unterstützung für Legacy-Code-Linien
+- 🔐 `secure-param-agent`: MCP-gestützter Parameterprüfer (nur R4+)
+
+> Hinweise zur Erweiterung findest du unter  
+> [Extending Copilot Agent with MCP](https://docs.github.com/de/copilot/how-tos/agents/copilot-coding-agent/extending-copilot-coding-agent-with-mcp)
+
+---
+
+## ⚙️ Abhängigkeiten & Umgebung
+
+Copilot verwendet eine GitHub Actions-basierte Entwicklungsumgebung. Um Probleme bei Dependency Resolution zu vermeiden:
+
+**Konfiguriere `copilot-setup-steps.yml`:**
+
+```yaml
+# .github/copilot-setup-steps.yml
+steps:
+  - uses: actions/setup-python@v4
+    with:
+      python-version: '3.11'
+  - run: pip install -r requirements.txt
+  - run: npm install --prefix web/
+```
+
+Weitere unterstützte Setups: `poetry`, `conda`, `pnpm`, `cargo`, `make`, `go install`
+
+---
+
+## 🧪 Testing Policy
+
+- Neue Funktionen → **Pflicht: Unit-Test**
+- Datenabhängige Funktionen → mit Mocks oder Fixtures testen
+- `make test` führt alle Tests automatisch aus
+- End-to-End Tests mit `pytest`, `selenium`, `playwright` in `tests/e2e`
+
+---
+
+## 🛠️ Troubleshooting & Hinweise
+
+### Falls Copilot seltsame PRs erstellt:
+- Checke `copilot-logs/` oder Actions-Log
+- Prüfe, ob `copilot-setup-steps.yml` korrekt ist
+- Ist `.github/copilot-instructions.md` aktuell?
+- Sind die Tasks gut strukturiert?
+
+### Verantwortungsvolle Nutzung:
+- Keine API-Schlüssel oder Credentials in Copilot generieren lassen
+- Verwende Secrets-Management (`config/env.example`)
+- Schreibe nie blind Copilot-Code in Produktion
+- Ergänze Copilot-PRs IMMER mit Review
+
+---
+
+## 🔗 Weitere Links
+
+- 🧭 [Best Practices Guide](https://docs.github.com/de/copilot/how-tos/agents/copilot-coding-agent/)
+- 📘 [Copilot Tutorials & Use Cases](https://docs.github.com/de/copilot/tutorials/)
+- 🧠 [MCP-Dokumentation](https://docs.github.com/de/copilot/tutorials/enhancing-copilot-agent-mode-with-mcp)
+- 💬 [Copilot Chat Cookbook](https://docs.github.com/de/copilot/tutorials/copilot-chat-cookbook/)
+- ✅ [Verantwortungsvolle Nutzung](https://docs.github.com/de/copilot/responsible-use-of-github-copilot-features/)
+
+---
+
+Let Copilot fly – but YOU are the pilot.
