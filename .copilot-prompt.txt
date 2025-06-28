@@ -1,0 +1,50 @@
+Du agierst als KI-Entwicklungsagent in diesem Repository. Grundlage deines Handelns ist die Datei .github/copilot-instructions.md, welche alle Richtlinien und Prozesse definiert. 🔧 Was du tun sollst:
+Lies die Datei vollständig – sie definiert Build-/Test-/Lint-Prozesse, Projektstruktur, Codekonventionen und das Verhalten bei PRs.
+Halte dich strikt an alle Vorgaben – z. B. Formatierungen (make fmt oder npm run format), Tests in tests/ (via pytest, npm test, make test), PR-Beschreibungen mit Referenz auf Issues, und Codeänderungen gemäß der Projektstruktur (src/, lib/, docs/, scripts/).
+Verhalte dich wie ein Reviewer – kommentiere Änderungen, begründe deinen Code und reagiere konstruktiv auf Reviews.
+Nutze MCP-Kontext, falls aktiv – z. B. lese GitHub Issues oder Test-Status über den GitHub-MCP, sofern verfügbar.
+Führe CI-nahe Aktionen aus – orientiere dich an unserer CI-Pipeline und prüfe z. B. copilot-setup-steps.yml für nötige Setup-Schritte.
+
+
+📌 Wichtig:
+Nimm keine spekulativen Änderungen vor. Arbeite abgegrenzt und zielgerichtet auf die gegebenen Anforderungen.
+Begründe jede Änderung ausführlich in Commit-Nachrichten und der PR-Beschreibung.
+Falls du von einer Regel abweichen möchtest, erkläre vorher den Mehrwert der Abweichung.
+Strukturvorschlag Entwicklerhandbuch: Agenten-Verhalten (erweiterte Optionen)
+(Dieser Abschnitt im Entwicklerhandbuch beschreibt fortgeschrittene Einsatzmöglichkeiten und Verhaltensregeln für die KI-Agenten – sowohl GitHub Copilot/Codex als auch „MARCEL“/ChatGPT – im FUR System.)
+Debugging-Taktiken für KI-Agenten
+Beschreibt den Umgang mit häufigen Problemen bei Agentenläufen, z. B. wenn der Agent ungültige JSON-Ausgaben erzeugt oder auf API-Rate-Limits stößt. Es werden Strategien erläutert, wie man solche Fehler erkennt (Logs prüfen, Fehlermeldungen interpretieren) und behebt – etwa durch Anpassen der Eingaben, Aufteilen der Aufgabe in kleinere Schritte oder erneutes Triggern des Agenten nach einer Wartezeit.
+Feature-Erkundung durch den Agenten
+Zeigt, wie der Agent für explorative Aufgaben eingesetzt werden kann. Beispielsweise kann der KI-Agent genutzt werden, um unbekannten Code im Repository zu analysieren, relevante Stellen für ein neues Feature aufzuspüren oder einen Implementierungsplan vorzuschlagen. Tipps, wie man den Agenten gezielt Fragen stellen oder nach bestimmten Mustern im Code suchen lassen kann, um die Feature-Ideation zu unterstützen.
+Refactoring-Typen und Strategien
+Gibt einen Überblick über verschiedene Refactoring-Ansätze, die der KI-Agent durchführen kann. Dazu gehören Verbesserungen der Lesbarkeit (Code Cleanup, konsistente Benennungen, Entfernen von Duplikaten), Performance-Optimierungen (effizientere Algorithmen, Caching einführen), die Implementierung bewährter Design-Pattern (z. B. Strategy, Singleton, Observer) sowie querschnittliche Aspekte (Cross-Cutting Concerns wie Logging, Fehlerbehandlung, Internationalisierung), die über mehrere Module hinweg berücksichtigt werden müssen. Jede Kategorie wird mit Beispielen und Best Practices erläutert, damit der Agent zielgerichtet refaktorieren kann.
+Dokumentationserzeugung mit KI-Hilfe
+Erläutert, wie der Agent genutzt werden kann, um Dokumentation zu erstellen oder zu aktualisieren. Der Fokus liegt darauf, den Legacy-Code besser zu verstehen und zu dokumentieren (etwa durch automatische Beschreibung komplexer Funktionen), Algorithmen in natürlichen Worten zu erklären und sicherzustellen, dass Änderungen im Code mit der Projekt­dokumentation synchronisiert werden. Konkrete Anleitungen zeigen, wie der Agent zum Generieren von Docstrings, README-Abschnitten oder Architektur-Diagrammen herangezogen werden kann.
+Testgenerierung und -abdeckung
+Beschreibt Methoden, um mit Hilfe des Agenten automatisierte Tests zu erstellen. Dazu zählen Unit-Tests für einzelne Funktionen oder Module, End-to-End-Tests für komplette Ablauf-Szenarien sowie der Einsatz von Mocks/Stubs, um externe Abhängigkeiten in Tests zu isolieren. Es wird erläutert, wie der Agent sinnvolle Testfälle vorschlägt, auf Randfälle achtet und die Testabdeckung erhöht, indem er Lücken in bestehenden Tests findet. Außerdem Tipps zum Überprüfen der vom Agenten erzeugten Tests auf Korrektheit und Relevanz.
+Security-Audits durch den KI-Agenten
+Zeigt, wie der Agent zur Sicherheitsanalyse des Codes eingesetzt werden kann. Erklärt, wie man den Agenten anweist, nach typischen Schwachstellen zu suchen – z. B. ungeprüfte Benutzereingaben (Injection-Angriffe), unsichere Verwendung von Tokens oder fehlende Berechtigungsprüfungen. Beschreibt die Überprüfung von Abhängigkeiten auf bekannte Sicherheitslücken und die Einhaltung von Sicherheitsrichtlinien (z. B. keine Hardcoded Secrets, Verwendung von Verschlüsselung, sichere Konfigurationen). Dieser Abschnitt betont auch, dass der Agent gefundene Probleme melden oder Pull Requests mit sicherheitsrelevanten Verbesserungen erstellen kann.
+Agenten-Auslöser: Wie starte ich eine KI-Session?
+Beschreibt die verschiedenen Möglichkeiten, eine Session mit dem KI-Agenten zu initiieren. Mögliche Trigger sind: spezielle Kommentare oder Befehle in Pull Requests/Issues (z. B. ein Kommentar mit bestimmtem Schlüsselwort oder Emoji 👀, um eine Codereview durch den Agenten anzustoßen), vordefinierte GitHub Actions beim Setzen bestimmter Labels oder beim Öffnen eines PRs, oder das manuelle Starten über ein CLI-Tool (z. B. mittels Befehl codex-fur task "Beschreibung der Aufgabe" gefolgt von codex-fur submit). Dieser Abschnitt erläutert, wie Entwickler den Agenten gezielt anstoßen können, welche Voraussetzungen dafür gelten (etwa Berechtigungen oder Konfigurationen) und wie der Agent seinen Start signalisiert (Logs, Kommentare, PR-Eröffnung etc.). Außerdem wird auf Best Practices eingegangen – z. B. zuerst in einem Entwurfs-PR zu starten, um Ergebnisse zu prüfen, bevor der Agent Änderungen auf produktive Branches vornimmt.
+
+
+Quellenangaben
+
+
+GitHub
+copilot-instructions.md
+
+https://github.com/Rabbit-Fur/try/blob/2b55550513b148661cd18a96be6cf5eed1cbebac/.github/copilot-instructions.md
+GitHub
+copilot-instructions.md
+
+https://github.com/Rabbit-Fur/try/blob/2b55550513b148661cd18a96be6cf5eed1cbebac/.github/copilot-instructions.md
+GitHub
+copilot-instructions.md
+
+https://github.com/Rabbit-Fur/try/blob/2b55550513b148661cd18a96be6cf5eed1cbebac/.github/copilot-instructions.md
+GitHub
+copilot-instructions.md
+
+https://github.com/Rabbit-Fur/try/blob/2b55550513b148661cd18a96be6cf5eed1cbebac/.github/copilot-instructions.md
+Alle Quellen
