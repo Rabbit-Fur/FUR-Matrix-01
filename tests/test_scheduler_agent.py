@@ -97,3 +97,48 @@ def test_monthly_champion_job(monkeypatch):
     jobs[0][1]()
     assert added["user"] == "Top"
     assert called.get("ok")
+
+
+def test_google_sync_job_uses_app_context(monkeypatch):
+    schedule_mod = types.ModuleType("schedule")
+    called = {}
+
+    class FakeEvery:
+        def __init__(self, interval):
+            self.interval = interval
+
+        @property
+        def minutes(self):
+            return self
+
+        def do(self, func, *args, **kwargs):
+            func()
+            return object()
+
+    schedule_mod.every = lambda interval: FakeEvery(interval)
+    sys.modules["schedule"] = schedule_mod
+
+    import importlib
+
+    agent_mod = importlib.reload(__import__("agents.scheduler_agent", fromlist=["SchedulerAgent"]))
+
+    monkeypatch.setattr(agent_mod, "start_google_sync", lambda *a, **k: None)
+
+    def fake_get_app():
+        from web import create_app
+
+        return create_app()
+
+    monkeypatch.setattr(agent_mod, "_get_app", fake_get_app)
+
+    def fake_sync():
+        from flask import current_app
+
+        called["app"] = current_app.name
+
+    monkeypatch.setattr(agent_mod, "sync_google_calendar", fake_sync)
+
+    agent = agent_mod.SchedulerAgent()
+    agent.schedule_google_sync(interval_minutes=1)
+
+    assert called.get("app") == "web"

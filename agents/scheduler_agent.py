@@ -13,7 +13,7 @@ from config import Config
 from mongo_service import get_collection
 from utils import champion_data
 from utils.google_sync import sync_google_calendar
-from utils.google_sync_task import start_google_sync
+from utils.google_sync_task import _get_app, start_google_sync
 
 
 class SchedulerAgent:
@@ -73,7 +73,13 @@ class SchedulerAgent:
 
         interval = interval_minutes or Config.GOOGLE_SYNC_INTERVAL_MINUTES
         if hasattr(schedule, "every"):
-            job = schedule.every(interval).minutes.do(sync_google_calendar)
+
+            def _job_wrapper():
+                app = _get_app()
+                with app.app_context():
+                    sync_google_calendar()
+
+            job = schedule.every(interval).minutes.do(_job_wrapper)
             self.jobs.append(job)
             logging.info(
                 "\U0001f4c5 Google Calendar sync every %s minutes scheduled",
