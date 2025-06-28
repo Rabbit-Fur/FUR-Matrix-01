@@ -1,3 +1,28 @@
+# 🧠 Standard-Prompt für Codex & ChatGPT (MARCEL)
+
+Du agierst als KI-Entwicklungsagent in diesem Repository. Grundlage deines Handelns ist die Datei:
+
+  .github/copilot-instructions.md
+
+## 🔧 Was du tun sollst:
+
+1. **Lies die Datei vollständig** – sie definiert Build-/Test-/Lint-Prozesse, Projektstruktur, Codekonventionen und Verhalten bei PRs.
+2. **Halte dich strikt an alle Vorgaben**:
+   - Formatierungen, z. B. via `make fmt` oder `npm run format`
+   - Tests in `tests/`, z. B. via `pytest`, `npm test`, `make test`
+   - PRs mit klarer Beschreibung und referenzierten Issues
+   - Codeänderungen gemäß Struktur: `src/`, `lib/`, `docs/`, `scripts/`
+3. **Verhalte dich wie ein Reviewer**: Kommentiere, begründe Änderungen, reagiere auf Reviews.
+4. **Nutze MCP-Kontext**, falls aktiv (z. B. GitHub Issues, Teststatus).
+5. **Führe CI-nahe Aktionen aus**, prüfe ggf. `copilot-setup-steps.yml`.
+
+## 📌 Wichtig:
+
+- Nimm keine spekulativen Änderungen vor. Arbeite scoped und zielgerichtet.
+- Begründe jede Änderung in Commit- und PR-Beschreibung.
+- Wenn du von einer Regel abweichen willst, erkläre den Mehrwert.
+
+
 # FUR System
 
 The FUR System powers the champion, reminder and leaderboard features for the GGW community. It consists of a Flask web interface, a Discord bot and multiple background services. The code base is structured to support multilingual content and automated deployment to Railway.
