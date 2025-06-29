@@ -5,10 +5,12 @@ import logging
 import os
 from typing import Optional
 
-from flask import Blueprint, current_app, redirect, request, session, url_for
+from flask import Blueprint, current_app, jsonify, redirect, request, session, url_for
+from google.auth import exceptions as google_exceptions
 from google.auth.transport.requests import Request
 from google.oauth2.credentials import Credentials
 from google_auth_oauthlib.flow import Flow
+from googleapiclient.discovery import build
 
 google_auth = Blueprint("google_auth", __name__)
 
@@ -73,25 +75,49 @@ def auth_google():
 
 @google_auth.route("/oauth2callback")
 def oauth2callback():
-    state = session.pop("google_oauth_state", None)
+    stored_state = session.pop("google_oauth_state", None)
+    req_state = request.args.get("state")
+    if not stored_state or stored_state != req_state:
+        return jsonify({"error": "Invalid OAuth state"}), 400
+
     path = _cred_path()
     if not path or not os.path.exists(path):
-        return "Missing Google client config", 500
+        return jsonify({"error": "Missing Google client config"}), 500
+
     with open(path, "r", encoding="utf-8") as fh:
         config = json.load(fh)
+
     flow = Flow.from_client_config(
         config,
         scopes=current_app.config.get(
             "GOOGLE_CALENDAR_SCOPES",
             ["https://www.googleapis.com/auth/calendar.readonly"],
         ),
-        state=state,
+        state=stored_state,
         redirect_uri=current_app.config.get("GOOGLE_REDIRECT_URI"),
     )
-    flow.fetch_token(authorization_response=request.url)
+
+    try:
+        flow.fetch_token(authorization_response=request.url)
+    except (google_exceptions.GoogleAuthError, ValueError) as exc:
+        current_app.logger.warning("OAuth user error: %s", exc)
+        return jsonify({"error": str(exc)}), 400
+    except Exception as exc:  # pragma: no cover - unexpected errors
+        current_app.logger.exception("OAuth unexpected error")
+        return jsonify({"error": "Server error"}), 500
+
     creds = flow.credentials
     _save_credentials(creds)
-    return redirect(url_for("public.dashboard"))
+
+    try:
+        service = build("calendar", "v3", credentials=creds)
+        calendars_resp = service.calendarList().list().execute()
+        calendars = calendars_resp.get("items", [])
+    except Exception as exc:  # pragma: no cover - API failure
+        current_app.logger.exception("Fetching calendar list failed")
+        return jsonify({"error": "Failed to fetch calendars"}), 500
+
+    return jsonify({"status": "connected", "calendars": calendars})
 
 
 __all__ = ["google_auth", "load_credentials"]
