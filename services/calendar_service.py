@@ -115,6 +115,7 @@ class CalendarService:
             )
 
     async def sync(self) -> int:
+        log.info("Starting calendar sync for %s", self.calendar_id)
         token = await self._get_token()
         params = {
             "calendarId": self.calendar_id,
@@ -130,6 +131,7 @@ class CalendarService:
             data = await self._api_list(params)
         except HttpError as exc:
             if exc.resp.status == 410:  # sync token expired
+                log.warning("Sync token expired; performing full sync")
                 token = None
                 params.pop("syncToken", None)
                 params["timeMin"] = datetime.utcnow().isoformat() + "Z"
@@ -141,6 +143,7 @@ class CalendarService:
         new_token = data.get("nextSyncToken")
         if new_token:
             await self._store_token(new_token)
+        log.info("Calendar sync complete: %s events", len(events))
         return len(events)
 
     # ------------------------------------------------------------------
@@ -180,6 +183,11 @@ class DMReminderScheduler:
         now = datetime.utcnow().replace(tzinfo=timezone.utc)
         window_start = now + timedelta(minutes=10)
         window_end = now + timedelta(minutes=11)
+        log.debug(
+            "Checking events between %s and %s for reminders",
+            window_start,
+            window_end,
+        )
         events = await self.service._get_range(window_start, window_end)
         for ev in events:
             participants = self.service.events.database["event_participants"].find(
@@ -191,6 +199,7 @@ class DMReminderScheduler:
                     await user.send(
                         f"Reminder: {ev['title']} at {ev['event_time'].strftime('%H:%M UTC')}"
                     )
+                    log.info("Sent reminder DM to %s for event %s", user.id, ev["title"])
                 except Exception:  # pragma: no cover - network failures
                     log.warning("Failed to send reminder", exc_info=True)
 
