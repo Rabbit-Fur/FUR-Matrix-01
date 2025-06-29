@@ -8,8 +8,9 @@ from pymongo import MongoClient
 
 # 🔧 MongoDB-Verbindung
 MONGO_URI = os.getenv("MONGODB_URI")
+MONGO_DB = os.getenv("MONGO_DB", "FURdb")
 client = MongoClient(MONGO_URI)
-db = client["furdb"]
+db = client[MONGO_DB]
 memory_collection = db["memory_contexts"]
 
 # 📦 Zu importierende Module
