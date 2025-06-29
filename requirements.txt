@@ -4,6 +4,7 @@ Flask-Session==0.8.0
 flask-babel @ git+https://github.com/python-babel/flask-babel.git
 flask-wtf
 pymongo==4.3.3
+motor
 flask-limiter
 Flask-SocketIO
 pydantic>=1.10.12,<2.0.0
