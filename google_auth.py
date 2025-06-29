@@ -5,10 +5,19 @@ import logging
 import os
 from typing import Optional
 
-from flask import Blueprint, current_app, redirect, request, session, url_for
+from flask import (
+    Blueprint,
+    current_app,
+    jsonify,
+    redirect,
+    request,
+    session,
+    url_for,
+)
 from google.auth.transport.requests import Request
 from google.oauth2.credentials import Credentials
 from google_auth_oauthlib.flow import Flow
+from googleapiclient.discovery import build
 
 google_auth = Blueprint("google_auth", __name__)
 
@@ -74,6 +83,8 @@ def auth_google():
 @google_auth.route("/oauth2callback")
 def oauth2callback():
     state = session.pop("google_oauth_state", None)
+    if request.args.get("state") != state:
+        return jsonify({"error": "invalid_state"}), 400
     path = _cred_path()
     if not path or not os.path.exists(path):
         return "Missing Google client config", 500
@@ -88,9 +99,17 @@ def oauth2callback():
         state=state,
         redirect_uri=current_app.config.get("GOOGLE_REDIRECT_URI"),
     )
-    flow.fetch_token(authorization_response=request.url)
+    try:
+        flow.fetch_token(authorization_response=request.url)
+    except Exception:
+        current_app.logger.exception("Google OAuth fetch_token failed")
+        return jsonify({"error": "token_failed"}), 400
     creds = flow.credentials
     _save_credentials(creds)
+    if current_app.config.get("TESTING"):
+        service = build("oauth2", "v2", credentials=creds, cache_discovery=False)
+        info = service.userinfo().get().execute()
+        return jsonify(info)
     return redirect(url_for("public.dashboard"))
 
 
