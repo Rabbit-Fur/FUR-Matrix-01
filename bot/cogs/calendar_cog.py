@@ -146,4 +146,7 @@ class CalendarCog(commands.Cog):
 async def setup(bot: commands.Bot) -> None:
     cog = CalendarCog(bot)
     await bot.add_cog(cog)
-    bot.tree.add_command(cog.calendar)
+    if bot.tree.get_command("calendar") is None:
+        bot.tree.add_command(cog.calendar)
+    else:
+        log.warning("Command 'calendar' already registered – skipping")
