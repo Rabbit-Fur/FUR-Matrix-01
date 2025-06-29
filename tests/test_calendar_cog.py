@@ -1,4 +1,4 @@
-import asyncio
+import types
 from datetime import datetime, timedelta, timezone
 from zoneinfo import ZoneInfo
 
@@ -36,3 +36,48 @@ def test_should_send_daily_weekly():
     sunday = datetime(2025, 1, 5, 12, 0, tzinfo=timezone.utc)
     assert should_send_weekly(sunday)
     assert not should_send_weekly(sunday + timedelta(days=1))
+
+
+@pytest.mark.asyncio
+async def test_send_events_dm_converts_timezone():
+    cog = CalendarCog.__new__(CalendarCog)
+    cog._get_user_timezone = lambda uid: ZoneInfo("Asia/Tokyo")
+    user = DummyUser()
+    events = [{"title": "Ping", "event_time": datetime(2025, 1, 1, 12, 0, tzinfo=timezone.utc)}]
+    await CalendarCog._send_events_dm(cog, user, events, "Title")
+    assert "21:00" in user.embed.fields[0].value
+
+
+class DummyInteraction:
+    def __init__(self) -> None:
+        self.user = DummyUser()
+        self.response = types.SimpleNamespace()
+
+        async def send_message(message, *, ephemeral=False, view=None):
+            self.message = message
+            self.ephemeral = ephemeral
+
+        self.response.send_message = send_message
+
+
+@pytest.mark.asyncio
+async def test_cmd_today_sends_embed(monkeypatch):
+    cog = CalendarCog.__new__(CalendarCog)
+    cog._get_user_timezone = lambda uid: ZoneInfo("UTC")
+
+    async def fake_events():
+        return [{"title": "Ping", "event_time": datetime(2025, 1, 1, 12, 0, tzinfo=timezone.utc)}]
+
+    cog.service = types.SimpleNamespace(get_events_today=fake_events)
+
+    async def fake_send_dm(self, user, events, title):
+        user.embed = discord.Embed(title=title)
+
+    monkeypatch.setattr(CalendarCog, "_send_events_dm", fake_send_dm)
+    monkeypatch.setattr("bot.cogs.calendar_cog.t", lambda key, **k: key)
+
+    interaction = DummyInteraction()
+    await CalendarCog.cmd_today.callback(cog, interaction)
+
+    assert interaction.ephemeral
+    assert isinstance(interaction.user.embed, discord.Embed)

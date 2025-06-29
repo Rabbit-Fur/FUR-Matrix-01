@@ -44,20 +44,24 @@ class DummyInteraction:
 
 
 def test_leaderboard_cache(monkeypatch):
-    i18n.translations = {
-        "en": {
-            "leaderboard_message": "{header}\n{content}",
-            "leaderboard_header": "LB",
-            "leaderboard_unknown_category": "bad",
-            "leaderboard_error": "err",
+    monkeypatch.setattr(
+        i18n,
+        "translations",
+        {
+            "en": {
+                "leaderboard_message": "{header}\n{content}",
+                "leaderboard_header": "LB",
+                "leaderboard_unknown_category": "bad",
+                "leaderboard_error": "err",
+            },
+            "de": {
+                "leaderboard_message": "{header}\n{content}",
+                "leaderboard_header": "LB",
+                "leaderboard_unknown_category": "bad",
+                "leaderboard_error": "err",
+            },
         },
-        "de": {
-            "leaderboard_message": "{header}\n{content}",
-            "leaderboard_header": "LB",
-            "leaderboard_unknown_category": "bad",
-            "leaderboard_error": "err",
-        },
-    }
+    )
     dummy = DummyCollection()
     monkeypatch.setattr(
         lb_mod, "get_collection", lambda name: dummy if name == "leaderboard" else DummyUsers()
@@ -81,20 +85,24 @@ def test_leaderboard_cache(monkeypatch):
 
 
 def test_cog_unload_cancels(monkeypatch):
-    i18n.translations = {
-        "en": {
-            "leaderboard_message": "{header}\n{content}",
-            "leaderboard_header": "LB",
-            "leaderboard_unknown_category": "bad",
-            "leaderboard_error": "err",
+    monkeypatch.setattr(
+        i18n,
+        "translations",
+        {
+            "en": {
+                "leaderboard_message": "{header}\n{content}",
+                "leaderboard_header": "LB",
+                "leaderboard_unknown_category": "bad",
+                "leaderboard_error": "err",
+            },
+            "de": {
+                "leaderboard_message": "{header}\n{content}",
+                "leaderboard_header": "LB",
+                "leaderboard_unknown_category": "bad",
+                "leaderboard_error": "err",
+            },
         },
-        "de": {
-            "leaderboard_message": "{header}\n{content}",
-            "leaderboard_header": "LB",
-            "leaderboard_unknown_category": "bad",
-            "leaderboard_error": "err",
-        },
-    }
+    )
     bot = types.SimpleNamespace()
 
     monkeypatch.setattr(lb_mod.tasks.Loop, "start", lambda self, *a, **k: None)
