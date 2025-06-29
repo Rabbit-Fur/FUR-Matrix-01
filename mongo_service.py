@@ -3,6 +3,7 @@ import warnings
 
 from pymongo import MongoClient
 from pymongo.errors import ConfigurationError, ConnectionFailure
+from pymongo.server_api import ServerApi
 
 from utils.env_helpers import get_env_str
 
@@ -10,7 +11,7 @@ logger = logging.getLogger(__name__)
 
 # --- Konfiguration aus Umgebungsvariablen ---
 MONGO_URI = get_env_str("MONGODB_URI", required=False)
-MONGO_DB = get_env_str("MONGO_DB", required=False)
+MONGO_DB = get_env_str("MONGO_DB", required=False, default="furdb")
 
 # Fallback auf lokale Instanz
 if not MONGO_URI:
@@ -19,17 +20,19 @@ if not MONGO_URI:
         RuntimeWarning,
     )
     logger.warning("MONGODB_URI not set, using default localhost URI")
-    MONGO_URI = "mongodb://localhost:27017/FURdb"
+    MONGO_URI = "mongodb://localhost:27017/furdb"
 
-MONGO_DB = MONGO_DB or "FURdb"
+MONGO_DB = MONGO_DB or "furdb"
 
 # Sicherstellen, dass DB-Name definiert ist
 if not MONGO_DB:
     raise ConfigurationError("No default database name defined or provided.")
 
 # --- MongoDB-Client erstellen ---
-client = MongoClient(MONGO_URI)
+client = MongoClient(MONGO_URI, server_api=ServerApi("1"))
 db = client[MONGO_DB]
+if db.name != "furdb":
+    raise RuntimeError("\u274c MongoDB DB name must be 'furdb'.")
 logger.info("MongoDB connected: %s [DB: %s]", bool(client), MONGO_DB)
 logger.info("🔌 Verbunden mit MongoDB-Datenbank: %s", db.name)
 

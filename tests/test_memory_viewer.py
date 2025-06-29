@@ -12,9 +12,9 @@ def test_memory_index_requires_admin(client):
 
 def test_memory_detail_displays_dump(app, client):
     login_admin(client)
-    from mongo_service import db as _db
+    from mongo_service import get_collection
 
-    collection = _db["memory_contexts"]
+    collection = get_collection("memory_contexts")
     item_id = collection.insert_one(
         {
             "name": "test",

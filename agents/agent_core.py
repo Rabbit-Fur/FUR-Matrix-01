@@ -9,7 +9,7 @@ from typing import Any, Dict
 
 import openai
 
-from mongo_service import db
+from mongo_service import get_collection
 
 PROMPT_PATH = (
     Path(__file__).resolve().parent.parent / "templates" / "prompts" / "gpt_agent_core_prompt.md"
@@ -23,7 +23,7 @@ class AgentCore:
     def __init__(self, api_key: str, webhook_agent: Any | None = None) -> None:
         openai.api_key = api_key
         self.webhook_agent = webhook_agent
-        self.logs = db["agent_logs"]
+        self.logs = get_collection("agent_logs")
 
     def run(self, prompt: str, role: str = "User", lang: str = "de") -> Dict[str, Any]:
         """Execute a prompt via GPT-4 and return parsed JSON if possible."""

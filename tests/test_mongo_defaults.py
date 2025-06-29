@@ -22,9 +22,9 @@ def _reload_fur_mongo(monkeypatch):
 
 def test_mongo_service_import_without_uri(monkeypatch):
     mod = _reload_mongo_service(monkeypatch)
-    assert mod.MONGO_URI == "mongodb://localhost:27017/FURdb"
+    assert mod.MONGO_URI == "mongodb://localhost:27017/furdb"
 
 
 def test_fur_mongo_import_without_uri(monkeypatch):
     mod = _reload_fur_mongo(monkeypatch)
-    assert mod.MONGO_URI == "mongodb://localhost:27017/FURdb"
+    assert mod.MONGO_URI == "mongodb://localhost:27017/furdb"

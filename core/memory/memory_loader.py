@@ -2,9 +2,9 @@
 
 from typing import List, Optional
 
-from mongo_service import db
+from mongo_service import get_collection
 
-memory_collection = db["memory_contexts"]
+memory_collection = get_collection("memory_contexts")
 
 
 def load_gpt_contexts(tags: Optional[List[str]] = None) -> str:
