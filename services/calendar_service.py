@@ -1,5 +1,6 @@
 import asyncio
 import logging
+import os
 from datetime import datetime, timedelta, timezone
 from typing import Any, Iterable, Optional
 
@@ -7,6 +8,7 @@ from discord.ext import tasks
 from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
 from motor.motor_asyncio import AsyncIOMotorClient, AsyncIOMotorCollection
+from pymongo.errors import ConfigurationError
 
 from config import Config
 from google_auth import load_credentials
@@ -51,7 +53,11 @@ class CalendarService:
             self.tokens = tokens_collection
         else:
             self.client = AsyncIOMotorClient(uri)
-            db = self.client.get_default_database()
+            try:
+                db = self.client.get_default_database()
+            except ConfigurationError:
+                db_name = os.getenv("MONGO_DB", "furdb")
+                db = self.client[db_name]
             self.events = db["events"]
             self.tokens = db["calendar_tokens"]
 
