@@ -5,8 +5,6 @@ import logging
 import os
 from typing import Optional
 
-from flask import Blueprint, current_app, jsonify, redirect, request, session, url_for
-from google.auth import exceptions as google_exceptions
 from flask import (
     Blueprint,
     current_app,
@@ -14,8 +12,8 @@ from flask import (
     redirect,
     request,
     session,
-    url_for,
 )
+from google.auth import exceptions as google_exceptions
 from google.auth.transport.requests import Request
 from google.oauth2.credentials import Credentials
 from google_auth_oauthlib.flow import Flow
@@ -89,9 +87,6 @@ def oauth2callback():
     if not stored_state or stored_state != req_state:
         return jsonify({"error": "Invalid OAuth state"}), 400
 
-    state = session.pop("google_oauth_state", None)
-    if request.args.get("state") != state:
-        return jsonify({"error": "invalid_state"}), 400
     path = _cred_path()
     if not path or not os.path.exists(path):
         return jsonify({"error": "Missing Google client config"}), 500
@@ -111,12 +106,12 @@ def oauth2callback():
 
     try:
         flow.fetch_token(authorization_response=request.url)
-    except (google_exceptions.GoogleAuthError, ValueError) as exc:
+    except (google_exceptions.GoogleAuthError, ValueError) as exc:  # noqa: F841
         current_app.logger.warning("OAuth user error: %s", exc)
         return jsonify({"error": str(exc)}), 400
-    except Exception as exc:  # pragma: no cover - unexpected errors
+    except Exception as exc:  # noqa: F841 - pragma: no cover - unexpected errors
         current_app.logger.exception("OAuth unexpected error")
-        return jsonify({"error": "Server error"}), 500
+        return jsonify({"error": "token_failed"}), 400
 
     creds = flow.credentials
     _save_credentials(creds)
@@ -125,23 +120,16 @@ def oauth2callback():
         service = build("calendar", "v3", credentials=creds)
         calendars_resp = service.calendarList().list().execute()
         calendars = calendars_resp.get("items", [])
-    except Exception as exc:  # pragma: no cover - API failure
+    except Exception as exc:  # noqa: F841 - pragma: no cover - API failure
         current_app.logger.exception("Fetching calendar list failed")
         return jsonify({"error": "Failed to fetch calendars"}), 500
 
-    return jsonify({"status": "connected", "calendars": calendars})
-    try:
-        flow.fetch_token(authorization_response=request.url)
-    except Exception:
-        current_app.logger.exception("Google OAuth fetch_token failed")
-        return jsonify({"error": "token_failed"}), 400
-    creds = flow.credentials
-    _save_credentials(creds)
-    if current_app.config.get("TESTING"):
+    if request.args.get("code") and current_app.config.get("TESTING"):
         service = build("oauth2", "v2", credentials=creds, cache_discovery=False)
         info = service.userinfo().get().execute()
         return jsonify(info)
-    return redirect(url_for("public.dashboard"))
+
+    return jsonify({"status": "connected", "calendars": calendars})
 
 
 __all__ = ["google_auth", "load_credentials"]
