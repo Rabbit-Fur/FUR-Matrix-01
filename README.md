@@ -42,6 +42,9 @@ The FUR System powers the champion, reminder and leaderboard features for the GG
 
 Copy `.env.example` to `.env` and adjust the values for your environment before running the setup commands.
 
+Set the Google OAuth credentials using the environment variables
+`GOOGLE_CLIENT_ID` and `GOOGLE_CLIENT_SECRET`. These must not be committed to version control.
+
 Set `EVENT_CHANNEL_ID` to the Discord channel where event announcements should be posted. This single variable replaces previous names such as `DISCORD_EVENT_CHANNEL_ID`.
 
 1. **Install the dependencies** (required before starting the app)
