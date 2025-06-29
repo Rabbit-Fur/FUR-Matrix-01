@@ -65,6 +65,7 @@ class CalendarCog(commands.Cog):
             embed.add_field(name=ev.get("title", "-"), value=dt_str, inline=False)
         try:
             await user.send(embed=embed)
+            log.info("Sent events DM to %s with %d events", user.id, len(events))
         except discord.Forbidden:
             log.warning("DM blocked for %s", user.id)
         except Exception as exc:  # pragma: no cover - network failures

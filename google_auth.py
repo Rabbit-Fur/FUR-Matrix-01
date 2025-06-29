@@ -21,6 +21,8 @@ from googleapiclient.discovery import build
 
 google_auth = Blueprint("google_auth", __name__)
 
+log = logging.getLogger(__name__)
+
 
 def _cred_path() -> Optional[str]:
     return current_app.config.get("GOOGLE_CREDENTIALS_FILE")
@@ -30,6 +32,7 @@ def _save_credentials(creds: Credentials) -> None:
     path = _cred_path()
     if not path:
         return
+    log.info("Saving Google OAuth credentials to %s", path)
     with open(path, "w", encoding="utf-8") as fh:
         fh.write(creds.to_json())
 
@@ -51,8 +54,10 @@ def load_credentials() -> Optional[Credentials]:
         logging.error("Main: %s", exc)
         return None
     if creds and creds.expired and creds.refresh_token:
+        log.info("Refreshing expired Google credentials")
         creds.refresh(Request())
         _save_credentials(creds)
+    log.info("Loaded Google OAuth credentials from %s", path)
     return creds
 
 
@@ -61,6 +66,7 @@ def auth_google():
     path = _cred_path()
     if not path or not os.path.exists(path):
         return "Missing Google client config", 500
+    log.info("Starting Google OAuth flow")
     with open(path, "r", encoding="utf-8") as fh:
         config = json.load(fh)
     flow = Flow.from_client_config(
@@ -76,6 +82,7 @@ def auth_google():
         include_granted_scopes="true",
         prompt="consent",
     )
+    log.debug("OAuth state=%s", state)
     session["google_oauth_state"] = state
     return redirect(authorization_url)
 
@@ -86,6 +93,7 @@ def oauth2callback():
     req_state = request.args.get("state")
     if not stored_state or stored_state != req_state:
         return jsonify({"error": "Invalid OAuth state"}), 400
+    log.info("Received OAuth callback with state %s", req_state)
 
     path = _cred_path()
     if not path or not os.path.exists(path):
@@ -115,6 +123,7 @@ def oauth2callback():
 
     creds = flow.credentials
     _save_credentials(creds)
+    log.info("OAuth flow completed and credentials saved")
 
     try:
         service = build("calendar", "v3", credentials=creds)
@@ -129,6 +138,7 @@ def oauth2callback():
         info = service.userinfo().get().execute()
         return jsonify(info)
 
+    log.info("User connected %s calendars", len(calendars))
     return jsonify({"status": "connected", "calendars": calendars})
 
 

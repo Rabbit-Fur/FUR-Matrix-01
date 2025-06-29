@@ -28,6 +28,8 @@ os.environ.setdefault(
     "GOOGLE_CALENDAR_SCOPES",
     "https://www.googleapis.com/auth/calendar.readonly",
 )
+os.environ.setdefault("GOOGLE_CLIENT_ID", "gid")
+os.environ.setdefault("GOOGLE_CLIENT_SECRET", "gsecret")
 
 try:
     asyncio.get_event_loop()

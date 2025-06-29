@@ -61,6 +61,8 @@ class Config:
     GOOGLE_SYNC_INTERVAL_MINUTES: int = get_env_int(
         "GOOGLE_SYNC_INTERVAL_MINUTES", required=False, default=2
     )
+    GOOGLE_CLIENT_ID: str = get_env_str("GOOGLE_CLIENT_ID", required=True)
+    GOOGLE_CLIENT_SECRET: str = get_env_str("GOOGLE_CLIENT_SECRET", required=True)
     GOOGLE_REDIRECT_URI: str | None = get_env_str("GOOGLE_REDIRECT_URI", required=False)
     GOOGLE_CREDENTIALS_FILE: str | None = get_env_str(
         "GOOGLE_CREDENTIALS_FILE",
