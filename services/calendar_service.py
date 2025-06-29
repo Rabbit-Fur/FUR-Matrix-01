@@ -44,7 +44,7 @@ class CalendarService:
         tokens_collection: Optional[AsyncIOMotorCollection] = None,
     ) -> None:
         self.calendar_id = calendar_id or Config.GOOGLE_CALENDAR_ID
-        uri = mongo_uri or Config.MONGODB_URI or "mongodb://localhost:27017/furdb"
+        uri = mongo_uri or Config.MONGODB_URI or "mongodb://localhost:27017/FURdb"
         if events_collection and tokens_collection:
             self.client = None
             self.events = events_collection

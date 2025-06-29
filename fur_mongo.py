@@ -1,6 +1,6 @@
 """
 fur_mongo.py – zentrale MongoDB-Verbindung für das FUR-System
-Verbindet sich mit der Datenbank 'furdb' und stellt globale Collection-Zugriffe bereit.
+Verbindet sich mit der Datenbank 'FURdb' und stellt globale Collection-Zugriffe bereit.
 """
 
 import logging
@@ -23,20 +23,21 @@ logging.basicConfig(level=logging.INFO)
 
 # === MongoDB-URI aus Umgebungsvariable ===
 MONGO_URI = get_env_str("MONGODB_URI", required=False)
+MONGO_DB = get_env_str("MONGO_DB", required=False, default="FURdb")
 if not MONGO_URI:
     warnings.warn(
         "MONGODB_URI not set, falling back to local MongoDB URI",
         RuntimeWarning,
     )
     logger.warning("MONGODB_URI not set, using default localhost URI")
-    MONGO_URI = "mongodb://localhost:27017/furdb"
+    MONGO_URI = "mongodb://localhost:27017/FURdb"
 
 # === Verbindung herstellen ===
 try:
     client = MongoClient(MONGO_URI, server_api=ServerApi("1"))
     client.admin.command("ping")
-    logger.info("✅ Verbindung zu MongoDB (furdb) erfolgreich.")
-    db = client["furdb"]
+    logger.info("✅ Verbindung zu MongoDB (%s) erfolgreich.", MONGO_DB)
+    db = client[MONGO_DB]
 
     # Collection-Verweise
     users = db["users"]

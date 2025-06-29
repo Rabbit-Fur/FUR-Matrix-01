@@ -21,7 +21,7 @@ jobs:
           --health-retries=5
 
     env:
-      MONGODB_URI: "mongodb://localhost:27017/furdb"
+      MONGODB_URI: "mongodb://localhost:27017/FURdb"
       FLASK_ENV: "test"
       SECRET_KEY: "test_key"
 

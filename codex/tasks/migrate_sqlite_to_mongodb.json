@@ -1,6 +1,6 @@
 {
   "name": "Migrate from SQLite to MongoDB",
-  "description": "Remove all SQLite usage and fully migrate to MongoDB (furdb). Replace connection logic, queries, and data access patterns.",
+  "description": "Remove all SQLite usage and fully migrate to MongoDB (FURdb). Replace connection logic, queries, and data access patterns.",
   "source_files": [
     "init_db_core.py",
     "database/__init__.py",
