@@ -20,7 +20,7 @@ from werkzeug.utils import secure_filename
 from agents.webhook_agent import WebhookAgent
 from config import Config
 from fur_lang.i18n import t
-from mongo_service import db
+from mongo_service import get_collection
 from utils.discord_util import require_roles
 from utils.poster_generator import generate_event_poster
 from web.auth.decorators import r4_required
@@ -51,7 +51,7 @@ def create_event():
         event_time = request.form.get("event_date")
         description = request.form.get("description")
         try:
-            db["events"].insert_one(
+            get_collection("events").insert_one(
                 {
                     "title": title,
                     "event_time": event_time,
@@ -99,7 +99,7 @@ def edit_event():
         flash(t("unknown_event", default="Unknown event"), "danger")
         return redirect(url_for("admin.events"))
 
-    collection = db["events"]
+    collection = get_collection("events")
     event = collection.find_one({"_id": ObjectId(event_id)})
     if not event:
         flash(t("unknown_event", default="Unknown event"), "danger")
@@ -128,7 +128,7 @@ def edit_event():
 @r4_required
 @admin.route("/events")
 def events():
-    rows = list(db["events"].find().sort("event_time", 1))
+    rows = list(get_collection("events").find().sort("event_time", 1))
     for row in rows:
         row["id"] = str(row.get("_id"))
     return render_template("admin/events.html", events=rows)
@@ -150,11 +150,13 @@ def participants():
     participant_list = []
     if event_id:
         try:
-            event = db["events"].find_one({"_id": ObjectId(event_id)})
+            event = get_collection("events").find_one({"_id": ObjectId(event_id)})
             if event:
-                participant_docs = list(db["event_participants"].find({"event_id": event["_id"]}))
+                participant_docs = list(
+                    get_collection("event_participants").find({"event_id": event["_id"]})
+                )
                 for p in participant_docs:
-                    user = db["users"].find_one({"discord_id": p["user_id"]})
+                    user = get_collection("users").find_one({"discord_id": p["user_id"]})
                     participant_list.append(
                         {"username": user.get("username") if user else p["user_id"]}
                     )
@@ -169,7 +171,7 @@ def participants():
 @r4_required
 @admin.route("/reminders")
 def reminder_admin():
-    reminders = list(db["reminders"].find().sort("send_time", 1))
+    reminders = list(get_collection("reminders").find().sort("send_time", 1))
     return render_template("admin/reminders.html", reminders=reminders)
 
 
@@ -286,7 +288,7 @@ def export_scores():
 @r4_required
 def post_event(event_id: str):
     """Post an event via bot or webhook."""
-    event = db["events"].find_one({"_id": ObjectId(event_id)})
+    event = get_collection("events").find_one({"_id": ObjectId(event_id)})
     if not event:
         flash(t("unknown_event"), "danger")
         return redirect(url_for("admin.events"))

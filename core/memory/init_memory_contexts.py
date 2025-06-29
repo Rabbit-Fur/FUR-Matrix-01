@@ -5,11 +5,12 @@ import os
 from datetime import datetime
 
 from pymongo import MongoClient
+from pymongo.server_api import ServerApi
 
 # 🔧 MongoDB-Verbindung
 MONGO_URI = os.getenv("MONGODB_URI")
-MONGO_DB = os.getenv("MONGO_DB", "FURdb")
-client = MongoClient(MONGO_URI)
+MONGO_DB = os.getenv("MONGO_DB", "furdb")
+client = MongoClient(MONGO_URI, server_api=ServerApi("1"))
 db = client[MONGO_DB]
 memory_collection = db["memory_contexts"]
 

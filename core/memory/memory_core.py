@@ -7,9 +7,9 @@ in der MongoDB-Collection `memory_contexts`.
 
 from datetime import datetime
 
-from mongo_service import db
+from mongo_service import get_collection
 
-memory_collection = db["memory_contexts"]
+memory_collection = get_collection("memory_contexts")
 
 
 def store_memory_context(key: str, data: dict) -> None:

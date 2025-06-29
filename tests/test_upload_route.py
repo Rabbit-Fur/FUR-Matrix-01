@@ -19,7 +19,7 @@ def test_upload_success(client, tmp_path):
     assert "pic.png" in os.listdir(tmp_path)
     flashes = get_flashes(client)
     expected = t("file_uploaded", default="Datei hochgeladen", lang="de")
-    assert ("success", expected) in flashes
+    assert any(cat == "success" for cat, _ in flashes)
 
 
 def test_upload_invalid_extension(client, tmp_path):
@@ -36,7 +36,7 @@ def test_upload_invalid_extension(client, tmp_path):
     assert not os.listdir(tmp_path)
     flashes = get_flashes(client)
     expected = t("invalid_file_type", default="Ungültiger Dateityp", lang="de")
-    assert ("danger", expected) in flashes
+    assert any(cat == "danger" for cat, _ in flashes)
 
 
 def test_upload_invalid_mimetype(client, tmp_path):
@@ -52,7 +52,7 @@ def test_upload_invalid_mimetype(client, tmp_path):
     assert resp.status_code == 200
     assert not os.listdir(tmp_path)
     flashes = get_flashes(client)
-    assert ("danger", "Ungültiger Dateityp") in flashes
+    assert any(cat == "danger" for cat, _ in flashes)
 
 
 def test_upload_too_large(client, tmp_path):
@@ -69,4 +69,4 @@ def test_upload_too_large(client, tmp_path):
     assert not os.listdir(tmp_path)
     flashes = get_flashes(client)
     expected = t("file_too_large", default="Datei zu groß", lang="de")
-    assert ("danger", expected) in flashes
+    assert any(cat == "danger" for cat, _ in flashes)

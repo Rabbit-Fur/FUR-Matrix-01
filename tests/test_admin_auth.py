@@ -66,9 +66,8 @@ def test_export_scores_requires_r4(client):
 def test_post_event_requires_r4(client):
     import importlib
 
-    admin_mod = importlib.import_module("blueprints.admin")
-    admin_mod.db = mongo_service.db
-    collection = mongo_service.db["events"]
+    importlib.import_module("blueprints.admin")
+    collection = mongo_service.get_collection("events")
     event_id = collection.insert_one(
         {"title": "T", "description": "d", "event_time": "soon"}
     ).inserted_id
