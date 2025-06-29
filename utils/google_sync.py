@@ -3,69 +3,30 @@
 from __future__ import annotations
 
 import logging
-import os
-import pickle
 from datetime import datetime, timezone
 from typing import Iterable
 
-from google.auth.transport.requests import Request
-from google.oauth2.credentials import Credentials
-from googleapiclient.discovery import build
-
 from config import Config
+from google_calendar_sync import fetch_upcoming_events, get_calendar_service
 from mongo_service import get_collection
-
-TOKEN_PATH = os.path.join("token", "token.pickle")
 
 log = logging.getLogger(__name__)
 
 
-def _load_token() -> Credentials | None:
-    """Load OAuth token from pickle file."""
-    if not os.path.exists(TOKEN_PATH):
-        log.warning("Google token missing – run google_oauth_setup.py")
-        return None
-    with open(TOKEN_PATH, "rb") as fh:
-        creds: Credentials = pickle.load(fh)
-    if creds and creds.expired and creds.refresh_token:
-        creds.refresh(Request())
-        with open(TOKEN_PATH, "wb") as fh:
-            pickle.dump(creds, fh)
-    return creds
-
-
 def get_service():
     """Return a Calendar API service or ``None`` if credentials are missing."""
-    creds = _load_token()
-    if not creds:
-        return None
-    return build("calendar", "v3", credentials=creds, cache_discovery=False)
+    return get_calendar_service()
 
 
 def fetch_calendar_events(
     service, calendar_id: str, time_min: datetime | None = None
 ) -> list[dict]:
     """Fetch events from Google Calendar."""
-    if not service:
-        return []
-    events: list[dict] = []
-    page_token = None
-    params = {
-        "calendarId": calendar_id,
-        "singleEvents": True,
-        "orderBy": "updated",
-    }
-    if time_min:
-        params["timeMin"] = time_min.isoformat() + "Z"
-    while True:
-        if page_token:
-            params["pageToken"] = page_token
-        result = service.events().list(**params).execute()
-        events.extend(result.get("items", []))
-        page_token = result.get("nextPageToken")
-        if not page_token:
-            break
-    return events
+    return fetch_upcoming_events(
+        service,
+        calendar_id=calendar_id,
+        time_min=time_min,
+    )
 
 
 def _parse_datetime(info: dict | None) -> datetime | None:
