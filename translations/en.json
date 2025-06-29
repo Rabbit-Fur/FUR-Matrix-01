@@ -394,5 +394,5 @@
     "calendar_today_title": "Today's Events",
     "calendar_week_title": "Events This Week",
     "calendar_link_start": "Click the button below to authorize.",
-    "calendar_timezone_set": "Timezone set to {zone}",
+    "calendar_timezone_set": "Timezone set to {zone}"
 }
