@@ -4,6 +4,7 @@ import importlib
 def _reload_without_token(monkeypatch):
     monkeypatch.delenv("TOKEN_GITHUB_API", raising=False)
     monkeypatch.delenv("REPO_GITHUB", raising=False)
+    monkeypatch.setattr("dotenv.load_dotenv", lambda *a, **k: None)
     import utils.github_service as gh_mod
 
     return importlib.reload(gh_mod)

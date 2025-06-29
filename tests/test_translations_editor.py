@@ -9,8 +9,7 @@ def test_translations_editor_save(client, app, monkeypatch, tmp_path):
     monkeypatch.setattr(app, "root_path", str(tmp_path))
     translations_dir = tmp_path / "translations"
     translations_dir.mkdir()
-    i18n.translations.clear()
-    i18n.translations["de"] = {}
+    monkeypatch.setattr(i18n, "translations", {"de": {}})
 
     monkeypatch.setattr(i18n, "get_supported_languages", lambda: ["de"])
 

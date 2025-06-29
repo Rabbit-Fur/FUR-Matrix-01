@@ -2,6 +2,8 @@ import asyncio
 import types
 from datetime import datetime, timedelta
 
+import pytest
+
 from bot.cogs import reminder_autopilot as autopilot_mod
 
 
@@ -66,3 +68,25 @@ def test_autopilot_ignores_opted_out_user(monkeypatch):
 
     assert not user.sent
     assert sent_col == []
+
+
+@pytest.mark.asyncio
+async def test_send_poster_skips_opted_out(monkeypatch):
+    called = {"sent": False}
+
+    async def fake_send(file=None):
+        called["sent"] = True
+
+    member = types.SimpleNamespace(id=1, bot=False, send=fake_send)
+    guild = types.SimpleNamespace(members=[member])
+    bot = types.SimpleNamespace(get_guild=lambda gid: guild)
+
+    monkeypatch.setattr(autopilot_mod, "is_opted_out", lambda uid: True)
+    monkeypatch.setattr(autopilot_mod.discord, "File", lambda p: p)
+    monkeypatch.setattr(asyncio, "sleep", lambda d: None)
+
+    cog = autopilot_mod.ReminderAutopilot.__new__(autopilot_mod.ReminderAutopilot)
+    cog.bot = bot
+    cog.delay = 0
+
+    await autopilot_mod.ReminderAutopilot._send_poster_to_members(cog, "poster")

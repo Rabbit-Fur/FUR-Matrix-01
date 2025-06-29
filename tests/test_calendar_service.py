@@ -90,3 +90,27 @@ async def test_sync_resync_on_410(monkeypatch):
     token = await tokens_col.find_one({"_id": "google"})
     assert token["token"] == "tok2"
     assert count == 0
+
+
+@pytest.mark.asyncio
+async def test_sync_uses_stored_token(monkeypatch):
+    events_col = DummyCollection()
+    tokens_col = DummyCollection()
+    tokens_col.docs.append({"_id": "google", "token": "old"})
+    service = mod.CalendarService(
+        calendar_id="c1", events_collection=events_col, tokens_collection=tokens_col
+    )
+
+    captured = {}
+
+    async def fake_api(params):
+        captured.update(params)
+        return {"items": [], "nextSyncToken": "new"}
+
+    monkeypatch.setattr(service, "_api_list", fake_api)
+
+    count = await service.sync()
+    assert count == 0
+    assert captured.get("syncToken") == "old"
+    token = await tokens_col.find_one({"_id": "google"})
+    assert token["token"] == "new"
