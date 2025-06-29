@@ -81,3 +81,18 @@ async def test_cmd_today_sends_embed(monkeypatch):
 
     assert interaction.ephemeral
     assert isinstance(interaction.user.embed, discord.Embed)
+
+
+@pytest.mark.asyncio
+async def test_setup_skips_duplicate_registration(monkeypatch):
+    from discord.ext import commands
+
+    from bot.cogs import calendar_cog as mod
+
+    bot = commands.Bot(command_prefix="!", intents=discord.Intents.none())
+
+    await mod.setup(bot)
+    await mod.setup(bot)  # second call should not register again
+
+    cmds = [c for c in bot.tree.get_commands() if c.name == "calendar"]
+    assert len(cmds) == 1
