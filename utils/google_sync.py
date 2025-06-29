@@ -3,23 +3,41 @@
 from __future__ import annotations
 
 import logging
+import os
+import pickle
 from datetime import datetime, timezone
 from typing import Iterable
 
+from google.auth.transport.requests import Request
+from google.oauth2.credentials import Credentials
 from googleapiclient.discovery import build
 
 from config import Config
-from google_auth import load_credentials
 from mongo_service import get_collection
+
+TOKEN_PATH = os.path.join("token", "token.pickle")
 
 log = logging.getLogger(__name__)
 
 
+def _load_token() -> Credentials | None:
+    """Load OAuth token from pickle file."""
+    if not os.path.exists(TOKEN_PATH):
+        log.warning("Google token missing – run google_oauth_setup.py")
+        return None
+    with open(TOKEN_PATH, "rb") as fh:
+        creds: Credentials = pickle.load(fh)
+    if creds and creds.expired and creds.refresh_token:
+        creds.refresh(Request())
+        with open(TOKEN_PATH, "wb") as fh:
+            pickle.dump(creds, fh)
+    return creds
+
+
 def get_service():
     """Return a Calendar API service or ``None`` if credentials are missing."""
-    creds = load_credentials()
+    creds = _load_token()
     if not creds:
-        log.warning("Google OAuth credentials missing – skipping Google sync")
         return None
     return build("calendar", "v3", credentials=creds, cache_discovery=False)
 
