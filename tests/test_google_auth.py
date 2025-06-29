@@ -99,6 +99,17 @@ def test_oauth2callback_success(client, tmp_path, monkeypatch):
     cfg_file.write_text(
         json.dumps({"web": {"client_id": "id", "client_secret": "s", "token_uri": "https://t"}})
     )
+def test_oauth2callback_success(client, tmp_path, monkeypatch):
+    config = {
+        "web": {
+            "client_id": "id",
+            "client_secret": "secret",
+            "auth_uri": "https://auth",
+            "token_uri": "https://token",
+        }
+    }
+    cfg_file = tmp_path / "google.json"
+    cfg_file.write_text(json.dumps(config))
     client.application.config.update(
         GOOGLE_CREDENTIALS_FILE=str(cfg_file),
         GOOGLE_REDIRECT_URI="http://localhost:8080/oauth2callback",
@@ -114,6 +125,14 @@ def test_oauth2callback_success(client, tmp_path, monkeypatch):
 
         def fetch_token(self, authorization_response=None):
             return None
+        token = "tok"
+
+    class FakeFlow:
+        def __init__(self):
+            self.credentials = FakeCred()
+
+        def fetch_token(self, authorization_response=None):
+            self.called = authorization_response
 
     monkeypatch.setattr(
         mod.Flow,
@@ -141,3 +160,69 @@ def test_oauth2callback_success(client, tmp_path, monkeypatch):
     resp = client.get("/oauth2callback?state=good")
     assert resp.status_code == 200
     assert resp.json == {"status": "connected", "calendars": ["c1"]}
+        lambda cfg, scopes, state=None, redirect_uri=None: FakeFlow(),
+    )
+
+    class FakeService:
+        def userinfo(self):
+            return self
+
+        def get(self):
+            return self
+
+        def execute(self):
+            return {"ok": True}
+
+    monkeypatch.setattr(mod, "build", lambda *a, **k: FakeService())
+
+    with client.session_transaction() as sess:
+        sess["google_oauth_state"] = "state1"
+
+    resp = client.get("/oauth2callback?state=state1&code=abc")
+    assert resp.status_code == 200
+    assert resp.is_json
+    assert resp.json == {"ok": True}
+
+
+def test_oauth2callback_invalid_state_or_token(client, tmp_path, monkeypatch):
+    config = {
+        "web": {
+            "client_id": "id",
+            "client_secret": "secret",
+            "auth_uri": "https://auth",
+            "token_uri": "https://token",
+        }
+    }
+    cfg_file = tmp_path / "google.json"
+    cfg_file.write_text(json.dumps(config))
+    client.application.config.update(
+        GOOGLE_CREDENTIALS_FILE=str(cfg_file),
+        GOOGLE_REDIRECT_URI="http://localhost:8080/oauth2callback",
+        GOOGLE_CALENDAR_SCOPES=["scope"],
+    )
+
+    class FakeFlow:
+        def __init__(self):
+            self.credentials = None
+
+        def fetch_token(self, authorization_response=None):
+            raise RuntimeError("fail")
+
+    monkeypatch.setattr(
+        mod.Flow,
+        "from_client_config",
+        lambda cfg, scopes, state=None, redirect_uri=None: FakeFlow(),
+    )
+    monkeypatch.setattr(mod, "build", lambda *a, **k: None)
+
+    with client.session_transaction() as sess:
+        sess["google_oauth_state"] = "good"
+
+    resp = client.get("/oauth2callback?state=bad&code=x")
+    assert resp.status_code == 400
+
+    with client.session_transaction() as sess:
+        sess["google_oauth_state"] = "good"
+
+    resp = client.get("/oauth2callback?state=good&code=x")
+    assert resp.status_code == 400

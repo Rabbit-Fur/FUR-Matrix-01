@@ -38,6 +38,9 @@ instance/
 .mypy_cache/
 .coverage
 
+# Google OAuth credentials
+credentials/oauth_client.json
+
 # Node / Frontend (falls vorhanden)
 node_modules/
 

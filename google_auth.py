@@ -7,6 +7,15 @@ from typing import Optional
 
 from flask import Blueprint, current_app, jsonify, redirect, request, session, url_for
 from google.auth import exceptions as google_exceptions
+from flask import (
+    Blueprint,
+    current_app,
+    jsonify,
+    redirect,
+    request,
+    session,
+    url_for,
+)
 from google.auth.transport.requests import Request
 from google.oauth2.credentials import Credentials
 from google_auth_oauthlib.flow import Flow
@@ -80,6 +89,9 @@ def oauth2callback():
     if not stored_state or stored_state != req_state:
         return jsonify({"error": "Invalid OAuth state"}), 400
 
+    state = session.pop("google_oauth_state", None)
+    if request.args.get("state") != state:
+        return jsonify({"error": "invalid_state"}), 400
     path = _cred_path()
     if not path or not os.path.exists(path):
         return jsonify({"error": "Missing Google client config"}), 500
@@ -118,6 +130,18 @@ def oauth2callback():
         return jsonify({"error": "Failed to fetch calendars"}), 500
 
     return jsonify({"status": "connected", "calendars": calendars})
+    try:
+        flow.fetch_token(authorization_response=request.url)
+    except Exception:
+        current_app.logger.exception("Google OAuth fetch_token failed")
+        return jsonify({"error": "token_failed"}), 400
+    creds = flow.credentials
+    _save_credentials(creds)
+    if current_app.config.get("TESTING"):
+        service = build("oauth2", "v2", credentials=creds, cache_discovery=False)
+        info = service.userinfo().get().execute()
+        return jsonify(info)
+    return redirect(url_for("public.dashboard"))
 
 
 __all__ = ["google_auth", "load_credentials"]
