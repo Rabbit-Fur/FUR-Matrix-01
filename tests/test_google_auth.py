@@ -81,6 +81,24 @@ def test_load_credentials_invalid_returns_none(tmp_path, app):
     assert mod.load_credentials() is None
 
 
+def test_oauth2callback_invalid_state(client, tmp_path, monkeypatch):
+    cfg_file = tmp_path / "google.json"
+    cfg_file.write_text(
+        json.dumps({"web": {"client_id": "id", "client_secret": "s", "token_uri": "https://t"}})
+    )
+    client.application.config.update(GOOGLE_CREDENTIALS_FILE=str(cfg_file))
+    with client.session_transaction() as sess:
+        sess["google_oauth_state"] = "good"
+    resp = client.get("/oauth2callback?state=bad")
+    assert resp.status_code == 400
+    assert resp.json["error"] == "Invalid OAuth state"
+
+
+def test_oauth2callback_success(client, tmp_path, monkeypatch):
+    cfg_file = tmp_path / "google.json"
+    cfg_file.write_text(
+        json.dumps({"web": {"client_id": "id", "client_secret": "s", "token_uri": "https://t"}})
+    )
 def test_oauth2callback_success(client, tmp_path, monkeypatch):
     config = {
         "web": {
@@ -99,6 +117,14 @@ def test_oauth2callback_success(client, tmp_path, monkeypatch):
     )
 
     class FakeCred:
+        def to_json(self):
+            return "{}"
+
+    class FakeFlow:
+        credentials = FakeCred()
+
+        def fetch_token(self, authorization_response=None):
+            return None
         token = "tok"
 
     class FakeFlow:
@@ -111,6 +137,29 @@ def test_oauth2callback_success(client, tmp_path, monkeypatch):
     monkeypatch.setattr(
         mod.Flow,
         "from_client_config",
+        lambda cfg, scopes, redirect_uri=None, state=None: FakeFlow(),
+    )
+
+    class FakeService:
+        def calendarList(self):
+            class L:
+                def list(self_inner):
+                    return self_inner
+
+                def execute(self_inner):
+                    return {"items": ["c1"]}
+
+            return L()
+
+    monkeypatch.setattr(mod, "build", lambda *a, **k: FakeService())
+    monkeypatch.setattr(mod, "_save_credentials", lambda c: None)
+
+    with client.session_transaction() as sess:
+        sess["google_oauth_state"] = "good"
+
+    resp = client.get("/oauth2callback?state=good")
+    assert resp.status_code == 200
+    assert resp.json == {"status": "connected", "calendars": ["c1"]}
         lambda cfg, scopes, state=None, redirect_uri=None: FakeFlow(),
     )
 
