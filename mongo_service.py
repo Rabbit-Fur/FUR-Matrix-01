@@ -29,12 +29,17 @@ if not MONGO_DB:
     raise ConfigurationError("No default database name defined or provided.")
 
 # --- MongoDB-Client erstellen ---
-client = MongoClient(MONGO_URI, server_api=ServerApi("1"))
-db = client[MONGO_DB]
-if db.name != "furdb":
-    raise RuntimeError("\u274c MongoDB DB name must be 'furdb'.")
-logger.info("MongoDB connected: %s [DB: %s]", bool(client), MONGO_DB)
-logger.info("🔌 Verbunden mit MongoDB-Datenbank: %s", db.name)
+try:
+    client = MongoClient(MONGO_URI, server_api=ServerApi("1"), serverSelectionTimeoutMS=5000)
+    client.admin.command("ping")
+    db = client[MONGO_DB]
+    if db.name != "furdb":
+        raise RuntimeError("\u274c MongoDB DB name must be 'furdb'.")
+    logger.info("MongoDB connected: %s [DB: %s]", bool(client), MONGO_DB)
+    logger.info("🔌 Verbunden mit MongoDB-Datenbank: %s", db.name)
+except ConnectionFailure as exc:
+    logger.error("MongoDB connection failed: %s", exc)
+    raise
 
 
 # --- Funktionen ---
