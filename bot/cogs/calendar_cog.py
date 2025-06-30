@@ -40,12 +40,14 @@ class CalendarCog(commands.Cog):
     def __init__(self, bot: commands.Bot) -> None:
         self.bot = bot
         self.service = CalendarService()
+        self.sync_loop.start()
         self.daily_loop.start()
         self.weekly_loop.start()
 
     def cog_unload(self) -> None:  # pragma: no cover - lifecycle
         self.daily_loop.cancel()
         self.weekly_loop.cancel()
+        self.sync_loop.cancel()
 
     def _get_user_timezone(self, user_id: int) -> ZoneInfo:
         user = get_collection("users").find_one({"discord_id": str(user_id)})
@@ -137,6 +139,15 @@ class CalendarCog(commands.Cog):
             if member.bot:
                 continue
             await self._send_events_dm(member, events, title)
+
+    @tasks.loop(minutes=Config.GOOGLE_SYNC_INTERVAL_MINUTES)
+    async def sync_loop(self) -> None:
+        """Regularly synchronize events from Google to MongoDB."""
+        await self.bot.wait_until_ready()
+        try:
+            await self.service.sync()
+        except Exception:  # noqa: BLE001
+            log.exception("Calendar sync failed")
 
     @tasks.loop(hours=1)
     async def daily_loop(self) -> None:

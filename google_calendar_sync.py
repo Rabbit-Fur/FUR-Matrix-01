@@ -6,6 +6,7 @@ from typing import Any, Optional
 from google.auth.transport.requests import Request
 from google.oauth2.credentials import Credentials
 from googleapiclient.discovery import build
+from googleapiclient.errors import HttpError
 
 from config import Config
 from mongo_service import get_collection
@@ -22,6 +23,20 @@ logger.setLevel(logging.INFO)
 
 # Token path
 TOKEN_PATH = Path("/data/google_token.json")
+
+
+def _get_token_collection():
+    """Return the MongoDB collection used for sync tokens."""
+    return get_collection("calendar_tokens")
+
+
+def _load_sync_token() -> str | None:
+    doc = _get_token_collection().find_one({"_id": "google"})
+    return doc.get("token") if doc else None
+
+
+def _store_sync_token(token: str) -> None:
+    _get_token_collection().update_one({"_id": "google"}, {"$set": {"token": token}}, upsert=True)
 
 
 def load_credentials() -> Optional[Credentials]:
@@ -140,7 +155,34 @@ def sync_to_mongodb(collection: str = "calendar_events") -> int:
     if not service:
         logger.warning("No calendar service – skipping sync")
         return 0
-    events = fetch_upcoming_events(service)
+    calendar_id = Config.GOOGLE_CALENDAR_ID
+    if not calendar_id:
+        logger.warning("GOOGLE_CALENDAR_ID not configured")
+        return 0
+    token = _load_sync_token()
+    params: dict[str, Any] = {
+        "calendarId": calendar_id,
+        "singleEvents": True,
+        "showDeleted": True,
+        "maxResults": 2500,
+    }
+    if token:
+        params["syncToken"] = token
+    else:
+        params["timeMin"] = datetime.utcnow().isoformat() + "Z"
+    try:
+        data = service.events().list(**params).execute()
+    except HttpError as exc:
+        if exc.resp.status == 410:  # sync token expired
+            logger.warning("Sync token expired; performing full sync")
+            params.pop("syncToken", None)
+            params["timeMin"] = datetime.utcnow().isoformat() + "Z"
+            data = service.events().list(**params).execute()
+        else:
+            logger.exception("Calendar API error")
+            return 0
+
+    events = data.get("items", [])
     if not events:
         logger.info("No events returned from calendar")
         return 0
@@ -156,6 +198,9 @@ def sync_to_mongodb(collection: str = "calendar_events") -> int:
             count += 1
         except Exception:
             logger.exception("Failed to sync event %s", doc.get("google_event_id"))
+    new_token = data.get("nextSyncToken")
+    if new_token:
+        _store_sync_token(new_token)
     logger.info("Synced %s events to MongoDB", count)
     return count
 
