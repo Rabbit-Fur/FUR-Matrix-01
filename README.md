@@ -8,8 +8,8 @@ Du agierst als KI-Entwicklungsagent in diesem Repository. Grundlage deines Hande
 
 1. **Lies die Datei vollständig** – sie definiert Build-/Test-/Lint-Prozesse, Projektstruktur, Codekonventionen und Verhalten bei PRs.
 2. **Halte dich strikt an alle Vorgaben**:
-   - Formatierungen, z. B. via `make fmt` oder `npm run format`
-   - Tests in `tests/`, z. B. via `pytest`, `npm test`, `make test`
+   - Formatierungen und Linting, z. B. via `make lint`
+   - Tests in `tests/`, z. B. via `pytest` oder `make test`
    - PRs mit klarer Beschreibung und referenzierten Issues
    - Codeänderungen gemäß Struktur: `src/`, `lib/`, `docs/`, `scripts/`
 3. **Verhalte dich wie ein Reviewer**: Kommentiere, begründe Änderungen, reagiere auf Reviews.
