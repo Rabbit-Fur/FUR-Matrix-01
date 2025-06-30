@@ -34,7 +34,7 @@ def test_scheduler_jobs(monkeypatch):
     agent_mod = importlib.reload(__import__("agents.scheduler_agent", fromlist=["SchedulerAgent"]))
 
     monkeypatch.setattr(agent_mod, "start_google_sync", lambda *a, **k: None)
-    monkeypatch.setattr(agent_mod, "sync_google_calendar", lambda: None)
+    monkeypatch.setattr(agent_mod, "sync_to_mongodb", lambda: None)
     monkeypatch.setattr(agent_mod, "run_champion_autopilot", lambda **k: None)
 
     agent = agent_mod.SchedulerAgent()
@@ -136,7 +136,7 @@ def test_google_sync_job_uses_app_context(monkeypatch):
 
         called["app"] = current_app.name
 
-    monkeypatch.setattr(agent_mod, "sync_google_calendar", fake_sync)
+    monkeypatch.setattr(agent_mod, "sync_to_mongodb", fake_sync)
 
     agent = agent_mod.SchedulerAgent()
     agent.schedule_google_sync(interval_minutes=1)

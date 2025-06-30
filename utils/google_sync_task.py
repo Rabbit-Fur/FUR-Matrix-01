@@ -9,7 +9,7 @@ import os
 from discord.ext import tasks
 from flask import current_app
 
-from utils.google_sync import sync_google_calendar
+from google_calendar_sync import sync_to_mongodb
 from web import create_app
 
 log = logging.getLogger(__name__)
@@ -33,10 +33,10 @@ def _get_app():
 
 @tasks.loop(minutes=DEFAULT_INTERVAL_MINUTES)
 async def google_sync_loop() -> None:
-    """Run ``sync_google_calendar`` in a thread within app context."""
+    """Run ``sync_to_mongodb`` in a thread within app context."""
     app = _get_app()
     with app.app_context():
-        await asyncio.to_thread(sync_google_calendar)
+        await asyncio.to_thread(sync_to_mongodb)
 
 
 def start_google_sync(interval_minutes: int | None = None) -> None:

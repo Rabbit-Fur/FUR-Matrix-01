@@ -11,6 +11,7 @@ from discord.ext import commands, tasks
 
 from config import Config, is_production
 from fur_lang.i18n import t
+from google_calendar_sync import fetch_upcoming_events, get_calendar_service
 from mongo_service import get_collection
 from utils import poster_generator
 from utils.event_helpers import get_events_for, parse_event_time
@@ -85,15 +86,20 @@ class ReminderAutopilot(commands.Cog):
         window_end = now + timedelta(minutes=11)
 
         try:
-            today_events = get_events_for(now)
-            events = [
-                ev
-                for ev in today_events
-                if (
-                    (ev_time := parse_event_time(ev.get("event_time")))
-                    and window_start <= ev_time <= window_end
-                )
-            ]
+            service = get_calendar_service()
+            events = fetch_upcoming_events(
+                service,
+                time_min=window_start,
+                time_max=window_end,
+                max_results=50,
+            )
+            mapped_events = []
+            for ev in events:
+                doc = get_collection("events").find_one({"google_event_id": ev.get("id")})
+                if doc:
+                    doc.update(ev)
+                    mapped_events.append(doc)
+            events = mapped_events
             for event in events:
                 participants = get_collection("event_participants").find({"event_id": event["_id"]})
                 for p in participants:

@@ -1,6 +1,6 @@
 from datetime import timezone
 
-import utils.google_sync as mod
+import google_calendar_sync as mod
 
 
 class DummyCollection:
@@ -11,90 +11,51 @@ class DummyCollection:
         self.docs[flt["google_event_id"]] = update["$set"]
 
 
-def test_import_events_upserts(monkeypatch):
+def test_sync_to_mongodb(monkeypatch):
     dummy = DummyCollection()
-    monkeypatch.setattr(mod, "get_collection", lambda name: dummy)
 
-    events = [
-        {
-            "id": "g1",
-            "summary": "Test",
-            "description": "foo",
-            "location": "bar",
-            "start": {"dateTime": "2025-01-01T10:00:00Z"},
-            "end": {"dateTime": "2025-01-01T11:00:00Z"},
-            "updated": "2025-01-01T09:00:00Z",
-        }
-    ]
-    mod.import_events(events)
-    assert "g1" in dummy.docs
-
-    events2 = [
-        {
-            "id": "g1",
-            "summary": "Test2",
-            "description": "baz",
-            "location": "qux",
-            "start": {"dateTime": "2025-01-01T12:00:00Z"},
-            "end": {"dateTime": "2025-01-01T13:00:00Z"},
-            "updated": "2025-01-02T09:00:00Z",
-        }
-    ]
-    mod.import_events(events2)
-    doc = dummy.docs["g1"]
-    assert doc["title"] == "Test2"
-    assert doc["start"].hour == 12
-    assert doc["end"].hour == 13
-    assert doc["start"].tzinfo == timezone.utc
-    assert doc["end"].tzinfo == timezone.utc
-    assert doc["event_time"].tzinfo == timezone.utc
-    assert doc["description"] == "baz"
-    assert doc["location"] == "qux"
-    assert doc["source"] == "google"
-
-
-def test_sync_google_calendar(monkeypatch):
-    called = {}
-
-    def fake_fetch(service, calendar_id):
-        called["calendar_id"] = calendar_id
+    def fake_fetch(*a, **k):
         return [
             {
-                "id": "g2",
-                "summary": "Meet",
-                "start": {"date": "2025-01-02"},
-                "updated": "2025-01-01T11:00:00Z",
+                "id": "g1",
+                "summary": "Test",
+                "start": {"dateTime": "2025-01-01T10:00:00Z"},
+                "end": {"dateTime": "2025-01-01T11:00:00Z"},
+                "updated": "2025-01-01T09:00:00Z",
             }
         ]
 
-    def fake_import(events):
-        called["imported"] = events
-
-    monkeypatch.setattr(mod, "get_service", lambda: object())
-    monkeypatch.setattr(mod, "fetch_calendar_events", fake_fetch)
-    monkeypatch.setattr(mod, "import_events", fake_import)
-    monkeypatch.setattr(mod.Config, "GOOGLE_CALENDAR_ID", "test")
-
-    mod.sync_google_calendar()
-    assert called["calendar_id"] == "test"
-    assert called["imported"][0]["id"] == "g2"
-
-
-def test_import_all_day_event_time(monkeypatch):
-    dummy = DummyCollection()
+    monkeypatch.setattr(mod, "fetch_upcoming_events", fake_fetch)
+    monkeypatch.setattr(mod, "get_calendar_service", lambda: object())
     monkeypatch.setattr(mod, "get_collection", lambda name: dummy)
+
+    count = mod.sync_to_mongodb("events")
+    assert count == 1
+    doc = dummy.docs["g1"]
+    assert doc["title"] == "Test"
+    assert doc["start"].hour == 10
+    assert doc["end"].hour == 11
+    assert doc["event_time"].tzinfo == timezone.utc
+
+
+def test_all_day_event(monkeypatch):
+    dummy = DummyCollection()
 
     events = [
         {
-            "id": "g3",
+            "id": "g2",
             "summary": "All Day",
-            "start": {"date": "2025-01-03"},
-            "end": {"date": "2025-01-04"},
-            "updated": "2025-01-02T09:00:00Z",
+            "start": {"date": "2025-01-02"},
+            "end": {"date": "2025-01-03"},
+            "updated": "2025-01-01T11:00:00Z",
         }
     ]
 
-    mod.import_events(events)
-    doc = dummy.docs["g3"]
+    monkeypatch.setattr(mod, "fetch_upcoming_events", lambda *a, **k: events)
+    monkeypatch.setattr(mod, "get_calendar_service", lambda: object())
+    monkeypatch.setattr(mod, "get_collection", lambda name: dummy)
+
+    mod.sync_to_mongodb("events")
+    doc = dummy.docs["g2"]
     assert doc["event_time"].hour == 0
     assert doc["event_time"].tzinfo == timezone.utc
