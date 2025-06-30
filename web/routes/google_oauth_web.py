@@ -15,7 +15,7 @@ oauth_bp = Blueprint("oauth_web", __name__)
 # Constants
 SCOPES = ["https://www.googleapis.com/auth/calendar"]
 CLIENT_SECRET_FILE = Path("credentials/client_secret.json")
-TOKEN_PATH = Path("token/token.json")
+TOKEN_PATH = Path("/data/google_token.json")
 REDIRECT_URI = "https://fur-martix.up.railway.app/oauth2callback"
 
 # Logger setup
@@ -25,6 +25,7 @@ log = logging.getLogger(__name__)
 state_map: dict[str, float] = {}
 
 # ---- Routes ----
+
 
 @oauth_bp.route("/auth/initiate")
 def auth_initiate() -> Response:
@@ -80,7 +81,6 @@ def oauth2callback() -> Response:
 
     creds = flow.credentials
     try:
-        TOKEN_PATH.parent.mkdir(parents=True, exist_ok=True)
         TOKEN_PATH.write_text(creds.to_json())
         log.info("Token successfully saved to %s", TOKEN_PATH)
     except Exception:
@@ -91,6 +91,7 @@ def oauth2callback() -> Response:
 
 
 # ---- Helpers ----
+
 
 def load_credentials() -> Optional[Credentials]:
     """Load stored credentials from token file."""

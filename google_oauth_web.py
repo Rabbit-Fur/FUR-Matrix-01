@@ -8,7 +8,7 @@ from google_auth_oauthlib.flow import Flow
 SCOPES = ["https://www.googleapis.com/auth/calendar"]
 REDIRECT_URI = "https://fur-martix.up.railway.app/oauth2callback"
 CLIENT_SECRETS_FILE = Path("credentials/client_secret.json")
-TOKEN_PATH = Path("token/token.json")
+TOKEN_PATH = Path("/data/google_token.json")
 
 app = Flask(__name__)
 app.secret_key = os.environ.get("SECRET_KEY", "change-me")
@@ -41,7 +41,6 @@ def oauth2callback() -> str:
     )
     flow.fetch_token(authorization_response=request.url)
     creds = flow.credentials
-    TOKEN_PATH.parent.mkdir(exist_ok=True)
     TOKEN_PATH.write_text(creds.to_json())
     return "Authentication successful"
 
