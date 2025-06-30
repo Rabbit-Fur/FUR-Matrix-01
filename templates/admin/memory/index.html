@@ -1,38 +1,61 @@
 {% extends 'admin/admin_base.html' %}
-
-{% block title %}🧠 {{ t('Memory Viewer') }}{% endblock %}
+{% set bg_image = '/static/bg/admin_memory.png' %}
+{% block title %}{{ t('Memory Viewer') }}{% endblock %}
 
 {% block content %}
-<div class="memory-panel">
-  <h1>🧠 {{ t('GPT Memory Log Viewer') }}</h1>
-  <p>{{ t('Hier siehst du alle gespeicherten Reflexionen, Logs und Speicherstände des Systems.') }}</p>
-
-  <table class="memory-table">
-    <thead>
-      <tr>
-        <th>📅 {{ t('Datum') }}</th>
-        <th>📁 {{ t('Typ') }}</th>
-        <th>🧠 {{ t('Version') }}</th>
-        <th>🔖 {{ t('Tags') }}</th>
-        <th>🔗 {{ t('Aktion') }}</th>
-      </tr>
-    </thead>
-    <tbody>
-      {% for entry in memory_entries %}
-      <tr>
-        <td>{{ entry.exported_at.strftime('%Y-%m-%d %H:%M') }}</td>
-        <td>{{ entry.type }}</td>
-        <td>{{ entry.version }}</td>
-        <td>{{ entry.tags | join(', ') }}</td>
-        <td>
-          <a href="{{ url_for('admin_memory.view_entry', entry_id=entry._id) }}" class="btn">{{ t('Anzeigen') }}</a>
-        </td>
-      </tr>
-      {% else %}
-      <tr><td colspan="5">{{ t('Keine Speicherstände gefunden.') }}</td></tr>
-      {% endfor %}
-    </tbody>
-  </table>
+<h1 class="page-title">🧠 {{ t('Memory Viewer') }}</h1>
+<div style="margin-bottom:1rem; display:flex; gap:0.5rem; flex-wrap:wrap;">
+  <input id="search" type="text" placeholder="{{ t('Search') }}" style="flex:1; padding:0.5rem; border-radius:6px;">
+  <button id="reset" class="btn">{{ t('Reset') }}</button>
+  {% if session.get('user', {}).get('role_level') == 'ADMIN' %}
+  <form method="post" action="{{ url_for('admin_memory.clear_memory') }}">
+    <button class="btn btn-glow" type="submit">🗑 {{ t('Cache löschen') }}</button>
+  </form>
+  {% endif %}
 </div>
+<table class="table" id="memory-table" style="width:100%;">
+  <thead>
+    <tr>
+      <th>{{ t('Key') }}</th>
+      <th>{{ t('Value') }}</th>
+      <th>{{ t('Source') }}</th>
+      <th>{{ t('Created At') }}</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for entry in memory_entries %}
+    <tr class="source-{{ entry.source }}">
+      <td>{{ entry.key }}</td>
+      <td title="{{ entry.value }}">{{ entry.value | string | truncate(60) }}</td>
+      <td>{{ entry.source }}</td>
+      <td>{{ entry.created_at or '–' }}</td>
+    </tr>
+    {% else %}
+    <tr><td colspan="4">{{ t('Keine Speicherstände gefunden.') }}</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+<script>
+(function() {
+  const search = document.getElementById('search');
+  const reset = document.getElementById('reset');
+  const rows = Array.from(document.querySelectorAll('#memory-table tbody tr'));
+  function filter() {
+    const q = search.value.toLowerCase();
+    rows.forEach(r => {
+      r.style.display = r.innerText.toLowerCase().includes(q) ? '' : 'none';
+    });
+  }
+  search.addEventListener('input', filter);
+  reset.addEventListener('click', () => { search.value=''; filter(); });
+  document.querySelectorAll('#memory-table th').forEach((th, idx) => {
+    th.style.cursor = 'pointer';
+    th.addEventListener('click', () => {
+      const sorted = rows.sort((a,b) => a.children[idx].innerText.localeCompare(b.children[idx].innerText));
+      const tbody = document.querySelector('#memory-table tbody');
+      sorted.forEach(r => tbody.appendChild(r));
+    });
+  });
+})();
+</script>
 {% endblock %}
-

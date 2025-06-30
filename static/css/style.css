@@ -238,3 +238,10 @@ html[lang="tr"] body {
     width: 100%;
   }
 }
+
+/* === MEMORY TABLE === */
+table { width:100%; border-collapse: collapse; }
+th, td { padding: 0.5rem; text-align:left; }
+.source-mongo { background: rgba(0,255,204,0.05); }
+.source-session { background: rgba(255,255,0,0.05); }
+
