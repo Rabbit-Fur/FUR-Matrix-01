@@ -8,6 +8,9 @@ from discord.ext import tasks
 from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
 from motor.motor_asyncio import AsyncIOMotorClient, AsyncIOMotorCollection
+
+from crud import event_crud
+from schemas.event_schema import EventModel
 from pymongo.errors import ConfigurationError
 
 from config import Config
@@ -116,9 +119,7 @@ class CalendarService:
             doc = self._build_doc(ev)
             if not doc["google_id"]:
                 continue
-            await self.events.update_one(
-                {"google_id": doc["google_id"]}, {"$set": doc}, upsert=True
-            )
+            await event_crud.upsert_event(doc, col=self.events)
 
     async def sync(self) -> int:
         log.info("Starting calendar sync for %s", self.calendar_id)
@@ -156,8 +157,8 @@ class CalendarService:
     # Query helpers
     # ------------------------------------------------------------------
     async def _get_range(self, start: datetime, end: datetime) -> list[dict]:
-        cursor = self.events.find({"event_time": {"$gte": start, "$lt": end}}).sort("event_time", 1)
-        return await cursor.to_list(length=None)
+        events = await event_crud.get_events_in_range(start, end, col=self.events)
+        return [e.model_dump(by_alias=True) if isinstance(e, EventModel) else e for e in events]
 
     async def get_events_today(self) -> list[dict]:
         now = datetime.utcnow().replace(tzinfo=timezone.utc)
