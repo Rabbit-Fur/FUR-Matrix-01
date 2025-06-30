@@ -10,6 +10,7 @@ from googleapiclient.discovery import build
 from config import Config
 from mongo_service import get_collection
 
+# Logging setup
 LOG_PATH = Path("logs")
 LOG_PATH.mkdir(exist_ok=True)
 logger = logging.getLogger(__name__)
@@ -19,20 +20,25 @@ handler.setFormatter(formatter)
 logger.addHandler(handler)
 logger.setLevel(logging.INFO)
 
+# Token path
 TOKEN_PATH = Path("token/token.json")
 
 
 def load_credentials() -> Optional[Credentials]:
     """Load stored credentials from JSON and refresh if needed."""
     if not TOKEN_PATH.exists():
-        logger.warning("No Google credentials found")
+        logger.warning("No Google credentials found at %s", TOKEN_PATH)
         return None
-    creds = Credentials.from_authorized_user_file(TOKEN_PATH, Config.GOOGLE_CALENDAR_SCOPES)
-    if creds.expired and creds.refresh_token:
-        logger.info("Refreshing Google credentials")
-        creds.refresh(Request())
-        TOKEN_PATH.write_text(creds.to_json())
-    return creds
+    try:
+        creds = Credentials.from_authorized_user_file(TOKEN_PATH, Config.GOOGLE_CALENDAR_SCOPES)
+        if creds.expired and creds.refresh_token:
+            logger.info("Refreshing Google credentials")
+            creds.refresh(Request())
+            TOKEN_PATH.write_text(creds.to_json())
+        return creds
+    except Exception as e:
+        logger.exception("Failed to load or refresh credentials")
+        return None
 
 
 def get_calendar_service():
@@ -40,7 +46,11 @@ def get_calendar_service():
     creds = load_credentials()
     if not creds:
         return None
-    return build("calendar", "v3", credentials=creds, cache_discovery=False)
+    try:
+        return build("calendar", "v3", credentials=creds, cache_discovery=False)
+    except Exception as e:
+        logger.exception("Failed to build Google Calendar service")
+        return None
 
 
 def _parse_datetime(info: Optional[dict]) -> Optional[datetime]:
@@ -53,13 +63,14 @@ def _parse_datetime(info: Optional[dict]) -> Optional[datetime]:
         value = value.replace("Z", "+00:00")
     try:
         dt = datetime.fromisoformat(value)
+        if dt.tzinfo is None:
+            dt = dt.replace(tzinfo=timezone.utc)
+        else:
+            dt = dt.astimezone(timezone.utc)
+        return dt
     except ValueError:
+        logger.warning("Could not parse datetime: %s", value)
         return None
-    if dt.tzinfo is None:
-        dt = dt.replace(tzinfo=timezone.utc)
-    else:
-        dt = dt.astimezone(timezone.utc)
-    return dt
 
 
 def fetch_upcoming_events(
@@ -78,6 +89,7 @@ def fetch_upcoming_events(
     if not calendar_id:
         logger.warning("GOOGLE_CALENDAR_ID not configured")
         return []
+
     params = {
         "calendarId": calendar_id,
         "singleEvents": True,
@@ -88,24 +100,27 @@ def fetch_upcoming_events(
         params["timeMin"] = time_min.astimezone(timezone.utc).isoformat()
     if time_max:
         params["timeMax"] = time_max.astimezone(timezone.utc).isoformat()
+
     events: list[dict] = []
     page_token = None
-    while True:
-        if page_token:
-            params["pageToken"] = page_token
-        result = service.events().list(**params).execute()
-        events.extend(result.get("items", []))
-        page_token = result.get("nextPageToken")
-        if not page_token:
-            break
+    try:
+        while True:
+            if page_token:
+                params["pageToken"] = page_token
+            result = service.events().list(**params).execute()
+            events.extend(result.get("items", []))
+            page_token = result.get("nextPageToken")
+            if not page_token:
+                break
+    except Exception as e:
+        logger.exception("Failed to fetch events from Google Calendar")
     return events
 
 
 def _build_doc(event: dict) -> dict:
     start_dt = _parse_datetime(event.get("start"))
     end_dt = _parse_datetime(event.get("end"))
-    event_time = start_dt
-    doc = {
+    return {
         "google_event_id": event.get("id"),
         "title": event.get("summary", "No Title"),
         "description": event.get("description"),
@@ -113,31 +128,34 @@ def _build_doc(event: dict) -> dict:
         "updated": event.get("updated"),
         "start": start_dt,
         "end": end_dt,
-        "event_time": event_time,
+        "event_time": start_dt,
         "source": "google",
         "status": event.get("status"),
     }
-    if event_time:
-        doc["event_time"] = event_time
-    return doc
 
 
 def sync_to_mongodb(collection: str = "calendar_events") -> int:
     """Fetch events and upsert them into MongoDB."""
     service = get_calendar_service()
     if not service:
+        logger.warning("No calendar service – skipping sync")
         return 0
     events = fetch_upcoming_events(service)
     if not events:
+        logger.info("No events returned from calendar")
         return 0
+
     col = get_collection(collection)
     count = 0
     for ev in events:
         doc = _build_doc(ev)
         if not doc["google_event_id"]:
             continue
-        col.update_one({"google_event_id": doc["google_event_id"]}, {"$set": doc}, upsert=True)
-        count += 1
+        try:
+            col.update_one({"google_event_id": doc["google_event_id"]}, {"$set": doc}, upsert=True)
+            count += 1
+        except Exception:
+            logger.exception("Failed to sync event %s", doc.get("google_event_id"))
     logger.info("Synced %s events to MongoDB", count)
     return count
 
@@ -148,6 +166,7 @@ def create_test_event(
     """Create a small test event in the primary calendar."""
     service = get_calendar_service()
     if not service:
+        logger.warning("No calendar service – cannot create test event")
         return None
     start = datetime.utcnow() + timedelta(minutes=minutes_from_now)
     end = start + timedelta(minutes=15)
@@ -156,6 +175,10 @@ def create_test_event(
         "start": {"dateTime": start.isoformat() + "Z"},
         "end": {"dateTime": end.isoformat() + "Z"},
     }
-    created = service.events().insert(calendarId="primary", body=event).execute()
-    logger.info("Created test event %s", created.get("id"))
-    return created
+    try:
+        created = service.events().insert(calendarId="primary", body=event).execute()
+        logger.info("Created test event %s", created.get("id"))
+        return created
+    except Exception:
+        logger.exception("Failed to create test event")
+        return None
