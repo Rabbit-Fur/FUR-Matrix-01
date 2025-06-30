@@ -67,7 +67,7 @@ class Config:
     GOOGLE_CREDENTIALS_FILE: str | None = get_env_str(
         "GOOGLE_CREDENTIALS_FILE",
         required=False,
-        default=os.path.join(basedir, "credentials", "oauth_client.json"),
+        default="/data/google_token.json",
     )
     GOOGLE_CALENDAR_SCOPES: list[str] = get_env_str(
         "GOOGLE_CALENDAR_SCOPES",

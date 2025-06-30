@@ -21,7 +21,7 @@ logger.addHandler(handler)
 logger.setLevel(logging.INFO)
 
 # Token path
-TOKEN_PATH = Path("token/token.json")
+TOKEN_PATH = Path("/data/google_token.json")
 
 
 def load_credentials() -> Optional[Credentials]:
