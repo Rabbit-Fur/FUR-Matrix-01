@@ -14,7 +14,7 @@ def test_google_sync_task_runs(monkeypatch):
     def fake_sync():
         called["count"] += 1
 
-    monkeypatch.setattr(task_mod, "sync_google_calendar", fake_sync)
+    monkeypatch.setattr(task_mod, "sync_to_mongodb", fake_sync)
 
     def fake_start():
         asyncio.run(task_mod.google_sync_loop.coro())
@@ -39,7 +39,7 @@ def test_start_google_sync_pushes_app_context(monkeypatch):
 
         called["app"] = current_app.name
 
-    monkeypatch.setattr(task_mod, "sync_google_calendar", fake_sync)
+    monkeypatch.setattr(task_mod, "sync_to_mongodb", fake_sync)
 
     def fake_start():
         asyncio.run(task_mod.google_sync_loop.coro())

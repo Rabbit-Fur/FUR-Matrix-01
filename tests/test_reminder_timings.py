@@ -51,7 +51,12 @@ def test_autopilot_sends_with_role_mention(monkeypatch):
     cog.get_user_language = fake_lang
 
     now = datetime.utcnow()
-    event = {"_id": 1, "title": "Ping", "event_time": now + timedelta(minutes=10, seconds=1)}
+    event = {
+        "_id": 1,
+        "title": "Ping",
+        "event_time": now + timedelta(minutes=10, seconds=1),
+        "google_event_id": "g1",
+    }
     monkeypatch.setattr(autopilot_mod, "datetime", types.SimpleNamespace(utcnow=lambda: now))
     events_col = DummyCollection([event])
     participants_col = DummyCollection([{"user_id": "1", "event_id": 1}])
@@ -69,6 +74,8 @@ def test_autopilot_sends_with_role_mention(monkeypatch):
         }[name]
 
     monkeypatch.setattr(autopilot_mod, "get_collection", get_coll)
+    monkeypatch.setattr(autopilot_mod, "fetch_upcoming_events", lambda *a, **k: [{"id": "g1"}])
+    monkeypatch.setattr(autopilot_mod, "get_calendar_service", lambda: object())
     monkeypatch.setattr(event_helpers, "get_collection", get_coll)
     monkeypatch.setattr(autopilot_mod, "is_production", lambda: True)
     monkeypatch.setattr(Config, "REMINDER_ROLE_ID", 99)

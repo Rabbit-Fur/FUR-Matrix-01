@@ -10,9 +10,9 @@ import schedule
 
 from champion.autopilot import run_champion_autopilot
 from config import Config
+from google_calendar_sync import sync_to_mongodb
 from mongo_service import get_collection
 from utils import champion_data
-from utils.google_sync import sync_google_calendar
 from utils.google_sync_task import _get_app, start_google_sync
 
 
@@ -77,7 +77,7 @@ class SchedulerAgent:
             def _job_wrapper():
                 app = _get_app()
                 with app.app_context():
-                    sync_google_calendar()
+                    sync_to_mongodb()
 
             job = schedule.every(interval).minutes.do(_job_wrapper)
             self.jobs.append(job)

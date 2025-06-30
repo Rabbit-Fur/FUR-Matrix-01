@@ -1,7 +1,4 @@
-import json
 import logging
-import os
-import pickle
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from typing import Any, Optional
@@ -22,36 +19,19 @@ handler.setFormatter(formatter)
 logger.addHandler(handler)
 logger.setLevel(logging.INFO)
 
-TOKEN_PATH = Path("token/token.pickle")
+TOKEN_PATH = Path("token/token.json")
 
 
 def load_credentials() -> Optional[Credentials]:
-    """Load stored credentials from pickle or json and refresh if needed."""
-    creds: Optional[Credentials] = None
-    if TOKEN_PATH.exists():
-        with TOKEN_PATH.open("rb") as fh:
-            creds = pickle.load(fh)
-    elif Config.GOOGLE_CREDENTIALS_FILE and os.path.exists(Config.GOOGLE_CREDENTIALS_FILE):
-        with open(Config.GOOGLE_CREDENTIALS_FILE, "r", encoding="utf-8") as fh:
-            data = json.load(fh)
-        try:
-            creds = Credentials.from_authorized_user_info(data, Config.GOOGLE_CALENDAR_SCOPES)
-        except ValueError:
-            logger.error("Invalid Google credentials file")
-            return None
-    else:
+    """Load stored credentials from JSON and refresh if needed."""
+    if not TOKEN_PATH.exists():
         logger.warning("No Google credentials found")
         return None
-
-    if creds and creds.expired and creds.refresh_token:
+    creds = Credentials.from_authorized_user_file(TOKEN_PATH, Config.GOOGLE_CALENDAR_SCOPES)
+    if creds.expired and creds.refresh_token:
         logger.info("Refreshing Google credentials")
         creds.refresh(Request())
-        if TOKEN_PATH.exists():
-            with TOKEN_PATH.open("wb") as fh:
-                pickle.dump(creds, fh)
-        elif Config.GOOGLE_CREDENTIALS_FILE:
-            with open(Config.GOOGLE_CREDENTIALS_FILE, "w", encoding="utf-8") as fh:
-                fh.write(creds.to_json())
+        TOKEN_PATH.write_text(creds.to_json())
     return creds
 
 
