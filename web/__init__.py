@@ -59,6 +59,8 @@ def create_app() -> Flask:
         template_folder=template_folder,
         static_folder=static_folder,
     )
+    # Ensure a secret key is set for session handling
+    app.secret_key = os.environ.get("FLASK_SECRET", "fallback-dev-key")
     app.config.from_object(Config)
 
     # Mongo URI aus ENV (Railway / Docker)

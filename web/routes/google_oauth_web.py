@@ -1,4 +1,5 @@
 import logging
+import time
 from pathlib import Path
 
 from flask import Blueprint, Response, redirect, request, session
@@ -16,6 +17,9 @@ REDIRECT_URI = "https://fur-martix.up.railway.app/oauth2callback"
 
 log = logging.getLogger(__name__)
 
+# Map to store OAuth states in case the session gets lost on Railway
+state_map: dict[str, float] = {}
+
 
 @oauth_bp.route("/auth/initiate")
 def auth_initiate() -> Response:
@@ -31,22 +35,32 @@ def auth_initiate() -> Response:
         prompt="consent",
     )
     session["oauth_state"] = state
-    log.info("OAuth flow initiated")
+    state_map[state] = time.time()
+    log.info("OAuth flow initiated with state %s", state)
     return redirect(authorization_url)
 
 
 @oauth_bp.route("/oauth2callback")
 def oauth2callback() -> Response:
     """Handle OAuth callback and store token."""
+    req_state = request.args.get("state")
     stored_state = session.pop("oauth_state", None)
-    if stored_state != request.args.get("state"):
-        log.warning("Invalid OAuth state (session mismatch)")
+    if req_state and req_state == stored_state:
+        valid = True
+    elif req_state and req_state in state_map:
+        valid = True
+        state_map.pop(req_state, None)
+    else:
+        valid = False
+
+    if not valid:
+        log.warning("Invalid OAuth state")
         return Response("Invalid OAuth state", status=400)
 
     flow = Flow.from_client_secrets_file(
         CLIENT_SECRET_FILE,
         scopes=SCOPES,
-        state=stored_state,
+        state=req_state,
         redirect_uri=REDIRECT_URI,
     )
     try:
