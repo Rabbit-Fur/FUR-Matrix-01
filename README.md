@@ -40,18 +40,15 @@ The FUR System powers the champion, reminder and leaderboard features for the GG
 
 ## Setup
 
-Copy `.env.example` to `.env` and adjust the values for your environment before running the setup commands.
+1. **Copy `.env.example` to `.env`** – the example file lists all settings required by `Config`. Adjust the values for your environment.
+2. Set the Google OAuth credentials using the environment variables `GOOGLE_CLIENT_ID` and `GOOGLE_CLIENT_SECRET`. These must not be committed to version control.
+3. Set `EVENT_CHANNEL_ID` to the Discord channel where event announcements should be posted. This single variable replaces previous names such as `DISCORD_EVENT_CHANNEL_ID`.
 
-Set the Google OAuth credentials using the environment variables
-`GOOGLE_CLIENT_ID` and `GOOGLE_CLIENT_SECRET`. These must not be committed to version control.
-
-Set `EVENT_CHANNEL_ID` to the Discord channel where event announcements should be posted. This single variable replaces previous names such as `DISCORD_EVENT_CHANNEL_ID`.
-
-1. **Install the dependencies** (required before starting the app)
+4. **Install the dependencies** (required before starting the app)
    ```bash
    pip install -r requirements.txt
    ```
-2. Run the lint and test suite
+5. Run the lint and test suite
    ```bash
    black . && isort . && flake8
    pytest --disable-warnings --maxfail=1
