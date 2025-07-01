@@ -44,6 +44,7 @@ async def test_sync_stores_events_and_token(monkeypatch):
     service = mod.CalendarService(
         calendar_id="c1", events_collection=events_col, tokens_collection=tokens_col
     )
+    monkeypatch.setattr(service, "_build_service", lambda: setattr(service, "service", object()))
 
     async def fake_api(params):
         return {
@@ -73,6 +74,7 @@ async def test_sync_resync_on_410(monkeypatch):
     service = mod.CalendarService(
         calendar_id="c1", events_collection=events_col, tokens_collection=tokens_col
     )
+    monkeypatch.setattr(service, "_build_service", lambda: setattr(service, "service", object()))
 
     calls = {"n": 0}
 
@@ -100,6 +102,7 @@ async def test_sync_uses_stored_token(monkeypatch):
     service = mod.CalendarService(
         calendar_id="c1", events_collection=events_col, tokens_collection=tokens_col
     )
+    monkeypatch.setattr(service, "_build_service", lambda: setattr(service, "service", object()))
 
     captured = {}
 

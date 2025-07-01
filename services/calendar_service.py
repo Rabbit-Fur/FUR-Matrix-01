@@ -49,6 +49,7 @@ class CalendarService:
         tokens_collection: Optional[AsyncIOMotorCollection] = None,
     ) -> None:
         self.calendar_id = calendar_id or Config.GOOGLE_CALENDAR_ID
+        self.service: Any | None = None
         uri = mongo_uri or Config.MONGODB_URI or "mongodb://localhost:27017/furdb"
         if events_collection and tokens_collection:
             self.client = None
@@ -67,19 +68,27 @@ class CalendarService:
     # ------------------------------------------------------------------
     # API helpers
     # ------------------------------------------------------------------
-    @staticmethod
-    def _build_service() -> Any | None:
+    def _build_service(self) -> None:
+        if self.service:
+            return
         creds = load_credentials()
         if not creds:
             log.warning("Google credentials missing – cannot sync")
-            return None
-        return build("calendar", "v3", credentials=creds, cache_discovery=False)
+            self.service = None
+            return
+        self.service = build(
+            "calendar",
+            "v3",
+            credentials=creds,
+            cache_discovery=False,
+        )
 
     async def _api_list(self, params: dict) -> dict:
-        service = self._build_service()
-        if not service:
+        self._build_service()
+        if not self.service:
+            log.warning("Calendar service not initialized – skipping")
             return {}
-        return await asyncio.to_thread(service.events().list(**params).execute)
+        return await asyncio.to_thread(self.service.events().list(**params).execute)
 
     # ------------------------------------------------------------------
     # Sync logic
@@ -123,6 +132,10 @@ class CalendarService:
 
     async def sync(self) -> int:
         log.info("Starting calendar sync for %s", self.calendar_id)
+        self._build_service()
+        if not self.service:
+            log.warning("Calendar service not initialized – skipping")
+            return 0
         token = await self._get_token()
         params = {
             "calendarId": self.calendar_id,
