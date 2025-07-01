@@ -1,0 +1,11 @@
+{% extends "admin/admin_base.html" %}
+{% set bg_image = "/static/bg/admin.png" %}
+{% block title %}Pet Advisor{% endblock %}
+
+{% block content %}
+  <div id="pet-advisor-root"></div>
+{% endblock %}
+
+{% block scripts %}
+  <script type="module" src="{{ url_for('static', filename='js/pet_advisor.js') }}"></script>
+{% endblock %}

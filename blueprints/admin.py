@@ -13,6 +13,7 @@ from flask import (
     redirect,
     render_template,
     request,
+    session,
     url_for,
 )
 from werkzeug.utils import secure_filename
@@ -427,3 +428,13 @@ def upload():
         files = sorted(f for f in os.listdir(upload_folder) if _allowed_file(f))
 
     return render_template("admin/upload.html", files=files)
+
+
+@admin.route("/pet-advisor")
+def pet_advisor():
+    """Show the pet advisor dashboard for admins and R4 roles."""
+    user = session.get("user")
+    roles = session.get("discord_roles", [])
+    if not user or (user.get("role_level") != "ADMIN" and "R4" not in roles):
+        return "403 - Zugriff verweigert", 403
+    return render_template("admin/pet_advisor.html")
