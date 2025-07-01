@@ -118,6 +118,7 @@
     {% set role = session.get('user', {}).get('role_level') %}
     {% if role in ['R4', 'ADMIN'] %}
     <a href="{{ url_for('admin.dashboard') }}">🛠️ {{ t("Admin") }}</a>
+    <a href="{{ url_for('admin.pet_advisor') }}">📎 Pet Advisor</a>
     {% endif %}
     {% if role in ['R3', 'R4', 'ADMIN'] %}
     <a href="{{ url_for('member.dashboard') }}">👥 {{ t("Mitglieder") }}</a>

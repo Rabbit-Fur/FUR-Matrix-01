@@ -14,7 +14,7 @@ from fur_lang.i18n import t
 from google_calendar_sync import fetch_upcoming_events, get_calendar_service
 from mongo_service import get_collection
 from utils import poster_generator
-from utils.event_helpers import get_events_for, parse_event_time
+from utils.event_helpers import parse_event_time
 
 
 def is_opted_out(user_id: int) -> bool:

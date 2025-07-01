@@ -1,4 +1,3 @@
-import json
 import os
 import time
 
@@ -91,7 +90,7 @@ def oauth2callback() -> Response:
             redirect_uri=REDIRECT_URI,
         )
         flow.fetch_token(authorization_response=request.url)
-    except Exception as exc:  # noqa: BLE001
+    except Exception:  # noqa: BLE001
         # Do not leak full exception to the user
         log.exception("OAuth token fetch failed")
         return Response("Authentication failed", status=400)

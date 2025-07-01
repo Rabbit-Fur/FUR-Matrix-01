@@ -50,8 +50,15 @@ try:
 
 except ConnectionFailure as e:
     logger.error(f"❌ MongoDB-Verbindung fehlgeschlagen: {e}")
-    db = None
-    users = events = reminders = hof = logs = None
+    import mongomock
+
+    client = mongomock.MongoClient()
+    db = client[MONGO_DB]
+    users = db["users"]
+    events = db["events"]
+    reminders = db["reminders"]
+    hof = db["hall_of_fame"]
+    logs = db["logs"]
 
 # === Direktstart: Diagnose-Ausgabe ===
 if __name__ == "__main__":

@@ -51,7 +51,7 @@ def load_credentials() -> Optional[Credentials]:
             creds.refresh(Request())
             TOKEN_PATH.write_text(creds.to_json())
         return creds
-    except Exception as e:
+    except Exception:  # noqa: BLE001
         logger.exception("Failed to load or refresh credentials")
         return None
 
@@ -63,7 +63,7 @@ def get_calendar_service():
         return None
     try:
         return build("calendar", "v3", credentials=creds, cache_discovery=False)
-    except Exception as e:
+    except Exception:  # noqa: BLE001
         logger.exception("Failed to build Google Calendar service")
         return None
 
@@ -127,7 +127,7 @@ def fetch_upcoming_events(
             page_token = result.get("nextPageToken")
             if not page_token:
                 break
-    except Exception as e:
+    except Exception:  # noqa: BLE001
         logger.exception("Failed to fetch events from Google Calendar")
     return events
 
