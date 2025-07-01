@@ -1,162 +1,122 @@
-🧠 FUR SYSTEM – AGENTS.md
-Codex Contributor Protocol · Version: QUM-1.0
-Repository: Rabbit-Fur/try
+# 🧠 FUR SYSTEM – AGENTS.md
+
+Codex Contributor Protocol · Version: QUM-1.0  
+Repository: Rabbit-Fur/try  
 Status: 🔒 Production-grade · 🚧 Actively Maintained · 🤖 Codex Enhanced
 
 ---
 
-🔍 Projektstruktur – FUR MATRIX
+## 🔍 Projektstruktur – FUR MATRIX
 
-| Ordner               | Funktion                                                         |
-| -------------------- | ---------------------------------------------------------------- |
-| `web/`               | Flask-Logik: Blueprints, HTML-Templates, API-Endpoints           |
-| `bot/`               | Discord-Bot mit modularen Cogs: Reminder, Leaderboard, Autopilot |
-| `core/`              | Systemkernel: Logs, Markdown-Reports, Meta-Daten, RAG, i18n      |
-| `database/`          | SQLite ORM-Modelle, Secure Queries, Datenvalidierung             |
-| `static/`            | Assets: Logos (FUR + GGW), Poster, Stylesheets, responsive UI    |
-| `translations/`      | Lokalisierungen (JSON, 42 Sprachen via `fur_lang`)               |
-| `tests/`             | Automatisierte Tests mit pytest, CI-Coverage, Stability-Checks   |
-| `.github/workflows/` | CI/CD Pipelines, Codex-Integration, Auto-Releases                |
+| Ordner              | Funktion |
+|---------------------|----------|
+| `web/`              | Flask-Logik: Blueprints, HTML-Templates, API-Endpoints |
+| `bot/`              | Discord-Bot mit modularen Cogs: Reminder, Leaderboard, Champion-Autopilot |
+| `core/`             | Systemkernel: Logs, Markdown-Reports, Meta-Daten, RAG-Analysen, i18n |
+| `database/`         | SQLite ORM-Modelle, Secure Queries, Datenvalidierung |
+| `static/`           | Assets: Logos (FUR + GGW), Poster, Stylesheets, responsive UI |
+| `translations/`     | Lokalisierungen (JSON, 42 Sprachen über fur_lang) |
+| `tests/`            | Automatisierte Tests mit pytest, CI-Coverage, Stability-Checks |
+| `.github/workflows/`| CI/CD Pipelines, Codex-Integration, Auto-Releases |
 
 ---
 
-⚙️ Lokales Setup
+## ✅ Codex Contributor Standards (verpflichtend)
+
+Du bist ein erfahrener Backend-Ingenieur für das MARCEL / FUR CORE System. Deine Aufgabe ist es, hochwertigen, produktionsreifen Python-Code zu schreiben, der alle technischen, organisatorischen und sicherheitsrelevanten Standards erfüllt.
+
+### CODE-QUALITÄT & PRÜFUNG
+- `pytest`-Tests sind Pflicht.
+- `black --check .` & `flake8` müssen fehlerfrei durchlaufen.
+- Ausnahme: Nur bei reinen Doku/Kommentaränderungen.
+
+### SICHERHEIT & TOKEN-HANDLING
+- Tokens/Secrets ausschließlich über `.env` oder `os.getenv`.
+- Zugriffstoken (z. B. Google Calendar) müssen **gültig und getestet** sein.
+- Keine Secrets im Code oder Commit!
+
+### NETZWERK & ZUGRIFF
+- Voller Internetzugriff erlaubt und erforderlich.
+- Alle Domains und HTTP-Methoden freigegeben.
+- Keine Einschränkungen durch Design.
+
+### KALENDER & EVENT-DATEN
+- MongoDB-kompatible Struktur: `google_id`, `start`, `event_time`, `summary`, …
+- Upsert auf `google_id` sicherstellen.
+- Events in `calendar_events` der DB `furdb` speichern.
+
+### DISCORD-COGS
+- Müssen Events korrekt empfangen und verarbeiten.
+- Keine Endlosschleifen durch Selbstreaktion erzeugen.
+
+### KONFIGURATION & UMGEBUNG
+- ENV-basierte Konfiguration (z. B. `os.getenv("DISCORD_TOKEN")`).
+- Keine hardcodierten Strings oder Pfade.
+
+### OUTPUT & STYLE
+- Liefere **nur funktionierenden Code**, keine Erklärungen oder Kommentare.
+- Importiere nur benötigte Module.
+- Nutze ggf. vorhandenes Logging (`utils/logger.py`).
+
+---
+
+## 🧪 Codex QA-Pipeline (lokal)
 
 ```bash
-# 🔽 1. Abhängigkeiten installieren
+# Abhängigkeiten
 pip install -r requirements.txt
 
-# 🧹 2. Linting & Formatierung prüfen
+# Linting & Style-Check
 black . && isort . && flake8
 
-# ✅ 3. Tests ausführen
+# Tests (empfohlen mit mongomock)
 pytest --disable-warnings --maxfail=1
 ```
 
 ---
 
-🤖 Codex-Agent\:innen: Arbeitsprotokoll
+## 🚀 Deployment-Flow (CI/CD via Railway)
 
-🪄 Codex-Task erstellen
-
-```
-codex-fur task "Fix reminder system import & add unit test"
-```
-
-📤 Task an Codex übergeben
-
-```
-codex-fur submit
-```
-
-🔁 Änderungen committen
-
-```
-pytest && git add . && git commit -m "✅ Fix: Reminder blueprint error + test"
-```
-
-🚀 Release-Flow (CI/CD + Auto-Deploy)
-
-* Ausgelöst bei jedem PR auf `main` oder durch Codex Push.
-
-**Ablauf:**
-
-* 🔎 Lint & Syntaxprüfung
-* 🧪 Tests & Coverage
-* 📦 Build + Struktur-Check
-* 🌐 Railway-Deployment
-* 📣 Discord Webhook Push (Champion/Reminder)
-* 📄 AGENTS.md & CHANGELOG.md Sync
+- Trigger: Jeder PR auf `main` oder `codex/*`
+- Schritte:
+  - ✅ Lint-Checks & Syntaxprüfung
+  - 🧪 Tests mit Coverage ≥ 85 %
+  - 📦 Build & Strukturvalidierung
+  - 🌐 Railway Deployment
+  - 📣 Discord Webhook Push (Reminder, Poster)
+  - 🗂 Sync von `AGENTS.md` & `CHANGELOG.md`
 
 ---
 
-🧬 Codex-QUM Standards
+## 🧬 Codex-QUM Commit Guidelines
 
-| Kategorie     | Standardvorgabe                                         |
-| ------------- | ------------------------------------------------------- |
-| Formatierung  | `black`, `isort`, `flake8`, keine Warnings im CI        |
-| Sprache       | Code: Englisch · UI: i18n via `fur_lang`                |
-| Tests         | `pytest`, Coverage min. 85 % bei neuen Features         |
-| Sicherheit    | `.env`-basierte Tokens, keine Secrets im Code           |
-| Deployment    | Railway (Staging/Prod), ENV-Checks, Health Reports      |
-| Branch-Naming | `main`, `dev`, `codex/*`                                |
-| Commits       | 🔁 Refactor, ✅ Fix, ➕ Feature, 🧪 Test, 🧹 Cleanup etc. |
+| Typ | Format | Beispiel |
+|-----|--------|----------|
+| ✅ Fix | `✅ Fix: Leaderboard error in reminder_cog.py` | Fehlerbehebung |
+| ➕ Feature | `➕ Feature: Add i18n support for Turkish` | Neue Funktion |
+| 🔁 Refactor | `🔁 Refactor: Simplify event validation logic` | Codeverbesserung |
+| 🧪 Test | `🧪 Test: Add test cases for event updater` | Testfunktion |
+| 🧹 Cleanup | `🧹 Cleanup: Remove deprecated methods` | Aufräumarbeiten |
 
 ---
 
-📐 Codex-Ausführungsrichtlinien (verbindlich für alle Tasks)
+## 🧭 Agent:innen-Verantwortung
 
-🧠 Du bist ein erfahrener Backend-Ingenieur für das MARCEL / FUR CORE System. Deine Aufgabe ist es, hochwertigen, produktionsreifen Python-Code zu schreiben, der alle technischen, organisatorischen und sicherheitsrelevanten Standards erfüllt.
-
-### Berücksichtige bei jeder Aufgabe zwingend folgende Richtlinien:
-
-✅ **CODE-QUALITÄT & PRÜFUNG**
-
-* Code muss mit `pytest` getestet sein
-* Linting: `black --check .`, `flake8` fehlerfrei
-* Gilt immer, außer bei reiner Doku/Kommentar-Änderung
-
-🔐 **SICHERHEIT & TOKEN-HANDLING**
-
-* Keine Tokens/Secrets im Quellcode
-* Nur Zugriff über `.env`, `os.getenv`
-* Gültige Zugriffstokens bei API-Nutzung (z. B. Google)
-
-🌐 **NETZWERK & SYSTEM-ZUGRIFF**
-
-* Internetzugriff vollständig erlaubt
-* Zugriff auf alle Domains erlaubt
-* HTTP-Methoden: `GET`, `POST`, `PUT`, `PATCH`, `DELETE` – alle erlaubt und zu verwenden
-
-📆 **KALENDER-FUNKTIONALITÄT**
-
-* Mongo-kompatibles Event-Format: `google_id`, `start`, `event_time`, `summary`, …
-* Collection: `calendar_events` in DB `furdb`
-* Keine Duplikate: `google_id` checken oder Upsert
-
-🌀 **DISCORD-SYSTEM**
-
-* Cogs müssen Events korrekt empfangen
-* Keine Endlosschleifen durch Selbstupdates
-
-🌱 **KONFIGURATION & UMGEBUNG**
-
-* Keine harten Pfade – nutze `.env`, `os.getenv`
-
-📂 **STRUKTURKONTEXT**
-
-* Integration in bestehende Dateien wie `try-main.zip`, `google_calendar.py`, `event_model.py`, `logger.py`
-* Modularität, Wiederverwendbarkeit, Logging und Exception-Handling beachten
-
-📌 **OUTPUT-VORGABE**
-
-* Nur lauffähiger Code
-* Keine Kommentare oder Meta-Beschreibung
-* Nur notwendige Imports
-* Logging via `utils/logger.py`, falls vorhanden
+Jede:r Contributor:in – egal ob Mensch oder Codex-Agent – verpflichtet sich zu:
+- 🔐 sicherem & dokumentiertem Arbeiten
+- 🧠 systemischem Denken (Matrix-Prinzip)
+- 🧪 testgetriebener Entwicklung
+- 📄 transparenter Protokollierung aller Änderungen
 
 ---
 
-🛟 Kontakt & Support
+## 📞 Support & Ressourcen
 
-| Ressource      | Zugang                                                                 |
-| -------------- | ---------------------------------------------------------------------- |
-| 🤖 Codex       | [https://chatgpt.com/codex](https://chatgpt.com/codex)                 |
-| 🐇 Owner       | Rabbit#2142 auf Discord                                                |
-| ☁️ Deployment  | Railway Dashboard                                                      |
-| 📦 GitHub Repo | [https://github.com/Rabbit-Fur/try](https://github.com/Rabbit-Fur/try) |
+| Ressource | Zugriff |
+|-----------|---------|
+| 🤖 Codex | [chatgpt.com/codex](https://chatgpt.com/codex) |
+| 🐇 Owner | see_u_m auf Discord |
+| ☁️ Deployment | [Railway Dashboard](https://railway.app) |
+| 📦 Repo | [Rabbit-Fur/try](https://github.com/Rabbit-Fur/try) |
 
 ---
-
-📌 Letzter Validierter Zustand
-
-* 🔖 Version: v1.1.0.2
-* 🗓️ Release-Datum: 14.06.2025
-* 🤖 Codex-Status: aktiviert (`codex-fur`)
-* 🔄 Deployment: Live auf Railway (fur-martix.up.railway.app)
-* 🛡️ Sicherheit: ENV/Token geschützt · Discord OAuth aktiv
-
-📣 **Letzte Worte**
-
-> Das FUR SYSTEM ist nicht nur ein Code-Repository. Es ist eine Allianz aus Effizienz, Automatisierung und Vertrauen.
-> Jede Änderung zählt. Jeder Beitrag formt die Matrix.
