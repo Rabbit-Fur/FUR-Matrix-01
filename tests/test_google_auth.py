@@ -1,4 +1,6 @@
 import json
+import logging
+import os
 
 import google_auth as mod
 
@@ -37,9 +39,11 @@ def test_google_login_flow(client, tmp_path, monkeypatch):
         assert sess["google_oauth_state"] == "state1"
 
 
-def test_load_credentials_refresh(monkeypatch, tmp_path, app):
+def test_load_credentials_refresh(monkeypatch, tmp_path, app, caplog):
     path = tmp_path / "token.json"
-    app.config.update(GOOGLE_CREDENTIALS_FILE=str(path), GOOGLE_CALENDAR_SCOPES=["scope"])
+    os.environ["GOOGLE_CREDENTIALS_FILE"] = str(path)
+    app.config.pop("GOOGLE_CREDENTIALS_FILE", None)
+    app.config.update(GOOGLE_CALENDAR_SCOPES=["scope"])
     data = {
         "token": "old",
         "refresh_token": "r",
@@ -66,19 +70,35 @@ def test_load_credentials_refresh(monkeypatch, tmp_path, app):
         mod.Credentials, "from_authorized_user_info", lambda info, scopes: FakeCred()
     )
     monkeypatch.setattr(mod, "Request", lambda: object())
-
-    cred = mod.load_credentials()
+    with caplog.at_level(logging.INFO):
+        cred = mod.load_credentials()
     assert isinstance(cred, FakeCred)
     assert refreshed["called"]
     assert json.loads(path.read_text())["token"] == "new"
+    assert f"Loaded Google OAuth credentials from {path}" in caplog.text
 
 
-def test_load_credentials_invalid_returns_none(tmp_path, app):
+def test_load_credentials_invalid_returns_none(tmp_path, app, caplog):
     path = tmp_path / "config.json"
     path.write_text(json.dumps({"web": {"client_id": "id"}}))
-    app.config.update(GOOGLE_CREDENTIALS_FILE=str(path), GOOGLE_CALENDAR_SCOPES=["scope"])
+    os.environ["GOOGLE_CREDENTIALS_FILE"] = str(path)
+    app.config.pop("GOOGLE_CREDENTIALS_FILE", None)
+    app.config.update(GOOGLE_CALENDAR_SCOPES=["scope"])
 
-    assert mod.load_credentials() is None
+    with caplog.at_level(logging.ERROR):
+        assert mod.load_credentials() is None
+    assert "Invalid credentials" in caplog.text
+
+
+def test_load_credentials_missing_file(tmp_path, app, caplog):
+    missing = tmp_path / "missing.json"
+    os.environ["GOOGLE_CREDENTIALS_FILE"] = str(missing)
+    app.config.pop("GOOGLE_CREDENTIALS_FILE", None)
+    app.config.update(GOOGLE_CALENDAR_SCOPES=["scope"])
+
+    with caplog.at_level(logging.WARNING):
+        assert mod.load_credentials() is None
+    assert "Token file not found" in caplog.text
 
 
 def test_oauth2callback_invalid_state(client, tmp_path, monkeypatch):

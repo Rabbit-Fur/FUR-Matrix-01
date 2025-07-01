@@ -12,6 +12,7 @@ from flask import (
     redirect,
     request,
     session,
+    has_app_context,
 )
 from google.auth import exceptions as google_exceptions
 from google.auth.transport.requests import Request
@@ -24,8 +25,12 @@ google_auth = Blueprint("google_auth", __name__)
 log = logging.getLogger(__name__)
 
 
-def _cred_path() -> Optional[str]:
-    return current_app.config.get("GOOGLE_CREDENTIALS_FILE")
+def _cred_path() -> str:
+    if has_app_context():
+        path = current_app.config.get("GOOGLE_CREDENTIALS_FILE")
+        if path:
+            return path
+    return os.environ.get("GOOGLE_CREDENTIALS_FILE", "/data/google_token.json")
 
 
 def _save_credentials(creds: Credentials) -> None:
@@ -40,18 +45,25 @@ def _save_credentials(creds: Credentials) -> None:
 def load_credentials() -> Optional[Credentials]:
     """Load stored credentials and refresh if expired."""
     path = _cred_path()
-    if not path or not os.path.exists(path):
+    if not os.path.exists(path):
+        log.warning("Token file not found: %s", path)
         return None
     with open(path, "r", encoding="utf-8") as fh:
         data = json.load(fh)
-    scopes = current_app.config.get(
-        "GOOGLE_CALENDAR_SCOPES",
-        ["https://www.googleapis.com/auth/calendar.readonly"],
-    )
+    if has_app_context():
+        scopes = current_app.config.get(
+            "GOOGLE_CALENDAR_SCOPES",
+            ["https://www.googleapis.com/auth/calendar.readonly"],
+        )
+    else:
+        scopes = os.environ.get(
+            "GOOGLE_CALENDAR_SCOPES",
+            "https://www.googleapis.com/auth/calendar.readonly",
+        ).split(",")
     try:
         creds = Credentials.from_authorized_user_info(data, scopes)
-    except ValueError as exc:  # invalid or client config only
-        logging.error("Main: %s", exc)
+    except ValueError:
+        log.error("Invalid credentials")
         return None
     if creds and creds.expired and creds.refresh_token:
         log.info("Refreshing expired Google credentials")
