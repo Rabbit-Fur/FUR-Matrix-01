@@ -93,11 +93,12 @@ def downloads():
 
 @require_roles(["R4", "ADMIN"])
 @r4_required
-@admin.route("/pet_advisor")
+@admin.route("/pet-advisor")
 def pet_advisor():
+    """Render the Pet Advisor dashboard for authorized users."""
     if current_app.config.get("TESTING"):
         return "petadvisor"
-    return render_template("admin/PetAdvisorDashboard.tsx")
+    return render_template("admin/pet_advisor.html")
 
 
 @require_roles(["R4", "ADMIN"])
@@ -428,13 +429,3 @@ def upload():
         files = sorted(f for f in os.listdir(upload_folder) if _allowed_file(f))
 
     return render_template("admin/upload.html", files=files)
-
-
-@admin.route("/pet-advisor")
-def pet_advisor():
-    """Show the pet advisor dashboard for admins and R4 roles."""
-    user = session.get("user")
-    roles = session.get("discord_roles", [])
-    if not user or (user.get("role_level") != "ADMIN" and "R4" not in roles):
-        return "403 - Zugriff verweigert", 403
-    return render_template("admin/pet_advisor.html")
