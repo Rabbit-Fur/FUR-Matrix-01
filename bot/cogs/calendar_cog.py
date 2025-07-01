@@ -145,6 +145,10 @@ class CalendarCog(commands.Cog):
         """Regularly synchronize events from Google to MongoDB."""
         await self.bot.wait_until_ready()
         try:
+            self.service._build_service()
+            if self.service.service is None:
+                log.warning("Calendar service not configured – skipping sync")
+                return
             await self.service.sync()
         except Exception:  # noqa: BLE001
             log.exception("Calendar sync failed")

@@ -4,6 +4,7 @@ from zoneinfo import ZoneInfo
 
 import discord
 import pytest
+import logging
 
 from bot.cogs.calendar_cog import CalendarCog, should_send_daily, should_send_weekly
 
@@ -96,3 +97,64 @@ async def test_setup_skips_duplicate_registration(monkeypatch):
 
     cmds = [c for c in bot.tree.get_commands() if c.name == "calendar"]
     assert len(cmds) == 1
+
+
+@pytest.mark.asyncio
+async def test_sync_loop_builds_and_syncs(monkeypatch):
+    cog = CalendarCog.__new__(CalendarCog)
+
+    async def ready():
+        return None
+
+    cog.bot = types.SimpleNamespace(wait_until_ready=ready)
+
+    called: dict[str, bool] = {}
+
+    class DummyService:
+        def __init__(self) -> None:
+            self.service = None
+
+        def _build_service(self) -> None:
+            called["build"] = True
+            self.service = object()
+
+        async def sync(self) -> None:
+            called["sync"] = True
+
+    cog.service = DummyService()
+
+    await cog.sync_loop()
+
+    assert called.get("build")
+    assert called.get("sync")
+
+
+@pytest.mark.asyncio
+async def test_sync_loop_skips_when_unconfigured(monkeypatch, caplog):
+    cog = CalendarCog.__new__(CalendarCog)
+
+    async def ready():
+        return None
+
+    cog.bot = types.SimpleNamespace(wait_until_ready=ready)
+
+    called: dict[str, bool] = {}
+
+    class DummyService:
+        def __init__(self) -> None:
+            self.service = None
+
+        def _build_service(self) -> None:
+            called["build"] = True
+
+        async def sync(self) -> None:  # pragma: no cover - should not run
+            called["sync"] = True
+
+    cog.service = DummyService()
+
+    with caplog.at_level(logging.WARNING):
+        await cog.sync_loop()
+
+    assert called.get("build")
+    assert "Calendar service not configured" in caplog.text
+    assert "sync" not in called
