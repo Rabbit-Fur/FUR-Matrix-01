@@ -55,7 +55,7 @@ def test_autopilot_sends_with_role_mention(monkeypatch):
         "_id": 1,
         "title": "Ping",
         "event_time": now + timedelta(minutes=10, seconds=1),
-        "google_event_id": "g1",
+        "google_id": "g1",
     }
     monkeypatch.setattr(autopilot_mod, "datetime", types.SimpleNamespace(utcnow=lambda: now))
     events_col = DummyCollection([event])

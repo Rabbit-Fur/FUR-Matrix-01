@@ -8,7 +8,7 @@ class DummyCollection:
         self.docs = {}
 
     def update_one(self, flt, update, upsert=False):
-        self.docs[flt["google_event_id"]] = update["$set"]
+        self.docs[flt["google_id"]] = update["$set"]
 
 
 def test_sync_to_mongodb(monkeypatch):
