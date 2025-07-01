@@ -21,7 +21,7 @@ def test_nav_guest_hidden(client):
     assert "/admin/dashboard" not in html
     assert "/members/dashboard" not in html
     assert "/admin/upload" not in html
-    assert "/admin/pet_advisor" not in html
+    assert "/admin/pet-advisor" not in html
     assert "/admin/memory" not in html
 
 
@@ -32,7 +32,7 @@ def test_nav_r3_sees_member_only(client):
     assert "/members/dashboard" in html
     assert "/admin/dashboard" not in html
     assert "/admin/upload" not in html
-    assert "/admin/pet_advisor" not in html
+    assert "/admin/pet-advisor" not in html
     assert "/admin/memory" not in html
 
 
@@ -43,7 +43,7 @@ def test_nav_r4_sees_admin(client):
     assert "/members/dashboard" in html
     assert "/admin/dashboard" in html
     assert "/admin/upload" in html
-    assert "/admin/pet_advisor" in html
+    assert "/admin/pet-advisor" in html
     assert "/admin/memory" not in html
 
 
@@ -54,5 +54,5 @@ def test_nav_admin_sees_all(client):
     assert "/members/dashboard" in html
     assert "/admin/dashboard" in html
     assert "/admin/upload" in html
-    assert "/admin/pet_advisor" in html
+    assert "/admin/pet-advisor" in html
     assert "/admin/memory" in html

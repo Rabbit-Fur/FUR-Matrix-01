@@ -2,6 +2,7 @@
 
 import asyncio
 import os
+from flask import session
 
 import pytest
 
@@ -88,6 +89,11 @@ def app():
     @public.route("/events")
     def events():
         return "events"
+
+    @public.route("/logout")
+    def logout():
+        session.clear()
+        return "logout"
 
     @public.route("/leaderboard")
     def leaderboard():
