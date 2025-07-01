@@ -1,4 +1,5 @@
 import logging
+import os
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from typing import Any, Optional
@@ -22,7 +23,7 @@ logger.addHandler(handler)
 logger.setLevel(logging.INFO)
 
 # Token path
-TOKEN_PATH = Path("/data/google_token.json")
+TOKEN_PATH = Path(os.getenv("GOOGLE_CREDENTIALS_FILE", "/data/google_token.json"))
 
 
 def _get_token_collection():
