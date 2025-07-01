@@ -21,7 +21,7 @@ from google_auth_oauthlib.flow import Flow
 log = logging.getLogger(__name__)
 
 # OAuth configuration loaded from environment so the same code works locally
-# and on Railway.  ``GOOGLE_TOKEN_PATH`` points to ``/data`` which should be
+# and on Railway.  ``GOOGLE_CREDENTIALS_FILE`` points to ``/data`` which should be
 # backed by a volume in production.
 SCOPES = os.getenv(
     "GOOGLE_CALENDAR_SCOPES",
@@ -29,7 +29,7 @@ SCOPES = os.getenv(
 ).split(",")
 REDIRECT_URI = os.getenv("GOOGLE_REDIRECT_URI", "https://fur-martix.up.railway.app/oauth2callback")
 CLIENT_SECRETS_FILE = Path(os.getenv("GOOGLE_CLIENT_CONFIG", "credentials/client_secret.json"))
-TOKEN_PATH = Path(os.getenv("GOOGLE_TOKEN_PATH", "/data/google_token.json"))
+TOKEN_PATH = Path(os.getenv("GOOGLE_CREDENTIALS_FILE", "/data/google_token.json"))
 # Using a JSON file avoids pickle security issues and works across container
 # restarts. In production consider storing this JSON in MongoDB instead of the
 # ephemeral filesystem.
