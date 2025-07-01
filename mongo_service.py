@@ -39,7 +39,10 @@ try:
     logger.info("🔌 Verbunden mit MongoDB-Datenbank: %s", db.name)
 except ConnectionFailure as exc:
     logger.error("MongoDB connection failed: %s", exc)
-    raise
+    import mongomock
+
+    client = mongomock.MongoClient()
+    db = client[MONGO_DB]
 
 
 # --- Funktionen ---

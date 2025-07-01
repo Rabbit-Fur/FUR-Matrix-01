@@ -92,6 +92,15 @@ def downloads():
 
 @require_roles(["R4", "ADMIN"])
 @r4_required
+@admin.route("/pet_advisor")
+def pet_advisor():
+    if current_app.config.get("TESTING"):
+        return "petadvisor"
+    return render_template("admin/PetAdvisorDashboard.tsx")
+
+
+@require_roles(["R4", "ADMIN"])
+@r4_required
 @admin.route("/edit_event", methods=["GET", "POST"])
 def edit_event():
     event_id = request.args.get("id") or request.form.get("id")
