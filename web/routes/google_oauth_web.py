@@ -15,7 +15,7 @@ oauth_bp = Blueprint("oauth_web", __name__)
 
 # Constants
 SCOPES = ["https://www.googleapis.com/auth/calendar"]
-CLIENT_SECRET_FILE = Path("credentials/client_secret.json")
+CLIENT_SECRET_FILE = Path(os.getenv("GOOGLE_CLIENT_CONFIG", "credentials/client_secret.json"))
 TOKEN_PATH = Path(os.getenv("GOOGLE_CREDENTIALS_FILE", "/data/google_token.json"))
 REDIRECT_URI = "https://fur-martix.up.railway.app/oauth2callback"
 
