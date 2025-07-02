@@ -22,7 +22,7 @@ def main() -> None:
             creds.refresh(Request())
         else:
             flow = InstalledAppFlow.from_client_secrets_file(
-                os.getenv("GOOGLE_CLIENT_CONFIG", "credentials/client_secret.json"),
+                os.getenv("GOOGLE_CLIENT_CONFIG"),
                 SCOPES,
             )
             creds = flow.run_local_server(port=0)
