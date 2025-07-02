@@ -50,3 +50,4 @@ static/champions/
 static/bg/*.tmp
 *.zip
 *weekly.md
+data/secrets/
