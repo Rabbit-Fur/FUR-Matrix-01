@@ -16,6 +16,23 @@ async def test_send_daily_dm(monkeypatch):
 
     monkeypatch.setattr(mod, "send_dm", fake_send)
 
+    class FakeFlags:
+        def __init__(self) -> None:
+            self.updated = False
+
+        def find_one(self, q):
+            return None
+
+        def update_one(self, q, u, upsert=False):
+            self.updated = True
+
+    flags = FakeFlags()
+
+    def fake_get_collection(name):
+        return flags if name == "flags" else None
+
+    monkeypatch.setattr(mod, "get_collection", fake_get_collection)
+
     async def fetch_user(uid):
         return uid
 
@@ -24,6 +41,7 @@ async def test_send_daily_dm(monkeypatch):
     await mod.send_daily_dm(fake_bot)
 
     assert called.get(1) == "Good morning! Your events for today are ready."
+    assert flags.updated
 
 
 @pytest.mark.asyncio
