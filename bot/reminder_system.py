@@ -7,7 +7,14 @@ from typing import Optional
 from bson import ObjectId
 
 from bot.bot_main import bot
-from mongo_service import get_collection
+from config import Config
+from motor.motor_asyncio import AsyncIOMotorClient
+
+# use motor client for non-blocking mongodb access
+client = AsyncIOMotorClient(Config.MONGODB_URI or "mongodb://localhost:27017/furdb")
+db = client.get_default_database()
+reminders_col = db["reminders"]
+participants_col = db["reminder_participants"]
 
 log = logging.getLogger(__name__)
 
@@ -15,12 +22,13 @@ log = logging.getLogger(__name__)
 async def _send_reminder(reminder_id: str) -> Optional[int]:
     """Sendet einen Reminder an alle zugehörigen Teilnehmer (per DM)."""
     try:
-        reminder = get_collection("reminders").find_one({"_id": ObjectId(reminder_id)})
+        reminder = await reminders_col.find_one({"_id": ObjectId(reminder_id)})
         if not reminder:
             log.warning("❗ Reminder-ID %s nicht gefunden", reminder_id)
             return None
 
-        participants = get_collection("reminder_participants").find({"reminder_id": reminder_id})
+        cursor = participants_col.find({"reminder_id": reminder_id})
+        participants = await cursor.to_list(length=None)
         success_count = 0
         for row in participants:
             try:
