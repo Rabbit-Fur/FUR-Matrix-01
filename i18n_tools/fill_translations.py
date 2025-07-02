@@ -1,7 +1,10 @@
 import json
+import logging
 from pathlib import Path
 
 import requests
+
+log = logging.getLogger(__name__)
 
 TRANSLATION_DIR = Path("translations")
 BASE_LANG = "de"
@@ -18,12 +21,12 @@ def translate_text(text: str, target: str) -> str | None:
         return text
     try:
         params = {"q": text, "langpair": f"{BASE_LANG}|{target}"}
-        resp = requests.get(API_URL, params=params, timeout=10, verify=False)
+        resp = requests.get(API_URL, params=params, timeout=10)
         resp.raise_for_status()
         data = resp.json()
         return data.get("responseData", {}).get("translatedText")
     except Exception as e:
-        print(f"Translation error for {target}: {e}")
+        log.error("Translation error for %s: %s", target, e)
         return None
 
 
