@@ -137,7 +137,7 @@ def _build_doc(event: dict) -> dict:
     start_dt = _parse_datetime(event.get("start"))
     end_dt = _parse_datetime(event.get("end"))
     return {
-        "google_event_id": event.get("id"),
+        "google_id": event.get("id"),
         "title": event.get("summary", "No Title"),
         "description": event.get("description"),
         "location": event.get("location"),
@@ -192,13 +192,13 @@ def sync_to_mongodb(collection: str = "calendar_events") -> int:
     count = 0
     for ev in events:
         doc = _build_doc(ev)
-        if not doc["google_event_id"]:
+        if not doc["google_id"]:
             continue
         try:
-            col.update_one({"google_event_id": doc["google_event_id"]}, {"$set": doc}, upsert=True)
+            col.update_one({"google_id": doc["google_id"]}, {"$set": doc}, upsert=True)
             count += 1
         except Exception:
-            logger.exception("Failed to sync event %s", doc.get("google_event_id"))
+            logger.exception("Failed to sync event %s", doc.get("google_id"))
     new_token = data.get("nextSyncToken")
     if new_token:
         _store_sync_token(new_token)

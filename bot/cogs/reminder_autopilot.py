@@ -95,7 +95,7 @@ class ReminderAutopilot(commands.Cog):
             )
             mapped_events = []
             for ev in events:
-                doc = get_collection("events").find_one({"google_event_id": ev.get("id")})
+                doc = get_collection("events").find_one({"google_id": ev.get("id")})
                 if doc:
                     doc.update(ev)
                     mapped_events.append(doc)
