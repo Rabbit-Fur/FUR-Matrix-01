@@ -15,7 +15,7 @@ def send_discord_webhook(content: str, file_path: str) -> int | None:
         with open(file_path, "rb") as f:
             files = {"file": f}
             data = {"content": content}
-            response = requests.post(webhook_url, data=data, files=files, timeout=10)
+            response = requests.post(webhook_url, data=data, files=files)
         return response.status_code
     except Exception as exc:  # noqa: BLE001
         logging.error("Failed to send Discord webhook: %s", exc)
