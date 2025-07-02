@@ -6,9 +6,13 @@ import argparse
 from datetime import datetime
 from pathlib import Path
 from typing import Iterable
+import logging
 
 from config import Config
 from utils import event_helpers
+
+
+log = logging.getLogger(__name__)
 
 
 def get_recent_events() -> str:
@@ -66,20 +70,20 @@ def main(argv: Iterable[str] | None = None) -> None:
         return
 
     if args.events:
-        print("== Recent Events ==")
-        print(get_recent_events())
+        log.info("== Recent Events ==")
+        log.info(get_recent_events())
     if args.channels:
-        print("== Channel Mappings ==")
+        log.info("== Channel Mappings ==")
         for key, value in get_channel_mapping().items():
-            print(f"{key}: {value}")
+            log.info("%s: %s", key, value)
     if args.posters:
-        print("== Poster Files ==")
+        log.info("== Poster Files ==")
         for item in get_poster_files():
-            print(item)
+            log.info(item)
     if args.logs:
-        print("== Log Files ==")
+        log.info("== Log Files ==")
         for item in get_log_files():
-            print(item)
+            log.info(item)
 
 
 if __name__ == "__main__":  # pragma: no cover - manual execution

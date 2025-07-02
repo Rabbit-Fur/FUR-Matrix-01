@@ -1,8 +1,12 @@
 import json
+import logging
 from pathlib import Path
 
 DEFAULT_SOURCE = Path("translations/en.json")
 DEFAULT_TARGET = Path("translation_keys.json")
+
+
+log = logging.getLogger(__name__)
 
 
 def update_key_list(source: Path = DEFAULT_SOURCE, target: Path = DEFAULT_TARGET) -> list[str]:
@@ -20,4 +24,4 @@ def update_key_list(source: Path = DEFAULT_SOURCE, target: Path = DEFAULT_TARGET
 
 if __name__ == "__main__":
     keys = update_key_list()
-    print(f"✅ Generated {len(keys)} translation keys.")
+    log.info("✅ Generated %s translation keys.", len(keys))

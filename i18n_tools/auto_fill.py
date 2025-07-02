@@ -1,4 +1,5 @@
 import json
+import logging
 from pathlib import Path
 from typing import Dict, Set
 
@@ -7,6 +8,9 @@ import requests
 TRANSLATIONS_DIR = Path("translations")
 BASE_LANG = "en"
 API_URL = "https://translate.argosopentech.com/translate"
+
+
+log = logging.getLogger(__name__)
 
 
 def load_all() -> Dict[str, Dict[str, str]]:
@@ -35,7 +39,7 @@ def translate(text: str, target: str) -> str:
         resp.raise_for_status()
         return resp.json()["translatedText"]
     except Exception as e:
-        print(f"Translation error [{target}]: {e}")
+        log.error("Translation error [%s]: %s", target, e)
         return text
 
 
@@ -50,7 +54,7 @@ def main() -> None:
         missing = [k for k in all_keys if k not in entries]
         if not missing:
             continue
-        print(f"{lang}: adding {len(missing)} translations")
+        log.info("%s: adding %s translations", lang, len(missing))
         for key in missing:
             source_text = base.get(key, key)
             entries[key] = translate(source_text, lang)

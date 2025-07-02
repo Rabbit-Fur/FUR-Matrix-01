@@ -1,6 +1,7 @@
 # mongo_test.py
 
 import os
+import logging
 from pymongo import MongoClient
 from pymongo.server_api import ServerApi
 from dotenv import load_dotenv
@@ -16,10 +17,11 @@ if not uri:
 
 # MongoDB-Client erstellen
 client = MongoClient(uri, server_api=ServerApi("1"))
+log = logging.getLogger(__name__)
 
 # Verbindung testen
 try:
     client.admin.command("ping")
-    print("✅ Verbindung zu MongoDB Atlas erfolgreich!")
+    log.info("✅ Verbindung zu MongoDB Atlas erfolgreich!")
 except Exception as e:
-    print("❌ Verbindung fehlgeschlagen:", e)
+    log.error("❌ Verbindung fehlgeschlagen: %s", e)

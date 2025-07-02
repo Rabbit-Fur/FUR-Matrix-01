@@ -88,7 +88,7 @@ def signal_handler(sig, frame):
 if __name__ == "__main__":
     try:
         init_db()
-        print("✅ Datenbank-Initialisierung erfolgreich.")
+        logging.info("✅ Datenbank-Initialisierung erfolgreich.")
 
         # 🧠 Agenten laden (Reminder, Translation, Champion etc.)
         agents = init_agents(db=db, session=session)
@@ -114,7 +114,7 @@ if __name__ == "__main__":
         app.run(host="0.0.0.0", port=port, debug=debug)
 
     except KeyboardInterrupt:
-        print("🛑 Manuell unterbrochen.")
+        logging.info("🛑 Manuell unterbrochen.")
     except Exception as e:
         log_error("Main", e)
         raise

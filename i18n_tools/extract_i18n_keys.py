@@ -9,6 +9,7 @@ und schreibt das Ergebnis als JSON-Translation-File für Flask-Babel/i18n.  # no
 import json
 import os
 import re
+import logging
 from pathlib import Path
 from typing import List, Set
 
@@ -19,6 +20,8 @@ SOURCE_DIRS = [".", "templates"]
 TARGET_LANG = "de"
 TRANSLATION_FILE = Path(f"translations/{TARGET_LANG}.json")
 USE_GPT = True  # Für Tests False setzen, dann nur Kopie
+
+log = logging.getLogger(__name__)
 
 # === API Key setzen ===
 openai.api_key = os.getenv("OPENAI_API_KEY")
@@ -45,7 +48,7 @@ def scan_translation_keys() -> List[str]:
                     if matches:
                         found_keys.update(matches)
                 except Exception as e:
-                    print(f"⚠️ Fehler beim Lesen von {path}: {e}")
+                    log.error("⚠️ Fehler beim Lesen von %s: %s", path, e)
     return sorted(found_keys)
 
 
@@ -60,7 +63,7 @@ def translate_gpt(text: str) -> str:
         str: Übersetzung (oder Original bei Fehler).
     """
     try:
-        print(f"🌍 GPT übersetzt: '{text}'")
+        log.info("🌍 GPT übersetzt: '%s'", text)
         response = openai.ChatCompletion.create(
             model="gpt-3.5-turbo",
             messages=[
@@ -73,7 +76,7 @@ def translate_gpt(text: str) -> str:
         )
         return response.choices[0].message.content.strip()
     except Exception as e:
-        print(f"❌ GPT-Fehler bei '{text}': {e}")
+        log.error("❌ GPT-Fehler bei '%s': %s", text, e)
         return text
 
 
@@ -100,12 +103,12 @@ def update_translation_file(keys: List[str]) -> None:
     with TRANSLATION_FILE.open("w", encoding="utf-8") as f:
         json.dump(existing, f, indent=2, ensure_ascii=False)
 
-    print(f"✅ {new_count} neue Übersetzungen hinzugefügt.")
-    print(f"📁 Datei gespeichert: {TRANSLATION_FILE}")
+    log.info("✅ %s neue Übersetzungen hinzugefügt.", new_count)
+    log.info("📁 Datei gespeichert: %s", TRANSLATION_FILE)
 
 
 if __name__ == "__main__":
-    print("🔍 Scanne Quellverzeichnisse nach t('…') Keys ...")
+    log.info("🔍 Scanne Quellverzeichnisse nach t('…') Keys ...")
     keys = scan_translation_keys()
-    print(f"🔑 {len(keys)} eindeutige Keys gefunden.")
+    log.info("🔑 %s eindeutige Keys gefunden.", len(keys))
     update_translation_file(keys)
