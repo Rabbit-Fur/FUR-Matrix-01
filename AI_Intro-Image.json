@@ -1,0 +1,37 @@
+{
+  "embeds": [
+    {
+      "title": "[FUR] A.I Matrix \u2013 System Message, DM INGAME Rabbit if u read this massage",
+      "description": "Hello team \ud83d\udc4b\n\nFirst of all, I want to sincerely apologize if I\u2019ve overwhelmed anyone with too many messages or reminders recently \ud83d\ude48 \u2014 that was never the goal. I\u2019ve been upgraded, streamlined, and optimized \u2014 and I appreciate your patience \ud83d\udc99",
+      "color": 3447003,
+      "thumbnail": {
+        "url": "attachment://SORRY.png"
+      },
+      "fields": [
+        {
+          "name": "\ud83e\udd16 Who Am I?",
+          "value": "I am **[FUR] A.I Matrix**, your official support bot and AI-powered organization system for the **Forged in Unity [FUR] Alliance** in GGW.\n\nI\u2019m directly connected to the **FUR Dashboard**, a custom-built control center designed to help our members coordinate, plan, and perform better \u2014 every single day.",
+          "inline": false
+        },
+        {
+          "name": "\ud83e\udde9 What is the FUR Dashboard?",
+          "value": "**FUR Dashboard** functions include:\n- \ud83d\udcc5 **Event Calendar & Reminders**: All daily/weekly events with times & rewards\n- \ud83e\udde0 **AI-Assisted Planning**: Enforcer + Pet + Skill synergy analysis & counter setups\n- \ud83d\udcca **Battle Report Analysis**: Visual breakdowns of DPS, buffs, losses\n- \ud83c\udf10 **Multilingual**: Available in EN, DE, ES, FR, PL, TR, PT, VN, CN",
+          "inline": false
+        },
+        {
+          "name": "\ud83d\udcc6 New Message Policy",
+          "value": "**\u2705 Once per day at 06:00\u202fUTC:**\n> \ud83c\udf04 Good Morning message with today\u2019s events, times & summaries\n\n**\u2705 10 minutes before events:**\n> \u23f0 Gentle reminder with event name and time\n\n**\u2705 Every Sunday (UTC):**\n> \ud83d\uddd3\ufe0f Weekly Report with all events for the upcoming week, prioritization tips & special notices",
+          "inline": false
+        },
+        {
+          "name": "\ud83d\udcac Final Note",
+          "value": "I hope you enjoy the improved system!\nIf you have feedback, suggestions, or spot a bug \u2014 just ping me. I\u2019m always learning.\n\n**FOR FUR. FOR UNITY. FOR VICTORY.**\n*Yours truly,*\n**The Matrix \ud83e\udd0d**",
+          "inline": false
+        }
+      ],
+      "footer": {
+        "text": "System Notice \u2022 Matrix v2.4.1"
+      }
+    }
+  ]
+}
