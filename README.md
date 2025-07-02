@@ -1,163 +1,116 @@
-# 🧠 FUR Codex System – Unified Agent & Calendar Platform
 
-> Ein modulares Fullstack-System zur Koordination, Erinnerung und Automatisierung von Events, Agenten und Nutzern – optimiert für Discord, MongoDB, Google Calendar und internationale Teams.
 
----
+Willkommen im Kernsystem von **FUR (Federated Utility Rabbit)** – einem modularen Discord-, Kalender- und Ereignis-Managementsystem mit GPT-gestütztem Multi-Agent-Netzwerk, MongoDB, Google-API-Integration und vollautomatisierten Abläufen.
 
-## 🚀 Projektbeschreibung
-
-**FUR Codex** ist ein intelligentes Kontrollsystem zur Organisation und Automatisierung von Event-, Kalender- und Kommunikationsprozessen. Es kombiniert:
-- 🔁 automatische Erinnerungen & wöchentliche Zusammenfassungen,
-- 🤖 GPT-gestützte Agentensysteme (Poster, Reminder, Inbox, etc.),
-- 📅 Google Calendar-Synchronisation mit OAuth 2.0,
-- 🧩 modulare Blueprints & Discord-Cogs,
-- 🌍 mehrsprachige Oberfläche mit Flaggen-UI & JSON-i18n,
-- 📦 MongoDB-Integration für Nutzer-, Event- und Reminderdaten,
-- 📊 visuelle Dashboards & Leaderboards für Mitglieder.
-
-Das System ist vollständig testbar (pytest), Docker-fähig und CI/CD-ready via Railway.
+> Dieses Repository folgt dem Codex-Protokoll QUM-1.0 und ist vollständig kompatibel mit Codex-Aktionen, Commit-Governance und Agenten-Routing.
 
 ---
 
-## 📁 Projektstruktur
+## 🚀 Quickstart
 
-try-main/
-├── agents/ # GPT-gestützte Agenten (Reminder, Poster, Dialog, etc.)
-├── blueprints/ # Flask-Routen (API, Admin, Member, Public)
-├── bot/ # Discord-Bot & Cogs (Commands, Newsletter, Kalender)
-├── codex/ # Codex CLI, Aufgabenplanung, Sync-Tools
-├── core/ # Memory Engine, Universal-Schnittstellen, Logging
-├── dashboard/ # CI/CD-YAMLs & wöchentlicher Logger
-├── database/ # Initialisierung & MongoDB-Anbindung
-├── docs/ # Screenshots & technische Dokumentation
-├── i18n_tools/ # Lokale Übersetzungswerkzeuge (autofill, sync, extract)
-├── models/ # MongoDB-Modellklassen für Events, Users, etc.
-├── schemas/ # Pydantic/Marshmallow-Schemas zur Validierung
-├── services/ # Dienste wie calendar_service
-├── static/ # Assets, Logos, generierte Poster, Flags
-├── templates/ # Jinja2-HTML Templates für Admin, Public, Member
-├── tests/ # Umfassende Pytest-Testabdeckung (~45 Module)
-├── translations/ # JSON-basierte Sprachdateien (50+ Sprachen)
-├── utils/ # Hilfsfunktionen (Timezone, Poster, Google, Discord)
-├── web/ # Flask Web-Routen, Sockets, Poster-API
-├── main_app.py # App-Initialisierung & Entry Point
-├── config.py # Konfiguration & ENV-Ladefunktionen
-└── requirements.txt # Python-Abhängigkeiten
-
-yaml
-Kopieren
-Bearbeiten
-
----
-
-## ⚙️ Installation & Setup
-
-### Voraussetzungen
-- Python 3.10+
-- MongoDB Atlas URI (z. B. `mongodb+srv://...`)
-- Google Cloud OAuth2 Credentials
-- Discord Bot Token mit OAuth & Adminrechten
-- Optional: Railway, Docker, Make
-
-### Setup-Schritte
-
-```bash
 # 1. Repository klonen
-git clone https://github.com/deinuser/fur-codex
-cd fur-codex
+git clone https://github.com/Rabbit-Fur/try.git
+cd try
 
-# 2. Virtuelle Umgebung & Abhängigkeiten
-python -m venv .venv
-source .venv/bin/activate
-pip install -r requirements.txt
-
-# 3. ENV-Variablen setzen (.env)
+# 2. Umgebung konfigurieren
 cp .env.example .env
-# → Trage hier deine MongoDB URI, Google OAuth & Discord Token ein
-# Die Google OAuth Client-Konfiguration (`client_secret.json`) darf **nicht** im
-# Repository liegen. Hinterlege den Pfad in der ENV-Variable
-# `GOOGLE_CLIENT_CONFIG` (kein Fallback). OAuth-Tokens werden per
-# `creds.to_json()` unter `GOOGLE_CREDENTIALS_FILE` gespeichert (Standard:
-# `/data/google_token.json`).
+poetry install
 
-# 4. Datenbank vorbereiten
-python init_db_core.py
+# 3. Starten (lokal)
+poetry run python agents/main_app.py
+🧱 Struktur
+text
+Kopieren
+Bearbeiten
+.
+├── agents/                # Alle Codex-konformen Agenten
+├── bot/                   # Discord-Bot + Cogs
+├── blueprints/           # Flask-API (OAuth, User, Events)
+├── db/                   # MongoDB-Logik, Zugriffsschicht
+├── tests/                # pytest-Tests
+├── .copilot/             # Codex-Regeln, Commit- und Branchrichtlinien
+├── argend.md             # Agent-Beschreibung (optional pro Modul)
+└── AGENTS.md             # Übersicht aller registrierten Agenten
+⚙️ Konfiguration
+Erstelle deine .env basierend auf .env.example:
 
-# 5. Lokale Tests ausführen
-pytest
-Optional:
+env
+DISCORD_TOKEN=...
+GOOGLE_CLIENT_SECRET=...
+MONGO_URI=mongodb+srv://...
+OPENAI_API_KEY=...
+DEBUG=true
 
+📡 Features
+✅ Zwei-Wege-Kalendersync (Google ↔ MongoDB)
+
+✅ Vollständig modularisiertes Agentensystem
+
+✅ Discord-Bot mit intelligenten Cogs (/cal, /now, /add)
+
+🧠 Kontextspeicher für Multi-User-Prompting
+
+📁 Logging + Event-Trail über log_agent
+
+🌐 Externe Webhook-Verarbeitung (z. B. GitHub, Stripe)
+
+📦 Agenten (Auszug)
+Agent	Zweck
+reminder_agent	Erinnerungen via Kalender / Discord
+auth_agent	Auth mit Discord, Google OAuth
+scheduler_agent	Zeitbasierte Planung & Trigger
+poster_agent	Bildgenerierung über image_api
+tagging_agent	Automatische Kategorisierung
+
+→ Vollständige Liste: AGENTS.md
+
+📜 Codex-Protokoll (QUM-1.0)
+Jeder Agent benötigt eine eigene argend.md
+
+Commit Messages folgen dem Schema COD:agent-name → kurzbeschreibung
+
+Commit-Lint, Branch- und PR-Regeln werden über .copilot/config.json gesteuert
+
+Jeder Branch beginnt mit feature/, fix/, agent/, release/
+
+🧪 Tests
 bash
 Kopieren
 Bearbeiten
-# Deployment via Docker
-docker build -t fur-codex .
-docker run -p 8000:8000 fur-codex
-
-# Railway Deployment (Procfile vorhanden)
-railway up
-💡 Hauptfunktionen & Zusammenhänge
-Modul	Beschreibung
-bot/	Discord Bot mit Reminder-System, Kalender-Integration, Opt-out, Signups
-agents/	GPT-Agents wie reminder_agent.py, poster_agent.py, auth_agent.py
-google_*.py	OAuth2 Flow, Kalender Sync, Event-Pusher nach MongoDB
-web/	Flask Webserver mit SocketIO, Poster-API und Admin-Schnittstellen
-core/memory/	Memory Engine zur GPT-Kontextsteuerung
-fur_mongo.py	Initiale MongoDB-Verbindung & Standard-Sammlungen
-utils/	Tools für Zeitzonen, Google-Tasks, Discord-DMs & Poster-Erzeugung
-templates/	Jinja2 Templates inkl. Admin-Panel, Event-Views, Leaderboards
-
-🧪 Testen & Qualitätssicherung
-bash
-Kopieren
-Bearbeiten
-# Linting
-make lint
-
-# Test Suite (Pytest)
-make test
-# oder
 pytest tests/
-Die tests/-Suite deckt über 40 Teilmodule ab, inkl. Discord Cogs, Flask Views, Agents & Google-Sync.
+Testabdeckung für Agenten, API-Flows, Discord-Kommandos
 
-📚 Beispielanwendung (Use Cases)
-🕓 Daily Reminder Bot für Discord: tägliche DM mit Aufgaben aus dem Mongo-DB Kalender
+Linting: ruff, mypy, black
 
-🗓 Google Calendar Sync: Events aus GCal werden automatisch abgeglichen
+Pre-Commit Hooks aktiviert (.pre-commit-config.yaml)
 
-🌐 Mehrsprachige Web-Dashboards: mit Flaggenumschaltung & i18n-JS-Bundle
+📄 Dokumentation
+Agentendefinitionen: AGENTS.md
 
-📩 Poster Agent: erstellt automatisch visuelle Eventposter & sendet sie an Discord-Channels
+API-Flows: docs/oauth.md
 
-🧠 Memory Agent: verfolgt Gespräche & Systemzustände über Speicherobjekte
+MongoDB Setup: docs/mongo.md
 
-📄 Lizenz & Autoren
-Dieses Projekt steht unter der MIT License – siehe LICENSE.
+🔐 Sicherheit
+Alle Secrets sind über .env geschützt
 
-Entwickelt im Rahmen des FUR CORE Projekts von Marcel S.
+Token Refresh-Flows sind implementiert
 
-🤝 Contribution Guidelines
-Forken & Branchen verwenden (feature/xyz)
+Codex blockiert Deployment ohne .env.example + Commit-Lint
 
-Formatierung via make lint sicherstellen
+📬 Kontakt
+Maintainer: Marcel Schlanzke
+Discord: see_u_m
 
-Tests hinzufügen oder anpassen
+🛠️ Kompatibilität
+Komponente	Version
+Python	3.11.x
+MongoDB Atlas	≥ 5.0
+Discord.py	2.x
+Google API	v3
+OpenAI API	GPT-4 Turbo
 
-Pull Request mit Beschreibung & Verweis auf Issues
+📜 Lizenz
+MIT – siehe LICENSE
 
-🐞 Bekannte Probleme
-🌐 Einige Übersetzungsdateien (translations/*.json) sind inkonsistent → i18n_tools/translate_sync.py verwenden
 
-🔐 OAuth-Tokens werden beim ersten Durchlauf automatisch als JSON gespeichert.
-Setze `GOOGLE_CREDENTIALS_FILE` auf den gewünschten Pfad.
-
-🧪 Einige Tests benötigen mongomock – ggf. separat installieren
-
-📎 Ressourcen
-Codex-Spezifikation.md – Funktionsübersicht & Designkonzept
-
-AGENTS.md – Übersicht aller GPT-Agenten
-
-CHANGELOG.md – Entwicklungshistorie
-
-copilot-instructions.md – GPT/Copilot-Setup für Mitwirkende
