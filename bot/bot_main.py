@@ -12,6 +12,7 @@ import aiohttp
 from config import Config
 
 from .translator import MyTranslator
+from .dm_scheduler import scheduler, schedule_dm_tasks
 
 # 🧠 Umschalten zwischen echtem Bot & Stub-Modus (z. B. für Web-Dashboard)
 USE_DISCORD_BOT = os.getenv("ENABLE_DISCORD_BOT", "false").lower() == "true"
@@ -51,6 +52,8 @@ async def create_bot() -> commands.Bot:
         @new_bot.event
         async def on_ready():
             log.info("✅ Eingeloggt als %s (ID: %s)", new_bot.user, new_bot.user.id)
+            if not scheduler.running:
+                schedule_dm_tasks(new_bot)
 
     else:
         new_bot = BotStub()
