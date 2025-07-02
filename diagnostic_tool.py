@@ -3,14 +3,13 @@
 from __future__ import annotations
 
 import argparse
+import logging
 from datetime import datetime
 from pathlib import Path
 from typing import Iterable
-import logging
 
 from config import Config
 from utils import event_helpers
-
 
 log = logging.getLogger(__name__)
 

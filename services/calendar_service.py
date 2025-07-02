@@ -8,13 +8,12 @@ from discord.ext import tasks
 from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
 from motor.motor_asyncio import AsyncIOMotorClient, AsyncIOMotorCollection
-
-from crud import event_crud
-from schemas.event_schema import EventModel
 from pymongo.errors import ConfigurationError
 
 from config import Config
+from crud import event_crud
 from google_auth import load_credentials
+from schemas.event_schema import EventModel
 
 log = logging.getLogger(__name__)
 
