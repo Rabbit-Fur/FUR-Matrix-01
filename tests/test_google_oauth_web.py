@@ -1,5 +1,4 @@
 import json
-import os
 import logging
 
 from web.routes import google_oauth_web as mod

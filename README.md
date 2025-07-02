@@ -20,7 +20,7 @@ poetry install
 
 # 3. Starten (lokal)
 
-poetry run python agents/main_app.py
+poetry run python main_app.py
 
 🧱 Struktur
 
