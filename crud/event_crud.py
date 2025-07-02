@@ -23,7 +23,12 @@ async def create_event(
 ) -> EventModel:
     """Insert a new event document."""
     col = col or collection
-    data = event.model_dump(by_alias=True)
+    if hasattr(event, "model_dump"):
+        data = event.model_dump(by_alias=True)
+    else:  # pragma: no cover - Pydantic < 2
+        data = event.dict(by_alias=True)
+    if data.get("_id") is None:
+        data.pop("_id")
     result = await asyncio.to_thread(col.insert_one, data)
     event.id = result.inserted_id
     return event
@@ -87,9 +92,12 @@ async def upsert_event(
 ) -> None:
     """Upsert an event document by ``google_id`` field."""
     col = col or collection
-    await asyncio.to_thread(
-        col.update_one,
-        {"google_id": data["google_id"]},
-        {"$set": data},
-        upsert=True,
-    )
+    if asyncio.iscoroutinefunction(col.update_one):
+        await col.update_one({"google_id": data["google_id"]}, {"$set": data}, upsert=True)
+    else:  # pragma: no cover - sync collections
+        await asyncio.to_thread(
+            col.update_one,
+            {"google_id": data["google_id"]},
+            {"$set": data},
+            upsert=True,
+        )
