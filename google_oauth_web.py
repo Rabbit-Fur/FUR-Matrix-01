@@ -28,7 +28,7 @@ SCOPES = os.getenv(
     "https://www.googleapis.com/auth/calendar",
 ).split(",")
 REDIRECT_URI = os.getenv("GOOGLE_REDIRECT_URI", "https://fur-martix.up.railway.app/oauth2callback")
-CLIENT_SECRETS_FILE = Path(os.getenv("GOOGLE_CLIENT_CONFIG", "credentials/client_secret.json"))
+CLIENT_SECRETS_FILE = Path(os.getenv("GOOGLE_CLIENT_CONFIG"))
 TOKEN_PATH = Path(os.getenv("GOOGLE_CREDENTIALS_FILE", "/data/google_token.json"))
 # Using a JSON file avoids pickle security issues and works across container
 # restarts. In production consider storing this JSON in MongoDB instead of the

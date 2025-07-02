@@ -74,11 +74,11 @@ pip install -r requirements.txt
 # 3. ENV-Variablen setzen (.env)
 cp .env.example .env
 # → Trage hier deine MongoDB URI, Google OAuth & Discord Token ein
-# Die Google OAuth Client-Konfiguration (`client_secret.json`) sollte **nicht**
-# im Repository liegen. Speichere den Pfad stattdessen in der ENV-Variable
-# `GOOGLE_CLIENT_CONFIG` oder mounte die Datei als Volume (z. B. `/data/client_secret.json`).
-# OAuth-Tokens werden als JSON-Datei unter dem Pfad aus `GOOGLE_CREDENTIALS_FILE`
-# gespeichert (Standard: `/data/google_token.json`).
+# Die Google OAuth Client-Konfiguration (`client_secret.json`) darf **nicht** im
+# Repository liegen. Hinterlege den Pfad in der ENV-Variable
+# `GOOGLE_CLIENT_CONFIG` (kein Fallback). OAuth-Tokens werden per
+# `creds.to_json()` unter `GOOGLE_CREDENTIALS_FILE` gespeichert (Standard:
+# `/data/google_token.json`).
 
 # 4. Datenbank vorbereiten
 python init_db_core.py
