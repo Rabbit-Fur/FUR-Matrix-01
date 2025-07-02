@@ -50,7 +50,7 @@ Alle Agenten folgen dem Codex-Protokoll QUM-1.0 und implementieren klar abgegren
 ---
 
 ## 📬 Inbox Agent
-**Datei:** `agents/Inbox_Agent.py`  
+**Datei:** `agents/inbox_agent.py`  
 Empfängt und verarbeitet eingehende Systemnachrichten (z. B. Discord, interne Trigger, E-Mails, Webhooks).  
 → Leitstelle für Message-Routing bei unbestimmten Eingangskanälen.
 

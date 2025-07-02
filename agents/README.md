@@ -11,7 +11,7 @@ Dieses Modul enthält alle spezialisierten Agenten für das FUR SYSTEM – modul
 | `ChampionAgent`   | `champion_agent.py`       | Erzeugt Champion-Poster, Discord-Webhook, HoF-Eintrag |
 | `DeploymentAgent` | `deployment_agent.py`     | Erstellt ZIPs, Releases, prüft Tokens, triggert CI/CD |
 | `DialogAgent`     | `dialog_agent.py`         | Antwortet kontextuell auf User-Fragen (z. B. „hilfe“) |
-| `InboxAgent`      | `Inbox_Agent.py`          | Speichert Discord-DMs wie `/join_event`, `/feedback` |
+| `InboxAgent`      | `inbox_agent.py`          | Speichert Discord-DMs wie `/join_event`, `/feedback` |
 | `LogAgent`        | `log_agent.py`            | Generiert Markdown-Daily/Wochen-Logs |
 | `MigrationAgent`  | `migration_agent.py`      | Führt SQLite → MongoDB Migrationen durch |
 | `MonitoringAgent` | `monitoring_agent.py`     | Führt Healthchecks, Statusprüfungen und Logging aus |
