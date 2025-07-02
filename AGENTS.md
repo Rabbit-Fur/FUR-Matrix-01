@@ -58,6 +58,7 @@ Empfängt und verarbeitet eingehende Systemnachrichten (z. B. Discord, interne
 
 ## 🔐 Access Agent
 **Datei:** `agents/access_agent.py`  
+→ Siehe `agents/access_argend.md`
 Zentraler Agent für Rechteverwaltung: prüft Rollen, ACLs und Zugriff auf Channels, Kalender, Benutzer.  
 → Integriert mit MongoDB, Discord-Permissions, ggf. `firebase_claims`.
 
@@ -65,6 +66,7 @@ Zentraler Agent für Rechteverwaltung: prüft Rollen, ACLs und Zugriff auf Chann
 
 ## 🔑 Auth Agent
 **Datei:** `agents/auth_agent.py`  
+→ Siehe `agents/auth_argend.md`
 Authentifizierungsagent für alle OAuth2- und tokenbasierten Mechanismen.  
 → Verwaltet Login-Flows, Refresh-Tokens und Discord User-Identität.
 
@@ -72,6 +74,7 @@ Authentifizierungsagent für alle OAuth2- und tokenbasierten Mechanismen.
 
 ## 🏆 Champion Agent
 **Datei:** `agents/champion_agent.py`  
+→ Siehe `agents/champion_argend.md`
 Synchronisiert Spieler-Metadaten mit Leaderboards, XP-System, Titeln.  
 → Erlaubt Tracking von „Top Player“-Zuständen.
 
@@ -79,6 +82,7 @@ Synchronisiert Spieler-Metadaten mit Leaderboards, XP-System, Titeln.
 
 ## 💬 Dialog Agent
 **Datei:** `agents/dialog_agent.py`  
+→ Siehe `agents/dialog_argend.md`
 Ermöglicht stateful Dialoge über mehrere Turns hinweg.  
 → Bezieht sich auf Nutzerkontext, History, NLP oder Intent Matching.
 
@@ -86,6 +90,7 @@ Ermöglicht stateful Dialoge über mehrere Turns hinweg.
 
 ## 🚀 Deployment Agent
 **Datei:** `agents/deployment_agent.py`  
+→ Siehe `agents/deployment_argend.md`
 Managed Deployments über Railway, Trigger per Commit, Image Builds.  
 → Nutzt ggf. GitHub Webhooks oder CI/CD API.
 
@@ -93,6 +98,7 @@ Managed Deployments über Railway, Trigger per Commit, Image Builds.
 
 ## 📑 Log Agent
 **Datei:** `agents/log_agent.py`  
+→ Siehe `agents/log_argend.md`
 Zentralisiertes Logging mit Zugriff auf `log.insert()` und Error-Persistenz in Mongo.  
 → Formatierter Output in STDOUT, Discord, UI.
 
@@ -100,6 +106,7 @@ Zentralisiertes Logging mit Zugriff auf `log.insert()` und Error-Persistenz in M
 
 ## 📊 Monitoring Agent
 **Datei:** `agents/monitoring_agent.py`  
+→ Siehe `agents/monitoring_argend.md`
 Agent für regelmäßige Health-Checks, Clusterstatus, OAuth-Gültigkeit.  
 → Optional mit Alert-Routing in `log_agent` oder Discord.
 
@@ -107,6 +114,7 @@ Agent für regelmäßige Health-Checks, Clusterstatus, OAuth-Gültigkeit.
 
 ## 🖼️ Poster Agent
 **Datei:** `agents/poster_agent.py`  
+→ Siehe `agents/poster_argend.md`
 Verwendet `image_api`, um dynamisch Poster, Kalender, Avatare zu rendern.  
 → Sendet Bild automatisch an Discord oder speichert in `cdn/`.
 
@@ -114,6 +122,7 @@ Verwendet `image_api`, um dynamisch Poster, Kalender, Avatare zu rendern.
 
 ## ⚔️ PvP Meta Agent
 **Datei:** `agents/pvp_meta_agent.py`  
+→ Siehe `agents/pvp_meta_argend.md`
 Verwaltet PvP-Metadaten, z. B. Team-Kombinationen, Klassen, Counter-Meta.  
 → Optional in Verbindung mit Champion-Agent.
 
@@ -121,6 +130,7 @@ Verwaltet PvP-Metadaten, z. B. Team-Kombinationen, Klassen, Counter-Meta.
 
 ## ⏰ Reminder Agent
 **Datei:** `agents/reminder_agent.py`  
+→ Siehe `agents/reminder_argend.md`
 Speichert Reminder in `calendar_events`, sendet zur geplanten Zeit über Discord / Webhook.  
 → Unterstützt wiederkehrende Events, Wochentage, Zeitzonen.
 
@@ -128,6 +138,7 @@ Speichert Reminder in `calendar_events`, sendet zur geplanten Zeit über Discord
 
 ## 📆 Scheduler Agent
 **Datei:** `agents/scheduler_agent.py`  
+→ Siehe `agents/scheduler_argend.md`
 Verwaltet Planung, Kalendersynchronisation, Zeitblöcke.  
 → Kann automatisch Kalender aus Discord generieren.
 
@@ -135,6 +146,7 @@ Verwaltet Planung, Kalendersynchronisation, Zeitblöcke.
 
 ## 🏷️ Tagging Agent
 **Datei:** `agents/tagging_agent.py`  
+→ Siehe `agents/tagging_argend.md`
 Scannt Eingaben und weist automatisierte Tags / Kategorien zu.  
 → Unterstützt ML-Klassifikation oder Regex-Matching.
 
@@ -142,6 +154,7 @@ Scannt Eingaben und weist automatisierte Tags / Kategorien zu.
 
 ## 🌐 Translation Agent
 **Datei:** `agents/translation_agent.py`  
+→ Siehe `agents/translation_argend.md`
 I18n-Handling (Internationalisierung), dynamische Übersetzungen basierend auf User-Sprache.  
 → Greift auf `i18n.json` oder externe Übersetzer zu.
 
@@ -149,6 +162,7 @@ I18n-Handling (Internationalisierung), dynamische Übersetzungen basierend auf U
 
 ## 🌍 Webhook Agent
 **Datei:** `agents/webhook_agent.py`  
+→ Siehe `agents/webhook_argend.md`
 Verarbeitet externe POST-Ereignisse (GitHub, Stripe, andere Bots).  
 → Konvertiert in interne `AgentInput`-Events.
 
