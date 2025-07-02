@@ -77,6 +77,8 @@ cp .env.example .env
 # Die Google OAuth Client-Konfiguration (`client_secret.json`) sollte **nicht**
 # im Repository liegen. Speichere den Pfad stattdessen in der ENV-Variable
 # `GOOGLE_CLIENT_CONFIG` oder mounte die Datei als Volume (z. B. `/data/client_secret.json`).
+# OAuth-Tokens werden als JSON-Datei unter dem Pfad aus `GOOGLE_CREDENTIALS_FILE`
+# gespeichert (Standard: `/data/google_token.json`).
 
 # 4. Datenbank vorbereiten
 python init_db_core.py
@@ -146,7 +148,8 @@ Pull Request mit Beschreibung & Verweis auf Issues
 🐞 Bekannte Probleme
 🌐 Einige Übersetzungsdateien (translations/*.json) sind inkonsistent → i18n_tools/translate_sync.py verwenden
 
-🔐 token.pickle muss lokal erzeugt sein für GCal OAuth
+🔐 OAuth-Tokens werden beim ersten Durchlauf automatisch als JSON gespeichert.
+Setze `GOOGLE_CREDENTIALS_FILE` auf den gewünschten Pfad.
 
 🧪 Einige Tests benötigen mongomock – ggf. separat installieren
 
