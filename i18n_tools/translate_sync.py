@@ -10,6 +10,7 @@ import argparse
 import json
 import os
 import re
+import logging
 from collections import defaultdict
 from pathlib import Path
 from typing import Dict, List
@@ -21,6 +22,8 @@ LANG_DIR = "i18n"
 MASTER_LANG = "de"
 REPORT_PATH = "untranslated_report.md"
 USE_GPT = True
+
+log = logging.getLogger(__name__)
 
 # 🌍 32 meistgesprochene Sprachen (ISO 639-1)
 TARGET_LANGS = [
@@ -122,7 +125,7 @@ def translate(text: str, lang: str) -> str:
         result = response.choices[0].message.content.strip()
         return restore_placeholders(result, placeholders)
     except Exception as e:
-        print(f"⚠️ GPT-Fehler ({lang}): {e}")
+        log.error("⚠️ GPT-Fehler (%s): %s", lang, e)
         return f"[{lang}] {text}"
 
 
@@ -142,7 +145,7 @@ def load_json(path: Path) -> Dict:
         with open(path, "r", encoding="utf-8") as f:
             return json.load(f)
     except json.JSONDecodeError:
-        print(f"❌ Ungültige JSON-Datei: {path}")
+        log.error("❌ Ungültige JSON-Datei: %s", path)
         return {}
 
 
@@ -226,13 +229,13 @@ if __name__ == "__main__":
     )
     args = parser.parse_args()
 
-    print("🌍 Starte Übersetzungsabgleich...")
+    log.info("🌍 Starte Übersetzungsabgleich...")
 
     result = sync_translations(dry_run=args.dry_run, report_only=args.report_only)
     generate_report(result)
 
-    print(f"✅ Fertig. Report: {REPORT_PATH}")
+    log.info("✅ Fertig. Report: %s", REPORT_PATH)
     if args.dry_run:
-        print("⚠️ Dry-Run: Keine Dateien wurden verändert.")
+        log.info("⚠️ Dry-Run: Keine Dateien wurden verändert.")
     elif args.report_only:
-        print("📄 Nur Report erstellt – Übersetzung übersprungen.")
+        log.info("📄 Nur Report erstellt – Übersetzung übersprungen.")

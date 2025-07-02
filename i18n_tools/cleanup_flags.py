@@ -1,5 +1,8 @@
 from pathlib import Path
 from typing import List
+import logging
+
+log = logging.getLogger(__name__)
 
 
 def cleanup_flags(
@@ -29,6 +32,6 @@ def cleanup_flags(
 if __name__ == "__main__":
     removed = cleanup_flags()
     if removed:
-        print(f"🧹 Removed {len(removed)} unused flags: {', '.join(removed)}")
+        log.info("🧹 Removed %s unused flags: %s", len(removed), ", ".join(removed))
     else:
-        print("✅ No unused flag icons found.")
+        log.info("✅ No unused flag icons found.")
