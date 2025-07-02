@@ -7,7 +7,8 @@ import pytest
 from flask import session
 
 # environment for Flask app
-os.environ.setdefault("MONGODB_URI", "mongodb://localhost:27017/testdb")
+# Override the MongoDB URI for tests to avoid any external connections
+os.environ["MONGODB_URI"] = "mongodb://localhost:27017/testdb"
 os.environ.setdefault("DISCORD_TOKEN", "dummy")
 os.environ.setdefault("DISCORD_GUILD_ID", "1")
 os.environ.setdefault("REMINDER_CHANNEL_ID", "1")
