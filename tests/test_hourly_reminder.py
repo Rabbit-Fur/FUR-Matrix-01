@@ -39,6 +39,7 @@ async def test_sends_if_open_tasks(monkeypatch):
     bot = types.SimpleNamespace(wait_until_ready=ready, get_channel=lambda cid: channel)
 
     monkeypatch.setattr(rem_mod.tasks.Loop, "start", lambda self, *a, **k: None)
+    monkeypatch.setenv("ENABLE_CHANNEL_REMINDERS", "true")
     monkeypatch.setattr(rem_mod, "t", fake_t)
     monkeypatch.setattr(rem_mod, "get_collection", lambda name: DummyCollection(count=1))
     now = datetime.utcnow()
@@ -60,6 +61,7 @@ async def test_no_send_if_recent(monkeypatch):
     bot = types.SimpleNamespace(wait_until_ready=ready, get_channel=lambda cid: channel)
 
     monkeypatch.setattr(rem_mod.tasks.Loop, "start", lambda self, *a, **k: None)
+    monkeypatch.setenv("ENABLE_CHANNEL_REMINDERS", "true")
     monkeypatch.setattr(rem_mod, "t", fake_t)
     monkeypatch.setattr(rem_mod, "get_collection", lambda name: DummyCollection(count=1))
     now = datetime.utcnow()

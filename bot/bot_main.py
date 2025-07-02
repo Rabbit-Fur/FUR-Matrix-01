@@ -11,8 +11,8 @@ import aiohttp
 
 from config import Config
 
+from .dm_scheduler import schedule_dm_tasks, scheduler
 from .translator import MyTranslator
-from .dm_scheduler import scheduler, schedule_dm_tasks
 
 # 🧠 Umschalten zwischen echtem Bot & Stub-Modus (z. B. für Web-Dashboard)
 USE_DISCORD_BOT = os.getenv("ENABLE_DISCORD_BOT", "false").lower() == "true"
@@ -78,6 +78,7 @@ async def load_extensions(bot_instance: commands.Bot):
         "bot.cogs.newsletter",
         "bot.cogs.reminders",
         "bot.cogs.reminder_cog",
+        "bot.cogs.intro_cog",
         "bot.cogs.reaction_signup",
         "bot.cogs.calendar_cog",
         # "bot.cogs.reminder_sender_cog",  # falls später aktiv

@@ -27,9 +27,14 @@ async def send_dm(user, message: str) -> None:
 
 
 async def send_daily_dm(bot) -> None:
+    today = datetime.utcnow().date().isoformat()
+    flags = get_collection("flags")
+    if flags.find_one({"_id": "daily_dm", "date": today}):
+        return
     for uid in get_dm_users():
         user = await bot.fetch_user(uid)
         await send_dm(user, "Good morning! Your events for today are ready.")
+    flags.update_one({"_id": "daily_dm"}, {"$set": {"date": today}}, upsert=True)
 
 
 async def check_upcoming_events(bot) -> None:

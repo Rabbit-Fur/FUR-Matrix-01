@@ -12,6 +12,7 @@ from config import Config, is_production
 from fur_lang.i18n import t
 
 log = logging.getLogger(__name__)
+ENABLE_CHANNEL_REMINDERS = os.getenv("ENABLE_CHANNEL_REMINDERS", "false").lower() == "true"
 
 
 class Reminders(commands.Cog):
@@ -37,6 +38,8 @@ class Reminders(commands.Cog):
     @tasks.loop(minutes=60)
     async def reminder_loop(self):
         """Sendet jede Stunde eine Erinnerungsnachricht an den Reminder-Channel."""
+        if not ENABLE_CHANNEL_REMINDERS:
+            return
         if not is_production():
             log.info("DM skipped in dev mode")
             return
