@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import logging
 import os
-import pickle
+from pathlib import Path
 from datetime import datetime, timedelta
 from zoneinfo import ZoneInfo
 
@@ -11,22 +11,20 @@ from google.oauth2.credentials import Credentials
 from googleapiclient.discovery import build
 
 SCOPES = ["https://www.googleapis.com/auth/calendar"]
-TOKEN_PATH = os.path.join("token", "token.pickle")
+TOKEN_PATH = Path(os.getenv("GOOGLE_CREDENTIALS_FILE", "/data/google_token.json"))
 TIME_ZONE = "Europe/Berlin"
 
 
 def load_token() -> Credentials:
-    if not os.path.exists(TOKEN_PATH):
+    if not TOKEN_PATH.exists():
         raise FileNotFoundError(
             f"Missing token file at {TOKEN_PATH}. Run google_oauth_setup.py first."
         )
-    with open(TOKEN_PATH, "rb") as fh:
-        creds: Credentials = pickle.load(fh)
+    creds = Credentials.from_authorized_user_file(TOKEN_PATH, SCOPES)
     if not creds.valid:
         if creds.expired and creds.refresh_token:
             creds.refresh(Request())
-            with open(TOKEN_PATH, "wb") as fh:
-                pickle.dump(creds, fh)
+            TOKEN_PATH.write_text(creds.to_json())
         else:
             raise RuntimeError("Invalid Google credentials. Re-run OAuth flow.")
     return creds
