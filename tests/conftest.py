@@ -2,9 +2,9 @@
 
 import asyncio
 import os
-from flask import session
 
 import pytest
+from flask import session
 
 # environment for Flask app
 os.environ.setdefault("MONGODB_URI", "mongodb://localhost:27017/testdb")

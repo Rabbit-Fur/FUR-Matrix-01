@@ -8,11 +8,11 @@ from typing import Optional
 from flask import (
     Blueprint,
     current_app,
+    has_app_context,
     jsonify,
     redirect,
     request,
     session,
-    has_app_context,
 )
 from google.auth import exceptions as google_exceptions
 from google.auth.transport.requests import Request

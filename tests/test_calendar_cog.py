@@ -1,10 +1,10 @@
+import logging
 import types
 from datetime import datetime, timedelta, timezone
 from zoneinfo import ZoneInfo
 
 import discord
 import pytest
-import logging
 
 from bot.cogs.calendar_cog import CalendarCog, should_send_daily, should_send_weekly
 

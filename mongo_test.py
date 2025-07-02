@@ -1,10 +1,11 @@
 # mongo_test.py
 
-import os
 import logging
+import os
+
+from dotenv import load_dotenv
 from pymongo import MongoClient
 from pymongo.server_api import ServerApi
-from dotenv import load_dotenv
 
 # .env laden
 load_dotenv()

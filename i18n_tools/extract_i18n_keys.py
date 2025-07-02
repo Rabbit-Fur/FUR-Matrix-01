@@ -7,9 +7,9 @@ und schreibt das Ergebnis als JSON-Translation-File für Flask-Babel/i18n.  # no
 """
 
 import json
+import logging
 import os
 import re
-import logging
 from pathlib import Path
 from typing import List, Set
 

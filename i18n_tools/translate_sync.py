@@ -8,9 +8,9 @@ Platzhalter (z.B. {name}, {count}) werden automatisch erkannt und korrekt übern
 
 import argparse
 import json
+import logging
 import os
 import re
-import logging
 from collections import defaultdict
 from pathlib import Path
 from typing import Dict, List

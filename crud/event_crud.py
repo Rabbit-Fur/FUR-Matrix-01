@@ -6,6 +6,7 @@ from datetime import datetime
 from typing import List, Optional
 
 from bson import ObjectId
+
 from fur_mongo import db
 from schemas.event_schema import EventModel
 

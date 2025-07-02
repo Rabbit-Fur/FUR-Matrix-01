@@ -1,9 +1,9 @@
-import pytest
-from bson import ObjectId
-
 import importlib
 import sys
 import types
+
+import pytest
+from bson import ObjectId
 
 
 class DummyCursor:

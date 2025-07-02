@@ -1,6 +1,7 @@
 """Simple helper to send champion posters via Discord webhook."""
 
 import logging
+
 import requests
 
 from config import Config

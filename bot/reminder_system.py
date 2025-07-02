@@ -5,10 +5,10 @@ import logging
 from typing import Optional
 
 from bson import ObjectId
+from motor.motor_asyncio import AsyncIOMotorClient
 
 from bot.bot_main import bot
 from config import Config
-from motor.motor_asyncio import AsyncIOMotorClient
 
 # use motor client for non-blocking mongodb access
 client = AsyncIOMotorClient(Config.MONGODB_URI or "mongodb://localhost:27017/furdb")
