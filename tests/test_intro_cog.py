@@ -38,9 +38,16 @@ async def test_maybe_send_intro(monkeypatch, tmp_path):
     monkeypatch.setattr(mod, "get_dm_users", lambda: [1])
 
     user = FakeUser()
+
+    async def dummy_wait() -> None:
+        pass
+
+    async def dummy_fetch(uid):
+        return user
+
     fake_bot = types.SimpleNamespace(
-        fetch_user=lambda uid: user,
-        wait_until_ready=lambda: None,
+        fetch_user=dummy_fetch,
+        wait_until_ready=dummy_wait,
         loop=asyncio.get_event_loop(),
     )
 
