@@ -8,7 +8,10 @@ import json
 from pathlib import Path
 from typing import Dict
 
+import logging
 from i18n_tools.generate_key_list import update_key_list
+
+logger = logging.getLogger(__name__)
 
 
 class TranslationAgent:
@@ -34,7 +37,7 @@ class TranslationAgent:
         try:
             keys = update_key_list(self.lang_dir / "en.json", keys_file)
         except Exception as e:  # pragma: no cover - log only
-            print(f"⚠️ Failed to update key list: {e}")
+            logger.warning("Failed to update key list: %s", e)
             keys = []
 
         all_keys = set(keys)

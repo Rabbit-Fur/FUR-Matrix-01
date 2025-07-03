@@ -1,6 +1,7 @@
 import os
 from datetime import datetime, timedelta
 
+import logging
 import requests
 
 from mongo_service import get_collection
@@ -8,6 +9,8 @@ from mongo_service import get_collection
 WEBHOOK_URL = os.getenv("DISCORD_WEBHOOK_URL")
 LOG_DIR = "core/logs"
 os.makedirs(LOG_DIR, exist_ok=True)
+
+logger = logging.getLogger(__name__)
 
 
 def generate_markdown_report(participation, upcoming, filename):
@@ -35,7 +38,7 @@ def send_webhook(markdown_file):
     try:
         requests.post(WEBHOOK_URL, json=data, timeout=10)
     except Exception as e:
-        print(f"❌ Webhook-Fehler: {e}")
+        logger.error("Webhook-Fehler: %s", e)
 
 
 def run_weekly_log():
@@ -70,4 +73,4 @@ def run_weekly_log():
     filename = f"{now.date()}-weekly.md"
     markdown = generate_markdown_report(participation, upcoming, filename)
     send_webhook(markdown)
-    print(f"✅ Weekly log created: {filename}")
+    logger.info("Weekly log created: %s", filename)
