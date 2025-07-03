@@ -1,5 +1,6 @@
 import json
 import logging
+
 from flask import Flask
 
 from web.routes import google_oauth_web as mod
