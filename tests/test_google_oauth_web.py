@@ -1,7 +1,15 @@
 import json
 import logging
+from flask import Flask
 
 from web.routes import google_oauth_web as mod
+
+
+def make_app():
+    app = Flask(__name__)
+    app.secret_key = "test"
+    app.register_blueprint(mod.oauth_bp)
+    return app
 
 
 def test_load_credentials_refresh(monkeypatch, tmp_path, caplog):
@@ -44,3 +52,132 @@ def test_load_credentials_missing_file(monkeypatch, tmp_path, caplog):
     with caplog.at_level(logging.WARNING):
         assert mod.load_credentials() is None
     assert "Token file not found" in caplog.text
+
+
+# ----- Route tests -----
+
+
+def test_auth_initiate_success(tmp_path, monkeypatch):
+    app = make_app()
+    client = app.test_client()
+    cfg = tmp_path / "client.json"
+    cfg.write_text("{}")
+    monkeypatch.setattr(mod, "CLIENT_SECRET_FILE", cfg, raising=False)
+    monkeypatch.setattr(mod, "state_map", {}, raising=False)
+
+    class FakeFlow:
+        def authorization_url(self, **kwargs):
+            return "http://consent", "state123"
+
+    monkeypatch.setattr(mod.Flow, "from_client_secrets_file", lambda *a, **k: FakeFlow())
+    resp = client.get("/auth/initiate")
+    assert resp.status_code == 302
+    assert resp.headers["Location"] == "http://consent"
+    with client.session_transaction() as sess:
+        assert sess["oauth_state"] == "state123"
+    assert "state123" in mod.state_map
+
+
+def test_auth_initiate_missing_config(monkeypatch):
+    app = make_app()
+    client = app.test_client()
+    monkeypatch.setattr(mod, "CLIENT_SECRET_FILE", None, raising=False)
+    resp = client.get("/auth/initiate")
+    assert resp.status_code == 500
+    assert b"Missing Google client config" in resp.data
+
+
+def test_oauth2callback_success(tmp_path, monkeypatch):
+    app = make_app()
+    client = app.test_client()
+    cfg = tmp_path / "client.json"
+    cfg.write_text("{}")
+    token_path = tmp_path / "token.json"
+    monkeypatch.setattr(mod, "CLIENT_SECRET_FILE", cfg, raising=False)
+    monkeypatch.setattr(mod, "TOKEN_PATH", token_path, raising=False)
+
+    class FakeCred:
+        def to_json(self):
+            return "{}"
+
+    class FakeFlow:
+        def __init__(self):
+            self.credentials = FakeCred()
+
+        def fetch_token(self, authorization_response=None):
+            self.called = authorization_response
+
+    monkeypatch.setattr(mod.Flow, "from_client_secrets_file", lambda *a, **k: FakeFlow())
+    with client.session_transaction() as sess:
+        sess["oauth_state"] = "state1"
+    mod.state_map["state1"] = 0.0
+    resp = client.get("/oauth2callback?state=state1&code=x")
+    assert resp.status_code == 200
+    assert token_path.read_text() == "{}"
+    assert b"Authentication successful" in resp.data
+
+
+def test_oauth2callback_invalid_state(tmp_path, monkeypatch):
+    app = make_app()
+    client = app.test_client()
+    cfg = tmp_path / "client.json"
+    cfg.write_text("{}")
+    monkeypatch.setattr(mod, "CLIENT_SECRET_FILE", cfg, raising=False)
+    with client.session_transaction() as sess:
+        sess["oauth_state"] = "good"
+    mod.state_map["good"] = 0.0
+    resp = client.get("/oauth2callback?state=bad")
+    assert resp.status_code == 400
+    assert b"Invalid OAuth state" in resp.data
+
+
+def test_oauth2callback_fetch_failure(tmp_path, monkeypatch):
+    app = make_app()
+    client = app.test_client()
+    cfg = tmp_path / "client.json"
+    cfg.write_text("{}")
+    monkeypatch.setattr(mod, "CLIENT_SECRET_FILE", cfg, raising=False)
+
+    class FakeFlow:
+        def __init__(self):
+            self.credentials = None
+
+        def fetch_token(self, authorization_response=None):
+            raise RuntimeError("fail")
+
+    monkeypatch.setattr(mod.Flow, "from_client_secrets_file", lambda *a, **k: FakeFlow())
+    with client.session_transaction() as sess:
+        sess["oauth_state"] = "good"
+    mod.state_map["good"] = 0.0
+    resp = client.get("/oauth2callback?state=good")
+    assert resp.status_code == 400
+    assert b"Authentication failed" in resp.data
+
+
+def test_oauth2callback_save_failure(tmp_path, monkeypatch):
+    app = make_app()
+    client = app.test_client()
+    cfg = tmp_path / "client.json"
+    cfg.write_text("{}")
+    bad_path = tmp_path / "missing" / "token.json"
+    monkeypatch.setattr(mod, "CLIENT_SECRET_FILE", cfg, raising=False)
+    monkeypatch.setattr(mod, "TOKEN_PATH", bad_path, raising=False)
+
+    class FakeCred:
+        def to_json(self):
+            return "{}"
+
+    class FakeFlow:
+        def __init__(self):
+            self.credentials = FakeCred()
+
+        def fetch_token(self, authorization_response=None):
+            pass
+
+    monkeypatch.setattr(mod.Flow, "from_client_secrets_file", lambda *a, **k: FakeFlow())
+    with client.session_transaction() as sess:
+        sess["oauth_state"] = "state1"
+    mod.state_map["state1"] = 0.0
+    resp = client.get("/oauth2callback?state=state1")
+    assert resp.status_code == 500
+    assert b"saving token failed" in resp.data
