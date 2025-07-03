@@ -62,5 +62,8 @@ except ConnectionFailure as e:
 
 # === Direktstart: Diagnose-Ausgabe ===
 if __name__ == "__main__":
-    print("📦 MongoDB verbunden:", bool(db))
-    print("📂 Collections:", db.list_collection_names() if db else "❌ keine Verbindung")
+    logger.info("📦 MongoDB verbunden: %s", bool(db))
+    logger.info(
+        "📂 Collections: %s",
+        db.list_collection_names() if db else "❌ keine Verbindung",
+    )
