@@ -1,0 +1,16 @@
+name: matrix-gpt
+description: MATRIX GPT mit vollem Zugriff auf GitHub via OAuth (Dateien, Branches, PRs, Commits, Issues, Diffs, Merges).
+api:
+  type: openapi
+  url: https://rabbit-fur.github.io/try/openapi.yaml
+auth:
+  type: oauth
+  clientUrl: https://github.com/login/oauth/authorize
+  authorizationUrl: https://github.com/login/oauth/authorize
+  tokenUrl: https://github.com/login/oauth/access_token
+  scopes:
+    - repo
+    - user
+logo_url: https://rabbit-fur.github.io/try/logo.png     # optional, falls vorhanden
+contact_email: deine@email.de                          # optional
+legal_info_url: https://rabbit-fur.github.io/try/legal # optional
