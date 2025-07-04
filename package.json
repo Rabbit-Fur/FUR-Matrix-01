@@ -1,10 +1,16 @@
 {
   "name": "fur-project",
   "version": "1.0.0",
+  "main": "app.js",
   "scripts": {
+    "start": "node app.js",
     "codex:sync": "codex-fur sync",
     "codex:audit": "codex-fur audit",
     "codex:fix": "codex-fur fix",
     "codex:release": "codex-fur release"
+  },
+  "dependencies": {
+    "dotenv": "^16.0.3",
+    "express": "^4.18.2"
   }
 }
