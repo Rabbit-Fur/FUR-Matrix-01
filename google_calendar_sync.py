@@ -44,10 +44,16 @@ def _store_sync_token(token: str) -> None:
         col.update_one({"_id": "google"}, {"$set": {"token": token}}, upsert=True)
 
 
+_warned_once = False
+
+
 def load_credentials() -> Optional[Credentials]:
     """Load stored credentials from JSON and refresh if needed."""
+    global _warned_once
     if not TOKEN_PATH.exists():
-        logger.warning("No Google credentials found at %s", TOKEN_PATH)
+        if not _warned_once:
+            logger.warning("No Google credentials found at %s", TOKEN_PATH)
+            _warned_once = True
         return None
     try:
         creds = Credentials.from_authorized_user_file(TOKEN_PATH, Config.GOOGLE_CALENDAR_SCOPES)
@@ -55,6 +61,7 @@ def load_credentials() -> Optional[Credentials]:
             logger.info("Refreshing Google credentials")
             creds.refresh(Request())
             TOKEN_PATH.write_text(creds.to_json())
+        _warned_once = False
         return creds
     except Exception:  # noqa: BLE001
         logger.exception("Failed to load or refresh credentials")

@@ -49,6 +49,7 @@ class CalendarService:
     ) -> None:
         self.calendar_id = calendar_id or Config.GOOGLE_CALENDAR_ID
         self.service: Any | None = None
+        self.warned_missing_creds = False
         uri = mongo_uri or Config.MONGODB_URI or "mongodb://localhost:27017/furdb"
         if events_collection and tokens_collection:
             self.client = None
@@ -72,9 +73,12 @@ class CalendarService:
             return
         creds = load_credentials()
         if not creds:
-            log.warning("Google credentials missing – cannot sync")
+            if not self.warned_missing_creds:
+                log.warning("Google credentials missing – cannot sync")
+                self.warned_missing_creds = True
             self.service = None
             return
+        self.warned_missing_creds = False
         self.service = build(
             "calendar",
             "v3",
