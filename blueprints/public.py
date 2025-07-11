@@ -235,6 +235,12 @@ def leaderboard():
     return render_template("public/public_leaderboard.html", leaderboard=leaderboard_list)
 
 
+@public.route("/bank-war-top5")
+def bank_war_top5():
+    """Display BANK WAR recap and top 5 players."""
+    return render_template("public/bank_war_top5.html")
+
+
 @public.route("/dashboard")
 def dashboard():
     return render_template("public/dashboard.html")
