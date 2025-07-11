@@ -1,5 +1,6 @@
 from datetime import timezone
 
+import logging
 import google_calendar_sync as mod
 
 
@@ -59,3 +60,16 @@ def test_all_day_event(monkeypatch):
     doc = dummy.docs["g2"]
     assert doc["event_time"].hour == 0
     assert doc["event_time"].tzinfo == timezone.utc
+
+
+def test_load_credentials_warns_once(monkeypatch, tmp_path, caplog):
+    missing = tmp_path / "token.json"
+    monkeypatch.setattr(mod, "TOKEN_PATH", missing, raising=False)
+    mod._warned_once = False
+    with caplog.at_level(logging.WARNING):
+        assert mod.load_credentials() is None
+    assert "No Google credentials found" in caplog.text
+    caplog.clear()
+    with caplog.at_level(logging.WARNING):
+        assert mod.load_credentials() is None
+    assert caplog.text == ""
