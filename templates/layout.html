@@ -126,6 +126,7 @@
     <a href="{{ url_for('public.events') }}">📅 {{ t("Events") }}</a>
     <a href="{{ url_for('public.leaderboard') }}">🏆 {{ t("Leaderboard") }}</a>
     <a href="{{ url_for('public.hall_of_fame') }}">👑 {{ t("Hall of Fame") }}</a>
+    <a href="{{ url_for('public.bank_war_top5') }}">💥 BANK WAR Top 5</a>
     <a href="{{ url_for('public.lore') }}">📖 {{ t("Lore") }}</a>
     {% if role in ['R4', 'ADMIN'] %}
     <a href="{{ url_for('admin.upload') }}">⏫ {{ t("Uploads") }}</a>
