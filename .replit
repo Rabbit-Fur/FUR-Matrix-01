@@ -12,6 +12,10 @@ build = ["sh", "-c", "make"]
 localPort = 3000
 externalPort = 80
 
+[[ports]]
+localPort = 8080
+externalPort = 8080
+
 [workflows]
 runButton = "Run Python App"
 
