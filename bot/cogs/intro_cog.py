@@ -1,5 +1,6 @@
 import json
 import logging
+import asyncio
 from datetime import datetime
 from pathlib import Path
 
@@ -19,7 +20,7 @@ INTRO_IMAGE = Path("static/img/SORRY.png")
 class IntroCog(commands.Cog):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
-        self.bot.loop.create_task(self._maybe_send_intro())
+        asyncio.create_task(self._maybe_send_intro())
 
     @staticmethod
     def _load_embed() -> discord.Embed | None:
