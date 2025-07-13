@@ -21,7 +21,8 @@ class IntroCog(commands.Cog):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
         asyncio.create_task(self._maybe_send_intro())
-        async def _hook(self):
+
+    async def _hook(self) -> None:
         await self.bot.wait_until_ready()
         await self._maybe_send_intro()
 
