@@ -8,7 +8,8 @@
     "codex:audit": "cd ./codex && npm run audit",
     "codex:fix": "cd ./codex && npm run fix",
     "codex:release": "cd ./codex && npm run release",
-    "codex:watch": "cd ./codex && npm run watch"
+    "codex:watch": "cd ./codex && npm run watch",
+    "watch": "nodemon app.js" // Added watch script
   },
   "dependencies": {
     "dotenv": "^16.0.3",

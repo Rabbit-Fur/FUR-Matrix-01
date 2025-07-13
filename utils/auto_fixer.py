@@ -71,7 +71,7 @@ def run_flake8_and_fix() -> None:
     print(f"🔧 Fixe {len(py_files)} Python-Dateien...")
 
     for file in py_files:
-        fix_file(file)
+        fix_file(file)  # Assuming `fix_file` is defined elsewhere
 
     print("✅ Basis-Fixes abgeschlossen. Führe black & isort aus...")
 
@@ -79,7 +79,7 @@ def run_flake8_and_fix() -> None:
         subprocess.run(["black", "."], cwd=PROJECT_DIR, check=True)
         subprocess.run(["isort", "."], cwd=PROJECT_DIR, check=True)
     except FileNotFoundError as e:
-        print(f"❌ Werkzeug nicht gefunden (black/isort): {e}")
+        print(f"❌ Werkzeug nicht gefunden: {e}")
 
 
 def fix_unused_imports() -> None:
