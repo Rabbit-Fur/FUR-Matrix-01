@@ -73,3 +73,13 @@ def test_load_credentials_warns_once(monkeypatch, tmp_path, caplog):
     with caplog.at_level(logging.WARNING):
         assert mod.load_credentials() is None
     assert caplog.text == ""
+
+
+def test_load_credentials_client_config(monkeypatch, tmp_path, caplog):
+    path = tmp_path / "client.json"
+    path.write_text("{""installed"": {""client_id"": ""id"", ""client_secret"": ""sec""}}")
+    monkeypatch.setattr(mod, "TOKEN_PATH", path, raising=False)
+    mod._warned_once = False
+    with caplog.at_level(logging.WARNING):
+        assert mod.load_credentials() is None
+    assert "client config" in caplog.text
