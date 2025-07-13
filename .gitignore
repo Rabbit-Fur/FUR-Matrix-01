@@ -39,7 +39,8 @@ instance/
 .coverage
 
 # Google OAuth credentials
-credentials/client_secret.json
+client_secret.json
+credentials/oauth_client.json
 token/
 
 # Node / Frontend (falls vorhanden)
