@@ -1,3 +1,4 @@
+
 """
 main_app.py – Einstiegspunkt für das FUR-System (Web & Discord-Bot)
 Mit Debug-Modus für lokale Entwicklung und sauberem Application-Factory-Pattern.
@@ -12,11 +13,15 @@ import sys
 import threading
 
 from dotenv import load_dotenv
-from flask import Response, session
+from flask import Flask, Response, session
 from google_auth import google_auth
 import os
 
+# === Flask App erstellen ===
+# Initialize the Flask app instance
+app = Flask(__name__)
 app.secret_key = os.environ.get("FLASK_SECRET", "dev-key")
+
 app.config["GOOGLE_CLIENT_CONFIG"] = os.environ.get("GOOGLE_CLIENT_CONFIG")
 app.config["GOOGLE_REDIRECT_URI"] = os.environ.get("GOOGLE_REDIRECT_URI")
 app.config["GOOGLE_CALENDAR_SCOPES"] = [
@@ -41,7 +46,7 @@ from utils.env_helpers import get_env_bool, get_env_int
 from utils.github_service import fetch_repo_info
 from web import create_app
 
-# === Flask App erstellen ===
+# Call to create the Flask application instance via factory pattern
 app = create_app()
 app.teardown_appcontext(close_db)
 app.jinja_env.globals.update(t=t)
@@ -123,7 +128,7 @@ if __name__ == "__main__":
         port = get_env_int("PORT", default=8080)
         debug = get_env_bool("DEBUG", default=False)
 
-        logging.info(f"🌐 Starte Webserver auf http://localhost:{port} (Debug={debug})")
+        logging.info(f"🌐 Starte Webserver auf http://0.0.0.0:{port} (Debug={debug})")
         app.run(host="0.0.0.0", port=port, debug=debug)
 
     except KeyboardInterrupt:
