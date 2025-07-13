@@ -1,9 +1,9 @@
-modules = ["python-3.10", "web", "nodejs-20", "dotnet-7.0", "dotnet-8.0", "angular-node-20", "bun-1.0", "c-clang14", "cpp-clang14", "clojure-1.12", "dart-2.18", "deno-2", "deno-1", "go-1.21", "go-1.20", "go-1.19", "gcloud", "haskell-ghc9.4", "haskell-ghc9.6", "haskell-ghc9.2", "hermit-0.38.2", "haskell-ghc9.0", "nodejs-22", "docker", "ruff", "vue-node-20", "typescript-language-server", "swift-5.6", "pyright", "pyright-extended", "nodejs-19", "nodejs-14", "php-8.3"]
+modules = ["python-3.10", "web", "nodejs-20", "dotnet-7.0", "dotnet-8.0", "angular-node-20", "bun-1.0", "c-clang14", "cpp-clang14", "clojure-1.12", "dart-2.18", "deno-2", "deno-1", "go-1.21", "go-1.20", "go-1.19", "gcloud", "haskell-ghc9.4", "haskell-ghc9.6", "haskell-ghc9.2", "hermit-0.38.2", "haskell-ghc9.0", "nodejs-22", "docker", "ruff", "vue-node-20", "typescript-language-server", "swift-5.6", "pyright", "pyright-extended", "nodejs-19", "nodejs-14", "php-8.3", "bash", "bun-1.2", "bun-1.1", "dart-3.5", "clojure-1.11", "nodejs-18", "postgresql-17", "postgresql-16", "python-3.9", "python-3.8", "python-3.12", "python-base-3.12", "vue-node-18"]
 compile = "make"
 
 [nix]
 channel = "stable-24_05"
-packages = ["cargo", "freetype", "lcms2", "libiconv", "libimagequant", "libjpeg", "libtiff", "libwebp", "libxcrypt", "openjpeg", "openssl", "pkg-config", "rustc", "tcl", "tk", "zlib"]
+packages = ["cargo", "freetype", "lcms2", "libiconv", "libimagequant", "libjpeg", "libtiff", "libwebp", "libxcrypt", "openjpeg", "openssl", "pkg-config", "rustc", "tcl", "tk", "zlib", "deepin.dwayland"]
 
 [deployment]
 build = ["sh", "-c", "make"]
