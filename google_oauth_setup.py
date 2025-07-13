@@ -32,9 +32,10 @@ def main() -> None:
             creds = flow.run_local_server(port=0)
         token_path.parent.mkdir(parents=True, exist_ok=True)
         import json
-with open(token_path, 'w', encoding='utf-8') as f:
-    json.dump(json.loads(creds.to_json()), f, ensure_ascii=False, indent=4)
-    logger.info("Token saved to %s", token_path)
+
+        with open(token_path, "w", encoding="utf-8") as f:
+            json.dump(json.loads(creds.to_json()), f, ensure_ascii=False, indent=4)
+        logger.info("Token saved to %s", token_path)
 
 
 if __name__ == "__main__":
