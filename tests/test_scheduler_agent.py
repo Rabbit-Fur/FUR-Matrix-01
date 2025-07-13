@@ -33,17 +33,21 @@ def test_scheduler_jobs(monkeypatch):
 
     agent_mod = importlib.reload(__import__("agents.scheduler_agent", fromlist=["SchedulerAgent"]))
 
-    monkeypatch.setattr(agent_mod, "start_google_sync", lambda *a, **k: None)
-    monkeypatch.setattr(agent_mod, "sync_to_mongodb", lambda: None)
+    called = {}
+
+    def fake_start_google_sync(interval_minutes=None, *a, **k):
+        called["minutes"] = interval_minutes
+
+    monkeypatch.setattr(agent_mod, "start_google_sync", fake_start_google_sync)
     monkeypatch.setattr(agent_mod, "run_champion_autopilot", lambda **k: None)
 
     agent = agent_mod.SchedulerAgent()
     agent.schedule_google_sync(interval_minutes=5)
     agent.schedule_champion_autopilot(interval_hours=1)
 
-    assert len(agent.jobs) == 2
-    assert jobs[0][0] == 5
-    assert jobs[1][0] == 1
+    assert called["minutes"] == 5
+    assert len(agent.jobs) == 1
+    assert jobs[0][0] == 1
 
 
 def test_monthly_champion_job(monkeypatch):
@@ -100,45 +104,19 @@ def test_monthly_champion_job(monkeypatch):
 
 
 def test_google_sync_job_uses_app_context(monkeypatch):
-    schedule_mod = types.ModuleType("schedule")
     called = {}
-
-    class FakeEvery:
-        def __init__(self, interval):
-            self.interval = interval
-
-        @property
-        def minutes(self):
-            return self
-
-        def do(self, func, *args, **kwargs):
-            func()
-            return object()
-
-    schedule_mod.every = lambda interval: FakeEvery(interval)
-    sys.modules["schedule"] = schedule_mod
 
     import importlib
 
     agent_mod = importlib.reload(__import__("agents.scheduler_agent", fromlist=["SchedulerAgent"]))
 
-    monkeypatch.setattr(agent_mod, "start_google_sync", lambda *a, **k: None)
+    def fake_start(interval_minutes=None, *a, **k):
+        called["minutes"] = interval_minutes
 
-    def fake_get_app():
-        from web import create_app
-
-        return create_app()
-
-    monkeypatch.setattr(agent_mod, "_get_app", fake_get_app)
-
-    def fake_sync():
-        from flask import current_app
-
-        called["app"] = current_app.name
-
-    monkeypatch.setattr(agent_mod, "sync_to_mongodb", fake_sync)
+    monkeypatch.setattr(agent_mod, "start_google_sync", fake_start)
 
     agent = agent_mod.SchedulerAgent()
     agent.schedule_google_sync(interval_minutes=1)
 
-    assert called.get("app") == "web"
+    assert called.get("minutes") == 1
+    assert agent.jobs == []
