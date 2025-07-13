@@ -21,6 +21,12 @@ class IntroCog(commands.Cog):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
         asyncio.create_task(self._maybe_send_intro())
+        async def _hook(self):
+        await self.bot.wait_until_ready()
+        await self._maybe_send_intro()
+
+    async def cog_load(self):
+        self.bot.loop.create_task(self._hook())
 
     @staticmethod
     def _load_embed() -> discord.Embed | None:

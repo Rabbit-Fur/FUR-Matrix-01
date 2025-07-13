@@ -50,16 +50,9 @@ def load_credentials() -> Optional[Credentials]:
         return None
     with open(path, "r", encoding="utf-8") as fh:
         data = json.load(fh)
-    if has_app_context():
-        scopes = current_app.config.get(
-            "GOOGLE_CALENDAR_SCOPES",
-            ["https://www.googleapis.com/auth/calendar.readonly"],
-        )
-    else:
-        scopes = os.environ.get(
-            "GOOGLE_CALENDAR_SCOPES",
-            "https://www.googleapis.com/auth/calendar.readonly",
-        ).split(",")
+    scopes = current_app.config.get(
+        "GOOGLE_CALENDAR_SCOPES", ["https://www.googleapis.com/auth/calendar.readonly"]
+    )
     try:
         creds = Credentials.from_authorized_user_info(data, scopes)
     except ValueError:

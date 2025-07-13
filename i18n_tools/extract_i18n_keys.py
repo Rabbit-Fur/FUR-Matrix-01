@@ -31,10 +31,10 @@ if USE_GPT and not openai.api_key:
 
 def scan_translation_keys() -> List[str]:
     """
-    Scannt alle Quellverzeichnisse nach Aufrufen von t ('Text') und gibt eine sortierte Liste zurück.  # noqa: E501
+    Scans all source directories for calls to `t` ('Text') and returns a sorted list of keys.
 
     Returns:
-        List[str]: Alphabetisch sortierte Liste aller gefundenen Keys.
+        List[str]: Alphabetically sorted list of all found keys.
     """
     pattern = re.compile(r"t\(\s*['\"](.+?)['\"]\s*\)")
     found_keys: Set[str] = set()
