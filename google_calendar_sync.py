@@ -1,5 +1,6 @@
 import logging
 import os
+import json
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from typing import Any, Optional
@@ -56,7 +57,30 @@ def load_credentials() -> Optional[Credentials]:
             _warned_once = True
         return None
     try:
-        creds = Credentials.from_authorized_user_file(TOKEN_PATH, Config.GOOGLE_CALENDAR_SCOPES)
+        info = json.loads(TOKEN_PATH.read_text())
+    except Exception:  # noqa: BLE001
+        logger.exception("Failed to read credentials JSON")
+        return None
+
+    required = {"client_id", "client_secret", "refresh_token"}
+    keys = set(info)
+    if not required.issubset(keys):
+        if ("installed" in info or "web" in info) and not _warned_once:
+            logger.warning(
+                "Credentials file %s looks like an OAuth client config, not a saved token",
+                TOKEN_PATH,
+            )
+            _warned_once = True
+        elif not _warned_once:
+            missing = ", ".join(sorted(required - keys))
+            logger.warning("Credentials file %s missing required keys: %s", TOKEN_PATH, missing)
+            _warned_once = True
+        return None
+
+    try:
+        creds = Credentials.from_authorized_user_file(
+            TOKEN_PATH, Config.GOOGLE_CALENDAR_SCOPES
+        )
         if creds.expired and creds.refresh_token:
             logger.info("Refreshing Google credentials")
             creds.refresh(Request())
