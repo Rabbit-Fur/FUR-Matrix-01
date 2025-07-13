@@ -1,0 +1,145 @@
+# ✅ Google Calendar Integration mit MongoDB + OAuth2 (optimiert)
+
+from flask import Flask, session, redirect, request, url_for
+from pymongo import MongoClient
+from google_auth_oauthlib.flow import Flow
+from google.oauth2.credentials import Credentials
+from googleapiclient.discovery import build
+import os
+
+# -------------------- FLASK SETUP -------------------- #
+app = Flask(__name__)
+app.secret_key = os.environ.get("FLASK_SECRET", "dev-key")
+os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = '1'  # Replit ohne HTTPS
+
+# -------------------- MONGO SETUP -------------------- #
+client = MongoClient(os.environ.get("MONGO_URI", "mongodb://localhost:27017"))
+db = client["fur_system"]
+token_collection = db["calendar_tokens"]
+
+# -------------------- GoogleAuth Klasse -------------------- #
+class GoogleAuth:
+    def __init__(self, mongo_collection, client_secret_path="client_secret.json", scopes=None):
+        self.mongo = mongo_collection
+        self.client_secret_path = client_secret_path
+        self.scopes = scopes or ['https://www.googleapis.com/auth/calendar']
+
+    def login(self):
+        flow = Flow.from_client_secrets_file(
+            self.client_secret_path,
+            scopes=self.scopes,
+            redirect_uri=url_for("oauth2callback", _external=True)
+        )
+        auth_url, state = flow.authorization_url(access_type='offline', include_granted_scopes='true')
+        session['state'] = state
+        return redirect(auth_url)
+
+    def callback(self):
+        state = session.get("state")
+        flow = Flow.from_client_secrets_file(
+            self.client_secret_path,
+            scopes=self.scopes,
+            state=state,
+            redirect_uri=url_for("oauth2callback", _external=True)
+        )
+        flow.fetch_token(authorization_response=request.url)
+        creds = flow.credentials
+        user_id = session.get("user_id", "demo-user")
+        self.mongo.update_one(
+            {"user_id": user_id},
+            {"$set": self._to_dict(creds, user_id)},
+            upsert=True
+        )
+        return "✅ Google verbunden. Du kannst nun deinen Kalender nutzen."
+
+    def get_credentials(self, user_id):
+        data = self.mongo.find_one({"user_id": user_id})
+        if not data:
+            return None
+        return Credentials(
+            token=data['token'],
+            refresh_token=data.get('refresh_token'),
+            token_uri=data['token_uri'],
+            client_id=data['client_id'],
+            client_secret=data['client_secret'],
+            scopes=data['scopes']
+        )
+
+    def _to_dict(self, creds, user_id):
+        return {
+            "user_id": user_id,
+            "token": creds.token,
+            "refresh_token": creds.refresh_token,
+            "token_uri": creds.token_uri,
+            "client_id": creds.client_id,
+            "client_secret": creds.client_secret,
+            "scopes": creds.scopes
+        }
+
+# -------------------- GoogleCalendarSync Service -------------------- #
+class GoogleCalendarSync:
+    def __init__(self, google_auth: GoogleAuth):
+        self.auth = google_auth
+
+    def get_service(self, user_id):
+        creds = self.auth.get_credentials(user_id)
+        if not creds:
+            print("❌ Keine gespeicherten Credentials vorhanden")
+            return None
+        if not creds.valid and creds.refresh_token:
+            try:
+                creds.refresh(Request())
+            except Exception as e:
+                print(f"⚠️ Fehler beim Refresh: {e}")
+                return None
+        return build("calendar", "v3", credentials=creds)
+
+    def create_event(self, user_id, summary, start, end):
+        service = self.get_service(user_id)
+        if not service:
+            return "🔒 Nicht verbunden oder Token ungültig."
+        event = {
+            'summary': summary,
+            'start': {'dateTime': start, 'timeZone': 'Europe/Berlin'},
+            'end': {'dateTime': end, 'timeZone': 'Europe/Berlin'}
+        }
+        created = service.events().insert(calendarId='primary', body=event).execute()
+        return f"📅 Event erstellt: {created.get('htmlLink')}"
+
+    def list_events(self, user_id):
+        service = self.get_service(user_id)
+        if not service:
+            return []
+        now = '2024-01-01T00:00:00Z'
+        events_result = service.events().list(calendarId='primary', timeMin=now, maxResults=10, singleEvents=True, orderBy='startTime').execute()
+        return events_result.get('items', [])
+
+# -------------------- Flask-Routen -------------------- #
+gauth = GoogleAuth(token_collection)
+sync = GoogleCalendarSync(gauth)
+
+@app.route("/")
+def index():
+    return "🌐 Willkommen! <a href='/login'>Mit Google verbinden</a>"
+
+@app.route("/login")
+def login():
+    session["user_id"] = "user-123"  # z. B. aus Discord übernehmen
+    return gauth.login()
+
+@app.route("/oauth2callback")
+def oauth2callback():
+    return gauth.callback()
+
+@app.route("/events")
+def list_events():
+    events = sync.list_events("user-123")
+    return "<br>".join([e['summary'] for e in events])
+
+@app.route("/create")
+def create():
+    return sync.create_event("user-123", "📌 Testevent GPT-4", "2025-07-13T10:00:00", "2025-07-13T11:00:00")
+
+# -------------------- Replit-kompatibler Start -------------------- #
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", port=8080, debug=True)
