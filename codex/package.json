@@ -9,10 +9,14 @@
   "scripts": {
     "sync": "node bin/index.js sync",
     "audit": "node bin/index.js audit",
-    "release": "node bin/index.js release"
+    "release": "node bin/index.js release",
+    "watch": "nodemon bin/index.js"
   },
   "dependencies": {
     "chalk": "^5.3.0",
     "commander": "^11.1.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.0"
   }
 }
