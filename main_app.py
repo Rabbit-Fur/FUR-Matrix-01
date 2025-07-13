@@ -13,6 +13,19 @@ import threading
 
 from dotenv import load_dotenv
 from flask import Response, session
+from google_auth import google_auth
+import os
+
+app.secret_key = os.environ.get("FLASK_SECRET", "dev-key")
+app.config["GOOGLE_CLIENT_CONFIG"] = os.environ.get("GOOGLE_CLIENT_CONFIG")
+app.config["GOOGLE_REDIRECT_URI"] = os.environ.get("GOOGLE_REDIRECT_URI")
+app.config["GOOGLE_CALENDAR_SCOPES"] = [
+    "https://www.googleapis.com/auth/calendar",
+    "https://www.googleapis.com/auth/calendar.readonly"
+]
+
+# Register blueprints for OAuth
+app.register_blueprint(google_auth, url_prefix="/auth")
 
 # ✅ Korrekt: Agenten-Loader importieren
 from agents.agenten_loader import init_agents
