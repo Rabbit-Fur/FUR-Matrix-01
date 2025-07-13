@@ -4,6 +4,7 @@
   "main": "app.js",
   "scripts": {
     "start": "node app.js",
+"dev": "nodemon app.js",
     "codex:sync": "cd ./codex && npm run sync",
     "codex:audit": "cd ./codex && npm run audit",
     "codex:fix": "cd ./codex && npm run fix",
