@@ -7,3 +7,19 @@ packages = ["cargo", "freetype", "lcms2", "libiconv", "libimagequant", "libjpeg"
 
 [deployment]
 build = ["sh", "-c", "make"]
+
+[[ports]]
+localPort = 3000
+externalPort = 80
+
+[workflows]
+runButton = "Run Python App"
+
+[[workflows.workflow]]
+name = "Run Python App"
+author = 42134334
+mode = "sequential"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "python main_app.py"
