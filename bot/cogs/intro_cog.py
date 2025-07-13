@@ -1,5 +1,6 @@
 import json
 import logging
+import asyncio
 from datetime import datetime
 from pathlib import Path
 
@@ -19,6 +20,7 @@ INTRO_IMAGE = Path("static/img/SORRY.png")
 class IntroCog(commands.Cog):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
+        asyncio.create_task(self._maybe_send_intro())
         async def _hook(self):
         await self.bot.wait_until_ready()
         await self._maybe_send_intro()
