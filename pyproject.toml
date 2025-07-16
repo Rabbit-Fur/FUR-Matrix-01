@@ -20,7 +20,8 @@ dependencies = [
   "Markdown>=3.0",
   "langchain>=0.3.0",
   "langchain-mongodb>=0.6.2",
-  "google-api-python-client>=2.125.0"
+  "google-api-python-client>=2.125.0",
+  "PyGithub>=2.3.0"
 ]
 
 [tool.setuptools]
