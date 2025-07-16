@@ -1,0 +1,65 @@
+# 🔧 Core Frameworks
+flask==2.3.3
+Flask-Session==0.8.0
+flask-babel @ git+https://github.com/python-babel/flask-babel.git
+flask-wtf
+pymongo==4.3.3
+motor
+flask-limiter
+Flask-SocketIO
+pydantic>=1.10.12,<2.0.0
+prometheus-client>=0.20.0
+
+# 📚 Datenbank & Planung
+SQLAlchemy==2.0.41
+apscheduler
+schedule
+redis==6.1.0
+
+# 🧠 KI & Übersetzung
+deepl
+libretranslatepy
+google-auth-oauthlib>=1.0.0
+
+# 🤖 Bots & Integration
+discord.py==2.5.2
+tlgbotfwk
+python-telegram-bot==22.1
+
+# 📦 Utilities
+requests==2.32.3
+PyGithub>=2.3.0
+openai==1.14.0
+langchain==0.1.17
+langchain-mongodb>=0.6.2
+python-dotenv==1.1.0
+python-dateutil
+pytz
+ics
+pillow
+Markdown
+werkzeug
+PyNaCl
+click==8.2.0
+cryptography==45.0.2
+limits==5.2.0
+multidict==6.4.4
+pefile==2024.8.26
+pluggy==1.6.0
+rich==14.0.0
+setuptools==80.7.1
+types-python-dateutil==2.9.0.20250516
+aiodns>=3.5.0
+bleach>=6.0
+google-api-python-client>=2.125.0
+
+# 🧪 Dev & Testing
+pytest>=7.0.0
+pytest-asyncio>=0.23
+flake8>=3.9.0
+isort>=5.0.0
+black>=23.0.0
+autoflake>=1.4
+gunicorn
+mongomock
+google-auth
