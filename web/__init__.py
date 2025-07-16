@@ -20,6 +20,7 @@ from web.champion_routes import champion_blueprint
 from web.poster_routes import poster_blueprint
 from web.reminder_routes import reminder_blueprint
 from web.socketio_events import init_socketio
+from blueprints.monitoring import monitoring
 
 # ---------------------------------------------------------------------------
 # 🔹 Hilfsfunktion (Fallback für BG-Resolver)
@@ -145,6 +146,7 @@ def create_app() -> Flask:
         # API-Blueprints
         app.register_blueprint(api_events)
         app.register_blueprint(api_users)
+        app.register_blueprint(monitoring)
 
         app.logger.info("✅ Alle Blueprints erfolgreich registriert.")
     except Exception:
