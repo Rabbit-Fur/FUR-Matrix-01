@@ -28,6 +28,8 @@ python-telegram-bot==22.1
 # 📦 Utilities
 requests==2.32.3
 openai>=1.14
+langchain>=0.3.0
+langchain-mongodb>=0.6.2
 python-dotenv==1.1.0
 python-dateutil
 pytz
