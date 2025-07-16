@@ -1,14 +1,77 @@
-# Fehlende oder nicht gesetzte Umgebungsvariablen / Secrets
+# Fehlende Umgebungsvariablen
 
-| Variable | Verwendet in | Fehlt in | Beispielwert vorhanden |
-|---------|--------------|---------|-----------------------|
-| FUR_PAT | middleware/auth.js | .env.example, GitHub Secrets | Nein |
-| PORT2 | app.js | .env.example, GitHub Secrets | Nein |
-| DOCKER_REGISTRY | .github/workflows/deploy.yml | .env.example | Nein |
-| DOCKER_IMAGE | .github/workflows/deploy.yml | .env.example | Nein |
-| DOCKER_PASSWORD | .github/workflows/deploy.yml | .env.example | Nein |
-| DOCKER_USERNAME | .github/workflows/deploy.yml | .env.example | Nein |
-| DEPLOY_HOST | .github/workflows/deploy.yml | .env.example | Nein |
-| DEPLOY_USER | .github/workflows/deploy.yml | .env.example | Nein |
-| DEPLOY_KEY | .github/workflows/deploy.yml | .env.example | Nein |
-| RAILWAY_TOKEN | .github/workflows/codex-fur-universal-railway.yml | .env.example | Nein |
+- ADMIN_ROLE_IDS
+- BASE_URL
+- CODEX_ENV_GO_VERSION
+- CODEX_ENV_NODE_VERSION
+- CODEX_ENV_PYTHON_VERSION
+- CODEX_ENV_RUST_VERSION
+- CODEX_ENV_SWIFT_VERSION
+- DATABASE_URL
+- DEBUG
+- DISCORD_CLIENT_ID
+- DISCORD_CLIENT_SECRET
+- DISCORD_GUILD_ID
+- DISCORD_REDIRECT_URI
+- DISCORD_TOKEN
+- DISCORD_WEBHOOK_URL
+- ENABLE_CHANNEL_REMINDERS
+- ENABLE_DISCORD_BOT
+- ENABLE_NEWSLETTER_AUTOPILOT
+- ENV_FILE
+- EVENT_CHANNEL_ID
+- FLASK_ENV
+- FLASK_SECRET
+- FUR_PAT
+- GITHUB_TOKEN
+- GOOGLE_AUTH_PROVIDER_CERT_URL
+- GOOGLE_AUTH_URI
+- GOOGLE_CALENDAR_ID
+- GOOGLE_CALENDAR_SCOPES
+- GOOGLE_CLIENT_CONFIG
+- GOOGLE_CLIENT_ID
+- GOOGLE_CLIENT_SECRET
+- GOOGLE_CREDENTIALS_FILE
+- GOOGLE_PROJECT_ID
+- GOOGLE_REDIRECT_URI
+- GOOGLE_SCOPES
+- GOOGLE_SYNC_INTERVAL_MINUTES
+- GOOGLE_TOKEN_STORAGE_PATH
+- GOOGLE_TOKEN_URI
+- HoF_CHANNEL_ID
+- LEADERBOARD_CHANNEL_ID
+- LOGTAIL_TOKEN
+- MONGODB_URI
+- MONGO_DB
+- MONGO_PASSWORD
+- MONGO_URL
+- NEWSLETTER_DM_DELAY
+- OPENAI_API_KEY
+- PORT
+- PORT2
+- POSTER_OUTPUT_PATH
+- PROMETHEUS_ENDPOINT
+- R3_ROLE_IDS
+- R4_ROLE_IDS
+- RAILWAY_PROJECT
+- RAILWAY_TOKEN
+- REMINDER_CHANNEL_ID
+- REMINDER_DM_DELAY
+- REMINDER_ROLE_ID
+- REPO_GITHUB
+- SECRET_KEY
+- SESSION_LIFETIME_MINUTES
+- TOKEN_GITHUB_API
+- TOKEN_GITHUB_SYNC
+- public_CHANNEL_ID
+
+# Paketkonflikte
+
+> Detektierter Versionskonflikt:
+- pydantic<2.0.0
+- langchain>=0.3.0
+- openai>=1.14
+
+## Loesungsvorschlaege:
+- Downgrade langchain auf <0.3.0 (z.B. 0.1.17)
+- Fixiere openai auf 1.14.0
