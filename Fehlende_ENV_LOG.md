@@ -68,10 +68,8 @@
 # Paketkonflikte
 
 > Detektierter Versionskonflikt:
-- pydantic<2.0.0
-- langchain>=0.3.0
+- pydantic>=2.7.4
+- langchain>=0.3.26
 - openai>=1.14
 
-## Loesungsvorschlaege:
-- Downgrade langchain auf <0.3.0 (z.B. 0.1.17)
-- Fixiere openai auf 1.14.0
+pip loest pydantic>=2.7.4 automatisch auf.
