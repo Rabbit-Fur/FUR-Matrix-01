@@ -3,8 +3,8 @@ flask==2.3.3
 Flask-Session==0.8.0
 flask-babel @ git+https://github.com/python-babel/flask-babel.git
 flask-wtf
-pymongo==4.3.3
-motor
+pymongo==4.13.2
+motor>=3.2.0
 flask-limiter
 Flask-SocketIO
 # pydantic now resolved via transitive dependencies

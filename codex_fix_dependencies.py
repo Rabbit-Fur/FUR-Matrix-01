@@ -11,6 +11,8 @@ LOG_PATH = Path("Fehlende_ENV_LOG.md")
 PACKAGES_TO_FIX = {
     "langchain": "langchain>=0.3.26",
     "openai": "openai>=1.14",
+    "motor": "motor>=3.2.0",
+    "pymongo": "pymongo==4.13.2",
 }
 
 
