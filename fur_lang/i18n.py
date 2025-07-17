@@ -101,7 +101,10 @@ def current_lang() -> str:
         except RuntimeError:
             lang = None
     if not lang:
-        lang = current_app.config.get("BABEL_DEFAULT_LOCALE", LANG_FALLBACK)
+        try:
+            lang = current_app.config.get("BABEL_DEFAULT_LOCALE", LANG_FALLBACK)
+        except RuntimeError:
+            lang = os.getenv("BABEL_DEFAULT_LOCALE", LANG_FALLBACK)
     return lang
 
 

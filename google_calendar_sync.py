@@ -78,9 +78,7 @@ def load_credentials() -> Optional[Credentials]:
         return None
 
     try:
-        creds = Credentials.from_authorized_user_file(
-            TOKEN_PATH, Config.GOOGLE_CALENDAR_SCOPES
-        )
+        creds = Credentials.from_authorized_user_file(TOKEN_PATH, Config.GOOGLE_CALENDAR_SCOPES)
         if creds.expired and creds.refresh_token:
             logger.info("Refreshing Google credentials")
             creds.refresh(Request())

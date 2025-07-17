@@ -1,4 +1,3 @@
-
 """
 main_app.py – Einstiegspunkt für das FUR-System (Web & Discord-Bot)
 Mit Debug-Modus für lokale Entwicklung und sauberem Application-Factory-Pattern.
@@ -26,7 +25,7 @@ app.config["GOOGLE_CLIENT_CONFIG"] = os.environ.get("GOOGLE_CLIENT_CONFIG")
 app.config["GOOGLE_REDIRECT_URI"] = os.environ.get("GOOGLE_REDIRECT_URI")
 app.config["GOOGLE_CALENDAR_SCOPES"] = [
     "https://www.googleapis.com/auth/calendar",
-    "https://www.googleapis.com/auth/calendar.readonly"
+    "https://www.googleapis.com/auth/calendar.readonly",
 ]
 
 # Register blueprints for OAuth
