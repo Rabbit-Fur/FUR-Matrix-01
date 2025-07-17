@@ -4,6 +4,9 @@ import os
 from datetime import datetime, timedelta, timezone
 from typing import Any, Iterable, Optional
 
+from flask import current_app
+from web import create_app
+
 from discord.ext import tasks
 from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
@@ -16,6 +19,20 @@ from google_auth import load_credentials
 from schemas.event_schema import EventModel
 
 log = logging.getLogger(__name__)
+
+
+_app = None
+
+
+def _get_app():
+    """Return a Flask application instance."""
+    global _app
+    try:
+        return current_app._get_current_object()
+    except RuntimeError:
+        if _app is None:
+            _app = create_app()
+        return _app
 
 
 class SyncTokenExpired(Exception):
@@ -71,7 +88,9 @@ class CalendarService:
     def _build_service(self) -> None:
         if self.service:
             return
-        creds = load_credentials()
+        app = _get_app()
+        with app.app_context():
+            creds = load_credentials()
         if not creds:
             if not self.warned_missing_creds:
                 log.warning("Google credentials missing – cannot sync")
