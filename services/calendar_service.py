@@ -68,7 +68,7 @@ class CalendarService:
         self.service: Any | None = None
         self.warned_missing_creds = False
         uri = mongo_uri or Config.MONGODB_URI or "mongodb://localhost:27017/furdb"
-        if events_collection and tokens_collection:
+        if events_collection is not None and tokens_collection is not None:
             self.client = None
             self.events = events_collection
             self.tokens = tokens_collection
