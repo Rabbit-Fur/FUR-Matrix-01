@@ -9,8 +9,8 @@ LOG_PATH = Path("Fehlende_ENV_LOG.md")
 
 
 PACKAGES_TO_FIX = {
-    "langchain": "langchain==0.1.17",
-    "openai": "openai==1.14.0",
+    "langchain": "langchain>=0.3.26",
+    "openai": "openai>=1.14",
 }
 
 
@@ -37,7 +37,7 @@ def resolve_requirements() -> None:
             resolved_lines.append(raw_line)
             continue
         pkg = re.split("[<>=]", line, 1)[0].lower()
-        if pkg == "langchain" and ">=0.3.0" in line:
+        if pkg == "langchain" and ">=0.3.26" in line:
             conflict = True
         replacement = PACKAGES_TO_FIX.get(pkg)
         resolved_lines.append(replacement if replacement else raw_line)
@@ -52,10 +52,8 @@ def resolve_requirements() -> None:
         f.write("\n# Paketkonflikte\n\n")
         if conflict:
             f.write("> Detektierter Versionskonflikt:\n")
-            f.write("- pydantic<2.0.0\n- langchain>=0.3.0\n- openai>=1.14\n")
-            f.write("\n## Loesungsvorschlaege:\n")
-            f.write("- Downgrade langchain auf <0.3.0 (z.B. 0.1.17)\n")
-            f.write("- Fixiere openai auf 1.14.0\n")
+            f.write("- pydantic>=2.7.4\n- langchain>=0.3.26\n- openai>=1.14\n")
+            f.write("\npip loest pydantic>=2.7.4 automatisch auf.\n")
         else:
             f.write("Keine Konflikte erkannt.\n")
 

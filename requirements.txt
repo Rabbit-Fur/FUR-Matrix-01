@@ -7,7 +7,7 @@ pymongo==4.3.3
 motor
 flask-limiter
 Flask-SocketIO
-pydantic>=1.10.12,<2.0.0
+# pydantic now resolved via transitive dependencies
 prometheus-client>=0.20.0
 
 # 📚 Datenbank & Planung
@@ -30,7 +30,7 @@ python-telegram-bot==22.1
 requests==2.32.3
 PyGithub>=2.3.0
 openai>=1.14
-langchain>=0.3.0
+langchain>=0.3.26
 langchain-mongodb>=0.6.2
 python-dotenv==1.1.0
 python-dateutil
