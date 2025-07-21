@@ -152,7 +152,9 @@ def test_oauth2callback_fetch_failure(tmp_path, monkeypatch):
     mod.state_map["good"] = 0.0
     resp = client.get("/oauth2callback?state=good")
     assert resp.status_code == 400
-    assert b"Authentication failed" in resp.data
+    assert resp.is_json
+    assert resp.json["error"].startswith("Authentication failed")
+    assert resp.json["details"] is None
 
 
 def test_oauth2callback_save_failure(tmp_path, monkeypatch):
