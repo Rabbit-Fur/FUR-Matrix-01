@@ -4,7 +4,7 @@ import time
 from pathlib import Path
 from typing import Optional
 
-from flask import Blueprint, Response, redirect, request, session
+from flask import Blueprint, Response, jsonify, redirect, request, session
 from google.auth.transport.requests import Request
 from google.oauth2.credentials import Credentials
 from google_auth_oauthlib.flow import Flow
@@ -84,8 +84,14 @@ def oauth2callback() -> Response:
         )
         flow.fetch_token(authorization_response=request.url)
     except Exception as exc:
+        status = getattr(getattr(exc, "response", None), "status", None)
+        text = getattr(getattr(exc, "response", None), "text", None)
         log.exception("OAuth token fetch failed")
-        return Response(f"Authentication failed: {exc}", status=400)
+        if status is not None:
+            log.error("Response status: %s", status)
+        if text:
+            log.error("Response text: %s", text)
+        return jsonify({"error": f"Authentication failed: {exc}", "details": text}), 400
 
     creds = flow.credentials
     try:

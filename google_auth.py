@@ -120,11 +120,21 @@ def oauth2callback():
     try:
         flow.fetch_token(authorization_response=request.url)
     except (google_exceptions.GoogleAuthError, ValueError) as exc:  # noqa: F841
-        current_app.logger.warning("OAuth user error: %s", exc)
-        return jsonify({"error": str(exc)}), 400
+        status = getattr(getattr(exc, "response", None), "status", None)
+        text = getattr(getattr(exc, "response", None), "text", None)
+        current_app.logger.warning("OAuth user error: %s status=%s", exc, status)
+        if text:
+            current_app.logger.debug("Response text: %s", text)
+        return jsonify({"error": str(exc), "details": text}), 400
     except Exception as exc:  # noqa: F841 - pragma: no cover - unexpected errors
+        status = getattr(getattr(exc, "response", None), "status", None)
+        text = getattr(getattr(exc, "response", None), "text", None)
         current_app.logger.exception("OAuth unexpected error")
-        return jsonify({"error": "token_failed"}), 400
+        if status is not None:
+            current_app.logger.error("Response status: %s", status)
+        if text:
+            current_app.logger.error("Response text: %s", text)
+        return jsonify({"error": "token_failed", "details": text}), 400
 
     creds = flow.credentials
     _save_credentials(creds)
