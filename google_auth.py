@@ -134,6 +134,8 @@ def oauth2callback():
             current_app.logger.error("Response status: %s", status)
         if text:
             current_app.logger.error("Response text: %s", text)
+        else:
+            text = str(exc)
         return jsonify({"error": "token_failed", "details": text}), 400
 
     creds = flow.credentials

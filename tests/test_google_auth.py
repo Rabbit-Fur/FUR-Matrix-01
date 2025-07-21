@@ -234,3 +234,5 @@ def test_oauth2callback_invalid_state_or_token(client, tmp_path, monkeypatch):
 
     resp = client.get("/oauth2callback?state=good&code=x")
     assert resp.status_code == 400
+    assert resp.is_json
+    assert resp.json["details"] == "fail"

@@ -91,6 +91,8 @@ def oauth2callback() -> Response:
             log.error("Response status: %s", status)
         if text:
             log.error("Response text: %s", text)
+        else:
+            text = str(exc)
         return jsonify({"error": f"Authentication failed: {exc}", "details": text}), 400
 
     creds = flow.credentials
