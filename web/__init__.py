@@ -5,6 +5,7 @@ import os
 from pathlib import Path
 
 from flask import Blueprint, Flask, request, session
+from werkzeug.middleware.proxy_fix import ProxyFix
 
 from config import Config
 from database import close_db
@@ -60,6 +61,7 @@ def create_app() -> Flask:
         template_folder=template_folder,
         static_folder=static_folder,
     )
+    app.wsgi_app = ProxyFix(app.wsgi_app, x_proto=1, x_host=1)
     # Ensure a secret key is set for session handling
     app.secret_key = os.environ.get("FLASK_SECRET", "fallback-dev-key")
     app.config.from_object(Config)
