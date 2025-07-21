@@ -154,7 +154,7 @@ def test_oauth2callback_fetch_failure(tmp_path, monkeypatch):
     assert resp.status_code == 400
     assert resp.is_json
     assert resp.json["error"].startswith("Authentication failed")
-    assert resp.json["details"] is None
+    assert resp.json["details"] == "fail"
 
 
 def test_oauth2callback_save_failure(tmp_path, monkeypatch):
