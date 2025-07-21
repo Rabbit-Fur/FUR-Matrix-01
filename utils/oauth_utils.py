@@ -75,6 +75,7 @@ def exchange_code_for_token(
     code_verifier: str,
     client_id: str,
     redirect_uri: str,
+    client_secret: str,
 ) -> dict:
     """Exchange authorization ``code`` for OAuth tokens."""
     data = {
@@ -82,6 +83,7 @@ def exchange_code_for_token(
         "code": code,
         "code_verifier": code_verifier,
         "client_id": client_id,
+        "client_secret": client_secret,
         "redirect_uri": redirect_uri,
     }
     response = requests.post(_GOOGLE_TOKEN_URL, data=data, timeout=10)
