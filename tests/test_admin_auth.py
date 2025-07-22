@@ -75,3 +75,15 @@ def test_post_event_requires_r4(client):
     assert resp.status_code == 302
     assert resp.headers["Location"].endswith("/admin/events")
     collection.delete_one({"_id": event_id})
+
+
+def test_send_daily_dms_requires_r4(client):
+    resp = _check_requires_r4(client, "POST", "/admin/send_daily_dms")
+    assert resp.status_code == 200
+    assert resp.data == b"daily"
+
+
+def test_send_custom_dm_requires_r4(client):
+    resp = _check_requires_r4(client, "POST", "/admin/send_custom_dm")
+    assert resp.status_code == 200
+    assert resp.data == b"custom"

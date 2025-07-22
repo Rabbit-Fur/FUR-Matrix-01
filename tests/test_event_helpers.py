@@ -1,6 +1,8 @@
-from datetime import datetime
+from datetime import datetime, timezone
+from zoneinfo import ZoneInfo
 
 import utils.event_helpers as mod
+
 from fur_lang import i18n
 
 
@@ -22,17 +24,26 @@ class FakeEvents:
 def fake_get_collection(name):
     return FakeEvents(
         [
-            {"title": "A", "event_time": datetime(2025, 1, 1, 10, 0)},
-            {"title": "B", "event_time": datetime(2025, 1, 2, 12, 0)},
+            {"title": "A", "event_time": datetime(2025, 1, 1, 22, 0, tzinfo=timezone.utc)},
+            {"title": "B", "event_time": datetime(2025, 1, 2, 12, 0, tzinfo=timezone.utc)},
         ]
     )
 
 
 def test_get_events_for(monkeypatch):
     monkeypatch.setattr(mod, "get_collection", fake_get_collection)
-    events = mod.get_events_for(datetime(2025, 1, 1))
+    tz = ZoneInfo("Europe/Berlin")
+    events = mod.get_events_for(datetime(2025, 1, 1, 12, 0, tzinfo=tz))
     assert len(events) == 1
     assert events[0]["title"] == "A"
+
+
+def test_get_events_for_tomorrow(monkeypatch):
+    monkeypatch.setattr(mod, "get_collection", fake_get_collection)
+    tz = ZoneInfo("Europe/Berlin")
+    events = mod.get_events_for(datetime(2025, 1, 2, 12, 0, tzinfo=tz))
+    assert len(events) == 1
+    assert events[0]["title"] == "B"
 
 
 def test_format_events(monkeypatch):

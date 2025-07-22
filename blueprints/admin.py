@@ -381,6 +381,60 @@ def post_announcement():
     return redirect(url_for("admin.admin_dashboard"))
 
 
+@admin.route("/send_daily_dms", methods=["POST"])
+@require_roles(["R4", "ADMIN"])
+@r4_required
+def send_daily_dms():
+    """Trigger sending of today's event reminders via DM."""
+    from bot import bot_main, dm_scheduler
+    import asyncio
+
+    if current_app.config.get("TESTING"):
+        return "daily"
+
+    bot = bot_main.bot
+    asyncio.run(dm_scheduler.send_daily_dm(bot))
+    flash("Daily DMs sent", "success")
+    return redirect(url_for("admin.admin_dashboard"))
+
+
+@admin.route("/send_custom_dm", methods=["POST"])
+@require_roles(["R4", "ADMIN"])
+@r4_required
+def send_custom_dm():
+    """Send a custom DM to all or a specific user."""
+    from bot import bot_main, dm_scheduler
+    import asyncio
+
+    if current_app.config.get("TESTING"):
+        return "custom"
+
+    text = request.form.get("message", "").strip()
+    user_id = request.form.get("user_id")
+    if not text:
+        flash("Message required", "danger")
+        return redirect(url_for("admin.admin_dashboard"))
+
+    bot = bot_main.bot
+    targets = []
+    if user_id:
+        targets = [int(user_id)]
+    else:
+        targets = dm_scheduler.get_dm_users()
+
+    success = 0
+    for uid in targets:
+        try:
+            user = asyncio.run(bot.fetch_user(uid))
+            asyncio.run(dm_scheduler.send_dm(user, text))
+            success += 1
+        except Exception:
+            pass
+
+    flash(f"DMs sent: {success}", "success")
+    return redirect(url_for("admin.admin_dashboard"))
+
+
 def _allowed_file(filename: str) -> bool:
     """Return True if the filename has an allowed extension."""
     return (

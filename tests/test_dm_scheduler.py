@@ -86,7 +86,7 @@ def test_schedule_dm_tasks(monkeypatch):
         running = False
 
         def add_job(self, func, trigger, **kw):
-            jobs.append((func, trigger))
+            jobs.append((func, trigger, kw))
 
         def start(self):
             self.running = True
@@ -98,3 +98,8 @@ def test_schedule_dm_tasks(monkeypatch):
 
     assert fake.running
     assert len(jobs) == 2
+    cron_job = jobs[0]
+    assert cron_job[1] == "cron"
+    assert cron_job[2]["hour"] == 0
+    assert cron_job[2]["minute"] == 0
+    assert cron_job[2]["timezone"] == "UTC"
