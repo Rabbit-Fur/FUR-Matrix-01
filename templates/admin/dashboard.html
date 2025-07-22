@@ -25,6 +25,9 @@
     <form action="{{ url_for('admin.post_weekly_report') }}" method="post">
       <button class="btn btn-glow">📤 {{ t("Wöchentlichen Report posten") }}</button>
     </form>
+    <form action="{{ url_for('admin.send_daily_dms') }}" method="post">
+      <button class="btn btn-glow">📨 Send Daily DMs</button>
+    </form>
   </div>
 
   <div class="panel" style="margin-top: 3rem; max-width: 600px;">
@@ -39,6 +42,21 @@
         <textarea id="message" name="message" rows="4" required></textarea>
       </div>
       <button type="submit" class="btn btn-glow">📣 {{ t("Ankündigung posten") }}</button>
+    </form>
+  </div>
+
+  <div class="panel" style="margin-top: 2rem; max-width: 600px;">
+    <h3>✉️ Send Custom DM</h3>
+    <form action="{{ url_for('admin.send_custom_dm') }}" method="post">
+      <div class="form-row" style="margin-bottom: 0.75rem;">
+        <label for="dm_message">Message</label>
+        <textarea id="dm_message" name="message" rows="3" required></textarea>
+      </div>
+      <div class="form-row" style="margin-bottom: 0.75rem;">
+        <label for="user_id">User ID (optional)</label>
+        <input type="text" id="user_id" name="user_id">
+      </div>
+      <button type="submit" class="btn btn-glow">✉️ Send DM</button>
     </form>
   </div>
 

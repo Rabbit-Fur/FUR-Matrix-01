@@ -54,6 +54,14 @@ async def check_upcoming_events(bot) -> None:
 
 
 def schedule_dm_tasks(bot) -> None:
-    scheduler.add_job(send_daily_dm, "cron", hour=6, minute=0, args=[bot])
+    """Configure DM tasks with a midnight UTC trigger."""
+    scheduler.add_job(
+        send_daily_dm,
+        trigger="cron",
+        hour=0,
+        minute=0,
+        timezone="UTC",
+        args=[bot],
+    )
     scheduler.add_job(check_upcoming_events, "interval", minutes=1, args=[bot])
     scheduler.start()
