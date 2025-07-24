@@ -1,7 +1,7 @@
 import asyncio
 import logging
 import os
-from datetime import datetime, timedelta, timezone
+from datetime import date as date_type, datetime, timedelta, timezone
 from typing import Any, Iterable, Optional
 
 from flask import current_app
@@ -205,6 +205,23 @@ class CalendarService:
         now = datetime.utcnow().replace(tzinfo=timezone.utc)
         start = now.replace(hour=0, minute=0, second=0, microsecond=0)
         end = start + timedelta(days=7)
+        return await self._get_range(start, end)
+
+    async def get_next_event(self) -> Optional[dict]:
+        """Return the next upcoming event or ``None`` if none found."""
+        now = datetime.utcnow().replace(tzinfo=timezone.utc)
+        window_end = now + timedelta(days=365)
+        events = await self._get_range(now, window_end)
+        return events[0] if events else None
+
+    async def get_events_for_date(self, dt: datetime | date_type) -> list[dict]:
+        """Return events for the given day in UTC."""
+        if isinstance(dt, datetime):
+            day = dt.date()
+        else:
+            day = dt
+        start = datetime.combine(day, datetime.min.time(), timezone.utc)
+        end = start + timedelta(days=1)
         return await self._get_range(start, end)
 
 

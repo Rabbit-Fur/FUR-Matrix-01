@@ -12,6 +12,7 @@ from fur_lang.i18n import t
 from google_calendar_sync import create_test_event
 from mongo_service import get_collection
 from services.calendar_service import CalendarService
+from utils.poster_generator import create_event_image
 from utils.oauth_utils import (
     build_authorization_url,
     generate_code_challenge,
@@ -129,6 +130,29 @@ class CalendarCog(commands.Cog):
             await interaction.response.send_message("Test event created", ephemeral=True)
         else:
             await interaction.response.send_message("Calendar token missing", ephemeral=True)
+
+    @calendar.command(name="postevent", description="Post next calendar event")
+    async def cmd_postevent(self, interaction: discord.Interaction) -> None:
+        event = await self.service.get_next_event()
+        if not event:
+            await interaction.response.send_message("No events found.", ephemeral=True)
+            return
+        img_buf = create_event_image(
+            event.get("title", "Event"),
+            event.get("event_time"),
+            event.get("description") or "",
+        )
+        file = discord.File(img_buf, filename="event.png")
+        embed = discord.Embed(
+            title=event.get("title", "Event"),
+            description=(event.get("description") or "")[:400],
+            color=0xF1C40F,
+        )
+        when = event.get("event_time")
+        if when:
+            embed.add_field(name="Start", value=str(when), inline=False)
+        embed.set_image(url="attachment://event.png")
+        await interaction.response.send_message(embed=embed, file=file)
 
     async def _send_reminders(self, events: list[dict], title: str) -> None:
         guild = self.bot.get_guild(Config.DISCORD_GUILD_ID)

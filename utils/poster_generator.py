@@ -4,7 +4,9 @@ from __future__ import annotations
 
 import uuid
 from datetime import datetime
+from io import BytesIO
 from pathlib import Path
+import textwrap
 
 from PIL import Image, ImageDraw, ImageFont
 
@@ -117,3 +119,45 @@ def generate_event_poster(event: dict, mode: str = "daily") -> str:
 
     img.save(file_path)
     return str(file_path)
+
+
+def create_event_image(title: str, date: datetime | None, description: str | None) -> BytesIO:
+    """Return an event poster image as ``BytesIO`` buffer."""
+    bg_path = Path(Config.POSTER_BG_DEFAULT_PATH)
+    if bg_path.is_file():
+        img = Image.open(bg_path).convert("RGB")
+        img = img.resize((Config.IMG_WIDTH, Config.IMG_HEIGHT))
+    else:
+        img = Image.new("RGB", (Config.IMG_WIDTH, Config.IMG_HEIGHT), DEFAULT_BG_COLOR)
+
+    draw = ImageDraw.Draw(img)
+    title_font = _load_font(Config.POSTER_FONT_TITLE_PATH, 60)
+    text_font = _load_font(Config.POSTER_FONT_TEXT_PATH, 32)
+
+    y = 80
+    bbox = draw.textbbox((0, 0), title, font=title_font)
+    x = (Config.IMG_WIDTH - (bbox[2] - bbox[0])) / 2
+    draw.text((x, y), title, font=title_font, fill=TITLE_COLOR)
+    y += bbox[3] - bbox[1] + 30
+
+    if isinstance(date, datetime):
+        dt_text = date.strftime("%d.%m.%Y %H:%M UTC")
+    else:
+        dt_text = str(date) if date else ""
+    if dt_text:
+        bbox = draw.textbbox((0, 0), dt_text, font=text_font)
+        x = (Config.IMG_WIDTH - (bbox[2] - bbox[0])) / 2
+        draw.text((x, y), dt_text, font=text_font, fill=TEXT_COLOR)
+        y += bbox[3] - bbox[1] + 20
+
+    if description:
+        for line in textwrap.wrap(description, width=40)[:5]:
+            bbox = draw.textbbox((0, 0), line, font=text_font)
+            x = (Config.IMG_WIDTH - (bbox[2] - bbox[0])) / 2
+            draw.text((x, y), line, font=text_font, fill=TEXT_COLOR)
+            y += bbox[3] - bbox[1] + 5
+
+    buf = BytesIO()
+    img.save(buf, format="PNG")
+    buf.seek(0)
+    return buf

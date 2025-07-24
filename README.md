@@ -112,6 +112,14 @@ Token Refresh-Flows sind implementiert
 
 Codex blockiert Deployment ohne .env.example + Commit-Lint
 
+## Google Calendar → Eventbild → Discord Workflow
+
+- Liest Events automatisiert aus Google Calendar
+- Erstellt für jedes Event ein ansprechendes Eventbild (FUR-Style)
+- Postet Event + Bild als Embed ins Discord (mit `!postevent`)
+- Vollständig modular, robust und testbar umgesetzt
+- Für Setup siehe `requirements.txt` und API-Doku im Ordner `docs/`
+
 📬 Kontakt
 
 Maintainer: Marcel Schlanzke
