@@ -48,6 +48,7 @@ DEBUG=true
 
 `GITHUB_TOKEN` wird für Zugriffe auf die GitHub API benötigt.
 `PROMETHEUS_ENDPOINT` legt fest, wo Prometheus die Metriken abrufen kann.
+Weitere Details zu allen Variablen finden sich in [docs/env_vars.md](docs/env_vars.md).
 
 📡 Features
 
