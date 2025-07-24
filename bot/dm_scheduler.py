@@ -9,6 +9,7 @@ from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from pymongo.collection import Collection
 
 from config import Config
+from urllib.parse import urljoin
 from mongo_service import get_collection
 
 log = logging.getLogger(__name__)
@@ -16,12 +17,19 @@ log = logging.getLogger(__name__)
 scheduler = AsyncIOScheduler(timezone="UTC")
 
 
+def _ensure_url(path: str) -> str:
+    """Prepend ``Config.BASE_URL`` if ``path`` is relative."""
+    if path and not path.startswith("http"):
+        return urljoin(Config.BASE_URL, path.lstrip("/"))
+    return path
+
+
 def get_dm_image(dm_type: str) -> str:
     """Return configured DM image or fallback."""
     doc = get_collection("settings").find_one({"_id": f"dm_image_{dm_type}"})
     if doc and doc.get("value"):
-        return doc["value"]
-    return Config.DEFAULT_DM_IMAGE_URL
+        return _ensure_url(doc["value"])
+    return _ensure_url(Config.DEFAULT_DM_IMAGE_URL)
 
 
 async def send_embed_dm(user, message: str, dm_type: str) -> None:

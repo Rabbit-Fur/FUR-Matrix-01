@@ -10,7 +10,7 @@ from config import Config
 
 class PosterAgent:
     def __init__(self, output_dir: str | None = None):
-        self.output_dir = Path(output_dir or Config.STATIC_FOLDER) / Config.CHAMPION_OUTPUT_REL_PATH
+        self.output_dir = Path(output_dir or Config.POSTER_OUTPUT_PATH)
         self.output_dir.mkdir(parents=True, exist_ok=True)
 
     def create_poster(self, username: str, stats: str | None = None) -> str:

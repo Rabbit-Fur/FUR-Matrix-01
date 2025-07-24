@@ -168,5 +168,5 @@ async def test_daily_poster_attachment(monkeypatch, tmp_path):
     cog = autopilot_mod.ReminderAutopilot(bot)
     await cog.send_daily_poster()
 
-    assert member.kwargs["file"]["path"] == str(poster_file)
-    assert not member.kwargs.get("content")
+    assert isinstance(member.kwargs.get("embed"), autopilot_mod.discord.Embed)
+    assert member.kwargs["embed"].image.url.endswith("poster.png")

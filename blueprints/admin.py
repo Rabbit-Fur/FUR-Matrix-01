@@ -314,8 +314,13 @@ def post_event(event_id: str):
         f"📅 **{event.get('title')}**\n{event.get('description', '')}\n🕒 {event.get('event_time')}"
     )
     webhook = WebhookAgent(Config.DISCORD_WEBHOOK_URL)
-    poster = generate_event_poster(event)
-    success = webhook.send(content, file_path=poster, event_channel=True)
+    poster_path = generate_event_poster(event)
+    poster_url = (
+        poster_path
+        if poster_path.startswith("http")
+        else Config.BASE_URL.rstrip("/") + "/" + poster_path.lstrip("/")
+    )
+    success = webhook.send(content, image_url=poster_url, event_channel=True)
     flash(
         (
             t("event_posted", default="Event posted")
