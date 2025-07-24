@@ -1,5 +1,3 @@
-from pathlib import Path
-
 from config import Config
 from modules import champion as champion_mod
 

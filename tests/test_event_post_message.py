@@ -1,5 +1,4 @@
 import importlib
-from pathlib import Path
 
 import mongo_service
 from tests.test_admin_auth import login_with_role

@@ -99,7 +99,10 @@ class Config:
     MAX_CONTENT_LENGTH: int = 2 * 1024 * 1024
     DEFAULT_DM_IMAGE_URL: str = get_env_str(
         "DEFAULT_DM_IMAGE_URL",
-        default=f"{os.getenv('BASE_URL', 'http://localhost:8080').rstrip('/')}/static/img/dm_default.png",
+        default=(
+            f"{os.getenv('BASE_URL', 'http://localhost:8080').rstrip('/')}/"
+            "static/img/dm_default.png"
+        ),
     )
 
     POSTER_OUTPUT_PATH: str = get_env_str(
