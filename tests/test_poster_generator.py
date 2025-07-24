@@ -2,7 +2,7 @@ import os
 from datetime import datetime
 
 from config import Config
-from utils.poster_generator import generate_event_poster
+from utils.poster_generator import create_event_image, generate_event_poster
 
 
 def test_generate_poster_daily_weekly(monkeypatch, tmp_path):
@@ -15,3 +15,8 @@ def test_generate_poster_daily_weekly(monkeypatch, tmp_path):
 
     path_weekly = generate_event_poster(event, "weekly")
     assert os.path.isfile(path_weekly)
+
+
+def test_create_event_image_bytes(monkeypatch):
+    buf = create_event_image("Test", datetime(2025, 1, 1, 12, 0), "desc")
+    assert isinstance(buf.getvalue(), (bytes, bytearray))
