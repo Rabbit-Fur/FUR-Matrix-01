@@ -4,6 +4,7 @@ from datetime import datetime
 
 from .poster_agent import PosterAgent
 from .webhook_agent import WebhookAgent
+from config import Config
 
 
 class ChampionAgent:
@@ -16,6 +17,11 @@ class ChampionAgent:
         """Create poster, store entry and optionally send via webhook."""
 
         poster_path = self.poster.create_poster(username, stats)
+        poster_url = (
+            poster_path
+            if poster_path.startswith("http")
+            else Config.BASE_URL.rstrip("/") + "/" + poster_path.lstrip("/")
+        )
         entry = {
             "username": username,
             "month": month,
@@ -24,5 +30,5 @@ class ChampionAgent:
         }
         self.db["hall_of_fame"].insert_one(entry)
         if self.webhook:
-            self.webhook.send_champion_announcement(username, "PvP Champion", month, poster_path)
+            self.webhook.send_champion_announcement(username, "PvP Champion", month, poster_url)
         return poster_path

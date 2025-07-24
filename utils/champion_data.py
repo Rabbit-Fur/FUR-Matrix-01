@@ -43,7 +43,7 @@ def get_champion_by_month(month: str) -> Optional[Dict[str, str]]:
 def generate_champion_poster(username: str = "Champion") -> str:
     """Generate a simple champion poster image and return file path."""
 
-    output_dir = os.path.join(Config.STATIC_FOLDER, Config.CHAMPION_OUTPUT_REL_PATH)
+    output_dir = Config.POSTER_OUTPUT_PATH
     os.makedirs(output_dir, exist_ok=True)
     file_path = os.path.join(output_dir, f"{uuid.uuid4().hex}.png")
 

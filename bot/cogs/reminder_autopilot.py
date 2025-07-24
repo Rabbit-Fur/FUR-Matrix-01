@@ -184,12 +184,15 @@ class ReminderAutopilot(commands.Cog):
             if is_opted_out(member.id):
                 continue
             try:
-                file = discord.File(poster_path)
                 embed = discord.Embed()
                 img = get_dm_image(dm_type)
                 if img:
                     embed.set_thumbnail(url=img)
-                await member.send(file=file, embed=embed)
+                poster_url = poster_path
+                if not poster_url.startswith("http"):
+                    poster_url = Config.BASE_URL.rstrip("/") + "/" + poster_path.lstrip("/")
+                embed.set_image(url=poster_url)
+                await member.send(embed=embed)
                 await asyncio.sleep(self.delay)
             except discord.Forbidden:
                 log.warning("DM blocked for %s", member.id)

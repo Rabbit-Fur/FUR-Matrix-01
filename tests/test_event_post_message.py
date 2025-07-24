@@ -10,9 +10,9 @@ class FakeWebhook:
         self.url = url
         self.calls = 0
 
-    def send(self, content: str, webhook_url=None, file_path=None, *, event_channel=False):
+    def send(self, content: str, webhook_url=None, image_url=None, *, event_channel=False):
         self.calls += 1
-        assert Path(file_path).is_file()
+        assert image_url.startswith("http")
         return True
 
 
