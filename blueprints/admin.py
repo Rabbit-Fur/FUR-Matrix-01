@@ -73,7 +73,14 @@ def create_event():
 def dashboard():
     if current_app.config.get("TESTING"):
         return "admindash"
-    return render_template("admin/dashboard.html")
+
+    coll = get_collection("settings")
+    dm_settings = {}
+    for _t in ("daily", "weekly", "custom"):
+        doc = coll.find_one({"_id": f"dm_image_{_t}"})
+        dm_settings[_t] = doc.get("value") if doc else ""
+
+    return render_template("admin/dashboard.html", dm_settings=dm_settings)
 
 
 @require_roles(["R4", "ADMIN"])
@@ -386,11 +393,11 @@ def post_announcement():
 @r4_required
 def send_daily_dms():
     """Trigger sending of today's event reminders via DM."""
-    from bot import bot_main, dm_scheduler
-    import asyncio
-
     if current_app.config.get("TESTING"):
         return "daily"
+
+    from bot import bot_main, dm_scheduler
+    import asyncio
 
     bot = bot_main.bot
     asyncio.run(dm_scheduler.send_daily_dm(bot))
@@ -403,11 +410,11 @@ def send_daily_dms():
 @r4_required
 def send_custom_dm():
     """Send a custom DM to all or a specific user."""
-    from bot import bot_main, dm_scheduler
-    import asyncio
-
     if current_app.config.get("TESTING"):
         return "custom"
+
+    from bot import bot_main, dm_scheduler
+    import asyncio
 
     text = request.form.get("message", "").strip()
     user_id = request.form.get("user_id")
@@ -426,13 +433,41 @@ def send_custom_dm():
     for uid in targets:
         try:
             user = asyncio.run(bot.fetch_user(uid))
-            asyncio.run(dm_scheduler.send_dm(user, text))
+            asyncio.run(dm_scheduler.send_embed_dm(user, text, "custom"))
             success += 1
         except Exception:
             pass
 
     flash(f"DMs sent: {success}", "success")
     return redirect(url_for("admin.admin_dashboard"))
+
+
+@admin.route("/dm_images", methods=["POST"])
+@require_roles(["R4", "ADMIN"])
+@r4_required
+def save_dm_images():
+    """Save DM image URLs or uploads for each DM type."""
+    coll = get_collection("settings")
+    upload_folder = current_app.config["UPLOAD_FOLDER"]
+    os.makedirs(upload_folder, exist_ok=True)
+    for dm_type in ("daily", "weekly", "custom"):
+        url = request.form.get(f"{dm_type}_url", "").strip()
+        file = request.files.get(f"{dm_type}_file")
+        value = None
+        if file and file.filename:
+            filename = secure_filename(file.filename)
+            file.save(os.path.join(upload_folder, filename))
+            value = f"/static/uploads/{filename}"
+        elif url:
+            value = url
+        if value:
+            coll.update_one(
+                {"_id": f"dm_image_{dm_type}"},
+                {"$set": {"value": value}},
+                upsert=True,
+            )
+    flash(t("dm_images_saved", default="DM images saved"), "success")
+    return redirect(url_for("admin.dashboard"))
 
 
 def _allowed_file(filename: str) -> bool:

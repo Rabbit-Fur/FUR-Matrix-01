@@ -3,14 +3,34 @@ from __future__ import annotations
 import logging
 from datetime import datetime, timedelta
 
+import discord
+
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from pymongo.collection import Collection
 
+from config import Config
 from mongo_service import get_collection
 
 log = logging.getLogger(__name__)
 
 scheduler = AsyncIOScheduler(timezone="UTC")
+
+
+def get_dm_image(dm_type: str) -> str:
+    """Return configured DM image or fallback."""
+    doc = get_collection("settings").find_one({"_id": f"dm_image_{dm_type}"})
+    if doc and doc.get("value"):
+        return doc["value"]
+    return Config.DEFAULT_DM_IMAGE_URL
+
+
+async def send_embed_dm(user, message: str, dm_type: str) -> None:
+    """Send an embed DM with an optional image."""
+    embed = discord.Embed(description=message)
+    image_url = get_dm_image(dm_type) or Config.DEFAULT_DM_IMAGE_URL
+    if image_url:
+        embed.set_image(url=image_url)
+    await user.send(embed=embed)
 
 
 def get_dm_users() -> list[int]:
@@ -33,7 +53,7 @@ async def send_daily_dm(bot) -> None:
         return
     for uid in get_dm_users():
         user = await bot.fetch_user(uid)
-        await send_dm(user, "Good morning! Your events for today are ready.")
+        await send_embed_dm(user, "Good morning! Your events for today are ready.", "daily")
     flags.update_one({"_id": "daily_dm"}, {"$set": {"date": today}}, upsert=True)
 
 

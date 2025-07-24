@@ -15,6 +15,7 @@ from google_calendar_sync import fetch_upcoming_events, get_calendar_service
 from mongo_service import get_collection
 from utils import poster_generator
 from utils.event_helpers import parse_event_time
+from bot.dm_scheduler import get_dm_image
 
 
 def is_opted_out(user_id: int) -> bool:
@@ -172,7 +173,7 @@ class ReminderAutopilot(commands.Cog):
             lines.append("No upcoming events.")
         return lines
 
-    async def _send_poster_to_members(self, poster_path: str) -> None:
+    async def _send_poster_to_members(self, poster_path: str, dm_type: str) -> None:
         guild = self.bot.get_guild(Config.DISCORD_GUILD_ID)
         if not guild:
             log.warning("Guild not found for poster dispatch")
@@ -184,7 +185,11 @@ class ReminderAutopilot(commands.Cog):
                 continue
             try:
                 file = discord.File(poster_path)
-                await member.send(file=file)
+                embed = discord.Embed()
+                img = get_dm_image(dm_type)
+                if img:
+                    embed.set_thumbnail(url=img)
+                await member.send(file=file, embed=embed)
                 await asyncio.sleep(self.delay)
             except discord.Forbidden:
                 log.warning("DM blocked for %s", member.id)
@@ -194,12 +199,12 @@ class ReminderAutopilot(commands.Cog):
     async def send_daily_poster(self) -> None:
         lines = await self._build_daily_lines()
         path = poster_generator.generate_text_poster("Today's Events", lines)
-        await self._send_poster_to_members(path)
+        await self._send_poster_to_members(path, "daily")
 
     async def send_weekly_poster(self) -> None:
         lines = await self._build_weekly_lines()
         path = poster_generator.generate_text_poster("Events This Week", lines)
-        await self._send_poster_to_members(path)
+        await self._send_poster_to_members(path, "weekly")
 
     @tasks.loop(hours=1)
     async def daily_poster_loop(self):

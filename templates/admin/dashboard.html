@@ -60,6 +60,28 @@
     </form>
   </div>
 
+  <div class="panel" style="margin-top: 2rem; max-width: 600px;">
+    <h3>🖼 DM Images</h3>
+    <form action="{{ url_for('admin.save_dm_images') }}" method="post" enctype="multipart/form-data">
+      <div class="form-row" style="margin-bottom: 0.75rem;">
+        <label for="daily_url">Daily DM Image URL</label>
+        <input type="text" id="daily_url" name="daily_url" value="{{ dm_settings.daily or '' }}">
+        <input type="file" name="daily_file">
+      </div>
+      <div class="form-row" style="margin-bottom: 0.75rem;">
+        <label for="weekly_url">Weekly DM Image URL</label>
+        <input type="text" id="weekly_url" name="weekly_url" value="{{ dm_settings.weekly or '' }}">
+        <input type="file" name="weekly_file">
+      </div>
+      <div class="form-row" style="margin-bottom: 0.75rem;">
+        <label for="custom_url">Custom DM Image URL</label>
+        <input type="text" id="custom_url" name="custom_url" value="{{ dm_settings.custom or '' }}">
+        <input type="file" name="custom_file">
+      </div>
+      <button type="submit" class="btn btn-glow">💾 Save</button>
+    </form>
+  </div>
+
   {% if stats is defined %}
   <div class="panel" style="margin-top:2.5rem; max-width: 600px;">
     <h3>📊 {{ t("Systemstatus") }}</h3>
