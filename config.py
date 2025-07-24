@@ -97,6 +97,9 @@ class Config:
     RESOURCES_FOLDER: str = os.path.join(STATIC_FOLDER, "resources")
     ALLOWED_EXTENSIONS: set[str] = {"jpg", "png"}
     MAX_CONTENT_LENGTH: int = 2 * 1024 * 1024
+    DEFAULT_DM_IMAGE_URL: str = get_env_str(
+        "DEFAULT_DM_IMAGE_URL", default="/static/img/dm_default.png"
+    )
 
     POSTER_OUTPUT_PATH: str = get_env_str(
         "POSTER_OUTPUT_PATH", default=os.path.join(STATIC_FOLDER, "posters")

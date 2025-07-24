@@ -12,7 +12,7 @@ class PyObjectId(ObjectId):
         yield cls.validate
 
     @classmethod
-    def validate(cls, v):
+    def validate(cls, v, *args, **kwargs):
         if isinstance(v, ObjectId):
             return v
         if not ObjectId.is_valid(v):
@@ -32,7 +32,7 @@ class PyObjectId(ObjectId):
 
 # Hauptmodell für Events
 class EventModel(BaseModel):
-    id: Optional[PyObjectId] = Field(alias="_id")
+    id: Optional[PyObjectId] = Field(default=None, alias="_id")
     title: str
     description: Optional[str] = None
     date: str  # ISO-8601 Datum als Text

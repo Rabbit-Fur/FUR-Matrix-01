@@ -89,4 +89,4 @@ async def test_send_poster_skips_opted_out(monkeypatch):
     cog.bot = bot
     cog.delay = 0
 
-    await autopilot_mod.ReminderAutopilot._send_poster_to_members(cog, "poster")
+    await autopilot_mod.ReminderAutopilot._send_poster_to_members(cog, "poster", "daily")

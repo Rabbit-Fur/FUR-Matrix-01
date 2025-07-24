@@ -1,6 +1,9 @@
 import types
 from datetime import datetime, timedelta
 
+import discord
+from config import Config
+
 import pytest
 
 
@@ -11,10 +14,12 @@ async def test_send_daily_dm(monkeypatch):
     called = {}
     monkeypatch.setattr(mod, "get_dm_users", lambda: [1])
 
-    async def fake_send(user, msg):
-        called[user] = msg
+    async def fake_send(user, msg, dm_type):
+        called["user"] = user
+        called["msg"] = msg
+        called["type"] = dm_type
 
-    monkeypatch.setattr(mod, "send_dm", fake_send)
+    monkeypatch.setattr(mod, "send_embed_dm", fake_send)
 
     class FakeFlags:
         def __init__(self) -> None:
@@ -28,8 +33,16 @@ async def test_send_daily_dm(monkeypatch):
 
     flags = FakeFlags()
 
+    class FakeSettings:
+        def find_one(self, q):
+            return {"value": "http://img"}
+
     def fake_get_collection(name):
-        return flags if name == "flags" else None
+        if name == "flags":
+            return flags
+        if name == "settings":
+            return FakeSettings()
+        return None
 
     monkeypatch.setattr(mod, "get_collection", fake_get_collection)
 
@@ -40,7 +53,8 @@ async def test_send_daily_dm(monkeypatch):
 
     await mod.send_daily_dm(fake_bot)
 
-    assert called.get(1) == "Good morning! Your events for today are ready."
+    assert called["msg"] == "Good morning! Your events for today are ready."
+    assert called["type"] == "daily"
     assert flags.updated
 
 
@@ -103,3 +117,42 @@ def test_schedule_dm_tasks(monkeypatch):
     assert cron_job[2]["hour"] == 0
     assert cron_job[2]["minute"] == 0
     assert cron_job[2]["timezone"] == "UTC"
+
+
+@pytest.mark.asyncio
+async def test_send_embed_dm(monkeypatch):
+    from bot import dm_scheduler as mod
+
+    monkeypatch.setattr(mod, "get_dm_image", lambda t: "http://img.png")
+
+    class FakeUser:
+        def __init__(self):
+            self.embed = None
+
+        async def send(self, *, embed: discord.Embed):
+            self.embed = embed
+
+    user = FakeUser()
+    await mod.send_embed_dm(user, "hi", "daily")
+
+    assert isinstance(user.embed, discord.Embed)
+    assert user.embed.image.url == "http://img.png"
+
+
+@pytest.mark.asyncio
+async def test_send_embed_dm_fallback(monkeypatch):
+    from bot import dm_scheduler as mod
+
+    monkeypatch.setattr(mod, "get_dm_image", lambda t: "")
+
+    class FakeUser:
+        def __init__(self):
+            self.embed = None
+
+        async def send(self, *, embed: discord.Embed):
+            self.embed = embed
+
+    user = FakeUser()
+    await mod.send_embed_dm(user, "hi", "daily")
+
+    assert user.embed.image.url == Config.DEFAULT_DM_IMAGE_URL
