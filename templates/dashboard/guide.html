@@ -39,7 +39,7 @@
       <a href="#gear" onclick="showSection('gear')">⚔️ Gear +2 vs Uyanış 5</a>
     </nav>
 
-    <section id="fur-strategy-guide-tr">
+    <section id="gear">
   <h2>🧠 FUR STRATEJİ REHBERİ<br>Gear +2 vs. Uyanış Seviye 5 – Hangisi daha fazla güç kazandırır?</h2>
 
   <p>
@@ -136,3 +136,32 @@
   <p><strong>Hazırsan uygulamaya geç – sıradaki MVP sensin.</strong></p>
 </section>
 
+  </div>
+
+  <script>
+    const users = {
+      'Burak': 'Var',
+      'Marcel': 'Mai'
+    };
+
+    function login() {
+      const user = document.getElementById('user').value.trim();
+      const pass = document.getElementById('pass').value.trim();
+      const error = document.getElementById('loginError');
+
+      if (users[user] === pass) {
+        document.getElementById('loginBox').style.display = 'none';
+        document.getElementById('dashboard').style.display = 'block';
+        showSection('gear');
+      } else {
+        error.style.display = 'block';
+      }
+    }
+
+    function showSection(id) {
+      document.querySelectorAll('section').forEach(s => s.style.display = 'none');
+      document.getElementById(id).style.display = 'block';
+    }
+  </script>
+</body>
+</html>
