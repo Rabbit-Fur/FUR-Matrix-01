@@ -5,7 +5,7 @@ The following table lists all variables accessed in the codebase. Locations refe
 | Variable | Location (examples) | Purpose |
 |----------|--------------------|---------|
 | ADMIN_ROLE_IDS | config.py, agents/access_agent.py | Discord role IDs with admin privileges |
-| BABEL_DEFAULT_LOCALE | fur_lang/i18n.py | Fallback locale when none set |
+| BABEL_DEFAULT_LOCALE | fur_lang/i18n.py | Default locale for Flask-Babel |
 | BASE_URL | config.py, core/universal/setup.py | Public application base URL |
 | CODEX_ENV_GO_VERSION | core/universal/setup.py | Version hint for Go runtime |
 | CODEX_ENV_NODE_VERSION | core/universal/setup.py | Version hint for Node runtime |
