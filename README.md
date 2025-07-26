@@ -16,9 +16,11 @@ cd try
 # 2. Umgebung konfigurieren
 
 cp .env.example .env
-poetry install
+# 3. Pre-commit installieren
 
-# 3. Starten (lokal)
+pre-commit install
+
+# 4. Starten (lokal)
 
 poetry run python main_app.py
 
@@ -95,6 +97,7 @@ Testabdeckung für Agenten, API-Flows, Discord-Kommandos
 Linting: ruff, mypy, black
 
 Pre-Commit Hooks aktiviert (.pre-commit-config.yaml)
+Vor dem ersten Commit: `pre-commit install`
 
 📄 Dokumentation
 
