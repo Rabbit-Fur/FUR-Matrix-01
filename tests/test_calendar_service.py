@@ -3,7 +3,7 @@ import types
 import pytest
 
 import services.calendar_service as mod
-from datetime import datetime, timedelta, timezone, date as date_type
+from datetime import datetime, timedelta, timezone
 
 
 class DummyCollection:
