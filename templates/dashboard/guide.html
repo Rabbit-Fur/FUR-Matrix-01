@@ -1,10 +1,9 @@
-<!-- 🔐 Logingeschütztes FUR Strategy Dashboard -->
 <!DOCTYPE html>
-<html lang="en">
+<html lang="tr">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>FUR Strategy Dashboard</title>
+  <title>FUR Strateji Paneli</title>
   <style>
     body { margin: 0; font-family: sans-serif; background: #121212; color: #fff; }
     header { background: #ff004c; padding: 1rem; text-align: center; }
@@ -24,65 +23,64 @@
 </head>
 <body>
 
-  <!-- 🔐 Login-Formular -->
+  <!-- 🔐 Giriş Formu -->
   <div class="login-box" id="loginBox">
-    <h2>🔐 Login</h2>
-    <input type="text" id="user" placeholder="Benutzername" />
-    <input type="password" id="pass" placeholder="Passwort" />
-    <button onclick="login()">Login</button>
-    <div class="error" id="loginError">❌ Zugriff verweigert</div>
+    <h2>🔐 Giriş</h2>
+    <input type="text" id="user" placeholder="Kullanıcı Adı" />
+    <input type="password" id="pass" placeholder="Şifre" />
+    <button onclick="login()">Giriş Yap</button>
+    <div class="error" id="loginError">❌ Erişim reddedildi</div>
   </div>
 
-  <!-- ✅ Navigation + Inhalte -->
+  <!-- ✅ Panel -->
   <div id="dashboard" style="display:none;">
-    <header><h1>FUR STRATEGY DASHBOARD</h1></header>
+    <header><h1>FUR STRATEJİ PANELİ</h1></header>
     <nav>
       <a href="#gear" onclick="showSection('gear')">⚔️ Gear vs Awakening</a>
-      <a href="#bank" onclick="alert('Coming soon...')">🏦 Bank War</a>
-      <a href="#clash" onclick="alert('Coming soon...')">💥 Alliance Clash</a>
     </nav>
 
     <section id="gear">
-      <h2>🧠 Gear +2 vs. Awakening Level 5 – What brings you more power?</h2>
-      <p>Have you ever wondered why some members suddenly rocket ahead? It’s not luck – it’s V-Coin strategy.</p>
-      <h3>🔺 OPTION A: Awakening Level 5</h3>
-      <table><tr><th>✅ Pros</th><th>❌ Cons</th></tr>
-      <tr><td>+100% ATK/DEF, +25% Potency</td><td>~8,000 V-Coins</td></tr>
-      <tr><td>Awakening Skill</td><td>One Enforcer only</td></tr>
-      <tr><td>High burst/control</td><td>No team support</td></tr></table>
+      <h2>🧠 Gear +2 vs. Awakening Seviye 5 – Hangisi daha güçlü?</h2>
+      <p>Bazı üyelerin neden birden yükseldiğini merak ettin mi? Bu şans değil – bu V-Coin stratejisidir.</p>
 
-      <h3>🛡️ OPTION B: 3x +2 Gear</h3>
-      <table><tr><th>✅ Pros</th><th>❌ Cons</th></tr>
-      <tr><td>+120% stats teamwide</td><td>No Potency</td></tr>
-      <tr><td>Heal, sustain, AoE buffs</td><td>No Awakening skill</td></tr></table>
+      <h3>🔺 SEÇENEK A: Awakening 5</h3>
+      <table><tr><th>✅ Avantajlar</th><th>❌ Dezavantajlar</th></tr>
+      <tr><td>+%100 ATK / DEF, +%25 Potency</td><td>~8.000 V-Coin</td></tr>
+      <tr><td>Güçlü Awakening yeteneği</td><td>Sadece 1 Enforcer için</td></tr>
+      <tr><td>Yüksek hasar / kontrol</td><td>Takıma destek yok</td></tr></table>
 
-      <h3>📊 Direct Comparison</h3>
+      <h3>🛡️ SEÇENEK B: 3x +2 Gear</h3>
+      <table><tr><th>✅ Avantajlar</th><th>❌ Dezavantajlar</th></tr>
+      <tr><td>Takım genelinde +%120 stat</td><td>Potency yok</td></tr>
+      <tr><td>İyileştirme, sustain, AoE buff</td><td>Awakening yeteneği yok</td></tr></table>
+
+      <h3>📊 Karşılaştırma</h3>
       <table>
-        <tr><th>Category</th><th>+2 Gear</th><th>Awakening 5</th></tr>
-        <tr><td>ATK / DEF</td><td>+40%</td><td>+100%</td></tr>
-        <tr><td>HP</td><td>+40%</td><td>–</td></tr>
-        <tr><td>Potency</td><td>–</td><td>+25%</td></tr>
-        <tr><td>Team Buff</td><td>✅</td><td>❌</td></tr>
+        <tr><th>Kategori</th><th>+2 Gear</th><th>Awakening 5</th></tr>
+        <tr><td>ATK / DEF</td><td>+%40</td><td>+%100</td></tr>
+        <tr><td>HP</td><td>+%40</td><td>–</td></tr>
+        <tr><td>Potency</td><td>–</td><td>+%25</td></tr>
+        <tr><td>Takım Bonusu</td><td>✅</td><td>❌</td></tr>
       </table>
 
-      <h3>🛣️ Your Roadmap</h3>
+      <h3>🛣️ Yol Haritası</h3>
       <ul>
-        <li>Phase 1: Gear 1st team</li>
-        <li>Phase 2: Build 2nd team</li>
-        <li>Phase 3: PvP depth team</li>
-        <li>Phase 4: Awakening 1–2 top Enforcers</li>
+        <li>Aşama 1: İlk takımı +2 Gear ile donat</li>
+        <li>Aşama 2: İkinci takımı kur</li>
+        <li>Aşama 3: PvP derinlik takımı oluştur</li>
+        <li>Aşama 4: En iyi Enforcer'ları Awakening yap</li>
       </ul>
 
-      <h3>✅ FUR Recommendation</h3>
+      <h3>✅ FUR Tavsiyesi</h3>
       <ul>
-        <li>&lt; 9 gear sets? ➜ Gear first!</li>
-        <li>Have teams? ➜ Then Awakening</li>
-        <li>F2P/Mid? ➜ Always gear</li>
+        <li>9'dan az Gear setin varsa ➜ Önce Gear</li>
+        <li>Takımın varsa ➜ Awakening uygula</li>
+        <li>F2P isen ➜ Gear en iyi yatırımdır</li>
       </ul>
 
       <div class="cta">
-        Need help? DM <strong>@Matríx</strong> or a <strong>@FUR Leader</strong><br/>
-        🔥 Stay FURious – Stay Ahead!
+        Yardım mı lazım? <strong>@Matríx</strong> ile iletişime geç veya bir <strong>@FUR Lideri</strong>ne yaz!<br/>
+        🔥 FUR ile kal – Önde kal!
       </div>
     </section>
   </div>
