@@ -1,3 +1,43 @@
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>FUR Strateji Paneli</title>
+  <style>
+    body { margin: 0; font-family: sans-serif; background: #121212; color: #fff; }
+    header { background: #ff004c; padding: 1rem; text-align: center; }
+    header h1 { margin: 0; font-size: 2rem; color: #fff; }
+    nav { background: #1e1e1e; padding: 1rem; display: flex; gap: 1rem; justify-content: center; }
+    nav a { color: #ffd700; text-decoration: none; font-weight: bold; }
+    section { max-width: 1000px; margin: auto; padding: 2rem; display: none; }
+    table { width: 100%; border-collapse: collapse; margin: 1rem 0; }
+    th, td { padding: 0.5rem; border: 1px solid #333; }
+    th { background: #333; color: #ff5555; }
+    .cta { margin-top: 2rem; padding: 1rem; background: #ffd700; color: #000; text-align: center; font-weight: bold; }
+    .login-box { max-width: 400px; margin: 10vh auto; background: #1e1e1e; padding: 2rem; border-radius: 10px; box-shadow: 0 0 10px #ff004c; }
+    .login-box input, .login-box button { width: 100%; padding: 0.75rem; margin: 0.5rem 0; border: none; border-radius: 4px; }
+    .login-box button { background: #ff004c; color: white; font-weight: bold; cursor: pointer; }
+    .error { color: red; text-align: center; display: none; }
+  </style>
+</head>
+<body>
+
+  <!-- 🔐 Giriş Formu -->
+  <div class="login-box" id="loginBox">
+    <h2>🔐 Giriş</h2>
+    <input type="text" id="user" placeholder="Kullanıcı Adı" />
+    <input type="password" id="pass" placeholder="Şifre" />
+    <button onclick="login()">Giriş Yap</button>
+    <div class="error" id="loginError">❌ Erişim reddedildi</div>
+  </div>
+
+  <!-- ✅ Panel -->
+  <div id="dashboard" style="display:none;">
+    <header><h1>FUR STRATEJİ PANELİ</h1></header>
+    <nav>
+      <a href="#gear" onclick="showSection('gear')">⚔️ Gear vs Awakening</a>
+    </nav>
+
 <section id="gear">
   <h2>🧠 FUR STRATEJİ REHBERİ: Gear +2 mi, Uyanış 5 mi?</h2>
   <p>
