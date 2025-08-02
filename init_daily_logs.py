@@ -30,7 +30,7 @@ log_entry = {
         {"category": "FUR SYSTEM", "content": "daily_logs wurde erfolgreich initialisiert."},
         {"category": "Codex", "content": "Export zu GitHub folgt im nächsten Schritt."},
     ],
-    "created_by": "Mai Diep Anh Do",
+    "created_by": "Marcel Aka Rabbit",
 }
 
 # Eintrag speichern
