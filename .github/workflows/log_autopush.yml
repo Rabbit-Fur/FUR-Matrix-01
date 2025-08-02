@@ -1,0 +1,38 @@
+name: Auto Push Daily Logs
+
+on:
+  schedule:
+    - cron: "0 5 * * *"  # Täglich 05:00 UTC
+  workflow_dispatch:  # manueller Trigger möglich
+
+jobs:
+  push-daily-log:
+    runs-on: ubuntu-latest
+
+    env:
+      MONGO_URL: ${{ secrets.MONGO_URL }}
+      MONGO_DB: ${{ secrets.MONGO_DB }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: pip install pymongo python-dateutil
+
+      - name: Export Mongo Log to Markdown
+        run: |
+          python .github/scripts/export_log_to_md.py
+
+      - name: Commit changes
+        run: |
+          git config user.name "fur-autobot"
+          git config user.email "matrix@fur.bot"
+          git add logs/
+          git commit -m "chore(log): auto-push daily log $(date +'%Y-%m-%d')" || echo "Nothing to commit"
+          git push
