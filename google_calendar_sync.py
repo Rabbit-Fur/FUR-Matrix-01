@@ -14,13 +14,26 @@ from mongo_service import get_collection
 
 # Logging setup
 LOG_PATH = Path("logs")
-LOG_PATH.mkdir(exist_ok=True)
 logger = logging.getLogger(__name__)
-handler = logging.FileHandler(LOG_PATH / "calendar_sync.log")
-formatter = logging.Formatter("%(asctime)s %(levelname)s %(message)s")
-handler.setFormatter(formatter)
-logger.addHandler(handler)
-logger.setLevel(logging.INFO)
+_logging_initialized = False
+
+
+def init_logging() -> None:
+    """Initialize file handler for this module's logger once."""
+    global _logging_initialized
+    if _logging_initialized:
+        return
+    LOG_PATH.mkdir(exist_ok=True)
+    if not any(isinstance(h, logging.FileHandler) for h in logger.handlers):
+        handler = logging.FileHandler(LOG_PATH / "calendar_sync.log")
+        formatter = logging.Formatter("%(asctime)s %(levelname)s %(message)s")
+        handler.setFormatter(formatter)
+        logger.addHandler(handler)
+    logger.setLevel(logging.INFO)
+    _logging_initialized = True
+
+
+init_logging()
 
 # Token path
 TOKEN_PATH = Path(os.getenv("GOOGLE_CREDENTIALS_FILE", "/data/google_token.json"))
