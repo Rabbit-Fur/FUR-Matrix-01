@@ -17,7 +17,7 @@ def test_google_login_flow(client, tmp_path, monkeypatch):
     cfg_file = tmp_path / "google.json"
     cfg_file.write_text(json.dumps(config))
     client.application.config.update(
-        GOOGLE_CREDENTIALS_FILE=str(cfg_file),
+        GOOGLE_CLIENT_CONFIG_FILE=str(cfg_file),
         GOOGLE_REDIRECT_URI="http://localhost:8080/oauth2callback",
         GOOGLE_CALENDAR_SCOPES=["scope"],
     )
@@ -106,7 +106,7 @@ def test_oauth2callback_invalid_state(client, tmp_path, monkeypatch):
     cfg_file.write_text(
         json.dumps({"web": {"client_id": "id", "client_secret": "s", "token_uri": "https://t"}})
     )
-    client.application.config.update(GOOGLE_CREDENTIALS_FILE=str(cfg_file))
+    client.application.config.update(GOOGLE_CLIENT_CONFIG_FILE=str(cfg_file))
     with client.session_transaction() as sess:
         sess["google_oauth_state"] = "good"
     resp = client.get("/oauth2callback?state=bad")
@@ -126,7 +126,7 @@ def test_oauth2callback_success(client, tmp_path, monkeypatch):
     cfg_file = tmp_path / "google.json"
     cfg_file.write_text(json.dumps(config))
     client.application.config.update(
-        GOOGLE_CREDENTIALS_FILE=str(cfg_file),
+        GOOGLE_CLIENT_CONFIG_FILE=str(cfg_file),
         GOOGLE_REDIRECT_URI="http://localhost:8080/oauth2callback",
         GOOGLE_CALENDAR_SCOPES=["scope"],
     )
@@ -204,7 +204,7 @@ def test_oauth2callback_invalid_state_or_token(client, tmp_path, monkeypatch):
     cfg_file = tmp_path / "google.json"
     cfg_file.write_text(json.dumps(config))
     client.application.config.update(
-        GOOGLE_CREDENTIALS_FILE=str(cfg_file),
+        GOOGLE_CLIENT_CONFIG_FILE=str(cfg_file),
         GOOGLE_REDIRECT_URI="http://localhost:8080/oauth2callback",
         GOOGLE_CALENDAR_SCOPES=["scope"],
     )
