@@ -28,9 +28,10 @@ The following table lists all variables accessed in the codebase. Locations refe
 | FLASK_SECRET | main_app.py, web/__init__.py | Flask secret key if not set via `SECRET_KEY` |
 | GOOGLE_CALENDAR_ID | config.py, google_calendar_sync.py | Google Calendar ID used for sync |
 | GOOGLE_CLIENT_CONFIG | google_oauth_setup.py, web/routes/google_oauth_web.py | Path to Google client config JSON |
+| GOOGLE_CLIENT_CONFIG_FILE | google_auth.py | Path to Google OAuth client config JSON |
 | GOOGLE_CLIENT_ID | config.py | Google OAuth client ID |
 | GOOGLE_CLIENT_SECRET | config.py | Google OAuth client secret |
-| GOOGLE_CREDENTIALS_FILE | config.py, google_calendar_sync.py | OAuth token storage path |
+| GOOGLE_CREDENTIALS_FILE | config.py, google_calendar_sync.py, google_auth.py | OAuth token storage path |
 | GOOGLE_REDIRECT_URI | config.py, web/routes/google_oauth_web.py | OAuth redirect URI |
 | GOOGLE_SYNC_INTERVAL_MINUTES | config.py, utils/google_sync_task.py | Interval for calendar sync |
 | MONGODB_URI | config.py, mongo_service.py | MongoDB connection URI |

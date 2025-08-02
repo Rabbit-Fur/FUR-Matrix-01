@@ -25,7 +25,7 @@ google_auth = Blueprint("google_auth", __name__)
 log = logging.getLogger(__name__)
 
 
-def _cred_path() -> str:
+def _token_path() -> str:
     if has_app_context():
         path = current_app.config.get("GOOGLE_CREDENTIALS_FILE")
         if path:
@@ -33,8 +33,16 @@ def _cred_path() -> str:
     return os.environ.get("GOOGLE_CREDENTIALS_FILE", "/data/google_token.json")
 
 
+def _config_path() -> str:
+    if has_app_context():
+        path = current_app.config.get("GOOGLE_CLIENT_CONFIG_FILE")
+        if path:
+            return path
+    return os.environ.get("GOOGLE_CLIENT_CONFIG_FILE", "/data/google_client_secret.json")
+
+
 def _save_credentials(creds: Credentials) -> None:
-    path = _cred_path()
+    path = _token_path()
     if not path:
         return
     log.info("Saving Google OAuth credentials to %s", path)
@@ -44,7 +52,7 @@ def _save_credentials(creds: Credentials) -> None:
 
 def load_credentials() -> Optional[Credentials]:
     """Load stored credentials and refresh if expired."""
-    path = _cred_path()
+    path = _token_path()
     if not os.path.exists(path):
         log.warning("Token file not found: %s", path)
         return None
@@ -68,11 +76,11 @@ def load_credentials() -> Optional[Credentials]:
 
 @google_auth.route("/auth/google")
 def auth_google():
-    path = _cred_path()
-    if not path or not os.path.exists(path):
+    config_path = _config_path()
+    if not config_path or not os.path.exists(config_path):
         return "Missing Google client config", 500
     log.info("Starting Google OAuth flow")
-    with open(path, "r", encoding="utf-8") as fh:
+    with open(config_path, "r", encoding="utf-8") as fh:
         config = json.load(fh)
     flow = Flow.from_client_config(
         config,
@@ -100,11 +108,11 @@ def oauth2callback():
         return jsonify({"error": "Invalid OAuth state"}), 400
     log.info("Received OAuth callback with state %s", req_state)
 
-    path = _cred_path()
-    if not path or not os.path.exists(path):
+    config_path = _config_path()
+    if not config_path or not os.path.exists(config_path):
         return jsonify({"error": "Missing Google client config"}), 500
 
-    with open(path, "r", encoding="utf-8") as fh:
+    with open(config_path, "r", encoding="utf-8") as fh:
         config = json.load(fh)
 
     flow = Flow.from_client_config(

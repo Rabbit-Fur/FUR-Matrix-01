@@ -26,12 +26,14 @@ os.environ.setdefault(
     "http://localhost:8080/oauth2callback",
 )
 os.environ.setdefault("GOOGLE_CREDENTIALS_FILE", "/tmp/google.json")
+os.environ.setdefault("GOOGLE_CLIENT_CONFIG_FILE", "/tmp/google_client.json")
 os.environ.setdefault(
     "GOOGLE_CALENDAR_SCOPES",
     "https://www.googleapis.com/auth/calendar.readonly",
 )
 os.environ.setdefault("GOOGLE_CLIENT_ID", "gid")
 os.environ.setdefault("GOOGLE_CLIENT_SECRET", "gsecret")
+os.environ.setdefault("BABEL_DEFAULT_LOCALE", "en")
 
 try:
     asyncio.get_event_loop()
