@@ -26,6 +26,12 @@ log = logging.getLogger(__name__)
 
 
 def _cred_path() -> str:
+    """Return the configured path for Google credentials.
+
+    Returns:
+        str: Absolute path to the Google OAuth credentials file.
+    """
+
     if has_app_context():
         path = current_app.config.get("GOOGLE_CREDENTIALS_FILE")
         if path:
@@ -34,6 +40,15 @@ def _cred_path() -> str:
 
 
 def _save_credentials(creds: Credentials) -> None:
+    """Persist Google OAuth credentials to disk.
+
+    Args:
+        creds (Credentials): The OAuth credentials to store.
+
+    Returns:
+        None
+    """
+
     path = _cred_path()
     if not path:
         return
@@ -43,7 +58,12 @@ def _save_credentials(creds: Credentials) -> None:
 
 
 def load_credentials() -> Optional[Credentials]:
-    """Load stored credentials and refresh if expired."""
+    """Load stored credentials and refresh if expired.
+
+    Returns:
+        Optional[Credentials]: Existing and refreshed credentials or ``None``
+        if no credentials are available.
+    """
     path = _cred_path()
     if not os.path.exists(path):
         log.warning("Token file not found: %s", path)
@@ -68,6 +88,13 @@ def load_credentials() -> Optional[Credentials]:
 
 @google_auth.route("/auth/google")
 def auth_google():
+    """Start the OAuth flow for Google authentication.
+
+    Returns:
+        Response: Redirect to the Google OAuth consent screen or an error
+        message.
+    """
+
     path = _cred_path()
     if not path or not os.path.exists(path):
         return "Missing Google client config", 500
@@ -94,6 +121,12 @@ def auth_google():
 
 @google_auth.route("/oauth2callback")
 def oauth2callback():
+    """Handle the OAuth2 callback and store user credentials.
+
+    Returns:
+        Response: JSON response with connection status or error details.
+    """
+
     stored_state = session.pop("google_oauth_state", None)
     req_state = request.args.get("state")
     if not stored_state or stored_state != req_state:
