@@ -26,6 +26,10 @@ log = logging.getLogger(__name__)
 
 
 def _cred_path() -> str:
+    """Return the configured path for Google credentials.
+
+    Returns:
+        str: Absolute path to the Google OAuth credentials file.
     """Return the path of the stored Google OAuth credentials.
 
     The function checks for a path configured in the current Flask
@@ -45,6 +49,13 @@ def _cred_path() -> str:
 
 
 def _save_credentials(creds: Credentials) -> None:
+    """Persist Google OAuth credentials to disk.
+
+    Args:
+        creds (Credentials): The OAuth credentials to store.
+
+    Returns:
+        None
     """Persist OAuth credentials to disk.
 
     Credentials are written to the location returned by :func:`_cred_path`
@@ -66,6 +77,10 @@ def _save_credentials(creds: Credentials) -> None:
 def load_credentials() -> Optional[Credentials]:
     """Load stored credentials and refresh if expired.
 
+    Returns:
+        Optional[Credentials]: Existing and refreshed credentials or ``None``
+        if no credentials are available.
+    """
     This helper reads previously saved credentials from disk and, when
     necessary, refreshes them using the Google OAuth refresh token. The
     refreshed credentials are persisted again for future use.
@@ -99,6 +114,11 @@ def load_credentials() -> Optional[Credentials]:
 
 @google_auth.route("/auth/google")
 def auth_google():
+    """Start the OAuth flow for Google authentication.
+
+    Returns:
+        Response: Redirect to the Google OAuth consent screen or an error
+        message.
     """Initiate the Google OAuth 2.0 authorization flow.
 
     The endpoint creates a new OAuth flow using the application settings
@@ -137,6 +157,10 @@ def auth_google():
 
 @google_auth.route("/oauth2callback")
 def oauth2callback():
+    """Handle the OAuth2 callback and store user credentials.
+
+    Returns:
+        Response: JSON response with connection status or error details.
     """Handle the OAuth callback and exchange the authorization code.
 
     After the user grants access, Google redirects back to this endpoint
