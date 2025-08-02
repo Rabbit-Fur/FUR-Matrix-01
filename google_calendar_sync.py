@@ -11,16 +11,30 @@ from googleapiclient.discovery import build
 
 from config import Config
 from mongo_service import get_collection
+from utils.time_utils import parse_calendar_datetime
 
 # Logging setup
 LOG_PATH = Path("logs")
-LOG_PATH.mkdir(exist_ok=True)
 logger = logging.getLogger(__name__)
-handler = logging.FileHandler(LOG_PATH / "calendar_sync.log")
-formatter = logging.Formatter("%(asctime)s %(levelname)s %(message)s")
-handler.setFormatter(formatter)
-logger.addHandler(handler)
-logger.setLevel(logging.INFO)
+_logging_initialized = False
+
+
+def init_logging() -> None:
+    """Initialize file handler for this module's logger once."""
+    global _logging_initialized
+    if _logging_initialized:
+        return
+    LOG_PATH.mkdir(exist_ok=True)
+    if not any(isinstance(h, logging.FileHandler) for h in logger.handlers):
+        handler = logging.FileHandler(LOG_PATH / "calendar_sync.log")
+        formatter = logging.Formatter("%(asctime)s %(levelname)s %(message)s")
+        handler.setFormatter(formatter)
+        logger.addHandler(handler)
+    logger.setLevel(logging.INFO)
+    _logging_initialized = True
+
+
+init_logging()
 
 # Token path
 TOKEN_PATH = Path(os.getenv("GOOGLE_CREDENTIALS_FILE", "/data/google_token.json"))
@@ -102,26 +116,6 @@ def get_calendar_service():
         return None
 
 
-def _parse_datetime(info: Optional[dict]) -> Optional[datetime]:
-    if not info:
-        return None
-    value = info.get("dateTime") or info.get("date")
-    if not value:
-        return None
-    if value.endswith("Z"):
-        value = value.replace("Z", "+00:00")
-    try:
-        dt = datetime.fromisoformat(value)
-        if dt.tzinfo is None:
-            dt = dt.replace(tzinfo=timezone.utc)
-        else:
-            dt = dt.astimezone(timezone.utc)
-        return dt
-    except ValueError:
-        logger.warning("Could not parse datetime: %s", value)
-        return None
-
-
 def fetch_upcoming_events(
     service: Any | None = None,
     *,
@@ -167,8 +161,8 @@ def fetch_upcoming_events(
 
 
 def _build_doc(event: dict) -> dict:
-    start_dt = _parse_datetime(event.get("start"))
-    end_dt = _parse_datetime(event.get("end"))
+    start_dt = parse_calendar_datetime(event.get("start"))
+    end_dt = parse_calendar_datetime(event.get("end"))
     return {
         "google_id": event.get("id"),
         "title": event.get("summary", "No Title"),
