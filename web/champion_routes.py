@@ -5,7 +5,7 @@ from datetime import datetime
 from flask import Blueprint, jsonify, request
 
 import mongo_service
-from agents.champion_agent import ChampionAgent
+from src.agents.champion_agent import ChampionAgent
 
 champion_blueprint = Blueprint("champion", __name__)
 

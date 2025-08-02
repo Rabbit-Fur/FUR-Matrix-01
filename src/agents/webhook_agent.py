@@ -5,7 +5,7 @@ from typing import Optional
 
 import requests
 
-from config import Config
+from ..config import Config
 from utils.discord_util import send_discord_message
 
 

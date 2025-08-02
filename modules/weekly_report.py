@@ -1,6 +1,6 @@
 from datetime import datetime, timedelta
 
-from agents.webhook_agent import WebhookAgent
+from src.agents.webhook_agent import WebhookAgent
 from config import Config
 from dashboard.weekly_log_generator import generate_markdown_report
 from mongo_service import get_collection

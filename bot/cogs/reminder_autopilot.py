@@ -11,7 +11,7 @@ from discord.ext import commands, tasks
 
 from config import Config, is_production
 from fur_lang.i18n import t
-from google_calendar_sync import fetch_upcoming_events, get_calendar_service
+from src.google_calendar_sync import fetch_upcoming_events, get_calendar_service
 from mongo_service import get_collection
 from utils import poster_generator
 from utils.event_helpers import parse_event_time

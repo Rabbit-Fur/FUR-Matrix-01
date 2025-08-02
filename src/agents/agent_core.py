@@ -10,7 +10,7 @@ from typing import Any, Dict
 
 import openai
 
-from mongo_service import get_collection
+from ..mongo_service import get_collection
 from blueprints.monitoring import GPT_ERROR_COUNT, GPT_RESPONSE_TIME
 
 PROMPT_PATH = (

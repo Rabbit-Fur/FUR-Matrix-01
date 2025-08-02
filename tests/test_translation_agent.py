@@ -1,6 +1,6 @@
 import json
 
-from agents.translation_agent import TranslationAgent
+from src.agents.translation_agent import TranslationAgent
 
 
 def test_sync_adds_missing_keys(tmp_path):

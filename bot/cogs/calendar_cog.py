@@ -9,9 +9,9 @@ from discord.ext import commands, tasks
 
 from config import Config
 from fur_lang.i18n import t
-from google_calendar_sync import create_test_event
+from src.google_calendar_sync import create_test_event
 from mongo_service import get_collection
-from services.calendar_service import CalendarService
+from src.services.calendar_service import CalendarService
 from utils.poster_generator import create_event_image
 from utils.oauth_utils import (
     build_authorization_url,

@@ -2,7 +2,7 @@ import types  # noqa: F401
 
 import pytest  # noqa: F401
 
-import services.langchain_service as mod
+import src.services.langchain_service as mod
 
 
 class DummyEmbeddings:

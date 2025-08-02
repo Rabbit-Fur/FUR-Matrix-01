@@ -31,7 +31,9 @@ def test_scheduler_jobs(monkeypatch):
 
     import importlib
 
-    agent_mod = importlib.reload(__import__("agents.scheduler_agent", fromlist=["SchedulerAgent"]))
+    agent_mod = importlib.reload(
+        __import__("src.agents.scheduler_agent", fromlist=["SchedulerAgent"])
+    )
 
     called = {}
 
@@ -71,7 +73,9 @@ def test_monthly_champion_job(monkeypatch):
 
     import importlib
 
-    agent_mod = importlib.reload(__import__("agents.scheduler_agent", fromlist=["SchedulerAgent"]))
+    agent_mod = importlib.reload(
+        __import__("src.agents.scheduler_agent", fromlist=["SchedulerAgent"])
+    )
 
     fake_coll = types.SimpleNamespace()
     fake_coll.find = lambda: fake_coll
@@ -108,7 +112,9 @@ def test_google_sync_job_uses_app_context(monkeypatch):
 
     import importlib
 
-    agent_mod = importlib.reload(__import__("agents.scheduler_agent", fromlist=["SchedulerAgent"]))
+    agent_mod = importlib.reload(
+        __import__("src.agents.scheduler_agent", fromlist=["SchedulerAgent"])
+    )
 
     def fake_start(interval_minutes=None, *a, **k):
         called["minutes"] = interval_minutes

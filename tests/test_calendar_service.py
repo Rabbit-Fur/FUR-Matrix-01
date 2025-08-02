@@ -2,7 +2,7 @@ import types
 
 import pytest
 
-import services.calendar_service as mod
+import src.services.calendar_service as mod
 from datetime import datetime, timedelta, timezone
 
 

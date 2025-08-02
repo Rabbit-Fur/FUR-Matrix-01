@@ -5,7 +5,7 @@ from pathlib import Path
 
 from PIL import Image, ImageDraw, ImageFont
 
-from config import Config
+from ..config import Config
 
 
 class PosterAgent:

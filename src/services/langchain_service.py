@@ -2,7 +2,7 @@ import os
 from langchain.embeddings.base import Embeddings
 from langchain_mongodb import MongoDBAtlasVectorSearch, MongoDBChatMessageHistory
 
-from config import Config
+from ..config import Config
 
 
 class LangchainService:

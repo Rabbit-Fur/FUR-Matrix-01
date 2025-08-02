@@ -5,7 +5,7 @@ from datetime import datetime
 from flask import Blueprint, jsonify, request
 
 import mongo_service
-from agents.reminder_agent import ReminderAgent
+from src.agents.reminder_agent import ReminderAgent
 
 reminder_blueprint = Blueprint("reminder", __name__)
 

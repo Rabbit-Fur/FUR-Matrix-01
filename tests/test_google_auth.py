@@ -2,7 +2,7 @@ import json
 import logging
 import os
 
-import google_auth as mod
+import src.google_auth as mod
 
 
 def test_google_login_flow(client, tmp_path, monkeypatch):

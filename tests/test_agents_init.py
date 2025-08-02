@@ -2,7 +2,7 @@
 
 # Tests for agent initialization
 
-from agents.agenten_loader import init_agents
+from src.agents.agenten_loader import init_agents
 
 
 class DummyDB(dict):

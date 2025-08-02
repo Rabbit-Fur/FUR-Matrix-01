@@ -4,7 +4,7 @@ from pathlib import Path
 
 from flask import Blueprint, jsonify, request, send_from_directory
 
-from agents.poster_agent import PosterAgent
+from src.agents.poster_agent import PosterAgent
 from config import Config
 
 poster_blueprint = Blueprint("poster", __name__)

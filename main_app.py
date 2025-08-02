@@ -14,7 +14,7 @@ import threading
 from dotenv import load_dotenv
 from flask import Flask, Response, session
 from werkzeug.middleware.proxy_fix import ProxyFix
-from google_auth import google_auth
+from src.google_auth import google_auth
 import os
 
 # === Flask App erstellen ===
@@ -33,8 +33,8 @@ app.config["GOOGLE_CALENDAR_SCOPES"] = [
 app.register_blueprint(google_auth, url_prefix="/auth")
 
 # ✅ Korrekt: Agenten-Loader importieren
-from agents.agenten_loader import init_agents  # noqa: E402
-from agents.scheduler_agent import SchedulerAgent  # noqa: E402
+from src.agents.agenten_loader import init_agents  # noqa: E402
+from src.agents.scheduler_agent import SchedulerAgent  # noqa: E402
 from config import Config  # noqa: E402
 
 # 🌍 Module

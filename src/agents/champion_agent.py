@@ -4,7 +4,7 @@ from datetime import datetime
 
 from .poster_agent import PosterAgent
 from .webhook_agent import WebhookAgent
-from config import Config
+from ..config import Config
 
 
 class ChampionAgent:

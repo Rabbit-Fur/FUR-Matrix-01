@@ -1,4 +1,4 @@
-from agents.webhook_agent import WebhookAgent
+from src.agents.webhook_agent import WebhookAgent
 from config import Config
 from utils.champion_data import generate_champion_poster
 

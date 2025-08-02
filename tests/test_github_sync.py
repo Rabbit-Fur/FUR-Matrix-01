@@ -1,7 +1,7 @@
 import importlib.util
 from pathlib import Path
 
-spec = importlib.util.spec_from_file_location("github_sync", Path("services/github_sync.py"))
+spec = importlib.util.spec_from_file_location("github_sync", Path("src/services/github_sync.py"))
 mod = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(mod)
 

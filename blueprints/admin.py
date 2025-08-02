@@ -17,7 +17,7 @@ from flask import (
 )
 from werkzeug.utils import secure_filename
 
-from agents.webhook_agent import WebhookAgent
+from src.agents.webhook_agent import WebhookAgent
 from config import Config
 from fur_lang.i18n import t
 from mongo_service import get_collection

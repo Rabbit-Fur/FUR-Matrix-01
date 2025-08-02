@@ -9,8 +9,8 @@ from google.auth.transport.requests import Request
 from google.oauth2.credentials import Credentials
 from googleapiclient.discovery import build
 
-from config import Config
-from mongo_service import get_collection
+from .config import Config
+from .mongo_service import get_collection
 
 # Logging setup
 LOG_PATH = Path("logs")
