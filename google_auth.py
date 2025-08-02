@@ -25,21 +25,16 @@ google_auth = Blueprint("google_auth", __name__)
 log = logging.getLogger(__name__)
 
 
-def _token_path() -> str:
 def _cred_path() -> str:
-    """Return the configured path for Google credentials.
+    """Return the configured path for Google OAuth credentials.
+
+    The value is read from the Flask configuration variable
+    ``GOOGLE_CREDENTIALS_FILE`` and falls back to the environment variable of
+    the same name. When neither is provided, ``/data/google_token.json`` is
+    used.
 
     Returns:
-        str: Absolute path to the Google OAuth credentials file.
-    """Return the path of the stored Google OAuth credentials.
-
-    The function checks for a path configured in the current Flask
-    application context; if none is available, it falls back to the
-    ``GOOGLE_CREDENTIALS_FILE`` environment variable. A default path is
-    used when neither source provides a value.
-
-    Returns:
-        str: Absolute file path where Google credentials are stored.
+        str: Absolute file path where OAuth credentials are stored.
     """
 
     if has_app_context():
@@ -47,6 +42,24 @@ def _cred_path() -> str:
         if path:
             return path
     return os.environ.get("GOOGLE_CREDENTIALS_FILE", "/data/google_token.json")
+
+
+def _token_path() -> str:
+    """Return the path used to persist OAuth tokens.
+
+    The function prefers the ``GOOGLE_TOKEN_STORAGE_PATH`` configuration or
+    environment variable. If it is not set, the path from :func:`_cred_path`
+    is used as a fallback for backwards compatibility.
+
+    Returns:
+        str: Absolute file path for the OAuth token store.
+    """
+
+    if has_app_context():
+        path = current_app.config.get("GOOGLE_TOKEN_STORAGE_PATH")
+        if path:
+            return path
+    return os.environ.get("GOOGLE_TOKEN_STORAGE_PATH", _cred_path())
 
 
 def _config_path() -> str:
@@ -58,25 +71,13 @@ def _config_path() -> str:
 
 
 def _save_credentials(creds: Credentials) -> None:
-    path = _token_path()
     """Persist Google OAuth credentials to disk.
 
     Args:
-        creds (Credentials): The OAuth credentials to store.
-
-    Returns:
-        None
-    """Persist OAuth credentials to disk.
-
-    Credentials are written to the location returned by :func:`_cred_path`
-    so that subsequent requests can authenticate with Google services
-    without repeating the OAuth flow.
-
-    Args:
-        creds (Credentials): Google OAuth2 credentials to serialize.
+        creds (Credentials): OAuth2 credentials to store.
     """
 
-    path = _cred_path()
+    path = _token_path()
     if not path:
         return
     log.info("Saving Google OAuth credentials to %s", path)
@@ -85,24 +86,14 @@ def _save_credentials(creds: Credentials) -> None:
 
 
 def load_credentials() -> Optional[Credentials]:
-    """Load stored credentials and refresh if expired."""
-    path = _token_path()
     """Load stored credentials and refresh if expired.
 
     Returns:
         Optional[Credentials]: Existing and refreshed credentials or ``None``
         if no credentials are available.
     """
-    This helper reads previously saved credentials from disk and, when
-    necessary, refreshes them using the Google OAuth refresh token. The
-    refreshed credentials are persisted again for future use.
 
-    Returns:
-        Optional[Credentials]: Valid Google credentials or ``None`` if the
-        token file is missing or invalid.
-    """
-
-    path = _cred_path()
+    path = _token_path()
     if not os.path.exists(path):
         log.warning("Token file not found: %s", path)
         return None
@@ -126,27 +117,15 @@ def load_credentials() -> Optional[Credentials]:
 
 @google_auth.route("/auth/google")
 def auth_google():
-    config_path = _config_path()
-    if not config_path or not os.path.exists(config_path):
     """Start the OAuth flow for Google authentication.
 
     Returns:
         Response: Redirect to the Google OAuth consent screen or an error
         message.
-    """Initiate the Google OAuth 2.0 authorization flow.
-
-    The endpoint creates a new OAuth flow using the application settings
-    and redirects the user to Google's consent screen. The resulting state
-    is stored in the Flask session for later verification during the
-    callback.
-
-    Returns:
-        Response: A Flask redirect response pointing to Google's OAuth
-        authorization URL.
     """
 
-    path = _cred_path()
-    if not path or not os.path.exists(path):
+    config_path = _config_path()
+    if not config_path or not os.path.exists(config_path):
         return "Missing Google client config", 500
     log.info("Starting Google OAuth flow")
     with open(config_path, "r", encoding="utf-8") as fh:
@@ -171,10 +150,6 @@ def auth_google():
 
 @google_auth.route("/oauth2callback")
 def oauth2callback():
-    """Handle the OAuth2 callback and store user credentials.
-
-    Returns:
-        Response: JSON response with connection status or error details.
     """Handle the OAuth callback and exchange the authorization code.
 
     After the user grants access, Google redirects back to this endpoint
