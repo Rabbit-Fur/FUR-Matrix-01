@@ -46,6 +46,13 @@ def _get_token_collection():
 
 
 def _load_sync_token() -> str | None:
+    """Fetch the previously stored sync token.
+
+    Returns
+    -------
+    str | None
+        The last sync token from MongoDB or ``None`` when not available.
+    """
     col = _get_token_collection()
     if not hasattr(col, "find_one"):
         return None
@@ -54,6 +61,18 @@ def _load_sync_token() -> str | None:
 
 
 def _store_sync_token(token: str) -> None:
+    """Persist a sync token for later incremental synchronization.
+
+    Parameters
+    ----------
+    token:
+        The sync token returned by the Google Calendar API.
+
+    Returns
+    -------
+    None
+        This function stores the token and does not return a value.
+    """
     col = _get_token_collection()
     if hasattr(col, "update_one"):
         col.update_one({"_id": "google"}, {"$set": {"token": token}}, upsert=True)
@@ -161,6 +180,18 @@ def fetch_upcoming_events(
 
 
 def _build_doc(event: dict) -> dict:
+    """Build a MongoDB document representation for a calendar event.
+
+    Parameters
+    ----------
+    event:
+        Raw event data from the Google Calendar API.
+
+    Returns
+    -------
+    dict
+        Document compatible with the ``calendar_events`` collection.
+    """
     start_dt = parse_calendar_datetime(event.get("start"))
     end_dt = parse_calendar_datetime(event.get("end"))
     return {

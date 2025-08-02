@@ -7,20 +7,20 @@ import pytest
 import google_calendar_sync as mod
 
 
-def test_parse_datetime_valid_datetime():
-    dt = mod._parse_datetime({"dateTime": "2024-05-10T12:30:00Z"})
+def test_parse_calendar_datetime_valid_datetime():
+    dt = mod.parse_calendar_datetime({"dateTime": "2024-05-10T12:30:00Z"})
     assert dt == datetime(2024, 5, 10, 12, 30, tzinfo=timezone.utc)
 
 
-def test_parse_datetime_valid_date():
-    dt = mod._parse_datetime({"date": "2024-05-10"})
+def test_parse_calendar_datetime_valid_date():
+    dt = mod.parse_calendar_datetime({"date": "2024-05-10"})
     assert dt == datetime(2024, 5, 10, 0, 0, tzinfo=timezone.utc)
 
 
 @pytest.mark.parametrize("info", [None, {}, {"dateTime": "invalid"}])
-def test_parse_datetime_invalid(info, caplog):
-    with caplog.at_level(logging.WARNING):
-        assert mod._parse_datetime(info) is None
+def test_parse_calendar_datetime_invalid(info, caplog):
+    with caplog.at_level(logging.WARNING, logger="utils.time_utils"):
+        assert mod.parse_calendar_datetime(info) is None
 
 
 def test_fetch_upcoming_events(monkeypatch):
