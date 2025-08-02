@@ -54,10 +54,24 @@ logging.basicConfig(
 
 
 def log_error(error_type, error):
+    """Log an error with its type and exception details.
+
+    Args:
+        error_type: A short string describing the error category.
+        error: The exception instance to log.
+
+    Returns:
+        None
+    """
     logging.error(f"{error_type}: {str(error)}", exc_info=True)
 
 
 def check_github_repo():
+    """Fetch basic GitHub repository information and log it.
+
+    Returns:
+        None
+    """
     try:
         repo_data = fetch_repo_info()
         logging.info(f"✅ GitHub Repo geladen: {repo_data['full_name']}")
@@ -67,6 +81,11 @@ def check_github_repo():
 
 
 def start_discord_bot():
+    """Start the Discord bot using an asyncio event loop.
+
+    Returns:
+        None
+    """
     try:
         logging.info("🤖 Starte Discord-Bot...")
         from bot.bot_main import run_bot
@@ -77,10 +96,24 @@ def start_discord_bot():
 
 
 def cleanup():
+    """Perform application cleanup when shutting down.
+
+    Returns:
+        None
+    """
     logging.info("🔻 Anwendung wird beendet.")
 
 
 def signal_handler(sig, frame):
+    """Handle interrupt signals and exit gracefully.
+
+    Args:
+        sig: The received signal number.
+        frame: The current stack frame when the signal was received.
+
+    Returns:
+        None
+    """
     logging.info("🛑 SIGINT empfangen. Beende Anwendung...")
     cleanup()
     sys.exit(0)
@@ -125,4 +158,9 @@ if __name__ == "__main__":
 # ➕ Healthcheck für Railway/CI/Monitoring
 @app.route("/health")
 def healthcheck():
+    """Return an HTTP 200 response to indicate application health.
+
+    Returns:
+        flask.Response: A simple "ok" response with status code 200.
+    """
     return Response("ok", status=200)
