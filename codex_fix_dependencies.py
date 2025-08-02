@@ -5,7 +5,7 @@ REQ_PATH = Path("requirements.txt")
 RESOLVED_PATH = Path("requirements_resolved.txt")
 ENV_EXAMPLE_PATH = Path(".env.example")
 ENV_PATH = Path(".env")
-LOG_PATH = Path("Fehlende_ENV_LOG.md")
+LOG_PATH = Path("docs/Fehlende_ENV_LOG.md")
 
 
 PACKAGES_TO_FIX = {
