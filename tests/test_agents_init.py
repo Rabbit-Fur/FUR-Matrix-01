@@ -1,6 +1,4 @@
-# tests/test_agents_init.py
-
-# Tests for agent initialization
+"""Tests for agent initialization."""
 
 from agents.agenten_loader import init_agents
 
