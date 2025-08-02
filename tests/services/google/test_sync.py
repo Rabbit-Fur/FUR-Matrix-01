@@ -1,7 +1,7 @@
 from datetime import timezone
 
 import logging
-import google_calendar_sync as mod
+import services.google.calendar_sync as mod
 
 
 class DummyCollection:

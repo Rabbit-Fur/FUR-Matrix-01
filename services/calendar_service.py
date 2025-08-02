@@ -15,7 +15,7 @@ from pymongo.errors import ConfigurationError
 
 from config import Config
 from crud import event_crud
-from google_auth import load_credentials
+from services.google.auth import load_credentials
 from schemas.event_schema import EventModel
 from utils.time_utils import parse_calendar_datetime
 

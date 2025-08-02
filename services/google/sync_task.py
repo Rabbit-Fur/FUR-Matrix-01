@@ -9,7 +9,7 @@ import os
 from discord.ext import tasks
 from flask import current_app
 
-from google_calendar_sync import sync_to_mongodb
+from .calendar_sync import sync_to_mongodb
 from web import create_app
 
 log = logging.getLogger(__name__)

@@ -4,7 +4,7 @@ from unittest.mock import ANY, MagicMock
 
 import pytest
 
-import google_calendar_sync as mod
+import services.google.calendar_sync as mod
 
 
 def test_parse_calendar_datetime_valid_datetime():
