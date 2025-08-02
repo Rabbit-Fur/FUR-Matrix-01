@@ -12,25 +12,8 @@ import sys
 import threading
 
 from dotenv import load_dotenv
-from flask import Flask, Response, session
+from flask import Response, session
 from werkzeug.middleware.proxy_fix import ProxyFix
-from google_auth import google_auth
-import os
-
-# === Flask App erstellen ===
-# Initialize the Flask app instance
-app = Flask(__name__)
-app.secret_key = os.environ.get("FLASK_SECRET", "dev-key")
-
-app.config["GOOGLE_CLIENT_CONFIG"] = os.environ.get("GOOGLE_CLIENT_CONFIG")
-app.config["GOOGLE_REDIRECT_URI"] = os.environ.get("GOOGLE_REDIRECT_URI")
-app.config["GOOGLE_CALENDAR_SCOPES"] = [
-    "https://www.googleapis.com/auth/calendar",
-    "https://www.googleapis.com/auth/calendar.readonly",
-]
-
-# Register blueprints for OAuth
-app.register_blueprint(google_auth, url_prefix="/auth")
 
 # ✅ Korrekt: Agenten-Loader importieren
 from agents.agenten_loader import init_agents  # noqa: E402
