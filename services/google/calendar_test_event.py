@@ -17,9 +17,7 @@ TIME_ZONE = "Europe/Berlin"
 
 def load_token() -> Credentials:
     if not TOKEN_PATH.exists():
-        raise FileNotFoundError(
-            f"Missing token file at {TOKEN_PATH}. Run google_oauth_setup.py first."
-        )
+        raise FileNotFoundError(f"Missing token file at {TOKEN_PATH}. Run oauth_setup.py first.")
     creds = Credentials.from_authorized_user_file(TOKEN_PATH, SCOPES)
     if not creds.valid:
         if creds.expired and creds.refresh_token:

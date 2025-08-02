@@ -7,7 +7,7 @@ def test_google_sync_task_runs(monkeypatch):
     sys.modules.setdefault("schedule", types.ModuleType("schedule"))
 
     import agents.scheduler_agent as agent_mod
-    import utils.google_sync_task as task_mod
+    import services.google.sync_task as task_mod
 
     called = {"count": 0}
 
@@ -30,7 +30,7 @@ def test_google_sync_task_runs(monkeypatch):
 def test_start_google_sync_pushes_app_context(monkeypatch):
     sys.modules.setdefault("schedule", types.ModuleType("schedule"))
 
-    import utils.google_sync_task as task_mod
+    import services.google.sync_task as task_mod
 
     called = {}
 

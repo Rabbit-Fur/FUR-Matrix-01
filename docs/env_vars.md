@@ -30,18 +30,18 @@ The following table lists all variables accessed in the codebase. Locations refe
 | GITHUB_TOKEN | README.md | Token for GitHub actions |
 | GOOGLE_AUTH_PROVIDER_CERT_URL | .env.example | Certificate URL for Google OAuth validation |
 | GOOGLE_AUTH_URI | .env.example | OAuth auth endpoint |
-| GOOGLE_CALENDAR_ID | config.py, google_calendar_sync.py | Google Calendar ID used for sync |
+| GOOGLE_CALENDAR_ID | config.py, services/google/calendar_sync.py | Google Calendar ID used for sync |
 | GOOGLE_CALENDAR_SCOPES | .env.example | Scopes for calendar write access |
-| GOOGLE_CLIENT_CONFIG | google_oauth_setup.py, web/routes/google_oauth_web.py | Path to Google client config JSON |
-| GOOGLE_CLIENT_CONFIG_FILE | google_auth.py | Path to Google OAuth client config JSON |
+| GOOGLE_CLIENT_CONFIG | services/google/oauth_setup.py, web/routes/google_oauth_web.py | Path to Google client config JSON |
+| GOOGLE_CLIENT_CONFIG_FILE | services/google/auth.py | Path to Google OAuth client config JSON |
 | GOOGLE_CLIENT_ID | config.py | Google OAuth client ID |
 | GOOGLE_CLIENT_SECRET | config.py | Google OAuth client secret |
-| GOOGLE_CREDENTIALS_FILE | config.py, google_calendar_sync.py, google_auth.py | OAuth token storage path |
-| GOOGLE_CREDENTIALS_FILE | config.py, google_calendar_sync.py | Service account credentials file |
+| GOOGLE_CREDENTIALS_FILE | config.py, services/google/calendar_sync.py, services/google/auth.py | OAuth token storage path |
+| GOOGLE_CREDENTIALS_FILE | config.py, services/google/calendar_sync.py | Service account credentials file |
 | GOOGLE_PROJECT_ID | .env.example | Google Cloud project ID |
 | GOOGLE_REDIRECT_URI | config.py, web/routes/google_oauth_web.py | OAuth redirect URI |
 | GOOGLE_SCOPES | .env.example | Scopes for read-only calendar access |
-| GOOGLE_SYNC_INTERVAL_MINUTES | config.py, utils/google_sync_task.py | Interval for calendar sync |
+| GOOGLE_SYNC_INTERVAL_MINUTES | config.py, services/google/sync_task.py | Interval for calendar sync |
 | GOOGLE_TOKEN_STORAGE_PATH | .env.example | Path to stored OAuth tokens |
 | GOOGLE_TOKEN_URI | .env.example | OAuth token endpoint |
 | HoF_CHANNEL_ID | .env.example | Channel for Hall of Fame posts |

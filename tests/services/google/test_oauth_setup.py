@@ -2,7 +2,7 @@ import json
 
 import pytest
 
-import google_oauth_setup as mod
+import services.google.oauth_setup as mod
 
 
 def test_main_writes_token_file(tmp_path, monkeypatch):

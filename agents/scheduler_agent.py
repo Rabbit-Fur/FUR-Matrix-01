@@ -11,7 +11,7 @@ import schedule
 from champion.autopilot import run_champion_autopilot
 from mongo_service import get_collection
 from utils import champion_data
-from utils.google_sync_task import start_google_sync
+from services.google.sync_task import start_google_sync
 
 
 class SchedulerAgent:
