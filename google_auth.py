@@ -63,6 +63,17 @@ def _token_path() -> str:
 
 
 def _config_path() -> str:
+    """Return path to the Google OAuth client configuration file.
+
+    The value is resolved from the Flask configuration key
+    ``GOOGLE_CLIENT_CONFIG_FILE`` and then from the corresponding environment
+    variable. If neither is provided, ``/data/google_client_secret.json`` is
+    used as a default.
+
+    Returns:
+        str: Absolute path to the client configuration file.
+    """
+
     if has_app_context():
         path = current_app.config.get("GOOGLE_CLIENT_CONFIG_FILE")
         if path:
