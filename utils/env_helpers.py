@@ -4,8 +4,9 @@ import os
 
 
 def get_env_str(var_name: str, required: bool = True, default: str | None = None) -> str | None:
-    """
-    Liest eine Umgebungsvariable als String aus.
+    """Liest eine Umgebungsvariable als String aus.
+
+    Wirft `RuntimeError`, wenn der Wert fehlt und `required=True` ist.
     """
     value = os.environ.get(var_name, default)
     if required and not value:
@@ -14,8 +15,9 @@ def get_env_str(var_name: str, required: bool = True, default: str | None = None
 
 
 def get_env_int(var_name: str, required: bool = True, default: int | None = None) -> int | None:
-    """
-    Liest eine Umgebungsvariable als Integer aus.
+    """Liest eine Umgebungsvariable als Integer aus.
+
+    Gibt `default` zurück oder wirft `RuntimeError` bei ungültiger Ganzzahl.
     """
     value = os.environ.get(var_name)
     if value is None:
@@ -29,8 +31,9 @@ def get_env_int(var_name: str, required: bool = True, default: int | None = None
 
 
 def get_env_bool(var_name: str, required: bool = True, default: bool | None = None) -> bool | None:
-    """
-    Liest eine Umgebungsvariable als Boolean aus ('true', '1', 'yes', 'on').
+    """Liest eine Umgebungsvariable als Boolean aus.
+
+    Akzeptiert "true", "1", "yes" und "on" als wahr.
     """
     value = os.environ.get(var_name)
     if value is None:
@@ -43,8 +46,9 @@ def get_env_bool(var_name: str, required: bool = True, default: bool | None = No
 def get_env_float(
     var_name: str, required: bool = True, default: float | None = None
 ) -> float | None:
-    """
-    Liest eine Umgebungsvariable als Float aus.
+    """Liest eine Umgebungsvariable als Float aus.
+
+    Gibt `default` zurück oder wirft `RuntimeError` bei ungültiger Zahl.
     """
     value = os.environ.get(var_name)
     if value is None:
