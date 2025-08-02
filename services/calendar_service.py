@@ -231,6 +231,7 @@ class DMReminderScheduler:
     def __init__(self, bot: Any, service: CalendarService) -> None:
         self.bot = bot
         self.service = service
+        self._sent: set[tuple[Any, Any]] = set()
         self.reminder_loop.start()
 
     def cog_unload(self) -> None:  # pragma: no cover - lifecycle
@@ -253,14 +254,33 @@ class DMReminderScheduler:
                 {"event_id": ev.get("_id")}
             )
             for part in await participants.to_list(length=None):
+                key = (ev.get("_id"), part.get("user_id"))
+                if key in self._sent:
+                    continue
                 try:
                     user = await self.bot.fetch_user(int(part["user_id"]))
+                except Exception:  # pragma: no cover - network failures
+                    log.warning(
+                        "Failed to fetch user %s for event %s",
+                        part.get("user_id"),
+                        ev.get("title"),
+                        exc_info=True,
+                    )
+                    continue
+                try:
                     await user.send(
                         f"Reminder: {ev['title']} at {ev['event_time'].strftime('%H:%M UTC')}"
                     )
-                    log.info("Sent reminder DM to %s for event %s", user.id, ev["title"])
                 except Exception:  # pragma: no cover - network failures
-                    log.warning("Failed to send reminder", exc_info=True)
+                    log.warning(
+                        "Failed to send reminder to %s for event %s",
+                        part.get("user_id"),
+                        ev.get("title"),
+                        exc_info=True,
+                    )
+                    continue
+                self._sent.add(key)
+                log.info("Sent reminder DM to %s for event %s", user.id, ev["title"])
 
 
 __all__ = ["CalendarService", "DMReminderScheduler", "SyncTokenExpired"]
