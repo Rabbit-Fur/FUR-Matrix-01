@@ -13,7 +13,7 @@ from mongo_service import get_collection
 
 log = logging.getLogger(__name__)
 
-INTRO_JSON = Path("AI_Intro-Image.json")
+INTRO_JSON = Path("docs/AI_Intro-Image.json")
 INTRO_IMAGE = Path("static/img/SORRY.png")
 
 
