@@ -63,3 +63,8 @@ autoflake>=1.4
 gunicorn
 mongomock
 google-auth
+pdfminer.six==20221105
+python-docx
+pytesseract
+pdf2image
+beautifulsoup4
