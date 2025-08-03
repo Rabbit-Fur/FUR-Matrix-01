@@ -18,7 +18,9 @@ SCOPES = ["https://www.googleapis.com/auth/calendar"]
 _client_config = os.getenv("GOOGLE_CLIENT_CONFIG")
 CLIENT_SECRET_FILE = Path(_client_config) if _client_config else None
 TOKEN_PATH = Path(os.getenv("GOOGLE_CREDENTIALS_FILE", "/data/google_token.json"))
-REDIRECT_URI = os.getenv("GOOGLE_REDIRECT_URI", "https://fur-martix.up.railway.app/oauth2callback")
+REDIRECT_URI = os.getenv("GOOGLE_REDIRECT_URI")
+if not REDIRECT_URI:
+    raise RuntimeError("GOOGLE_REDIRECT_URI not configured")
 
 # Logger setup
 log = logging.getLogger(__name__)

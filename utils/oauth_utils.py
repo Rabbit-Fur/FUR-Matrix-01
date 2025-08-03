@@ -74,18 +74,23 @@ def exchange_code_for_token(
     code: str,
     code_verifier: str,
     client_id: str,
+    client_secret: str,
     redirect_uri: str,
 ) -> dict:
     """Exchange authorization ``code`` for OAuth tokens."""
     data = {
         "grant_type": "authorization_code",
         "code": code,
-        "code_verifier": code_verifier,
         "client_id": client_id,
+        "client_secret": client_secret,
         "redirect_uri": redirect_uri,
+        "code_verifier": code_verifier,
     }
     response = requests.post(_GOOGLE_TOKEN_URL, data=data, timeout=10)
-    response.raise_for_status()
+    print(response.status_code)
+    print(response.text)
+    if response.status_code != 200:
+        raise RuntimeError(f"Token exchange failed: {response.text}")
     return response.json()
 
 
