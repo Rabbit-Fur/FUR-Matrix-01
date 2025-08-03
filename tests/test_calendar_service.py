@@ -3,6 +3,7 @@ import types
 import pytest
 
 import services.calendar_service as mod
+from datetime import datetime, timedelta, timezone
 
 
 class DummyCollection:
@@ -117,3 +118,32 @@ async def test_sync_uses_stored_token(monkeypatch):
     assert captured.get("syncToken") == "old"
     token = await tokens_col.find_one({"_id": "google"})
     assert token["token"] == "new"
+
+
+@pytest.mark.asyncio
+async def test_get_next_event_and_events_for_date(monkeypatch):
+    events_col = DummyCollection()
+    tokens_col = DummyCollection()
+    service = mod.CalendarService(events_collection=events_col, tokens_collection=tokens_col)
+
+    async def fake_get_range(start, end, *, col=None):
+        col = col or events_col
+        result = [d for d in col.docs if start <= d["event_time"] < end]
+        result.sort(key=lambda d: d["event_time"])
+        return result
+
+    monkeypatch.setattr(mod.event_crud, "get_events_in_range", fake_get_range)
+
+    now = datetime.utcnow().replace(tzinfo=timezone.utc)
+    events_col.docs.extend(
+        [
+            {"event_time": now + timedelta(hours=1), "title": "A"},
+            {"event_time": now + timedelta(days=1), "title": "B"},
+        ]
+    )
+
+    ev = await service.get_next_event()
+    assert ev and ev["title"] == "A"
+
+    events = await service.get_events_for_date((now + timedelta(hours=1)).date())
+    assert len(events) == 1 and events[0]["title"] == "A"

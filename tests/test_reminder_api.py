@@ -7,7 +7,7 @@ from bson import ObjectId
 
 def login_r4(client):
     with client.session_transaction() as sess:
-        sess["user"] = {"role_level": "ADMIN"}
+        sess["discord_user"] = {"role_level": "ADMIN"}
         sess["discord_roles"] = ["ADMIN"]
 
 
@@ -37,7 +37,7 @@ def test_deactivate_valid(client, monkeypatch):
     with client.application.test_request_context("/"):
         import flask
 
-        flask.session["user"] = {"role_level": "ADMIN"}
+        flask.session["discord_user"] = {"role_level": "ADMIN"}
         flask.session["discord_roles"] = ["ADMIN"]
         resp = mod.deactivate_reminder(reminder_id)
     assert resp.is_json
@@ -54,7 +54,7 @@ def test_deactivate_invalid_id(client, monkeypatch):
     with client.application.test_request_context("/"):
         import flask
 
-        flask.session["user"] = {"role_level": "ADMIN"}
+        flask.session["discord_user"] = {"role_level": "ADMIN"}
         flask.session["discord_roles"] = ["ADMIN"]
         resp = mod.deactivate_reminder("foo")
 

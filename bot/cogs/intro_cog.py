@@ -13,7 +13,7 @@ from mongo_service import get_collection
 
 log = logging.getLogger(__name__)
 
-INTRO_JSON = Path("AI_Intro-Image.json")
+INTRO_JSON = Path("docs/AI_Intro-Image.json")
 INTRO_IMAGE = Path("static/img/SORRY.png")
 
 
@@ -44,13 +44,12 @@ class IntroCog(commands.Cog):
 
     async def _send_intro(self) -> None:
         embed = self._load_embed()
-        if not embed or not INTRO_IMAGE.is_file():
+        if not embed:
             return
-        file_path = INTRO_IMAGE
         for uid in get_dm_users():
             try:
                 user = await self.bot.fetch_user(uid)
-                await user.send(embed=embed, file=discord.File(file_path))
+                await user.send(embed=embed)
             except Exception as exc:  # noqa: BLE001
                 log.error("intro DM to %s failed: %s", uid, exc)
 

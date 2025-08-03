@@ -17,6 +17,11 @@ def post_champion_poster(username: str = "Champion") -> bool:
         ``True`` if posting succeeded, otherwise ``False``.
     """
     poster_path = generate_champion_poster(username)
+    poster_url = (
+        poster_path
+        if poster_path.startswith("http")
+        else Config.BASE_URL.rstrip("/") + "/" + poster_path.lstrip("/")
+    )
     webhook = WebhookAgent(Config.DISCORD_WEBHOOK_URL)
     content = f"\U0001f3c6 {username} wurde Champion!"
-    return webhook.send(content=content, file_path=poster_path)
+    return webhook.send(content=content, image_url=poster_url)

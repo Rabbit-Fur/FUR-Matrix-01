@@ -20,16 +20,19 @@ if ENABLE_BOT:
     intents = discord.Intents.all()
     bot = commands.Bot(command_prefix="!", intents=intents)
 
-    async def send_discord_message(channel_id: int, content: str, file_path: str = None):
+    async def send_discord_message(
+        channel_id: int, content: str, image_url: str | None = None
+    ) -> None:
         """Sendet eine Nachricht über den echten Discord-Bot."""
         channel = bot.get_channel(channel_id)
         if channel is None:
             logging.warning(f"⚠️ Channel {channel_id} nicht gefunden.")
             return
 
-        if file_path:
-            file = discord.File(file_path)
-            await channel.send(content, file=file)
+        if image_url:
+            embed = discord.Embed()
+            embed.set_image(url=image_url)
+            await channel.send(content, embed=embed)
         else:
             await channel.send(content)
 
@@ -39,15 +42,12 @@ else:
 
     DISCORD_WEBHOOK_URL = os.getenv("DISCORD_WEBHOOK_URL")
 
-    def send_discord_message(channel_id: int, content: str, file_path: str = None):
+    def send_discord_message(channel_id: int, content: str, image_url: str | None = None) -> None:
         """Sendet eine Nachricht via Discord Webhook (ohne Bot)."""
         data = {"content": content}
-        files = None
-
-        if file_path and os.path.exists(file_path):
-            with open(file_path, "rb") as f:
-                files = {"file": (os.path.basename(file_path), f)}
-                response = requests.post(DISCORD_WEBHOOK_URL, data=data, files=files)
+        if image_url:
+            data["embeds"] = [{"image": {"url": image_url}}]
+            response = requests.post(DISCORD_WEBHOOK_URL, json=data)
         else:
             response = requests.post(DISCORD_WEBHOOK_URL, json=data)
 
@@ -68,7 +68,7 @@ def require_roles(roles):
         def wrapped(*args, **kwargs):
             user_roles = session.get("discord_roles", [])
             if not any(role in user_roles for role in roles):
-                return redirect(url_for("public.login"))
+                return redirect(url_for("auth.login"))
             return f(*args, **kwargs)
 
         return wrapped

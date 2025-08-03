@@ -1,7 +1,7 @@
 import asyncio
 import logging
 import os
-from datetime import datetime, timedelta, timezone
+from datetime import date as date_type, datetime, timedelta, timezone
 from typing import Any, Iterable, Optional
 
 from flask import current_app
@@ -15,8 +15,9 @@ from pymongo.errors import ConfigurationError
 
 from config import Config
 from crud import event_crud
-from google_auth import load_credentials
+from services.google.auth import load_credentials
 from schemas.event_schema import EventModel
+from utils.time_utils import parse_calendar_datetime
 
 log = logging.getLogger(__name__)
 
@@ -37,20 +38,6 @@ def _get_app():
 
 class SyncTokenExpired(Exception):
     """Raised when a stored sync token is no longer valid."""
-
-
-def _parse_datetime(info: Optional[dict]) -> Optional[datetime]:
-    if not info:
-        return None
-    value = info.get("dateTime") or info.get("date")
-    if not value:
-        return None
-    if value.endswith("Z"):
-        value = value.replace("Z", "+00:00")
-    try:
-        return datetime.fromisoformat(value)
-    except ValueError:
-        return None
 
 
 class CalendarService:
@@ -124,14 +111,9 @@ class CalendarService:
 
     @staticmethod
     def _build_doc(event: dict) -> dict:
-        start_dt = _parse_datetime(event.get("start"))
-        end_dt = _parse_datetime(event.get("end"))
+        start_dt = parse_calendar_datetime(event.get("start"))
+        end_dt = parse_calendar_datetime(event.get("end"))
         event_time = start_dt
-        if event_time:
-            if event_time.tzinfo is None:
-                event_time = event_time.replace(tzinfo=timezone.utc)
-            else:
-                event_time = event_time.astimezone(timezone.utc)
         return {
             "google_id": event.get("id"),
             "title": event.get("summary", "No Title"),
@@ -207,6 +189,23 @@ class CalendarService:
         end = start + timedelta(days=7)
         return await self._get_range(start, end)
 
+    async def get_next_event(self) -> Optional[dict]:
+        """Return the next upcoming event or ``None`` if none found."""
+        now = datetime.utcnow().replace(tzinfo=timezone.utc)
+        window_end = now + timedelta(days=365)
+        events = await self._get_range(now, window_end)
+        return events[0] if events else None
+
+    async def get_events_for_date(self, dt: datetime | date_type) -> list[dict]:
+        """Return events for the given day in UTC."""
+        if isinstance(dt, datetime):
+            day = dt.date()
+        else:
+            day = dt
+        start = datetime.combine(day, datetime.min.time(), timezone.utc)
+        end = start + timedelta(days=1)
+        return await self._get_range(start, end)
+
 
 class DMReminderScheduler:
     """Send DM reminders for upcoming events."""
@@ -214,6 +213,7 @@ class DMReminderScheduler:
     def __init__(self, bot: Any, service: CalendarService) -> None:
         self.bot = bot
         self.service = service
+        self._sent: set[tuple[Any, Any]] = set()
         self.reminder_loop.start()
 
     def cog_unload(self) -> None:  # pragma: no cover - lifecycle
@@ -236,14 +236,33 @@ class DMReminderScheduler:
                 {"event_id": ev.get("_id")}
             )
             for part in await participants.to_list(length=None):
+                key = (ev.get("_id"), part.get("user_id"))
+                if key in self._sent:
+                    continue
                 try:
                     user = await self.bot.fetch_user(int(part["user_id"]))
+                except Exception:  # pragma: no cover - network failures
+                    log.warning(
+                        "Failed to fetch user %s for event %s",
+                        part.get("user_id"),
+                        ev.get("title"),
+                        exc_info=True,
+                    )
+                    continue
+                try:
                     await user.send(
                         f"Reminder: {ev['title']} at {ev['event_time'].strftime('%H:%M UTC')}"
                     )
-                    log.info("Sent reminder DM to %s for event %s", user.id, ev["title"])
                 except Exception:  # pragma: no cover - network failures
-                    log.warning("Failed to send reminder", exc_info=True)
+                    log.warning(
+                        "Failed to send reminder to %s for event %s",
+                        part.get("user_id"),
+                        ev.get("title"),
+                        exc_info=True,
+                    )
+                    continue
+                self._sent.add(key)
+                log.info("Sent reminder DM to %s for event %s", user.id, ev["title"])
 
 
 __all__ = ["CalendarService", "DMReminderScheduler", "SyncTokenExpired"]

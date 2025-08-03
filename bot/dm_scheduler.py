@@ -3,14 +3,42 @@ from __future__ import annotations
 import logging
 from datetime import datetime, timedelta
 
+import discord
+
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from pymongo.collection import Collection
 
+from config import Config
+from urllib.parse import urljoin
 from mongo_service import get_collection
 
 log = logging.getLogger(__name__)
 
 scheduler = AsyncIOScheduler(timezone="UTC")
+
+
+def _ensure_url(path: str) -> str:
+    """Prepend ``Config.BASE_URL`` if ``path`` is relative."""
+    if path and not path.startswith("http"):
+        return urljoin(Config.BASE_URL, path.lstrip("/"))
+    return path
+
+
+def get_dm_image(dm_type: str) -> str:
+    """Return configured DM image or fallback."""
+    doc = get_collection("settings").find_one({"_id": f"dm_image_{dm_type}"})
+    if doc and doc.get("value"):
+        return _ensure_url(doc["value"])
+    return _ensure_url(Config.DEFAULT_DM_IMAGE_URL)
+
+
+async def send_embed_dm(user, message: str, dm_type: str) -> None:
+    """Send an embed DM with an optional image."""
+    embed = discord.Embed(description=message)
+    image_url = get_dm_image(dm_type) or Config.DEFAULT_DM_IMAGE_URL
+    if image_url:
+        embed.set_image(url=image_url)
+    await user.send(embed=embed)
 
 
 def get_dm_users() -> list[int]:
@@ -33,7 +61,7 @@ async def send_daily_dm(bot) -> None:
         return
     for uid in get_dm_users():
         user = await bot.fetch_user(uid)
-        await send_dm(user, "Good morning! Your events for today are ready.")
+        await send_embed_dm(user, "Good morning! Your events for today are ready.", "daily")
     flags.update_one({"_id": "daily_dm"}, {"$set": {"date": today}}, upsert=True)
 
 
@@ -54,6 +82,14 @@ async def check_upcoming_events(bot) -> None:
 
 
 def schedule_dm_tasks(bot) -> None:
-    scheduler.add_job(send_daily_dm, "cron", hour=6, minute=0, args=[bot])
+    """Configure DM tasks with a midnight UTC trigger."""
+    scheduler.add_job(
+        send_daily_dm,
+        trigger="cron",
+        hour=0,
+        minute=0,
+        timezone="UTC",
+        args=[bot],
+    )
     scheduler.add_job(check_upcoming_events, "interval", minutes=1, args=[bot])
     scheduler.start()

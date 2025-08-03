@@ -12,41 +12,26 @@ import sys
 import threading
 
 from dotenv import load_dotenv
-from flask import Flask, Response, session
-from google_auth import google_auth
-import os
-
-# === Flask App erstellen ===
-# Initialize the Flask app instance
-app = Flask(__name__)
-app.secret_key = os.environ.get("FLASK_SECRET", "dev-key")
-
-app.config["GOOGLE_CLIENT_CONFIG"] = os.environ.get("GOOGLE_CLIENT_CONFIG")
-app.config["GOOGLE_REDIRECT_URI"] = os.environ.get("GOOGLE_REDIRECT_URI")
-app.config["GOOGLE_CALENDAR_SCOPES"] = [
-    "https://www.googleapis.com/auth/calendar",
-    "https://www.googleapis.com/auth/calendar.readonly",
-]
-
-# Register blueprints for OAuth
-app.register_blueprint(google_auth, url_prefix="/auth")
+from flask import Response, session
+from werkzeug.middleware.proxy_fix import ProxyFix
 
 # ✅ Korrekt: Agenten-Loader importieren
-from agents.agenten_loader import init_agents
-from agents.scheduler_agent import SchedulerAgent
-from config import Config
+from agents.agenten_loader import init_agents  # noqa: E402
+from agents.scheduler_agent import SchedulerAgent  # noqa: E402
+from config import Config  # noqa: E402
 
 # 🌍 Module
-from database import close_db
-from fur_lang.i18n import t
-from init_db_core import init_db
-from mongo_service import db  # MongoDB-Instanz
-from utils.env_helpers import get_env_bool, get_env_int
-from utils.github_service import fetch_repo_info
-from web import create_app
+from database import close_db  # noqa: E402
+from fur_lang.i18n import t  # noqa: E402
+from init_db_core import init_db  # noqa: E402
+from mongo_service import db  # MongoDB-Instanz  # noqa: E402
+from utils.env_helpers import get_env_bool, get_env_int  # noqa: E402
+from utils.github_service import fetch_repo_info  # noqa: E402
+from web import create_app  # noqa: E402
 
 # Call to create the Flask application instance via factory pattern
 app = create_app()
+app.wsgi_app = ProxyFix(app.wsgi_app, x_proto=1, x_host=1)
 app.teardown_appcontext(close_db)
 app.jinja_env.globals.update(t=t)
 app.jinja_env.globals.update(current_lang=lambda: session.get("lang", "de"))
@@ -69,10 +54,24 @@ logging.basicConfig(
 
 
 def log_error(error_type, error):
+    """Log an error with its type and exception details.
+
+    Args:
+        error_type: A short string describing the error category.
+        error: The exception instance to log.
+
+    Returns:
+        None
+    """
     logging.error(f"{error_type}: {str(error)}", exc_info=True)
 
 
 def check_github_repo():
+    """Fetch basic GitHub repository information and log it.
+
+    Returns:
+        None
+    """
     try:
         repo_data = fetch_repo_info()
         logging.info(f"✅ GitHub Repo geladen: {repo_data['full_name']}")
@@ -82,6 +81,11 @@ def check_github_repo():
 
 
 def start_discord_bot():
+    """Start the Discord bot using an asyncio event loop.
+
+    Returns:
+        None
+    """
     try:
         logging.info("🤖 Starte Discord-Bot...")
         from bot.bot_main import run_bot
@@ -92,10 +96,24 @@ def start_discord_bot():
 
 
 def cleanup():
+    """Perform application cleanup when shutting down.
+
+    Returns:
+        None
+    """
     logging.info("🔻 Anwendung wird beendet.")
 
 
 def signal_handler(sig, frame):
+    """Handle interrupt signals and exit gracefully.
+
+    Args:
+        sig: The received signal number.
+        frame: The current stack frame when the signal was received.
+
+    Returns:
+        None
+    """
     logging.info("🛑 SIGINT empfangen. Beende Anwendung...")
     cleanup()
     sys.exit(0)
@@ -140,4 +158,9 @@ if __name__ == "__main__":
 # ➕ Healthcheck für Railway/CI/Monitoring
 @app.route("/health")
 def healthcheck():
+    """Return an HTTP 200 response to indicate application health.
+
+    Returns:
+        flask.Response: A simple "ok" response with status code 200.
+    """
     return Response("ok", status=200)

@@ -16,9 +16,11 @@ cd try
 # 2. Umgebung konfigurieren
 
 cp .env.example .env
-poetry install
+# 3. Pre-commit installieren
 
-# 3. Starten (lokal)
+pre-commit install
+
+# 4. Starten (lokal)
 
 poetry run python main_app.py
 
@@ -48,6 +50,28 @@ DEBUG=true
 
 `GITHUB_TOKEN` wird für Zugriffe auf die GitHub API benötigt.
 `PROMETHEUS_ENDPOINT` legt fest, wo Prometheus die Metriken abrufen kann.
+Weitere Details zu allen Variablen finden sich in [docs/env_vars.md](docs/env_vars.md).
+
+### Discord OAuth `.env` Variablen
+
+Für den Discord-Login müssen folgende Variablen in `.env` gesetzt werden:
+
+- `DISCORD_CLIENT_ID`
+- `DISCORD_CLIENT_SECRET`
+- `DISCORD_REDIRECT_URI`
+- `DISCORD_GUILD_ID`
+- `DISCORD_TOKEN`
+- `R3_ROLE_IDS`, `R4_ROLE_IDS`, `ADMIN_ROLE_IDS`
+
+### Login- und Callback-Flow
+
+1. Nutzer ruft `/login/discord` auf und wird zu Discord weitergeleitet.
+2. Discord fragt Berechtigungen für die Scopes `identify`, `guilds` und `guilds.members.read` an.
+3. Nach Zustimmung leitet Discord zur in `DISCORD_REDIRECT_URI` konfigurierten URL (z. B. `/callback`) zurück und übergibt `code` und `state`.
+4. Die Anwendung validiert `state` und tauscht `code` mithilfe von `DISCORD_CLIENT_ID` und `DISCORD_CLIENT_SECRET` gegen ein Access Token.
+5. Mit diesem Token werden `/users/@me` sowie `/users/@me/guilds/{DISCORD_GUILD_ID}/member` abgefragt.
+6. Die Discord-Rollen werden mit `R3_ROLE_IDS`, `R4_ROLE_IDS` und `ADMIN_ROLE_IDS` verglichen; nur passende Rollen erhalten Zugriff.
+7. Abhängig vom Rollenlevel erfolgt die Weiterleitung zum Admin- oder Member-Dashboard.
 
 📡 Features
 
@@ -94,6 +118,7 @@ Testabdeckung für Agenten, API-Flows, Discord-Kommandos
 Linting: ruff, mypy, black
 
 Pre-Commit Hooks aktiviert (.pre-commit-config.yaml)
+Vor dem ersten Commit: `pre-commit install`
 
 📄 Dokumentation
 
@@ -110,6 +135,14 @@ Alle Secrets sind über .env geschützt
 Token Refresh-Flows sind implementiert
 
 Codex blockiert Deployment ohne .env.example + Commit-Lint
+
+## Google Calendar → Eventbild → Discord Workflow
+
+- Liest Events automatisiert aus Google Calendar
+- Erstellt für jedes Event ein ansprechendes Eventbild (FUR-Style)
+- Postet Event + Bild als Embed ins Discord (mit `!postevent`)
+- Vollständig modular, robust und testbar umgesetzt
+- Für Setup siehe `requirements.txt` und API-Doku im Ordner `docs/`
 
 📬 Kontakt
 

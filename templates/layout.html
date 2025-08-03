@@ -115,7 +115,7 @@
     <h2>{{ t("Navigation") }}</h2>
     <a href="{{ url_for('public.landing') }}">🏠 {{ t("Home") }}</a>
     <a href="{{ url_for('public.dashboard') }}">📊 {{ t("Dashboard") }}</a>
-    {% set role = session.get('user', {}).get('role_level') %}
+    {% set role = session.get('discord_user', {}).get('role_level') %}
     {% if role in ['R4', 'ADMIN'] %}
     <a href="{{ url_for('admin.dashboard') }}">🛠️ {{ t("Admin") }}</a>
     <a href="{{ url_for('admin.pet_advisor') }}">📎 Pet Advisor</a>

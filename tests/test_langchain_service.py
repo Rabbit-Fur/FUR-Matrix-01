@@ -1,6 +1,6 @@
-import types
+import types  # noqa: F401
 
-import pytest
+import pytest  # noqa: F401
 
 import services.langchain_service as mod
 

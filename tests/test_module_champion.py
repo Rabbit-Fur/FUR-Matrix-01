@@ -1,5 +1,3 @@
-from pathlib import Path
-
 from config import Config
 from modules import champion as champion_mod
 
@@ -14,18 +12,18 @@ class FakeWebhook:
         self,
         content: str,
         webhook_url=None,
-        file_path=None,
+        image_url=None,
         *,
         event_channel=False,
     ):
         self.called = True
         self.kwargs = {
             "content": content,
-            "file_path": file_path,
+            "image_url": image_url,
             "event_channel": event_channel,
         }
         # ensure file exists
-        assert file_path and Path(file_path).is_file()
+        assert image_url
         return True
 
 
@@ -52,9 +50,9 @@ def test_run_champion_autopilot(monkeypatch, tmp_path):
         path.write_bytes(b"img")
         return str(path)
 
-    def fake_send(content: str, file_path: str):
+    def fake_send(content: str, image_url: str):
         fake_send.called = True
-        fake_send.kwargs = {"content": content, "file_path": file_path}
+        fake_send.kwargs = {"content": content, "image_url": image_url}
         return 204
 
     monkeypatch.setattr(autopilot_mod, "generate_champion_poster", fake_generate)
@@ -63,7 +61,7 @@ def test_run_champion_autopilot(monkeypatch, tmp_path):
     assert autopilot_mod.run_champion_autopilot(month="June", username="Tester")
     assert fake_send.called
     assert "June" in fake_send.kwargs["content"]
-    assert Path(fake_send.kwargs["file_path"]).exists()
+    assert fake_send.kwargs["image_url"].startswith("http")
 
 
 def test_run_champion_autopilot_error(monkeypatch, tmp_path):

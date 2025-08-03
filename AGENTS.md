@@ -22,6 +22,7 @@ Alle Agenten folgen dem Codex-Protokoll QUM-1.0 und implementieren klar abgegren
 - Jeder Commit, der einen Agenten verändert, **muss** `COD:agent-name` als Prefix im Commit-Message enthalten.
 
 > 🔒 Sicherheit: Alle `.env`-Abhängigkeiten **müssen** in `.env.example` dokumentiert sein.
+> ℹ️ Siehe auch [docs/env_vars.md](docs/env_vars.md) für eine Übersicht aller verwendeten Variablen.
 > 📦 Deployment: Jeder Agent muss mit `make deploy-agent NAME=...` deploybar sein.
 > 🧪 Jeder neue Agent benötigt mindestens 1 pytest-Funktion im Testordner `tests/`.
 

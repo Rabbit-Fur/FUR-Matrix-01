@@ -7,15 +7,13 @@ import requests
 from config import Config
 
 
-def send_discord_webhook(content: str, file_path: str) -> int | None:
-    """Upload a file to the configured Discord webhook."""
+def send_discord_webhook(content: str, image_url: str) -> int | None:
+    """Send a Discord webhook with an embed image."""
 
     webhook_url = Config.DISCORD_WEBHOOK_URL
     try:
-        with open(file_path, "rb") as f:
-            files = {"file": f}
-            data = {"content": content}
-            response = requests.post(webhook_url, data=data, files=files)
+        data = {"content": content, "embeds": [{"image": {"url": image_url}}]}
+        response = requests.post(webhook_url, json=data)
         return response.status_code
     except Exception as exc:  # noqa: BLE001
         logging.error("Failed to send Discord webhook: %s", exc)

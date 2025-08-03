@@ -27,7 +27,7 @@ tlgbotfwk
 python-telegram-bot==22.1
 
 # 📦 Utilities
-requests==2.32.3
+requests==2.32.4
 PyGithub>=2.3.0
 openai>=1.14
 langchain>=0.3.26
@@ -63,3 +63,8 @@ autoflake>=1.4
 gunicorn
 mongomock
 google-auth
+pdfminer.six==20221105
+python-docx
+pytesseract
+pdf2image
+beautifulsoup4

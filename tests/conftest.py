@@ -32,6 +32,7 @@ os.environ.setdefault(
 )
 os.environ.setdefault("GOOGLE_CLIENT_ID", "gid")
 os.environ.setdefault("GOOGLE_CLIENT_SECRET", "gsecret")
+os.environ.setdefault("BABEL_DEFAULT_LOCALE", "en")
 
 try:
     asyncio.get_event_loop()
@@ -72,6 +73,7 @@ def app():
     app = create_app()
 
     from flask import Blueprint
+    from web.auth.decorators import login_required
 
     public = Blueprint("public", __name__)
 
@@ -83,7 +85,12 @@ def app():
     def landing():
         return "home"
 
+    @public.route("/login")
+    def login():
+        return "login"
+
     @public.route("/dashboard")
+    @login_required
     def public_dashboard():
         return "dash"
 

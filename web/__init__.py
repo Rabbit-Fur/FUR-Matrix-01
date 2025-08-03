@@ -5,6 +5,7 @@ import os
 from pathlib import Path
 
 from flask import Blueprint, Flask, request, session
+from werkzeug.middleware.proxy_fix import ProxyFix
 
 from config import Config
 from database import close_db
@@ -16,6 +17,7 @@ from fur_lang.i18n import (
     is_rtl,
     t,
 )
+from web.auth_routes import auth_bp
 from web.champion_routes import champion_blueprint
 from web.poster_routes import poster_blueprint
 from web.reminder_routes import reminder_blueprint
@@ -60,6 +62,7 @@ def create_app() -> Flask:
         template_folder=template_folder,
         static_folder=static_folder,
     )
+    app.wsgi_app = ProxyFix(app.wsgi_app, x_proto=1, x_host=1)
     # Ensure a secret key is set for session handling
     app.secret_key = os.environ.get("FLASK_SECRET", "fallback-dev-key")
     app.config.from_object(Config)
@@ -137,7 +140,7 @@ def create_app() -> Flask:
         if reminder_api:
             app.register_blueprint(reminder_api, url_prefix="/api/reminders")
         app.register_blueprint(dashboard)
-        from google_auth import google_auth as google_auth_bp
+        from services.google.auth import google_auth as google_auth_bp
         from web.routes.google_oauth_web import oauth_bp as google_oauth_web_bp
 
         app.register_blueprint(google_auth_bp)
@@ -152,6 +155,7 @@ def create_app() -> Flask:
     except Exception:
         app.logger.exception("❌ Blueprint registration failed")
 
+    app.register_blueprint(auth_bp)
     app.register_blueprint(champion_blueprint)
     app.register_blueprint(reminder_blueprint)
     app.register_blueprint(poster_blueprint)

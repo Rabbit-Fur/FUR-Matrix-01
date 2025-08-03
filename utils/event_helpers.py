@@ -1,8 +1,9 @@
 from __future__ import annotations
 
 from datetime import date as date_type
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from typing import Any, Iterable
+from zoneinfo import ZoneInfo
 
 from babel.dates import format_datetime
 
@@ -22,14 +23,21 @@ def parse_event_time(value: Any) -> datetime | None:
     return None
 
 
-def get_events_for(dt: datetime | date_type) -> list[dict]:
-    """Return all events for the given day sorted by ``event_time``."""
+def get_events_for(dt: datetime | date_type, tz: str | ZoneInfo = "Europe/Berlin") -> list[dict]:
+    """Return all events for the given day in ``tz`` sorted by ``event_time``."""
+    # Fix: Compare event dates in Europe/Berlin instead of UTC to avoid off-by-one errors
+    tzinfo = ZoneInfo(tz) if isinstance(tz, str) else tz
+
     if isinstance(dt, datetime):
-        day = dt.date()
+        day = dt.astimezone(tzinfo).date()
     else:
         day = dt
-    start = datetime.combine(day, datetime.min.time())
-    end = start + timedelta(days=1)
+
+    start_local = datetime.combine(day, datetime.min.time(), tzinfo)
+    end_local = start_local + timedelta(days=1)
+    start = start_local.astimezone(timezone.utc)
+    end = end_local.astimezone(timezone.utc)
+
     events = (
         get_collection("events")
         .find({"event_time": {"$gte": start, "$lt": end}})

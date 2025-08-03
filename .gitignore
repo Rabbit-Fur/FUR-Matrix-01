@@ -40,7 +40,7 @@ instance/
 
 # Google OAuth credentials
 client_secret.json
-credentials/oauth_client.json
+credentials/
 token/
 
 # Node / Frontend (falls vorhanden)
@@ -57,3 +57,8 @@ todo_missing_bg.md
 
 # Logfiles
 core/logs/
+
+# Lokale Assets
+attached_assets/
+docs/Fehlende_ENV_LOG.md
+/Screenshot_*.png

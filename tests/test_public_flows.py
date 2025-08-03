@@ -6,7 +6,7 @@ import requests
 
 import mongo_service
 
-public_mod = importlib.import_module("blueprints.public")
+auth_mod = importlib.import_module("web.auth_routes")
 
 
 def get_flashes(client):
@@ -15,7 +15,7 @@ def get_flashes(client):
 
 
 def test_discord_login_flow(client, monkeypatch):
-    resp = client.get("/login/discord")
+    resp = client.get("/login")
     assert resp.status_code == 302
     assert "discord.com/oauth2/authorize" in resp.headers["Location"]
     with client.session_transaction() as sess:
@@ -55,7 +55,7 @@ def test_discord_login_flow(client, monkeypatch):
     monkeypatch.setattr(requests, "get", fake_get)
     fake_collection = FakeCollection()
     monkeypatch.setattr(mongo_service, "get_collection", lambda name: fake_collection)
-    monkeypatch.setattr(public_mod, "get_collection", lambda name: fake_collection)
+    monkeypatch.setattr(auth_mod, "get_collection", lambda name: fake_collection)
 
     resp = client.get(f"/callback?code=abc&state={state}")
     assert resp.status_code == 302
@@ -63,9 +63,68 @@ def test_discord_login_flow(client, monkeypatch):
     flashes = get_flashes(client)
     assert flashes and flashes[0][0] == "success"
     with client.session_transaction() as sess:
-        assert sess["user"]["id"] == "123"
-        assert sess["user"]["role_level"] == "R3"
+        assert sess["discord_user"]["id"] == "123"
+        assert sess["discord_user"]["role_level"] == "R3"
         assert sess["discord_roles"] == ["R3"]
+
+
+def test_discord_login_auto_join(client, monkeypatch):
+    resp = client.get("/login/discord")
+    assert resp.status_code == 302
+    with client.session_transaction() as sess:
+        state = sess["discord_oauth_state"]
+
+    client.application.config.update(
+        R3_ROLE_IDS={"1"},
+        R4_ROLE_IDS=set(),
+        ADMIN_ROLE_IDS=set(),
+    )
+
+    class DummyResponse:
+        def __init__(self, data, status=200):
+            self._data = data
+            self.status_code = status
+            self.text = json.dumps(data)
+
+        def json(self):
+            return self._data
+
+    def fake_post(url, data, headers, timeout):
+        return DummyResponse({"access_token": "tok"})
+
+    guild_calls = {"count": 0}
+
+    def fake_get(url, headers):
+        if url == "https://discord.com/api/users/@me":
+            return DummyResponse({"id": "123", "username": "test", "avatar": "x"})
+        if url.startswith("https://discord.com/api/users/@me/guilds/"):
+            if guild_calls["count"] == 0:
+                guild_calls["count"] += 1
+                return DummyResponse({}, status=404)
+            return DummyResponse({"roles": ["1"]})
+        raise AssertionError("unexpected url: " + url)
+
+    put_called = {"flag": False}
+
+    def fake_put(url, headers, timeout=10):
+        put_called["flag"] = True
+        return DummyResponse({}, status=201)
+
+    class FakeCollection:
+        def update_one(self, *args, **kwargs):
+            self.called = True
+
+    monkeypatch.setattr(requests, "post", fake_post)
+    monkeypatch.setattr(requests, "get", fake_get)
+    monkeypatch.setattr(requests, "put", fake_put)
+    fake_collection = FakeCollection()
+    monkeypatch.setattr(mongo_service, "get_collection", lambda name: fake_collection)
+    monkeypatch.setattr(public_mod, "get_collection", lambda name: fake_collection)
+
+    resp = client.get(f"/callback?code=abc&state={state}")
+    assert resp.status_code == 302
+    assert resp.headers["Location"].endswith("/members/dashboard")
+    assert put_called["flag"]
 
 
 def test_join_event_requires_login(client):
@@ -79,7 +138,7 @@ def test_join_event_requires_login(client):
 
 def test_join_event_success(client):
     with client.session_transaction() as sess:
-        sess["user"] = {"id": "42", "role_level": "R3"}
+        sess["discord_user"] = {"id": "42", "role_level": "R3"}
         sess["discord_roles"] = ["R3"]
     resp = client.post("/events/1/join")
     assert resp.status_code == 302
