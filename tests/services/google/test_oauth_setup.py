@@ -7,10 +7,11 @@ import services.google.oauth_setup as mod
 
 def test_main_writes_token_file(tmp_path, monkeypatch):
     token_path = tmp_path / "token.json"
-    cfg = tmp_path / "client.json"
-    cfg.write_text("{}")
     monkeypatch.setenv("GOOGLE_CREDENTIALS_FILE", str(token_path))
-    monkeypatch.setenv("GOOGLE_CLIENT_CONFIG", str(cfg))
+    monkeypatch.setenv("GOOGLE_CLIENT_ID", "id")
+    monkeypatch.setenv("GOOGLE_CLIENT_SECRET", "secret")
+    monkeypatch.setenv("GOOGLE_AUTH_URI", "https://auth")
+    monkeypatch.setenv("GOOGLE_TOKEN_URI", "https://token")
 
     token_data = {
         "token": "tok",
@@ -32,7 +33,7 @@ def test_main_writes_token_file(tmp_path, monkeypatch):
     monkeypatch.setattr(
         mod,
         "InstalledAppFlow",
-        type("F", (), {"from_client_secrets_file": lambda *a, **k: FakeFlow()}),
+        type("F", (), {"from_client_config": lambda *a, **k: FakeFlow()}),
     )
 
     mod.main()
@@ -41,19 +42,12 @@ def test_main_writes_token_file(tmp_path, monkeypatch):
         assert data[key] == token_data[key]
 
 
-def test_main_raises_with_missing_client_config(tmp_path, monkeypatch):
+def test_main_requires_client_credentials(tmp_path, monkeypatch):
     token_path = tmp_path / "token.json"
     monkeypatch.setenv("GOOGLE_CREDENTIALS_FILE", str(token_path))
-    monkeypatch.delenv("GOOGLE_CLIENT_CONFIG", raising=False)
+    monkeypatch.delenv("GOOGLE_CLIENT_ID", raising=False)
+    monkeypatch.delenv("GOOGLE_CLIENT_SECRET", raising=False)
 
-    with pytest.raises(TypeError):
+    with pytest.raises(KeyError):
         mod.main()
 
-
-def test_main_raises_with_invalid_client_config(tmp_path, monkeypatch):
-    token_path = tmp_path / "token.json"
-    monkeypatch.setenv("GOOGLE_CREDENTIALS_FILE", str(token_path))
-    monkeypatch.setenv("GOOGLE_CLIENT_CONFIG", str(tmp_path / "missing.json"))
-
-    with pytest.raises(FileNotFoundError):
-        mod.main()
