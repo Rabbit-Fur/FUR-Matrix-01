@@ -38,13 +38,13 @@ def _create_app():
     app = Flask(__name__)
     app.secret_key = "test"
 
-    public = Blueprint("public", __name__)
+    auth_bp = Blueprint("auth", __name__)
 
-    @public.route("/login")
+    @auth_bp.route("/login")
     def login():
         return "login"
 
-    app.register_blueprint(public)
+    app.register_blueprint(auth_bp)
 
     @app.route("/protected")
     @login_required
@@ -75,17 +75,17 @@ def test_auth_agent_role_helpers():
     assert not auth.is_r4()
     assert not auth.is_admin()
 
-    auth = AuthAgent({"user": {"role_level": "R3"}}, None)
+    auth = AuthAgent({"discord_user": {"role_level": "R3"}}, None)
     assert auth.is_r3()
     assert not auth.is_r4()
     assert not auth.is_admin()
 
-    auth = AuthAgent({"user": {"role_level": "R4"}}, None)
+    auth = AuthAgent({"discord_user": {"role_level": "R4"}}, None)
     assert auth.is_r3()
     assert auth.is_r4()
     assert not auth.is_admin()
 
-    auth = AuthAgent({"user": {"role_level": "ADMIN"}}, None)
+    auth = AuthAgent({"discord_user": {"role_level": "ADMIN"}}, None)
     assert auth.is_r3()
     assert auth.is_r4()
     assert auth.is_admin()
@@ -101,7 +101,7 @@ def test_role_decorators_enforce_access():
     assert resp.headers["Location"].endswith("/login")
 
     with client.session_transaction() as sess:
-        sess["user"] = {"role_level": "R3"}
+        sess["discord_user"] = {"role_level": "R3"}
 
     assert client.get("/protected").status_code == 200
 
@@ -114,12 +114,12 @@ def test_role_decorators_enforce_access():
     assert resp.status_code == 302
 
     with client.session_transaction() as sess:
-        sess["user"] = {"role_level": "R4"}
+        sess["discord_user"] = {"role_level": "R4"}
 
     assert client.get("/r4").status_code == 200
     assert client.get("/admin").status_code == 302
 
     with client.session_transaction() as sess:
-        sess["user"] = {"role_level": "ADMIN"}
+        sess["discord_user"] = {"role_level": "ADMIN"}
 
     assert client.get("/admin").status_code == 200
