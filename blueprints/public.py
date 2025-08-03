@@ -1,7 +1,3 @@
-import secrets
-from urllib.parse import urlencode
-
-import requests
 from bson import ObjectId
 from flask import (
     Blueprint,
@@ -37,7 +33,7 @@ def set_language():
 
 @public.route("/login")
 def login():
-    user = session.get("user")
+    user = session.get("discord_user")
     if user:
         role = user.get("role_level")
         if role in ["ADMIN", "R4"]:
@@ -110,12 +106,45 @@ def discord_callback():
     )
     user_data = user_res.json()
 
+    guild_url = f"https://discord.com/api/users/@me/guilds/{current_app.config['DISCORD_GUILD_ID']}"
     guild_res = requests.get(
-        f"https://discord.com/api/users/@me/guilds/{current_app.config['DISCORD_GUILD_ID']}/member",
+        f"{guild_url}/member",
         headers={"Authorization": f"Bearer {access_token}"},
     )
     if guild_res.status_code != 200:
-        return t("guild_membership_required", default="Not a member of the FUR Discord server"), 403
+        join_res = requests.put(
+            guild_url,
+            headers={"Authorization": f"Bearer {access_token}"},
+            timeout=10,
+        )
+        if join_res.status_code not in {200, 201, 204}:
+            current_app.logger.error(
+                "Guild join failed %s: %s", join_res.status_code, join_res.text
+            )
+            return (
+                t(
+                    "guild_membership_required",
+                    default="Not a member of the FUR Discord server",
+                ),
+                403,
+            )
+        guild_res = requests.get(
+            f"{guild_url}/member",
+            headers={"Authorization": f"Bearer {access_token}"},
+        )
+        if guild_res.status_code != 200:
+            current_app.logger.error(
+                "Guild membership fetch failed %s: %s",
+                guild_res.status_code,
+                guild_res.text,
+            )
+            return (
+                t(
+                    "guild_membership_required",
+                    default="Not a member of the FUR Discord server",
+                ),
+                403,
+            )
 
     guild_member = guild_res.json()
     user_roles = set(str(role) for role in guild_member.get("roles", []))
@@ -135,7 +164,7 @@ def discord_callback():
         return t("invalid_role", default="Invalid role for access"), 403
 
     session["discord_roles"] = [role_level]
-    session["user"] = {
+    session["discord_user"] = {
         "id": user_data["id"],
         "username": user_data["username"],
         "avatar": user_data["avatar"],
@@ -201,9 +230,9 @@ def view_event(event_id):
 @public.route("/events/<event_id>/join", methods=["POST"])
 @r3_required
 def join_event(event_id):
-    if "user" not in session:
+    if "discord_user" not in session:
         flash(t("login_required", default="Login required."), "warning")
-        return redirect(url_for("public.login"))
+        return redirect(url_for("auth.login"))
 
     flash(t("event_join_success", default="Successfully joined the event!"), "success")
     return redirect(url_for("public.view_event", event_id=event_id))

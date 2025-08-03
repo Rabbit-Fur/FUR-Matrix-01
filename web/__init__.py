@@ -17,6 +17,7 @@ from fur_lang.i18n import (
     is_rtl,
     t,
 )
+from web.auth_routes import auth_bp
 from web.champion_routes import champion_blueprint
 from web.poster_routes import poster_blueprint
 from web.reminder_routes import reminder_blueprint
@@ -154,6 +155,7 @@ def create_app() -> Flask:
     except Exception:
         app.logger.exception("❌ Blueprint registration failed")
 
+    app.register_blueprint(auth_bp)
     app.register_blueprint(champion_blueprint)
     app.register_blueprint(reminder_blueprint)
     app.register_blueprint(poster_blueprint)
