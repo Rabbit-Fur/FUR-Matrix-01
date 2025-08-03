@@ -7,7 +7,7 @@
 <div style="margin-bottom:1rem; display:flex; gap:0.5rem; flex-wrap:wrap;">
   <input id="search" type="text" placeholder="{{ t('Search') }}" style="flex:1; padding:0.5rem; border-radius:6px;">
   <button id="reset" class="btn">{{ t('Reset') }}</button>
-  {% if session.get('user', {}).get('role_level') == 'ADMIN' %}
+  {% if session.get('discord_user', {}).get('role_level') == 'ADMIN' %}
   <form method="post" action="{{ url_for('admin_memory.clear_memory') }}">
     <button class="btn btn-glow" type="submit">🗑 {{ t('Cache löschen') }}</button>
   </form>

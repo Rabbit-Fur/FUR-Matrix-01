@@ -68,7 +68,7 @@ def require_roles(roles):
         def wrapped(*args, **kwargs):
             user_roles = session.get("discord_roles", [])
             if not any(role in user_roles for role in roles):
-                return redirect(url_for("public.login"))
+                return redirect(url_for("auth.login"))
             return f(*args, **kwargs)
 
         return wrapped

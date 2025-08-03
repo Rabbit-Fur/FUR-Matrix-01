@@ -25,8 +25,9 @@ def login_required(view_func):
     @wraps(view_func)
     def wrapper(*args, **kwargs):
         if not _agent().is_logged_in():
+        if "discord_user" not in session:
             flash(t("login_required", default="Login required."), "warning")
-            return redirect(url_for("public.login"))
+            return redirect(url_for("auth.login"))
         return view_func(*args, **kwargs)
 
     return wrapper
@@ -38,8 +39,10 @@ def r3_required(view_func):
     @wraps(view_func)
     def wrapper(*args, **kwargs):
         if not _agent().is_r3():
+        if session.get("discord_user", {}).get("role_level") not in ["R3", "R4", "ADMIN"]:
+
             flash(t("member_only", default="Members only."))
-            return redirect(url_for("public.login"))
+            return redirect(url_for("auth.login"))
         return view_func(*args, **kwargs)
 
     return wrapper
@@ -51,8 +54,9 @@ def r4_required(view_func):
     @wraps(view_func)
     def wrapper(*args, **kwargs):
         if not _agent().is_r4():
+        if session.get("discord_user", {}).get("role_level") not in ["R4", "ADMIN"]:
             flash(t("admin_only", default="Admins only."))
-            return redirect(url_for("public.login"))
+            return redirect(url_for("auth.login"))
         return view_func(*args, **kwargs)
 
     return wrapper
@@ -64,8 +68,9 @@ def admin_required(view_func):
     @wraps(view_func)
     def wrapper(*args, **kwargs):
         if not _agent().is_admin():
+        if session.get("discord_user", {}).get("role_level") != "ADMIN":
             flash(t("superuser_only", default="Superuser only."))
-            return redirect(url_for("public.login"))
+            return redirect(url_for("auth.login"))
         return view_func(*args, **kwargs)
 
     return wrapper
