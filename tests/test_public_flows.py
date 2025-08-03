@@ -6,7 +6,7 @@ import requests
 
 import mongo_service
 
-public_mod = importlib.import_module("blueprints.public")
+auth_mod = importlib.import_module("web.auth_routes")
 
 
 def get_flashes(client):
@@ -15,7 +15,7 @@ def get_flashes(client):
 
 
 def test_discord_login_flow(client, monkeypatch):
-    resp = client.get("/login/discord")
+    resp = client.get("/login")
     assert resp.status_code == 302
     assert "discord.com/oauth2/authorize" in resp.headers["Location"]
     with client.session_transaction() as sess:
@@ -55,7 +55,7 @@ def test_discord_login_flow(client, monkeypatch):
     monkeypatch.setattr(requests, "get", fake_get)
     fake_collection = FakeCollection()
     monkeypatch.setattr(mongo_service, "get_collection", lambda name: fake_collection)
-    monkeypatch.setattr(public_mod, "get_collection", lambda name: fake_collection)
+    monkeypatch.setattr(auth_mod, "get_collection", lambda name: fake_collection)
 
     resp = client.get(f"/callback?code=abc&state={state}")
     assert resp.status_code == 302
@@ -63,8 +63,8 @@ def test_discord_login_flow(client, monkeypatch):
     flashes = get_flashes(client)
     assert flashes and flashes[0][0] == "success"
     with client.session_transaction() as sess:
-        assert sess["user"]["id"] == "123"
-        assert sess["user"]["role_level"] == "R3"
+        assert sess["discord_user"]["id"] == "123"
+        assert sess["discord_user"]["role_level"] == "R3"
         assert sess["discord_roles"] == ["R3"]
 
 
@@ -79,7 +79,7 @@ def test_join_event_requires_login(client):
 
 def test_join_event_success(client):
     with client.session_transaction() as sess:
-        sess["user"] = {"id": "42", "role_level": "R3"}
+        sess["discord_user"] = {"id": "42", "role_level": "R3"}
         sess["discord_roles"] = ["R3"]
     resp = client.post("/events/1/join")
     assert resp.status_code == 302
