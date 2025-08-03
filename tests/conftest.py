@@ -74,6 +74,7 @@ def app():
     app = create_app()
 
     from flask import Blueprint
+    from web.auth.decorators import login_required
 
     public = Blueprint("public", __name__)
 
@@ -85,7 +86,12 @@ def app():
     def landing():
         return "home"
 
+    @public.route("/login")
+    def login():
+        return "login"
+
     @public.route("/dashboard")
+    @login_required
     def public_dashboard():
         return "dash"
 

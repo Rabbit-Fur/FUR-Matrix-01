@@ -17,7 +17,7 @@ from flask import (
 
 from fur_lang.i18n import get_supported_languages, t
 from mongo_service import get_collection
-from web.auth.decorators import r3_required
+from web.auth.decorators import login_required, r3_required
 
 public = Blueprint("public", __name__)
 
@@ -242,5 +242,6 @@ def bank_war_top5():
 
 
 @public.route("/dashboard")
+@login_required
 def dashboard():
     return render_template("public/dashboard.html")
