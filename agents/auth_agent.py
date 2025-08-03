@@ -19,11 +19,12 @@ class AuthAgent:
     # Session based helpers
     # ------------------------------------------------------------------
     def _current_role(self):
-        return self.session.get("user", {}).get("role_level")
+        """Return the role of the current session user."""
+        return self.session.get("discord_user", {}).get("role_level")
 
     def is_logged_in(self):
         """Return True if a user is present in session."""
-        return "user" in self.session
+        return "discord_user" in self.session
 
     def is_r3(self):
         """Check if the current session user has at least R3 privileges."""

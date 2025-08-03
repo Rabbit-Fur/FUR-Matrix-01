@@ -1,6 +1,6 @@
 def login_role(client, role: str) -> None:
     with client.session_transaction() as sess:
-        sess["user"] = {"role_level": role}
+        sess["discord_user"] = {"role_level": role}
         sess["discord_roles"] = [role]
 
 

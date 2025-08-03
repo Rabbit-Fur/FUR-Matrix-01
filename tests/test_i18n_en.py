@@ -13,7 +13,7 @@ routes = [
 def test_no_german_words(client):
     with client.session_transaction() as sess:
         sess["lang"] = "en"
-        sess["user"] = {"id": "1", "role_level": "ADMIN"}
+        sess["discord_user"] = {"id": "1", "role_level": "ADMIN"}
     for route in routes:
         resp = client.get(route)
         assert resp.status_code == 200

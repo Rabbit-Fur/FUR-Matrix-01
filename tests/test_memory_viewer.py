@@ -1,6 +1,6 @@
 def login_admin(client):
     with client.session_transaction() as sess:
-        sess["user"] = {"role_level": "ADMIN"}
+        sess["discord_user"] = {"role_level": "ADMIN"}
         sess["discord_roles"] = ["ADMIN"]
 
 
