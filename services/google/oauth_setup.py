@@ -25,10 +25,19 @@ def main() -> None:
         if creds and creds.expired and creds.refresh_token:
             creds.refresh(Request())
         else:
-            flow = InstalledAppFlow.from_client_secrets_file(
-                os.getenv("GOOGLE_CLIENT_CONFIG"),
-                SCOPES,
-            )
+            config = {
+                "installed": {
+                    "client_id": os.environ["GOOGLE_CLIENT_ID"],
+                    "client_secret": os.environ["GOOGLE_CLIENT_SECRET"],
+                    "auth_uri": os.getenv(
+                        "GOOGLE_AUTH_URI", "https://accounts.google.com/o/oauth2/auth"
+                    ),
+                    "token_uri": os.getenv(
+                        "GOOGLE_TOKEN_URI", "https://oauth2.googleapis.com/token"
+                    ),
+                }
+            }
+            flow = InstalledAppFlow.from_client_config(config, SCOPES)
             creds = flow.run_local_server(port=0)
         token_path.parent.mkdir(parents=True, exist_ok=True)
         import json

@@ -15,10 +15,30 @@ oauth_bp = Blueprint("oauth_web", __name__)
 
 # Constants
 SCOPES = ["https://www.googleapis.com/auth/calendar"]
-_client_config = os.getenv("GOOGLE_CLIENT_CONFIG")
-CLIENT_SECRET_FILE = Path(_client_config) if _client_config else None
+REDIRECT_URI = os.getenv(
+    "GOOGLE_REDIRECT_URI", "https://fur-martix.up.railway.app/oauth2callback"
+)
+CLIENT_CONFIG = {
+    "web": {
+        "client_id": os.getenv("GOOGLE_CLIENT_ID"),
+        "project_id": os.getenv("GOOGLE_PROJECT_ID"),
+        "auth_uri": os.getenv(
+            "GOOGLE_AUTH_URI", "https://accounts.google.com/o/oauth2/auth"
+        ),
+        "token_uri": os.getenv(
+            "GOOGLE_TOKEN_URI", "https://oauth2.googleapis.com/token"
+        ),
+        "auth_provider_x509_cert_url": os.getenv(
+            "GOOGLE_AUTH_PROVIDER_CERT_URL", "https://www.googleapis.com/v1/certs"
+        ),
+        "client_secret": os.getenv("GOOGLE_CLIENT_SECRET"),
+        "redirect_uris": [REDIRECT_URI],
+    }
+}
 TOKEN_PATH = Path(os.getenv("GOOGLE_CREDENTIALS_FILE", "/data/google_token.json"))
-REDIRECT_URI = os.getenv("GOOGLE_REDIRECT_URI", "https://fur-martix.up.railway.app/oauth2callback")
+REDIRECT_URI = os.getenv("GOOGLE_REDIRECT_URI")
+if not REDIRECT_URI:
+    raise RuntimeError("GOOGLE_REDIRECT_URI not configured")
 
 # Logger setup
 log = logging.getLogger(__name__)
@@ -32,12 +52,12 @@ state_map: dict[str, float] = {}
 @oauth_bp.route("/auth/initiate")
 def auth_initiate() -> Response:
     """Start OAuth flow and redirect user to Google."""
-    if CLIENT_SECRET_FILE is None or not CLIENT_SECRET_FILE.exists():
-        log.error("CLIENT_SECRET_FILE not configured")
+    if not CLIENT_CONFIG["web"].get("client_id") or not CLIENT_CONFIG["web"].get("client_secret"):
+        log.error("CLIENT_CONFIG incomplete")
         return Response("Missing Google client config", status=500)
     try:
-        flow = Flow.from_client_secrets_file(
-            str(CLIENT_SECRET_FILE),
+        flow = Flow.from_client_config(
+            CLIENT_CONFIG,
             scopes=SCOPES,
             redirect_uri=REDIRECT_URI,
         )
@@ -72,12 +92,12 @@ def oauth2callback() -> Response:
         log.warning("Invalid OAuth state: received %s, expected %s", req_state, stored_state)
         return Response("Invalid OAuth state", status=400)
 
-    if CLIENT_SECRET_FILE is None or not CLIENT_SECRET_FILE.exists():
-        log.error("CLIENT_SECRET_FILE not configured")
+    if not CLIENT_CONFIG["web"].get("client_id") or not CLIENT_CONFIG["web"].get("client_secret"):
+        log.error("CLIENT_CONFIG incomplete")
         return Response("Missing Google client config", status=500)
     try:
-        flow = Flow.from_client_secrets_file(
-            str(CLIENT_SECRET_FILE),
+        flow = Flow.from_client_config(
+            CLIENT_CONFIG,
             scopes=SCOPES,
             state=req_state,
             redirect_uri=REDIRECT_URI,

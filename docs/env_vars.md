@@ -32,10 +32,8 @@ The following table lists all variables accessed in the codebase. Locations refe
 | GOOGLE_AUTH_URI | .env.example | OAuth auth endpoint |
 | GOOGLE_CALENDAR_ID | config.py, services/google/calendar_sync.py | Google Calendar ID used for sync |
 | GOOGLE_CALENDAR_SCOPES | .env.example | Scopes for calendar write access |
-| GOOGLE_CLIENT_CONFIG | services/google/oauth_setup.py, web/routes/google_oauth_web.py | Path to Google client config JSON |
-| GOOGLE_CLIENT_CONFIG_FILE | services/google/auth.py | Path to Google OAuth client config JSON |
-| GOOGLE_CLIENT_ID | config.py | Google OAuth client ID |
-| GOOGLE_CLIENT_SECRET | config.py | Google OAuth client secret |
+| GOOGLE_CLIENT_ID | config.py, services/google/auth.py, services/google/oauth_setup.py, web/routes/google_oauth_web.py | Google OAuth client ID |
+| GOOGLE_CLIENT_SECRET | config.py, services/google/auth.py, services/google/oauth_setup.py, web/routes/google_oauth_web.py | Google OAuth client secret |
 | GOOGLE_CREDENTIALS_FILE | config.py, services/google/calendar_sync.py, services/google/auth.py | OAuth token storage path |
 | GOOGLE_CREDENTIALS_FILE | config.py, services/google/calendar_sync.py | Service account credentials file |
 | GOOGLE_PROJECT_ID | .env.example | Google Cloud project ID |

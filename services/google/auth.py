@@ -3,7 +3,7 @@ from __future__ import annotations
 import json
 import logging
 import os
-from typing import Optional
+from typing import Any, Optional
 
 from flask import (
     Blueprint,
@@ -62,23 +62,36 @@ def _token_path() -> str:
     return os.environ.get("GOOGLE_TOKEN_STORAGE_PATH", _cred_path())
 
 
-def _config_path() -> str:
-    """Return path to the Google OAuth client configuration file.
+def _client_config() -> dict[str, dict[str, Any]]:
+    """Assemble Google OAuth client configuration from environment variables.
 
-    The value is resolved from the Flask configuration key
-    ``GOOGLE_CLIENT_CONFIG_FILE`` and then from the corresponding environment
-    variable. If neither is provided, ``/data/google_client_secret.json`` is
-    used as a default.
+    Values are resolved from Flask configuration when available and fall back to
+    environment variables. The returned mapping matches the structure expected
+    by ``google-auth`` libraries.
 
     Returns:
-        str: Absolute path to the client configuration file.
+        dict: Configuration dictionary for ``Flow.from_client_config``.
     """
 
-    if has_app_context():
-        path = current_app.config.get("GOOGLE_CLIENT_CONFIG_FILE")
-        if path:
-            return path
-    return os.environ.get("GOOGLE_CLIENT_CONFIG_FILE", "/data/google_client_secret.json")
+    def _get(name: str, default: Optional[str] = None) -> Optional[str]:
+        if has_app_context():
+            return current_app.config.get(name) or os.environ.get(name, default)
+        return os.environ.get(name, default)
+
+    redirect_uri = _get("GOOGLE_REDIRECT_URI")
+    return {
+        "web": {
+            "client_id": _get("GOOGLE_CLIENT_ID"),
+            "project_id": _get("GOOGLE_PROJECT_ID"),
+            "auth_uri": _get("GOOGLE_AUTH_URI", "https://accounts.google.com/o/oauth2/auth"),
+            "token_uri": _get("GOOGLE_TOKEN_URI", "https://oauth2.googleapis.com/token"),
+            "auth_provider_x509_cert_url": _get(
+                "GOOGLE_AUTH_PROVIDER_CERT_URL", "https://www.googleapis.com/v1/certs"
+            ),
+            "client_secret": _get("GOOGLE_CLIENT_SECRET"),
+            "redirect_uris": [redirect_uri] if redirect_uri else [],
+        }
+    }
 
 
 def _save_credentials(creds: Credentials) -> None:
@@ -135,19 +148,18 @@ def auth_google():
         message.
     """
 
-    config_path = _config_path()
-    if not config_path or not os.path.exists(config_path):
+    config = _client_config()
+    if not config["web"].get("client_id") or not config["web"].get("client_secret"):
         return "Missing Google client config", 500
     log.info("Starting Google OAuth flow")
-    with open(config_path, "r", encoding="utf-8") as fh:
-        config = json.load(fh)
+    redirect_uri = config["web"].get("redirect_uris", [None])[0]
     flow = Flow.from_client_config(
         config,
         scopes=current_app.config.get(
             "GOOGLE_CALENDAR_SCOPES",
             ["https://www.googleapis.com/auth/calendar.readonly"],
         ),
-        redirect_uri=current_app.config.get("GOOGLE_REDIRECT_URI"),
+        redirect_uri=redirect_uri,
     )
     authorization_url, state = flow.authorization_url(
         access_type="offline",
@@ -179,12 +191,9 @@ def oauth2callback():
         return jsonify({"error": "Invalid OAuth state"}), 400
     log.info("Received OAuth callback with state %s", req_state)
 
-    config_path = _config_path()
-    if not config_path or not os.path.exists(config_path):
+    config = _client_config()
+    if not config["web"].get("client_id") or not config["web"].get("client_secret"):
         return jsonify({"error": "Missing Google client config"}), 500
-
-    with open(config_path, "r", encoding="utf-8") as fh:
-        config = json.load(fh)
 
     flow = Flow.from_client_config(
         config,
@@ -193,7 +202,7 @@ def oauth2callback():
             ["https://www.googleapis.com/auth/calendar.readonly"],
         ),
         state=stored_state,
-        redirect_uri=current_app.config.get("GOOGLE_REDIRECT_URI"),
+        redirect_uri=config["web"].get("redirect_uris", [None])[0],
     )
 
     try:
