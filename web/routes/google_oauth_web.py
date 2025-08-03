@@ -36,6 +36,9 @@ CLIENT_CONFIG = {
     }
 }
 TOKEN_PATH = Path(os.getenv("GOOGLE_CREDENTIALS_FILE", "/data/google_token.json"))
+REDIRECT_URI = os.getenv("GOOGLE_REDIRECT_URI")
+if not REDIRECT_URI:
+    raise RuntimeError("GOOGLE_REDIRECT_URI not configured")
 
 # Logger setup
 log = logging.getLogger(__name__)
