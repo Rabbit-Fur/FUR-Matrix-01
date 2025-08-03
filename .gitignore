@@ -40,7 +40,7 @@ instance/
 
 # Google OAuth credentials
 client_secret.json
-credentials/oauth_client.json
+credentials/
 token/
 
 # Node / Frontend (falls vorhanden)
