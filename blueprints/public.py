@@ -110,12 +110,45 @@ def discord_callback():
     )
     user_data = user_res.json()
 
+    guild_url = f"https://discord.com/api/users/@me/guilds/{current_app.config['DISCORD_GUILD_ID']}"
     guild_res = requests.get(
-        f"https://discord.com/api/users/@me/guilds/{current_app.config['DISCORD_GUILD_ID']}/member",
+        f"{guild_url}/member",
         headers={"Authorization": f"Bearer {access_token}"},
     )
     if guild_res.status_code != 200:
-        return t("guild_membership_required", default="Not a member of the FUR Discord server"), 403
+        join_res = requests.put(
+            guild_url,
+            headers={"Authorization": f"Bearer {access_token}"},
+            timeout=10,
+        )
+        if join_res.status_code not in {200, 201, 204}:
+            current_app.logger.error(
+                "Guild join failed %s: %s", join_res.status_code, join_res.text
+            )
+            return (
+                t(
+                    "guild_membership_required",
+                    default="Not a member of the FUR Discord server",
+                ),
+                403,
+            )
+        guild_res = requests.get(
+            f"{guild_url}/member",
+            headers={"Authorization": f"Bearer {access_token}"},
+        )
+        if guild_res.status_code != 200:
+            current_app.logger.error(
+                "Guild membership fetch failed %s: %s",
+                guild_res.status_code,
+                guild_res.text,
+            )
+            return (
+                t(
+                    "guild_membership_required",
+                    default="Not a member of the FUR Discord server",
+                ),
+                403,
+            )
 
     guild_member = guild_res.json()
     user_roles = set(str(role) for role in guild_member.get("roles", []))

@@ -68,6 +68,65 @@ def test_discord_login_flow(client, monkeypatch):
         assert sess["discord_roles"] == ["R3"]
 
 
+def test_discord_login_auto_join(client, monkeypatch):
+    resp = client.get("/login/discord")
+    assert resp.status_code == 302
+    with client.session_transaction() as sess:
+        state = sess["discord_oauth_state"]
+
+    client.application.config.update(
+        R3_ROLE_IDS={"1"},
+        R4_ROLE_IDS=set(),
+        ADMIN_ROLE_IDS=set(),
+    )
+
+    class DummyResponse:
+        def __init__(self, data, status=200):
+            self._data = data
+            self.status_code = status
+            self.text = json.dumps(data)
+
+        def json(self):
+            return self._data
+
+    def fake_post(url, data, headers, timeout):
+        return DummyResponse({"access_token": "tok"})
+
+    guild_calls = {"count": 0}
+
+    def fake_get(url, headers):
+        if url == "https://discord.com/api/users/@me":
+            return DummyResponse({"id": "123", "username": "test", "avatar": "x"})
+        if url.startswith("https://discord.com/api/users/@me/guilds/"):
+            if guild_calls["count"] == 0:
+                guild_calls["count"] += 1
+                return DummyResponse({}, status=404)
+            return DummyResponse({"roles": ["1"]})
+        raise AssertionError("unexpected url: " + url)
+
+    put_called = {"flag": False}
+
+    def fake_put(url, headers, timeout=10):
+        put_called["flag"] = True
+        return DummyResponse({}, status=201)
+
+    class FakeCollection:
+        def update_one(self, *args, **kwargs):
+            self.called = True
+
+    monkeypatch.setattr(requests, "post", fake_post)
+    monkeypatch.setattr(requests, "get", fake_get)
+    monkeypatch.setattr(requests, "put", fake_put)
+    fake_collection = FakeCollection()
+    monkeypatch.setattr(mongo_service, "get_collection", lambda name: fake_collection)
+    monkeypatch.setattr(public_mod, "get_collection", lambda name: fake_collection)
+
+    resp = client.get(f"/callback?code=abc&state={state}")
+    assert resp.status_code == 302
+    assert resp.headers["Location"].endswith("/members/dashboard")
+    assert put_called["flag"]
+
+
 def test_join_event_requires_login(client):
     client.get("/logout")
     resp = client.post("/events/1/join")
