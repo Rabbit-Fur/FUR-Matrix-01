@@ -37,7 +37,7 @@ def set_language():
 
 @public.route("/login")
 def login():
-    user = session.get("user")
+    user = session.get("discord_user")
     if user:
         role = user.get("role_level")
         if role in ["ADMIN", "R4"]:
@@ -135,7 +135,7 @@ def discord_callback():
         return t("invalid_role", default="Invalid role for access"), 403
 
     session["discord_roles"] = [role_level]
-    session["user"] = {
+    session["discord_user"] = {
         "id": user_data["id"],
         "username": user_data["username"],
         "avatar": user_data["avatar"],
