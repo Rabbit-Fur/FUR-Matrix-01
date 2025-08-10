@@ -106,6 +106,7 @@ def callback():
         "avatar": user_data["avatar"],
         "email": user_data.get("email"),
         "role_level": role_level,
+        "roles": list(user_roles),
     }
     session.permanent = True
     get_collection("users").update_one(
