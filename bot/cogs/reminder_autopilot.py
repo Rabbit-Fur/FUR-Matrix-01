@@ -11,7 +11,7 @@ from discord.ext import commands, tasks
 
 from config import Config, is_production
 from fur_lang.i18n import t
-from services.google.calendar_sync import get_service, list_upcoming_events
+from services.google.calendar_sync import CalendarSettings, get_service, list_upcoming_events
 from mongo_service import get_collection
 from utils import poster_generator
 from utils.event_helpers import parse_event_time
@@ -55,6 +55,7 @@ class ReminderAutopilot(commands.Cog):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
         self.delay = float(os.getenv("REMINDER_DM_DELAY", "1"))
+        self.calendar_settings = CalendarSettings()
         self.reminder_loop.start()
         self.daily_poster_loop.start()
         self.weekly_poster_loop.start()
@@ -87,12 +88,13 @@ class ReminderAutopilot(commands.Cog):
         window_end = now + timedelta(minutes=11)
 
         try:
-            service = get_service()
+            service = get_service(self.calendar_settings)
             events = list_upcoming_events(
                 service,
                 time_min=window_start,
                 time_max=window_end,
                 max_results=50,
+                settings=self.calendar_settings,
             )
             mapped_events = []
             for ev in events:

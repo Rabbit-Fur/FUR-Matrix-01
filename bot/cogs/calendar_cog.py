@@ -3,6 +3,8 @@ import secrets
 from datetime import datetime, timezone
 from zoneinfo import ZoneInfo
 
+import os
+
 import discord
 from discord import app_commands
 from discord.ext import commands, tasks
@@ -11,6 +13,7 @@ from config import Config
 from fur_lang.i18n import t
 from mongo_service import get_collection
 from services.calendar_service import CalendarService
+from services.google.calendar_sync import CalendarSettings
 from utils.poster_generator import create_event_image
 from utils.oauth_utils import (
     build_authorization_url,
@@ -39,7 +42,13 @@ class CalendarCog(commands.Cog):
 
     def __init__(self, bot: commands.Bot) -> None:
         self.bot = bot
-        self.service = CalendarService()
+        settings = CalendarSettings()
+        self.service = CalendarService(
+            calendar_id=settings.calendar_id,
+            token_path=str(settings.token_path),
+            scopes=settings.scopes,
+            mongo_uri=os.getenv("MONGODB_URI"),
+        )
         self.sync_loop.start()
         self.daily_loop.start()
         self.weekly_loop.start()
