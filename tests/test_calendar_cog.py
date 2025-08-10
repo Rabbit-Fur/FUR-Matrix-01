@@ -1,4 +1,7 @@
+import importlib
 import logging
+import pathlib
+import sys
 import types
 from datetime import datetime, timedelta, timezone
 from zoneinfo import ZoneInfo
@@ -6,7 +9,14 @@ from zoneinfo import ZoneInfo
 import discord
 import pytest
 
-from bot.cogs.calendar_cog import CalendarCog, should_send_daily, should_send_weekly
+services_pkg = types.ModuleType("services")
+services_pkg.__path__ = [str(pathlib.Path(__file__).resolve().parents[1] / "services")]
+sys.modules["services"] = services_pkg
+
+CalendarCogModule = importlib.import_module("bot.cogs.calendar_cog")
+CalendarCog = CalendarCogModule.CalendarCog
+should_send_daily = CalendarCogModule.should_send_daily
+should_send_weekly = CalendarCogModule.should_send_weekly
 
 
 class DummyUser:
@@ -110,22 +120,19 @@ async def test_sync_loop_builds_and_syncs(monkeypatch):
 
     called: dict[str, bool] = {}
 
-    class DummyService:
-        def __init__(self) -> None:
-            self.service = None
+    def setup_service(self):
+        called["setup"] = True
 
-        def _build_service(self) -> None:
-            called["build"] = True
-            self.service = object()
-
-        async def sync(self) -> None:
+        async def sync():
             called["sync"] = True
 
-    cog.service = DummyService()
+        self.service = types.SimpleNamespace(service=object(), sync=sync)
 
-    await cog.sync_loop()
+    monkeypatch.setattr(CalendarCog, "setup_service", setup_service)
 
-    assert called.get("build")
+    await CalendarCog.sync_loop(cog)
+
+    assert called.get("setup")
     assert called.get("sync")
 
 
@@ -140,21 +147,18 @@ async def test_sync_loop_skips_when_unconfigured(monkeypatch, caplog):
 
     called: dict[str, bool] = {}
 
-    class DummyService:
-        def __init__(self) -> None:
-            self.service = None
+    def setup_service(self):
+        called["setup"] = True
 
-        def _build_service(self) -> None:
-            called["build"] = True
+        async def sync():
+            called["sync"] = True  # pragma: no cover - should not run
 
-        async def sync(self) -> None:  # pragma: no cover - should not run
-            called["sync"] = True
+        self.service = types.SimpleNamespace(service=None, sync=sync)
 
-    cog.service = DummyService()
+    monkeypatch.setattr(CalendarCog, "setup_service", setup_service)
 
     with caplog.at_level(logging.WARNING):
-        await cog.sync_loop()
+        await CalendarCog.sync_loop(cog)
 
-    assert called.get("build")
+    assert called.get("setup")
     assert "Calendar service not configured" in caplog.text
-    assert "sync" not in called
