@@ -16,6 +16,7 @@ from mongo_service import get_collection
 from utils import poster_generator
 from utils.event_helpers import parse_event_time
 from bot.dm_utils import get_dm_image
+from main_app import app
 
 
 def is_opted_out(user_id: int) -> bool:
@@ -88,14 +89,15 @@ class ReminderAutopilot(commands.Cog):
         window_end = now + timedelta(minutes=11)
 
         try:
-            service = get_service(self.calendar_settings)
-            events = list_upcoming_events(
-                service,
-                time_min=window_start,
-                time_max=window_end,
-                max_results=50,
-                settings=self.calendar_settings,
-            )
+            with app.app_context():
+                service = get_service(self.calendar_settings)
+                events = list_upcoming_events(
+                    service,
+                    time_min=window_start,
+                    time_max=window_end,
+                    max_results=50,
+                    settings=self.calendar_settings,
+                )
             mapped_events = []
             for ev in events:
                 doc = get_collection("events").find_one({"google_id": ev.get("id")})
