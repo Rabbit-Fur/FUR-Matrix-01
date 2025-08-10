@@ -1,0 +1,14 @@
+tasks:
+  - name: fix-flask-appcontext
+    prompt: >
+      Behebe 'Working outside of application context' im calendar_cog.
+      Ziel: saubere AppContext-Initialisierung, keine globalen Side-Effects,
+      vollständige Tests (pytest), Logging & Fehlerpfade abdecken.
+  - name: google-sync-hardening
+    prompt: >
+      Härte Google OAuth/Sync ab: robustes Token-Refresh, Mongo-Persistenz,
+      klare Fehlerlogs, Retry-Backoff, i18n-Fehlertexte, 85% Coverage.
+  - name: i18n-sync
+    prompt: >
+      Synchronisiere alle translation JSON keys (de/en/vi/...),
+      generiere Missing-Keys-Report, fülle Platzhalter, schreibe Doku.

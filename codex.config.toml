@@ -1,0 +1,10 @@
+model = "gpt-4.1"
+ask_for_approval = true
+sandbox = "strict"
+disable_response_storage = true
+
+[project]
+docs = ["AGENTS.md"]
+
+[paths]
+root = "."
