@@ -1,5 +1,3 @@
-import types
-import logging
 import asyncio
 import logging
 import sys

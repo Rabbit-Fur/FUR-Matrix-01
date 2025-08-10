@@ -3,7 +3,7 @@
 from collections.abc import Iterable
 from functools import wraps
 
-from flask import current_app, flash, redirect, request, session, url_for
+from flask import current_app, flash, redirect, session, url_for
 
 import mongo_service
 from agents.auth_agent import AuthAgent

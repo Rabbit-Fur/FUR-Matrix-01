@@ -73,6 +73,19 @@ class Config:
         "GOOGLE_CALENDAR_SCOPES",
         default="https://www.googleapis.com/auth/calendar.readonly",
     ).split(",")
+    GOOGLE_PROJECT_ID: str | None = get_env_str("GOOGLE_PROJECT_ID", required=False)
+    GOOGLE_AUTH_URI: str = get_env_str(
+        "GOOGLE_AUTH_URI",
+        default="https://accounts.google.com/o/oauth2/auth",
+    )
+    GOOGLE_TOKEN_URI: str = get_env_str(
+        "GOOGLE_TOKEN_URI",
+        default="https://oauth2.googleapis.com/token",
+    )
+    GOOGLE_AUTH_PROVIDER_CERT_URL: str = get_env_str(
+        "GOOGLE_AUTH_PROVIDER_CERT_URL",
+        default="https://www.googleapis.com/v1/certs",
+    )
 
     # --- i18n ---
     BABEL_DEFAULT_LOCALE = "en"

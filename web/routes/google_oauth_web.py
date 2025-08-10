@@ -1,9 +1,16 @@
 import logging
-import os
 import time
 from pathlib import Path
 
-from flask import Blueprint, Response, jsonify, redirect, request, session
+from flask import (
+    Blueprint,
+    Response,
+    current_app,
+    jsonify,
+    redirect,
+    request,
+    session,
+)
 from google.auth.transport.requests import Request
 from google.oauth2.credentials import Credentials
 from google_auth_oauthlib.flow import Flow
@@ -14,24 +21,32 @@ oauth_bp = Blueprint("oauth_web", __name__)
 
 # Constants
 SCOPES = ["https://www.googleapis.com/auth/calendar"]
-REDIRECT_URI = os.getenv("GOOGLE_REDIRECT_URI", "https://fur-martix.up.railway.app/oauth2callback")
-CLIENT_CONFIG = {
-    "web": {
-        "client_id": os.getenv("GOOGLE_CLIENT_ID"),
-        "project_id": os.getenv("GOOGLE_PROJECT_ID"),
-        "auth_uri": os.getenv("GOOGLE_AUTH_URI", "https://accounts.google.com/o/oauth2/auth"),
-        "token_uri": os.getenv("GOOGLE_TOKEN_URI", "https://oauth2.googleapis.com/token"),
-        "auth_provider_x509_cert_url": os.getenv(
-            "GOOGLE_AUTH_PROVIDER_CERT_URL", "https://www.googleapis.com/v1/certs"
-        ),
-        "client_secret": os.getenv("GOOGLE_CLIENT_SECRET"),
-        "redirect_uris": [REDIRECT_URI],
+
+
+def _redirect_uri() -> str:
+    uri = current_app.config.get("GOOGLE_REDIRECT_URI")
+    if not uri:
+        raise RuntimeError("GOOGLE_REDIRECT_URI not configured")
+    return uri
+
+
+def _client_config() -> dict:
+    return {
+        "web": {
+            "client_id": current_app.config.get("GOOGLE_CLIENT_ID"),
+            "project_id": current_app.config.get("GOOGLE_PROJECT_ID"),
+            "auth_uri": current_app.config.get("GOOGLE_AUTH_URI"),
+            "token_uri": current_app.config.get("GOOGLE_TOKEN_URI"),
+            "auth_provider_x509_cert_url": current_app.config.get("GOOGLE_AUTH_PROVIDER_CERT_URL"),
+            "client_secret": current_app.config.get("GOOGLE_CLIENT_SECRET"),
+            "redirect_uris": [_redirect_uri()],
+        }
     }
-}
-TOKEN_PATH = Path(os.getenv("GOOGLE_CREDENTIALS_FILE", "/data/google_token.json"))
-REDIRECT_URI = os.getenv("GOOGLE_REDIRECT_URI")
-if not REDIRECT_URI:
-    raise RuntimeError("GOOGLE_REDIRECT_URI not configured")
+
+
+def _token_path() -> Path:
+    return Path(current_app.config.get("GOOGLE_CREDENTIALS_FILE", "/data/google_token.json"))
+
 
 # Logger setup
 log = logging.getLogger(__name__)
@@ -50,14 +65,15 @@ state_map: dict[str, float] = {}
 @oauth_bp.route("/auth/initiate")
 def auth_initiate() -> Response:
     """Start OAuth flow and redirect user to Google."""
-    if not CLIENT_CONFIG["web"].get("client_id") or not CLIENT_CONFIG["web"].get("client_secret"):
+    client_config = _client_config()
+    if not client_config["web"].get("client_id") or not client_config["web"].get("client_secret"):
         log.error("CLIENT_CONFIG incomplete")
         return Response("Missing Google client config", status=500)
     try:
         flow = Flow.from_client_config(
-            CLIENT_CONFIG,
+            client_config,
             scopes=SCOPES,
-            redirect_uri=REDIRECT_URI,
+            redirect_uri=_redirect_uri(),
         )
         authorization_url, state = flow.authorization_url(
             access_type="offline",
@@ -90,15 +106,16 @@ def oauth2callback() -> Response:
         log.warning("Invalid OAuth state: received %s, expected %s", req_state, stored_state)
         return Response("Invalid OAuth state", status=400)
 
-    if not CLIENT_CONFIG["web"].get("client_id") or not CLIENT_CONFIG["web"].get("client_secret"):
+    client_config = _client_config()
+    if not client_config["web"].get("client_id") or not client_config["web"].get("client_secret"):
         log.error("CLIENT_CONFIG incomplete")
         return Response("Missing Google client config", status=500)
     try:
         flow = Flow.from_client_config(
-            CLIENT_CONFIG,
+            client_config,
             scopes=SCOPES,
             state=req_state,
-            redirect_uri=REDIRECT_URI,
+            redirect_uri=_redirect_uri(),
         )
         flow.fetch_token(authorization_response=request.url)
     except Exception as exc:
@@ -114,9 +131,10 @@ def oauth2callback() -> Response:
         return jsonify({"error": f"Authentication failed: {exc}", "details": text}), 400
 
     creds = flow.credentials
+    token_path = _token_path()
     try:
-        TOKEN_PATH.write_text(creds.to_json())
-        log.info("Token successfully saved to %s", TOKEN_PATH)
+        token_path.write_text(creds.to_json())
+        log.info("Token successfully saved to %s", token_path)
     except Exception:
         log.exception("Failed to save OAuth credentials to file")
         return Response("Authentication succeeded, but saving token failed.", status=500)
@@ -136,16 +154,17 @@ def load_credentials() -> Credentials:
         If the token file does not exist or credentials cannot be loaded.
     """
 
-    if not TOKEN_PATH.exists():
-        log.warning("Token file not found: %s", TOKEN_PATH)
+    token_path = _token_path()
+    if not token_path.exists():
+        log.warning("Token file not found: %s", token_path)
         raise SyncTokenExpired from None
 
     try:
-        creds = Credentials.from_authorized_user_file(TOKEN_PATH, SCOPES)
+        creds = Credentials.from_authorized_user_file(token_path, SCOPES)
         if creds.expired and creds.refresh_token:
             log.info("Refreshing expired token...")
             creds.refresh(Request())
-            TOKEN_PATH.write_text(creds.to_json())
+            token_path.write_text(creds.to_json())
         return creds
     except Exception:
         log.exception("Failed to load or refresh credentials")

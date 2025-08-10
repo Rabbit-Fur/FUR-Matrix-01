@@ -2,16 +2,15 @@
 
 from pathlib import Path
 
-from flask import Blueprint, jsonify, request, send_from_directory
+from flask import Blueprint, jsonify, request, send_from_directory, current_app
 
 from agents.poster_agent import PosterAgent
-from config import Config
 
 poster_blueprint = Blueprint("poster", __name__)
 
 
 def _poster_dir() -> Path:
-    path = Path(Config.POSTER_OUTPUT_PATH)
+    path = Path(current_app.config["POSTER_OUTPUT_PATH"])
     path.mkdir(parents=True, exist_ok=True)
     return path
 
