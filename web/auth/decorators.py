@@ -24,12 +24,10 @@ def login_required(view_func):
 
     @wraps(view_func)
     def wrapper(*args, **kwargs):
-        if not _agent().is_logged_in():
         if not _agent().is_logged_in() or "discord_user" not in session:
             flash(t("login_required", default="Login required."), "warning")
             return redirect(url_for("auth.login"))
-        else:
-            return view_func(*args, **kwargs)
+        return view_func(*args, **kwargs)
 
     return wrapper
 
@@ -39,7 +37,6 @@ def r3_required(view_func):
 
     @wraps(view_func)
     def wrapper(*args, **kwargs):
-        if not _agent().is_r3():
         if not _agent().is_r3() or session.get("discord_user", {}).get("role_level") not in [
             "R3",
             "R4",
@@ -47,8 +44,7 @@ def r3_required(view_func):
         ]:
             flash(t("member_only", default="Members only."))
             return redirect(url_for("auth.login"))
-        else:
-            return view_func(*args, **kwargs)
+        return view_func(*args, **kwargs)
 
     return wrapper
 
@@ -58,15 +54,13 @@ def r4_required(view_func):
 
     @wraps(view_func)
     def wrapper(*args, **kwargs):
-        if not _agent().is_r4():
         if not _agent().is_r4() or session.get("discord_user", {}).get("role_level") not in [
             "R4",
             "ADMIN",
         ]:
             flash(t("admin_only", default="Admins only."))
             return redirect(url_for("auth.login"))
-        else:
-            return view_func(*args, **kwargs)
+        return view_func(*args, **kwargs)
 
     return wrapper
 
@@ -76,11 +70,9 @@ def admin_required(view_func):
 
     @wraps(view_func)
     def wrapper(*args, **kwargs):
-        if not _agent().is_admin():
         if not _agent().is_admin() or session.get("discord_user", {}).get("role_level") != "ADMIN":
             flash(t("superuser_only", default="Superuser only."))
             return redirect(url_for("auth.login"))
-        else:
-            return view_func(*args, **kwargs)
+        return view_func(*args, **kwargs)
 
     return wrapper

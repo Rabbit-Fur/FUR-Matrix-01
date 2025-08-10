@@ -2,7 +2,9 @@ import json
 import logging
 import os
 
+import pytest
 import services.google.auth as mod
+from services.google.exceptions import SyncTokenExpired
 
 
 def test_google_login_flow(client, monkeypatch):
@@ -79,7 +81,8 @@ def test_load_credentials_invalid_returns_none(tmp_path, app, caplog):
     app.config.update(GOOGLE_CALENDAR_SCOPES=["scope"])
 
     with caplog.at_level(logging.ERROR):
-        assert mod.load_credentials() is None
+        with pytest.raises(SyncTokenExpired):
+            mod.load_credentials()
     assert "Invalid credentials" in caplog.text
 
 
@@ -90,7 +93,8 @@ def test_load_credentials_missing_file(tmp_path, app, caplog):
     app.config.update(GOOGLE_CALENDAR_SCOPES=["scope"])
 
     with caplog.at_level(logging.WARNING):
-        assert mod.load_credentials() is None
+        with pytest.raises(SyncTokenExpired):
+            mod.load_credentials()
     assert "Token file not found" in caplog.text
 
 

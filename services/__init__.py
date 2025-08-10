@@ -1,4 +1,5 @@
-from .calendar_service import CalendarService, DMReminderScheduler, SyncTokenExpired
+from .calendar_service import CalendarService, DMReminderScheduler
+from .google.exceptions import SyncTokenExpired
 from .langchain_service import LangchainService
 from .github_sync import GitHubSyncService
 

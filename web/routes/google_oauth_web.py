@@ -10,24 +10,20 @@ from google.oauth2.credentials import Credentials
 from google_auth_oauthlib.flow import Flow
 from googleapiclient.discovery import build
 
+from services.google.exceptions import SyncTokenExpired
+
 # Blueprint definition
 oauth_bp = Blueprint("oauth_web", __name__)
 
 # Constants
 SCOPES = ["https://www.googleapis.com/auth/calendar"]
-REDIRECT_URI = os.getenv(
-    "GOOGLE_REDIRECT_URI", "https://fur-martix.up.railway.app/oauth2callback"
-)
+REDIRECT_URI = os.getenv("GOOGLE_REDIRECT_URI", "https://fur-martix.up.railway.app/oauth2callback")
 CLIENT_CONFIG = {
     "web": {
         "client_id": os.getenv("GOOGLE_CLIENT_ID"),
         "project_id": os.getenv("GOOGLE_PROJECT_ID"),
-        "auth_uri": os.getenv(
-            "GOOGLE_AUTH_URI", "https://accounts.google.com/o/oauth2/auth"
-        ),
-        "token_uri": os.getenv(
-            "GOOGLE_TOKEN_URI", "https://oauth2.googleapis.com/token"
-        ),
+        "auth_uri": os.getenv("GOOGLE_AUTH_URI", "https://accounts.google.com/o/oauth2/auth"),
+        "token_uri": os.getenv("GOOGLE_TOKEN_URI", "https://oauth2.googleapis.com/token"),
         "auth_provider_x509_cert_url": os.getenv(
             "GOOGLE_AUTH_PROVIDER_CERT_URL", "https://www.googleapis.com/v1/certs"
         ),
@@ -129,11 +125,17 @@ def oauth2callback() -> Response:
 # ---- Helpers ----
 
 
-def load_credentials() -> Optional[Credentials]:
-    """Load stored credentials from token file."""
+def load_credentials() -> Credentials:
+    """Load stored credentials from token file.
+
+    Raises
+    ------
+    SyncTokenExpired
+        If the token file is missing or invalid.
+    """
     if not TOKEN_PATH.exists():
         log.warning("Token file not found: %s", TOKEN_PATH)
-        return None
+        raise SyncTokenExpired("token file not found")
 
     try:
         creds = Credentials.from_authorized_user_file(TOKEN_PATH, SCOPES)
@@ -142,19 +144,17 @@ def load_credentials() -> Optional[Credentials]:
             creds.refresh(Request())
             TOKEN_PATH.write_text(creds.to_json())
         return creds
-    except Exception:
+    except Exception as exc:  # noqa: BLE001
         log.exception("Failed to load or refresh credentials")
-        return None
+        raise SyncTokenExpired("failed to load credentials") from exc
 
 
 def get_calendar_service():
     """Return Google Calendar service if credentials exist."""
     creds = load_credentials()
-    if not creds:
-        return None
     try:
         return build("calendar", "v3", credentials=creds, cache_discovery=False)
-    except Exception:
+    except Exception:  # noqa: BLE001
         log.exception("Failed to build Google Calendar API service")
         return None
 
