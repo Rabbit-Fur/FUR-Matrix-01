@@ -2,9 +2,8 @@ import asyncio
 import logging
 import os
 from datetime import date as date_type, datetime, timedelta, timezone
+from pathlib import Path
 from typing import Any, Iterable, Optional
-
-from flask import current_app
 
 from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
@@ -12,7 +11,7 @@ from motor.motor_asyncio import AsyncIOMotorClient, AsyncIOMotorCollection
 from pymongo.errors import ConfigurationError
 
 from crud import event_crud
-from services.google.auth import load_credentials
+from services.google.calendar_sync import CalendarSettings, load_credentials
 from schemas.event_schema import EventModel
 from utils.time_utils import parse_calendar_datetime
 
@@ -33,10 +32,21 @@ class CalendarService:
         mongo_uri: Optional[str] = None,
         events_collection: Optional[AsyncIOMotorCollection] = None,
         tokens_collection: Optional[AsyncIOMotorCollection] = None,
+        token_path: Optional[str] = None,
+        scopes: Optional[list[str]] = None,
     ) -> None:
-        self.calendar_id = calendar_id or current_app.config.get("GOOGLE_CALENDAR_ID")
+        self.calendar_id = calendar_id or os.getenv("GOOGLE_CALENDAR_ID")
+        self.token_path = (
+            token_path
+            or os.getenv("GOOGLE_TOKEN_STORAGE_PATH")
+            or os.getenv(
+                "GOOGLE_CREDENTIALS_FILE",
+                "/data/google_token.json",
+            )
+        )
+        self.scopes = scopes or ["https://www.googleapis.com/auth/calendar.readonly"]
         self.service: Any | None = None
-        uri = mongo_uri or current_app.config.get("MONGODB_URI", "mongodb://localhost:27017/furdb")
+        uri = mongo_uri or os.getenv("MONGODB_URI", "mongodb://localhost:27017/furdb")
         if events_collection is not None and tokens_collection is not None:
             self.client = None
             self.events = events_collection
@@ -57,7 +67,12 @@ class CalendarService:
     def _build_service(self) -> None:
         if self.service:
             return
-        creds = load_credentials()
+        settings = CalendarSettings(
+            token_path=Path(self.token_path),
+            calendar_id=self.calendar_id,
+            scopes=self.scopes,
+        )
+        creds = load_credentials(settings)
         if not creds:
             raise SyncTokenExpired
         self.service = build(

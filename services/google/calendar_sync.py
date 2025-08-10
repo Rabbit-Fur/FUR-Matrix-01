@@ -12,11 +12,12 @@ from __future__ import annotations
 
 import json
 import logging
+import os
+from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Optional
 
-from flask import current_app
 from google.auth.transport.requests import Request
 from google.oauth2.credentials import Credentials
 from googleapiclient.discovery import build
@@ -57,28 +58,43 @@ init_logging()
 _warned_once = False
 
 
-def _token_path() -> Path:
-    """Resolve the configured path for stored OAuth tokens."""
+def _default_token_path() -> Path:
+    """Return the default path for stored OAuth tokens."""
 
-    cfg = current_app.config
-    path = (
-        cfg.get("GOOGLE_TOKEN_STORAGE_PATH")
-        or cfg.get("GOOGLE_CREDENTIALS_FILE")
+    return Path(
+        os.getenv("GOOGLE_TOKEN_STORAGE_PATH")
+        or os.getenv("GOOGLE_CREDENTIALS_FILE")
         or "/data/google_token.json"
     )
-    return Path(path)
+
+
+@dataclass
+class CalendarSettings:
+    """Runtime configuration for Google Calendar access."""
+
+    token_path: Path = field(default_factory=_default_token_path)
+    calendar_id: str | None = os.getenv("GOOGLE_CALENDAR_ID")
+    scopes: list[str] = field(
+        default_factory=lambda: ["https://www.googleapis.com/auth/calendar.readonly"]
+    )
 
 
 class SyncTokenExpired(Exception):
     """Raised when stored OAuth credentials are missing or invalid."""
 
 
-def load_credentials() -> Credentials:
+def load_credentials(settings: CalendarSettings | None = None) -> Credentials:
     """Load stored OAuth credentials from disk.
 
     The token file is expected to contain a refresh token. When the access token
     is expired it will be refreshed automatically and the new credentials are
     written back to the same file.
+
+    Parameters
+    ----------
+    settings:
+        Optional :class:`CalendarSettings` providing ``token_path`` and
+        ``scopes``. When omitted, environment defaults are used.
 
     Raises
     ------
@@ -88,7 +104,8 @@ def load_credentials() -> Credentials:
     """
 
     global _warned_once
-    token_path = _token_path()
+    settings = settings or CalendarSettings()
+    token_path = settings.token_path
     if not token_path.exists():
         if not _warned_once:
             logger.warning("No Google credentials found at %s", token_path)
@@ -115,9 +132,7 @@ def load_credentials() -> Credentials:
             _warned_once = True
         raise SyncTokenExpired from None
 
-    scopes = current_app.config.get(
-        "GOOGLE_CALENDAR_SCOPES", ["https://www.googleapis.com/auth/calendar.readonly"]
-    )
+    scopes = settings.scopes
     try:
         creds = Credentials.from_authorized_user_info(info, scopes)
         if creds.expired and creds.refresh_token:
@@ -134,26 +149,34 @@ def load_credentials() -> Credentials:
 # ---------------------------------------------------------------------------
 # Public API
 # ---------------------------------------------------------------------------
-_service: Any | None = None
+_service_cache: dict[Path, Any] = {}
 
 
-def get_service() -> Any | None:
+def get_service(settings: CalendarSettings | None = None) -> Any | None:
     """Return a cached Google Calendar API service instance.
 
-    The client is constructed on first use. Missing or invalid credentials raise
-    :class:`SyncTokenExpired` while other build errors return ``None``.
+    Parameters
+    ----------
+    settings:
+        Optional :class:`CalendarSettings` providing token location and scopes.
+
+    The client is constructed on first use for the given ``token_path``. Missing
+    or invalid credentials raise :class:`SyncTokenExpired` while other build
+    errors return ``None``.
     """
 
-    global _service
-    if _service is not None:
-        return _service
-    creds = load_credentials()
+    settings = settings or CalendarSettings()
+    token_path = settings.token_path
+    if token_path in _service_cache:
+        return _service_cache[token_path]
+    creds = load_credentials(settings)
     try:
-        _service = build("calendar", "v3", credentials=creds, cache_discovery=False)
+        service = build("calendar", "v3", credentials=creds, cache_discovery=False)
     except Exception:  # noqa: BLE001
         logger.exception("Failed to build Google Calendar service")
-        _service = None
-    return _service
+        service = None
+    _service_cache[token_path] = service
+    return service
 
 
 def list_upcoming_events(
@@ -163,6 +186,7 @@ def list_upcoming_events(
     time_min: Optional[datetime] = None,
     time_max: Optional[datetime] = None,
     max_results: int = 2500,
+    settings: CalendarSettings | None = None,
 ) -> list[dict]:
     """Return upcoming events from Google Calendar.
 
@@ -170,20 +194,23 @@ def list_upcoming_events(
     ----------
     service:
         Existing calendar service instance. When ``None`` a new service is
-        created via :func:`get_service`.
+        created via :func:`get_service` using ``settings``.
     calendar_id:
-        Specific calendar to query. Defaults to ``Config.GOOGLE_CALENDAR_ID``.
+        Specific calendar to query. Defaults to ``settings.calendar_id``.
     time_min / time_max:
         Optional datetime boundaries. Values are converted to UTC as required by
         the API.
     max_results:
         Maximum number of events to fetch.
+    settings:
+        Optional :class:`CalendarSettings` object providing defaults.
     """
 
-    service = service or get_service()
+    settings = settings or CalendarSettings()
+    service = service or get_service(settings)
     if not service:
         return []
-    calendar_id = calendar_id or current_app.config.get("GOOGLE_CALENDAR_ID")
+    calendar_id = calendar_id or settings.calendar_id
     if not calendar_id:
         logger.warning("GOOGLE_CALENDAR_ID not configured")
         return []
@@ -231,6 +258,7 @@ def sync_to_mongodb(
     max_results: int = 250,
     time_min: Optional[datetime] = None,
     time_max: Optional[datetime] = None,
+    settings: CalendarSettings | None = None,
 ) -> int:
     """Fetch events via :class:`CalendarService` and upsert them into MongoDB."""
 
@@ -239,7 +267,12 @@ def sync_to_mongodb(
         SyncTokenExpired as ServiceSyncTokenExpired,
     )
 
-    svc = CalendarService()
+    settings = settings or CalendarSettings()
+    svc = CalendarService(
+        calendar_id=settings.calendar_id,
+        token_path=str(settings.token_path),
+        scopes=settings.scopes,
+    )
     if time_min is None:
         time_min = datetime.now(timezone.utc)
 
@@ -258,7 +291,7 @@ def sync_to_mongodb(
     if not events:
         return 0
 
-    cal_id = current_app.config.get("GOOGLE_CALENDAR_ID")
+    cal_id = settings.calendar_id
     ops = []
     for e in events:
         e["__calendar_id"] = cal_id
@@ -273,6 +306,7 @@ def sync_to_mongodb(
 
 
 __all__ = [
+    "CalendarSettings",
     "get_service",
     "list_upcoming_events",
     "format_event",
