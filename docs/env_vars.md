@@ -12,7 +12,6 @@ The following table lists all variables accessed in the codebase. Locations refe
 | CODEX_ENV_PYTHON_VERSION | core/universal/setup.py | Version hint for Python runtime |
 | CODEX_ENV_RUST_VERSION | core/universal/setup.py | Version hint for Rust runtime |
 | CODEX_ENV_SWIFT_VERSION | core/universal/setup.py | Version hint for Swift runtime |
-| DATABASE_URL | — | Optional alternative database connection string |
 | DEBUG | main_app.py | Enable debug mode |
 | DISCORD_CLIENT_ID | config.py | Discord OAuth client ID |
 | DISCORD_CLIENT_SECRET | config.py | Discord OAuth client secret |
@@ -42,19 +41,15 @@ The following table lists all variables accessed in the codebase. Locations refe
 | GOOGLE_SYNC_INTERVAL_MINUTES | config.py, services/google/sync_task.py | Interval for calendar sync |
 | GOOGLE_TOKEN_STORAGE_PATH | .env.example | Path to stored OAuth tokens |
 | GOOGLE_TOKEN_URI | .env.example | OAuth token endpoint |
-| HoF_CHANNEL_ID | .env.example | Channel for Hall of Fame posts |
 | LEADERBOARD_CHANNEL_ID | .env.example | Channel for leaderboard updates |
 | LOGTAIL_TOKEN | .env.example | Token for Logtail logging |
 | MONGO_DB | config.py, mongo_service.py | MongoDB database name |
-| MONGO_PASSWORD | .env.example | Password for MongoDB authentication |
 | MONGO_URL | init_daily_logs.py | Simple Mongo connection URL for scripts |
 | MONGODB_URI | config.py, mongo_service.py | MongoDB connection URI |
 | NEWSLETTER_DM_DELAY | bot/cogs/newsletter_autopilot.py | Delay between DM sends |
 | OPENAI_API_KEY | i18n_tools/translate_sync.py | OpenAI API authentication |
 | PORT | main_app.py | HTTP server port |
 | PORT2 | .env.example | Secondary port for auxiliary services |
-| PROMETHEUS_ENDPOINT | README.md | Prometheus metrics endpoint (default http://localhost:9090) |
-| public_CHANNEL_ID | .env.example | Channel for public announcements |
 | RAILWAY_PROJECT | .env.example | Railway project identifier |
 | RAILWAY_TOKEN | .env.example | Railway API token for deployment |
 | R3_ROLE_IDS | config.py | Discord role IDs for R3 group |
