@@ -1,6 +1,6 @@
+import logging
 from datetime import timezone
 
-import logging
 import services.google.calendar_sync as mod
 
 
@@ -12,7 +12,7 @@ class DummyCollection:
         self.docs[flt["google_id"]] = update["$set"]
 
 
-def test_sync_to_mongodb(monkeypatch):
+def test_sync_to_mongodb(monkeypatch, app):
     dummy = DummyCollection()
 
     def fake_fetch(*a, **k):
@@ -30,7 +30,8 @@ def test_sync_to_mongodb(monkeypatch):
     monkeypatch.setattr(mod, "get_calendar_service", lambda: object())
     monkeypatch.setattr(mod, "get_collection", lambda name: dummy)
 
-    count = mod.sync_to_mongodb("events")
+    with app.app_context():
+        count = mod.sync_to_mongodb("events")
     assert count == 1
     doc = dummy.docs["g1"]
     assert doc["title"] == "Test"
@@ -39,7 +40,7 @@ def test_sync_to_mongodb(monkeypatch):
     assert doc["event_time"].tzinfo == timezone.utc
 
 
-def test_all_day_event(monkeypatch):
+def test_all_day_event(monkeypatch, app):
     dummy = DummyCollection()
 
     events = [
@@ -56,30 +57,34 @@ def test_all_day_event(monkeypatch):
     monkeypatch.setattr(mod, "get_calendar_service", lambda: object())
     monkeypatch.setattr(mod, "get_collection", lambda name: dummy)
 
-    mod.sync_to_mongodb("events")
+    with app.app_context():
+        mod.sync_to_mongodb("events")
     doc = dummy.docs["g2"]
     assert doc["event_time"].hour == 0
     assert doc["event_time"].tzinfo == timezone.utc
 
 
-def test_load_credentials_warns_once(monkeypatch, tmp_path, caplog):
+def test_load_credentials_warns_once(monkeypatch, tmp_path, caplog, app):
     missing = tmp_path / "token.json"
-    monkeypatch.setattr(mod, "TOKEN_PATH", missing, raising=False)
+    app.config["GOOGLE_TOKEN_STORAGE_PATH"] = str(missing)
     mod._warned_once = False
     with caplog.at_level(logging.WARNING):
-        assert mod.load_credentials() is None
+        with app.app_context():
+            assert mod.load_credentials() is None
     assert "No Google credentials found" in caplog.text
     caplog.clear()
     with caplog.at_level(logging.WARNING):
-        assert mod.load_credentials() is None
+        with app.app_context():
+            assert mod.load_credentials() is None
     assert caplog.text == ""
 
 
-def test_load_credentials_client_config(monkeypatch, tmp_path, caplog):
+def test_load_credentials_client_config(monkeypatch, tmp_path, caplog, app):
     path = tmp_path / "client.json"
     path.write_text('{"installed": {"client_id": "id", "client_secret": "sec"}}')
-    monkeypatch.setattr(mod, "TOKEN_PATH", path, raising=False)
+    app.config["GOOGLE_TOKEN_STORAGE_PATH"] = str(path)
     mod._warned_once = False
     with caplog.at_level(logging.WARNING):
-        assert mod.load_credentials() is None
+        with app.app_context():
+            assert mod.load_credentials() is None
     assert "client config" in caplog.text

@@ -5,13 +5,18 @@ from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from typing import Any, Optional
 
+from flask import current_app, has_app_context
 from google.auth.transport.requests import Request
 from google.oauth2.credentials import Credentials
 from googleapiclient.discovery import build
 
-from config import Config
 from mongo_service import get_collection
 from utils.time_utils import parse_calendar_datetime
+
+
+class SyncTokenExpired(Exception):
+    """Raised when the Google OAuth token is missing or invalid."""
+
 
 # Logging setup
 LOG_PATH = Path("logs")
@@ -36,8 +41,18 @@ def init_logging() -> None:
 
 init_logging()
 
-# Token path
-TOKEN_PATH = Path(os.getenv("GOOGLE_CREDENTIALS_FILE", "/data/google_token.json"))
+
+def _token_path() -> Path:
+    """Return the configured OAuth token storage path."""
+    if has_app_context():
+        cfg = current_app.config
+        path = cfg.get("GOOGLE_TOKEN_STORAGE_PATH") or cfg.get("GOOGLE_CREDENTIALS_FILE")
+        if path:
+            return Path(path)
+    env_path = os.environ.get("GOOGLE_TOKEN_STORAGE_PATH") or os.environ.get(
+        "GOOGLE_CREDENTIALS_FILE"
+    )
+    return Path(env_path or "/data/google_token.json")
 
 
 def _get_token_collection():
@@ -84,13 +99,14 @@ _warned_once = False
 def load_credentials() -> Optional[Credentials]:
     """Load stored credentials from JSON and refresh if needed."""
     global _warned_once
-    if not TOKEN_PATH.exists():
+    path = _token_path()
+    if not path.exists():
         if not _warned_once:
-            logger.warning("No Google credentials found at %s", TOKEN_PATH)
+            logger.warning("No Google credentials found at %s", path)
             _warned_once = True
         return None
     try:
-        info = json.loads(TOKEN_PATH.read_text())
+        info = json.loads(path.read_text())
     except Exception:  # noqa: BLE001
         logger.exception("Failed to read credentials JSON")
         return None
@@ -101,21 +117,32 @@ def load_credentials() -> Optional[Credentials]:
         if ("installed" in info or "web" in info) and not _warned_once:
             logger.warning(
                 "Credentials file %s looks like an OAuth client config, not a saved token",
-                TOKEN_PATH,
+                path,
             )
             _warned_once = True
         elif not _warned_once:
             missing = ", ".join(sorted(required - keys))
-            logger.warning("Credentials file %s missing required keys: %s", TOKEN_PATH, missing)
+            logger.warning("Credentials file %s missing required keys: %s", path, missing)
             _warned_once = True
         return None
 
     try:
-        creds = Credentials.from_authorized_user_file(TOKEN_PATH, Config.GOOGLE_CALENDAR_SCOPES)
+        scopes = (
+            current_app.config.get(
+                "GOOGLE_CALENDAR_SCOPES",
+                ["https://www.googleapis.com/auth/calendar.readonly"],
+            )
+            if has_app_context()
+            else os.environ.get(
+                "GOOGLE_CALENDAR_SCOPES",
+                "https://www.googleapis.com/auth/calendar.readonly",
+            ).split(",")
+        )
+        creds = Credentials.from_authorized_user_info(info, scopes)
         if creds.expired and creds.refresh_token:
             logger.info("Refreshing Google credentials")
             creds.refresh(Request())
-            TOKEN_PATH.write_text(creds.to_json())
+            path.write_text(creds.to_json())
         _warned_once = False
         return creds
     except Exception:  # noqa: BLE001
@@ -123,16 +150,23 @@ def load_credentials() -> Optional[Credentials]:
         return None
 
 
+_SERVICE: Any | None = None
+
+
 def get_calendar_service():
-    """Return Google Calendar API service or ``None`` if credentials missing."""
+    """Return a cached Google Calendar API service."""
+    global _SERVICE
+    if _SERVICE:
+        return _SERVICE
     creds = load_credentials()
     if not creds:
-        return None
+        raise SyncTokenExpired("Missing Google OAuth token")
     try:
-        return build("calendar", "v3", credentials=creds, cache_discovery=False)
+        _SERVICE = build("calendar", "v3", credentials=creds, cache_discovery=False)
+        return _SERVICE
     except Exception:  # noqa: BLE001
         logger.exception("Failed to build Google Calendar service")
-        return None
+        raise
 
 
 def fetch_upcoming_events(
@@ -145,12 +179,12 @@ def fetch_upcoming_events(
 ) -> list[dict]:
     """Fetch events from Google Calendar."""
     service = service or get_calendar_service()
-    if not service:
-        return []
-    calendar_id = calendar_id or Config.GOOGLE_CALENDAR_ID
-    if not calendar_id:
-        logger.warning("GOOGLE_CALENDAR_ID not configured")
-        return []
+    if calendar_id is None:
+        if has_app_context():
+            calendar_id = current_app.config.get("GOOGLE_CALENDAR_ID")
+        if not calendar_id:
+            logger.warning("GOOGLE_CALENDAR_ID not configured")
+            return []
 
     params = {
         "calendarId": calendar_id,
@@ -177,6 +211,12 @@ def fetch_upcoming_events(
     except Exception:  # noqa: BLE001
         logger.exception("Failed to fetch events from Google Calendar")
     return events
+
+
+def list_upcoming_events(max_results: int = 10) -> list[dict]:
+    """Return upcoming Google Calendar events."""
+    now = datetime.utcnow().astimezone(timezone.utc)
+    return fetch_upcoming_events(time_min=now, max_results=max_results)
 
 
 def _build_doc(event: dict) -> dict:
@@ -211,10 +251,10 @@ def _build_doc(event: dict) -> dict:
 def sync_to_mongodb(collection: str = "calendar_events") -> int:
     """Fetch events and upsert them into MongoDB."""
     service = get_calendar_service()
-    if not service:
-        logger.warning("No calendar service – skipping sync")
-        return 0
-    calendar_id = Config.GOOGLE_CALENDAR_ID or "primary"
+    if has_app_context():
+        calendar_id = current_app.config.get("GOOGLE_CALENDAR_ID", "primary")
+    else:
+        calendar_id = os.environ.get("GOOGLE_CALENDAR_ID", "primary")
     events = fetch_upcoming_events(service=service, calendar_id=calendar_id)
     if not events:
         logger.info("No events returned from calendar")
@@ -257,3 +297,14 @@ def create_test_event(
     except Exception:
         logger.exception("Failed to create test event")
         return None
+
+
+__all__ = [
+    "SyncTokenExpired",
+    "load_credentials",
+    "get_calendar_service",
+    "fetch_upcoming_events",
+    "list_upcoming_events",
+    "sync_to_mongodb",
+    "create_test_event",
+]
