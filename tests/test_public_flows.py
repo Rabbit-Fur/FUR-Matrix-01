@@ -66,7 +66,7 @@ def test_discord_login_flow(client, monkeypatch):
     with client.session_transaction() as sess:
         assert sess["discord_user"]["id"] == "123"
         assert sess["discord_user"]["role_level"] == "R3"
-        assert sess["discord_roles"] == ["R3"]
+        assert sess["discord_roles"] == ["1"]
 
 
 def test_discord_login_auto_join(client, monkeypatch):
@@ -132,15 +132,13 @@ def test_join_event_requires_login(client):
     client.get("/logout")
     resp = client.post("/events/1/join")
     assert resp.status_code == 302
-    assert resp.headers["Location"].endswith("/login")
-    flashes = get_flashes(client)
-    assert any(cat == "message" for cat, _ in flashes)
+    assert resp.headers["Location"].endswith("/login?next=/events/1/join")
 
 
 def test_join_event_success(client):
     with client.session_transaction() as sess:
         sess["discord_user"] = {"id": "42", "role_level": "R3"}
-        sess["discord_roles"] = ["R3"]
+        sess["discord_roles"] = ["1"]
     resp = client.post("/events/1/join")
     assert resp.status_code == 302
     assert resp.headers["Location"].endswith("/events/1")

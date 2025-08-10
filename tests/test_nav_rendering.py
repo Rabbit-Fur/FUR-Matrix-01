@@ -1,7 +1,10 @@
+ROLE_IDS = {"R3": "1", "R4": "2", "ADMIN": "3"}
+
+
 def login_role(client, role: str) -> None:
     with client.session_transaction() as sess:
         sess["discord_user"] = {"role_level": role}
-        sess["discord_roles"] = [role]
+        sess["discord_roles"] = [ROLE_IDS[role]]
 
 
 def clear_session(client) -> None:

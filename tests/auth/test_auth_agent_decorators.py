@@ -14,8 +14,8 @@ os.environ.setdefault("DISCORD_CLIENT_SECRET", "dummy")
 os.environ.setdefault("DISCORD_REDIRECT_URI", "http://localhost:8080/callback")
 os.environ.setdefault("SESSION_LIFETIME_MINUTES", "60")
 os.environ.setdefault("R3_ROLE_IDS", "1")
-os.environ.setdefault("R4_ROLE_IDS", "1")
-os.environ.setdefault("ADMIN_ROLE_IDS", "1")
+os.environ.setdefault("R4_ROLE_IDS", "2")
+os.environ.setdefault("ADMIN_ROLE_IDS", "3")
 os.environ.setdefault("BASE_URL", "http://localhost:8080")
 os.environ.setdefault("GOOGLE_REDIRECT_URI", "http://localhost:8080/oauth2callback")
 os.environ.setdefault("GOOGLE_CREDENTIALS_FILE", "/tmp/google.json")
@@ -97,10 +97,11 @@ def test_role_decorators_enforce_access():
     # login_required
     resp = client.get("/protected")
     assert resp.status_code == 302
-    assert resp.headers["Location"].endswith("/login")
+    assert "/login?next=/protected" in resp.headers["Location"]
 
     with client.session_transaction() as sess:
         sess["discord_user"] = {"role_level": "R3"}
+        sess["discord_roles"] = ["1"]
 
     assert client.get("/protected").status_code == 200
 
@@ -114,11 +115,13 @@ def test_role_decorators_enforce_access():
 
     with client.session_transaction() as sess:
         sess["discord_user"] = {"role_level": "R4"}
+        sess["discord_roles"] = ["2"]
 
     assert client.get("/r4").status_code == 200
-    assert client.get("/admin").status_code == 302
+    assert client.get("/admin").status_code == 403
 
     with client.session_transaction() as sess:
         sess["discord_user"] = {"role_level": "ADMIN"}
+        sess["discord_roles"] = ["3"]
 
     assert client.get("/admin").status_code == 200

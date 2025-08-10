@@ -1,3 +1,5 @@
+"""Role and login decorators for Flask views."""
+
 """
 Role and login decorators for Flask views.
 
@@ -8,13 +10,20 @@ so that a user can belong to multiple groups (R3/R4/Admin) simultaneously.
 
 from collections.abc import Iterable
 from functools import wraps
+from typing import Iterable
 
+from flask import abort, current_app, redirect, request, session, url_for
 from flask import current_app, flash, redirect, session, url_for
 
-import mongo_service
-from agents.auth_agent import AuthAgent
 
-from fur_lang.i18n import t
+def _as_list(value: Iterable | str | None) -> list[str]:
+    """Return *value* as a list of strings."""
+
+    if value is None:
+        return []
+    if isinstance(value, (list, tuple, set)):
+        return [str(v) for v in value]
+    return [v.strip() for v in str(value).split(",") if v.strip()]
 
 
 def _agent() -> AuthAgent:
@@ -22,6 +31,12 @@ def _agent() -> AuthAgent:
 
     return AuthAgent(session, mongo_service.db)
 
+
+def _config_ids(key: str) -> set[str]:
+    """Return configured role IDs for *key* from ``current_app.config``."""
+
+
+    return set(_as_list(current_app.config.get(key)))
 
 def _session_roles() -> list[str]:
     """Return the current user's Discord role IDs as strings.
@@ -68,9 +83,11 @@ def login_required(view_func):
             return redirect(url_for("auth.login"))
         return view_func(*args, **kwargs)
 
-    return wrapper
 
+def _session_roles() -> set[str]:
+    """Return the current user's role IDs from the session."""
 
+    return set(_as_list(session.get("discord_roles", [])))
 def r3_required(view_func):
     """Allow access only for members (R3+, Admin)."""
 
@@ -86,9 +103,26 @@ def r3_required(view_func):
             return redirect(url_for("auth.login"))
         return view_func(*args, **kwargs)
 
-    return wrapper
 
+def _role_required(config_key: str | None):
+    """Internal decorator factory checking login and optional roles."""
 
+    def decorator(view_func):
+        @wraps(view_func)
+        def wrapper(*args, **kwargs):
+            if "discord_user" not in session:
+                try:
+                    next_url = request.full_path if request.query_string else request.path
+                    return redirect(url_for("auth.login", next=next_url))
+                except Exception:  # pragma: no cover - no auth blueprint
+                    abort(401)
+
+            if config_key:
+                required = _config_ids(config_key)
+                if not (_session_roles() & required):
+                    abort(403)
+
+            return view_func(*args, **kwargs)
 def r4_required(view_func):
     """Allow access only for R4 or Admin roles."""
 
@@ -102,8 +136,9 @@ def r4_required(view_func):
             return redirect(url_for("auth.login"))
         return view_func(*args, **kwargs)
 
-    return wrapper
+        return wrapper
 
+    return decorator
 
 def admin_required(view_func):
     """Allow access only for system administrators."""
@@ -116,4 +151,17 @@ def admin_required(view_func):
             return redirect(url_for("auth.login"))
         return view_func(*args, **kwargs)
 
-    return wrapper
+def login_required(view_func):
+    return _role_required(None)(view_func)
+
+
+def r3_required(view_func):
+    return _role_required("R3_ROLE_IDS")(view_func)
+
+
+def r4_required(view_func):
+    return _role_required("R4_ROLE_IDS")(view_func)
+
+
+def admin_required(view_func):
+    return _role_required("ADMIN_ROLE_IDS")(view_func)
