@@ -142,6 +142,36 @@ Codex blockiert Deployment ohne .env.example + Commit-Lint
 - Vollständig modular, robust und testbar umgesetzt
 - Für Setup siehe `requirements.txt` und API-Doku im Ordner `docs/`
 
+### APScheduler Calendar Sync Example
+
+Schedule periodic synchronisation by creating a `CalendarService` within a
+Flask application context. The job interval is driven by the
+``GOOGLE_SYNC_INTERVAL_MINUTES`` configuration (default ``30`` minutes). OAuth
+tokens are loaded from the path specified via ``GOOGLE_TOKEN_STORAGE_PATH`` or
+``GOOGLE_CREDENTIALS_FILE``.
+
+```python
+from apscheduler.schedulers.background import BackgroundScheduler
+import asyncio, os
+from services import CalendarService
+from web import create_app
+
+app = create_app()
+scheduler = BackgroundScheduler()
+
+def sync_calendar():
+    with app.app_context():
+        service = CalendarService()
+        asyncio.run(service.sync())
+
+scheduler.add_job(
+    sync_calendar,
+    "interval",
+    minutes=int(os.getenv("GOOGLE_SYNC_INTERVAL_MINUTES", "30")),
+)
+scheduler.start()
+```
+
 📬 Kontakt
 
 Maintainer: Marcel Schlanzke

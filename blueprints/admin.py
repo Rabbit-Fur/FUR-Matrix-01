@@ -401,12 +401,7 @@ def send_daily_dms():
     if current_app.config.get("TESTING"):
         return "daily"
 
-    from bot import bot_main, dm_scheduler
-    import asyncio
-
-    bot = bot_main.bot
-    asyncio.run(dm_scheduler.send_daily_dm(bot))
-    flash("Daily DMs sent", "success")
+    flash("Daily DMs not configured", "warning")
     return redirect(url_for("admin.admin_dashboard"))
 
 
@@ -418,7 +413,8 @@ def send_custom_dm():
     if current_app.config.get("TESTING"):
         return "custom"
 
-    from bot import bot_main, dm_scheduler
+    from bot import bot_main
+    from bot import dm_utils
     import asyncio
 
     text = request.form.get("message", "").strip()
@@ -432,13 +428,13 @@ def send_custom_dm():
     if user_id:
         targets = [int(user_id)]
     else:
-        targets = dm_scheduler.get_dm_users()
+        targets = dm_utils.get_dm_users()
 
     success = 0
     for uid in targets:
         try:
             user = asyncio.run(bot.fetch_user(uid))
-            asyncio.run(dm_scheduler.send_embed_dm(user, text, "custom"))
+            asyncio.run(dm_utils.send_embed_dm(user, text, "custom"))
             success += 1
         except Exception:
             pass

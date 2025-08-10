@@ -74,8 +74,8 @@ def test_autopilot_sends_with_role_mention(monkeypatch):
         }[name]
 
     monkeypatch.setattr(autopilot_mod, "get_collection", get_coll)
-    monkeypatch.setattr(autopilot_mod, "fetch_upcoming_events", lambda *a, **k: [{"id": "g1"}])
-    monkeypatch.setattr(autopilot_mod, "get_calendar_service", lambda: object())
+    monkeypatch.setattr(autopilot_mod, "list_upcoming_events", lambda *a, **k: [{"id": "g1"}])
+    monkeypatch.setattr(autopilot_mod, "get_service", lambda: object())
     monkeypatch.setattr(event_helpers, "get_collection", get_coll)
     monkeypatch.setattr(autopilot_mod, "is_production", lambda: True)
     monkeypatch.setattr(Config, "REMINDER_ROLE_ID", 99)

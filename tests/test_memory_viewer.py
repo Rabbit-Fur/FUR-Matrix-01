@@ -1,7 +1,7 @@
 def login_admin(client):
     with client.session_transaction() as sess:
         sess["discord_user"] = {"role_level": "ADMIN"}
-        sess["discord_roles"] = ["ADMIN"]
+        sess["discord_roles"] = ["3"]
 
 
 def test_memory_index_requires_admin(client):

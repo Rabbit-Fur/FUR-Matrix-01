@@ -1,10 +1,13 @@
 import mongo_service
 
 
+ROLE_IDS = {"R3": "1", "R4": "2", "ADMIN": "3"}
+
+
 def login_with_role(client, role):
     with client.session_transaction() as sess:
         sess["discord_user"] = {"role_level": role}
-        sess["discord_roles"] = [role]
+        sess["discord_roles"] = [ROLE_IDS[role]]
         sess.pop("_flashes", None)
 
 
@@ -17,14 +20,13 @@ def _check_requires_r4(client, method, path):
     client.get("/logout")
     resp = client.open(path, method=method)
     assert resp.status_code == 302
-    assert resp.headers["Location"].endswith("/login")
+    assert resp.headers["Location"].endswith(f"/login?next={path}")
     # require_roles decorator redirects without flash on missing roles
 
     # login as R3
     login_with_role(client, "R3")
     resp = client.open(path, method=method)
-    assert resp.status_code == 302
-    assert resp.headers["Location"].endswith("/login")
+    assert resp.status_code == 403
 
     # login as R4
     login_with_role(client, "R4")
