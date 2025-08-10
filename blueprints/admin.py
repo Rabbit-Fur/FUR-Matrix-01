@@ -18,7 +18,6 @@ from flask import (
 from werkzeug.utils import secure_filename
 
 from agents.webhook_agent import WebhookAgent
-from config import Config
 from fur_lang.i18n import t
 from mongo_service import get_collection
 from utils.discord_util import require_roles
@@ -313,12 +312,12 @@ def post_event(event_id: str):
     content = (
         f"📅 **{event.get('title')}**\n{event.get('description', '')}\n🕒 {event.get('event_time')}"
     )
-    webhook = WebhookAgent(Config.DISCORD_WEBHOOK_URL)
+    webhook = WebhookAgent(current_app.config["DISCORD_WEBHOOK_URL"])
     poster_path = generate_event_poster(event)
     poster_url = (
         poster_path
         if poster_path.startswith("http")
-        else Config.BASE_URL.rstrip("/") + "/" + poster_path.lstrip("/")
+        else current_app.config["BASE_URL"].rstrip("/") + "/" + poster_path.lstrip("/")
     )
     success = webhook.send(content, image_url=poster_url, event_channel=True)
     flash(
@@ -380,7 +379,7 @@ def post_announcement():
         return redirect(url_for("admin.admin_dashboard"))
 
     content = f"📣 **{title}**\n{message}"
-    success = WebhookAgent(Config.DISCORD_WEBHOOK_URL).send(content)
+    success = WebhookAgent(current_app.config["DISCORD_WEBHOOK_URL"]).send(content)
 
     flash(
         (

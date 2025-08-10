@@ -67,9 +67,6 @@ def create_app() -> Flask:
     app.secret_key = os.environ.get("FLASK_SECRET", "fallback-dev-key")
     app.config.from_object(Config)
 
-    # Mongo URI aus ENV (Railway / Docker)
-    app.config["MONGODB_URI"] = os.getenv("MONGODB_URI")
-
     # ---------------------------------------------------------------------
     # 🧠 1) Vorab-Blueprints (Memory-Viewer)
     # ---------------------------------------------------------------------
