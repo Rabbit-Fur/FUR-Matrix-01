@@ -16,6 +16,7 @@ from pymongo.errors import ConfigurationError
 from config import Config
 from crud import event_crud
 from services.google.auth import load_credentials
+from services.google.exceptions import SyncTokenExpired
 from schemas.event_schema import EventModel
 from utils.time_utils import parse_calendar_datetime
 
@@ -34,10 +35,6 @@ def _get_app():
         if _app is None:
             _app = create_app()
         return _app
-
-
-class SyncTokenExpired(Exception):
-    """Raised when a stored sync token is no longer valid."""
 
 
 class CalendarService:
@@ -76,14 +73,15 @@ class CalendarService:
         if self.service:
             return
         app = _get_app()
-        with app.app_context():
-            creds = load_credentials()
-        if not creds:
+        try:
+            with app.app_context():
+                creds = load_credentials()
+        except SyncTokenExpired:
             if not self.warned_missing_creds:
                 log.warning("Google credentials missing – cannot sync")
                 self.warned_missing_creds = True
             self.service = None
-            return
+            raise
         self.warned_missing_creds = False
         self.service = build(
             "calendar",

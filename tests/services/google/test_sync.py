@@ -1,7 +1,9 @@
 from datetime import timezone
 
 import logging
+import pytest
 import services.google.calendar_sync as mod
+from services.google.exceptions import SyncTokenExpired
 
 
 class DummyCollection:
@@ -67,11 +69,13 @@ def test_load_credentials_warns_once(monkeypatch, tmp_path, caplog):
     monkeypatch.setattr(mod, "TOKEN_PATH", missing, raising=False)
     mod._warned_once = False
     with caplog.at_level(logging.WARNING):
-        assert mod.load_credentials() is None
+        with pytest.raises(SyncTokenExpired):
+            mod.load_credentials()
     assert "No Google credentials found" in caplog.text
     caplog.clear()
     with caplog.at_level(logging.WARNING):
-        assert mod.load_credentials() is None
+        with pytest.raises(SyncTokenExpired):
+            mod.load_credentials()
     assert caplog.text == ""
 
 
@@ -81,5 +85,6 @@ def test_load_credentials_client_config(monkeypatch, tmp_path, caplog):
     monkeypatch.setattr(mod, "TOKEN_PATH", path, raising=False)
     mod._warned_once = False
     with caplog.at_level(logging.WARNING):
-        assert mod.load_credentials() is None
+        with pytest.raises(SyncTokenExpired):
+            mod.load_credentials()
     assert "client config" in caplog.text

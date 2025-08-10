@@ -20,6 +20,8 @@ from google.oauth2.credentials import Credentials
 from google_auth_oauthlib.flow import Flow
 from googleapiclient.discovery import build
 
+from .exceptions import SyncTokenExpired
+
 google_auth = Blueprint("google_auth", __name__)
 
 log = logging.getLogger(__name__)
@@ -109,18 +111,20 @@ def _save_credentials(creds: Credentials) -> None:
         fh.write(creds.to_json())
 
 
-def load_credentials() -> Optional[Credentials]:
+def load_credentials() -> Credentials:
     """Load stored credentials and refresh if expired.
 
+    Raises:
+        SyncTokenExpired: If the token file is missing or contains invalid data.
+
     Returns:
-        Optional[Credentials]: Existing and refreshed credentials or ``None``
-        if no credentials are available.
+        Credentials: Existing and refreshed credentials.
     """
 
     path = _token_path()
     if not os.path.exists(path):
         log.warning("Token file not found: %s", path)
-        return None
+        raise SyncTokenExpired("token file not found")
     with open(path, "r", encoding="utf-8") as fh:
         data = json.load(fh)
     scopes = current_app.config.get(
@@ -128,10 +132,10 @@ def load_credentials() -> Optional[Credentials]:
     )
     try:
         creds = Credentials.from_authorized_user_info(data, scopes)
-    except ValueError:
+    except ValueError as exc:
         log.error("Invalid credentials")
-        return None
-    if creds and creds.expired and creds.refresh_token:
+        raise SyncTokenExpired("invalid credentials") from exc
+    if creds.expired and creds.refresh_token:
         log.info("Refreshing expired Google credentials")
         creds.refresh(Request())
         _save_credentials(creds)

@@ -9,6 +9,8 @@ from google.auth.transport.requests import Request
 from google.oauth2.credentials import Credentials
 from googleapiclient.discovery import build
 
+from services.google.exceptions import SyncTokenExpired
+
 from config import Config
 from mongo_service import get_collection
 from utils.time_utils import parse_calendar_datetime
@@ -81,19 +83,26 @@ def _store_sync_token(token: str) -> None:
 _warned_once = False
 
 
-def load_credentials() -> Optional[Credentials]:
-    """Load stored credentials from JSON and refresh if needed."""
+def load_credentials() -> Credentials:
+    """Load stored credentials from JSON and refresh if needed.
+
+    Raises
+    ------
+    SyncTokenExpired
+        If the token file is missing or cannot be parsed.
+    """
+
     global _warned_once
     if not TOKEN_PATH.exists():
         if not _warned_once:
             logger.warning("No Google credentials found at %s", TOKEN_PATH)
             _warned_once = True
-        return None
+        raise SyncTokenExpired("token file not found")
     try:
         info = json.loads(TOKEN_PATH.read_text())
-    except Exception:  # noqa: BLE001
+    except Exception as exc:  # noqa: BLE001
         logger.exception("Failed to read credentials JSON")
-        return None
+        raise SyncTokenExpired("invalid token JSON") from exc
 
     required = {"client_id", "client_secret", "refresh_token"}
     keys = set(info)
@@ -108,7 +117,7 @@ def load_credentials() -> Optional[Credentials]:
             missing = ", ".join(sorted(required - keys))
             logger.warning("Credentials file %s missing required keys: %s", TOKEN_PATH, missing)
             _warned_once = True
-        return None
+        raise SyncTokenExpired("invalid credentials file")
 
     try:
         creds = Credentials.from_authorized_user_file(TOKEN_PATH, Config.GOOGLE_CALENDAR_SCOPES)
@@ -118,16 +127,14 @@ def load_credentials() -> Optional[Credentials]:
             TOKEN_PATH.write_text(creds.to_json())
         _warned_once = False
         return creds
-    except Exception:  # noqa: BLE001
+    except Exception as exc:  # noqa: BLE001
         logger.exception("Failed to load or refresh credentials")
-        return None
+        raise SyncTokenExpired("failed to load credentials") from exc
 
 
 def get_calendar_service():
-    """Return Google Calendar API service or ``None`` if credentials missing."""
+    """Return Google Calendar API service using stored credentials."""
     creds = load_credentials()
-    if not creds:
-        return None
     try:
         return build("calendar", "v3", credentials=creds, cache_discovery=False)
     except Exception:  # noqa: BLE001
