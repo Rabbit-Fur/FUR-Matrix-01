@@ -11,7 +11,7 @@ from discord.ext import commands, tasks
 
 from config import Config, is_production
 from fur_lang.i18n import t
-from services.google.calendar_sync import fetch_upcoming_events, get_calendar_service
+from services.google.calendar_sync import get_service, list_upcoming_events
 from mongo_service import get_collection
 from utils import poster_generator
 from utils.event_helpers import parse_event_time
@@ -87,8 +87,8 @@ class ReminderAutopilot(commands.Cog):
         window_end = now + timedelta(minutes=11)
 
         try:
-            service = get_calendar_service()
-            events = fetch_upcoming_events(
+            service = get_service()
+            events = list_upcoming_events(
                 service,
                 time_min=window_start,
                 time_max=window_end,

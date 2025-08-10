@@ -5,7 +5,7 @@ def test_resources_requires_login(client):
     client.get("/logout")
     resp = client.get("/resources")
     assert resp.status_code == 302
-    assert resp.headers["Location"].endswith("/login")
+    assert resp.headers["Location"].endswith("/login?next=/resources")
 
 
 def test_resources_listing_and_download(client, tmp_path):
