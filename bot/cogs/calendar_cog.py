@@ -9,7 +9,6 @@ from discord.ext import commands, tasks
 
 from config import Config
 from fur_lang.i18n import t
-from services.google.calendar_sync import create_test_event
 from mongo_service import get_collection
 from services.calendar_service import CalendarService
 from utils.poster_generator import create_event_image
@@ -119,17 +118,6 @@ class CalendarCog(commands.Cog):
         await interaction.response.send_message(
             t("calendar_timezone_set", zone=tz.key), ephemeral=True
         )
-
-    @calendar.command(name="test", description="Create test event")
-    async def cmd_test(self, interaction: discord.Interaction) -> None:
-        if not interaction.user.guild_permissions.administrator:
-            await interaction.response.send_message(t("no_admin_rights"), ephemeral=True)
-            return
-        created = create_test_event()
-        if created:
-            await interaction.response.send_message("Test event created", ephemeral=True)
-        else:
-            await interaction.response.send_message("Calendar token missing", ephemeral=True)
 
     @calendar.command(name="postevent", description="Post next calendar event")
     async def cmd_postevent(self, interaction: discord.Interaction) -> None:
