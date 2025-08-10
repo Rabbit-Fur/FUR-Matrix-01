@@ -189,6 +189,10 @@ def get_service(settings: CalendarSettings | None = None) -> Any | None:
 
     settings = settings or CalendarSettings()
     token_path = settings.token_path
+    setup_hint = "Run services/google/oauth_setup.py to create tokens."
+    if not token_path.exists():
+        logger.warning("Google credentials not found at %s. %s", token_path, setup_hint)
+        raise SyncTokenExpired(f"Google credentials not found at {token_path}. {setup_hint}")
     if token_path in _service_cache:
         return _service_cache[token_path]
     creds = load_credentials(settings)
