@@ -17,6 +17,7 @@ from services.google.calendar_sync import (
     load_credentials,
 )
 from schemas.event_schema import EventModel
+from utils.env_utils import get_google_calendar_settings
 from utils.time_utils import parse_calendar_datetime
 
 log = logging.getLogger(__name__)
@@ -39,16 +40,10 @@ class CalendarService:
         token_path: Optional[str] = None,
         scopes: Optional[list[str]] = None,
     ) -> None:
-        self.calendar_id = calendar_id or os.getenv("GOOGLE_CALENDAR_ID")
-        self.token_path = (
-            token_path
-            or os.getenv("GOOGLE_TOKEN_STORAGE_PATH")
-            or os.getenv(
-                "GOOGLE_CREDENTIALS_FILE",
-                "/data/google_token.json",
-            )
-        )
-        self.scopes = scopes or ["https://www.googleapis.com/auth/calendar.readonly"]
+        settings = get_google_calendar_settings()
+        self.calendar_id = calendar_id or settings.calendar_id
+        self.token_path = token_path or settings.token_path
+        self.scopes = scopes or settings.scopes
         self.service: Any | None = None
         uri = mongo_uri or os.getenv("MONGODB_URI", "mongodb://localhost:27017/furdb")
         if events_collection is not None and tokens_collection is not None:

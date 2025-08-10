@@ -20,6 +20,8 @@ from google.oauth2.credentials import Credentials
 from google_auth_oauthlib.flow import Flow
 from googleapiclient.discovery import build
 
+from utils.env_utils import get_google_calendar_settings
+
 google_auth = Blueprint("google_auth", __name__)
 
 log = logging.getLogger(__name__)
@@ -41,7 +43,7 @@ def _cred_path() -> str:
         path = current_app.config.get("GOOGLE_CREDENTIALS_FILE")
         if path:
             return path
-    return os.environ.get("GOOGLE_CREDENTIALS_FILE", "/data/google_token.json")
+    return get_google_calendar_settings().credentials_file
 
 
 def _token_path() -> str:
@@ -59,7 +61,7 @@ def _token_path() -> str:
         path = current_app.config.get("GOOGLE_TOKEN_STORAGE_PATH")
         if path:
             return path
-    return os.environ.get("GOOGLE_TOKEN_STORAGE_PATH", _cred_path())
+    return get_google_calendar_settings().token_path
 
 
 def _client_config() -> dict[str, dict[str, Any]]:
