@@ -1,20 +1,25 @@
 {
-  "name": "fur-project",
-  "version": "1.0.0",
-  "main": "app.js",
+  "name": "codex-monorepo",
+  "private": true,
+  "description": "Tools for repo-wide maintenance.",
   "scripts": {
-    "start": "node app.js",
-"dev": "nodemon app.js",
-    "codex:sync": "cd ./codex && npm run sync",
-    "codex:audit": "cd ./codex && npm run audit",
-    "codex:fix": "cd ./codex && npm run fix",
-    "codex:release": "cd ./codex && npm run release",
-    "codex:watch": "cd ./codex && npm run watch",
-    "watch": "nodemon app.js"
+    "format": "prettier --check *.json *.md .github/workflows/*.yml",
+    "format:fix": "prettier --write *.json *.md .github/workflows/*.yml"
   },
-  "dependencies": {
-    "dotenv": "^16.0.3",
-    "express": "^4.18.2",
-    "nodemon": "^3.1.10"
-  }
+  "devDependencies": {
+    "prettier": "^3.5.3"
+  },
+  "resolutions": {
+    "braces": "^3.0.3",
+    "micromatch": "^4.0.8",
+    "semver": "^7.7.1"
+  },
+  "overrides": {
+    "punycode": "^2.3.1"
+  },
+  "engines": {
+    "node": ">=22",
+    "pnpm": ">=9.0.0"
+  },
+  "packageManager": "pnpm@10.8.1"
 }
