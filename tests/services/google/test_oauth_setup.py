@@ -50,4 +50,3 @@ def test_main_requires_client_credentials(tmp_path, monkeypatch):
 
     with pytest.raises(KeyError):
         mod.main()
-

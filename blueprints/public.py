@@ -1,3 +1,7 @@
+import secrets
+from urllib.parse import urlencode
+
+import requests
 from bson import ObjectId
 from flask import (
     Blueprint,
@@ -170,6 +174,7 @@ def discord_callback():
         "avatar": user_data["avatar"],
         "email": user_data.get("email"),
         "role_level": role_level,
+        "roles": list(user_roles),
     }
     session.permanent = True
 
