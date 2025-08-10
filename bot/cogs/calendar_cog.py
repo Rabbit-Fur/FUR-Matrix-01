@@ -12,7 +12,7 @@ from discord.ext import commands, tasks
 from config import Config
 from fur_lang.i18n import t
 from mongo_service import get_collection
-from services.calendar_service import CalendarService
+from services.calendar_service import CalendarService, SyncTokenExpired
 from services.google.calendar_sync import CalendarSettings
 from utils.poster_generator import create_event_image
 from utils.oauth_utils import (
@@ -64,9 +64,12 @@ class CalendarCog(commands.Cog):
             )
             try:
                 svc._build_service()
+            except SyncTokenExpired:
+                log.exception("Failed to build calendar service")
             except Exception:  # noqa: BLE001
                 log.exception("Failed to build calendar service")
-            self.service = svc
+            else:
+                self.service = svc
 
     def cog_unload(self) -> None:  # pragma: no cover - lifecycle
         self.daily_loop.cancel()
