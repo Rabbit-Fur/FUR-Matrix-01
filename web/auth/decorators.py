@@ -18,6 +18,7 @@ from flask import abort, current_app, redirect, request, session, url_for
 from flask import current_app, flash, redirect, session, url_for
 
 
+from flask import current_app, flash, redirect, session, url_for
 def _as_list(value: Iterable | str | None) -> list[str]:
     """Return *value* as a list of strings."""
 
@@ -35,6 +36,11 @@ def _agent() -> AuthAgent:
     """Return an ``AuthAgent`` bound to the current session."""
 
 def _agent() -> AuthAgent:
+    """Return an ``AuthAgent`` bound to the current session."""
+
+    return AuthAgent(session, mongo_service.db)
+
+
     return AuthAgent(session, mongo_service.db)
 
 
@@ -100,6 +106,15 @@ def r3_required(view_func):
 
     @wraps(view_func)
     def wrapper(*args, **kwargs):
+        required = (
+            _as_list(current_app.config.get("R3_ROLE_IDS"))
+            + _as_list(current_app.config.get("R4_ROLE_IDS"))
+            + _as_list(current_app.config.get("ADMIN_ROLE_IDS"))
+        )
+        if not _has_any_required_role(required):
+            flash(t("member_only", default="Members only."))
+            return redirect(url_for("auth.login"))
+        return view_func(*args, **kwargs)
         if not _agent().is_r3() or session.get("discord_user", {}).get("role_level") not in [
             "R3",
             "R4",
@@ -139,6 +154,11 @@ def _role_required(config_key: str | None):
 
             return view_func(*args, **kwargs)
 def r4_required(view_func):
+    """Allow access only for R4 or Admin roles."""
+
+    @wraps(view_func)
+    def wrapper(*args, **kwargs):
+
     """Allow access only for R4 or Admin."""
 
     @wraps(view_func)
@@ -151,6 +171,7 @@ def r4_required(view_func):
 
     @wraps(view_func)
     def wrapper(*args, **kwargs):
+
         required = _as_list(current_app.config.get("R4_ROLE_IDS")) + _as_list(
             current_app.config.get("ADMIN_ROLE_IDS")
         )
@@ -164,11 +185,18 @@ def r4_required(view_func):
     return decorator
 
 def admin_required(view_func):
+    """Allow access only for system administrators."""
+
+    @wraps(view_func)
+    def wrapper(*args, **kwargs):
+        required = _as_list(current_app.config.get("ADMIN_ROLE_IDS"))
+        if not _has_any_required_role(required):
     """Allow access only for system admins."""
 
     @wraps(view_func)
     def wrapper(*args, **kwargs):
         if not _agent().is_admin() or session.get("discord_user", {}).get("role_level") != "ADMIN":
+
             flash(t("superuser_only", default="Superuser only."))
             return redirect(url_for("auth.login"))
         return view_func(*args, **kwargs)
