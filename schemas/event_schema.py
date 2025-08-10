@@ -2,7 +2,7 @@ from datetime import datetime
 from typing import List, Optional
 
 from bson import ObjectId
-from pydantic import BaseModel, Field, validator
+from pydantic import BaseModel, ConfigDict, Field, validator
 
 
 # Hilfsklasse zur Unterstützung von ObjectId in Pydantic
@@ -46,7 +46,8 @@ class EventModel(BaseModel):
             raise ValueError("Datum muss im ISO-Format sein (z. B. 2025-06-20T18:00:00)")
         return v
 
-    class Config:
-        allow_population_by_field_name = True
-        arbitrary_types_allowed = True
-        json_encoders = {ObjectId: str}
+    model_config = ConfigDict(
+        populate_by_name=True,
+        arbitrary_types_allowed=True,
+        json_encoders={ObjectId: str},
+    )

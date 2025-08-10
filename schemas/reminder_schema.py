@@ -2,7 +2,7 @@ from datetime import datetime
 from typing import List, Optional
 
 from bson import ObjectId
-from pydantic import BaseModel, Field, validator
+from pydantic import BaseModel, ConfigDict, Field, validator
 
 from models.models_mongo import PyObjectId
 
@@ -24,7 +24,8 @@ class ReminderModel(BaseModel):
             raise ValueError("Zeit muss im ISO-Format sein (z. B. 2025-06-25T19:00:00)")
         return v
 
-    class Config:
-        allow_population_by_field_name = True
-        arbitrary_types_allowed = True
-        json_encoders = {ObjectId: str}
+    model_config = ConfigDict(
+        populate_by_name=True,
+        arbitrary_types_allowed=True,
+        json_encoders={ObjectId: str},
+    )

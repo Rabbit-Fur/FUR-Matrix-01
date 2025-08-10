@@ -3,7 +3,7 @@ from typing import Optional
 
 from bson import ObjectId
 from motor.motor_asyncio import AsyncIOMotorCollection
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field
 
 
 class PyObjectId(ObjectId):
@@ -28,10 +28,11 @@ class UserModel(BaseModel):
     created_at: datetime = Field(default_factory=datetime.utcnow)
     updated_at: datetime = Field(default_factory=datetime.utcnow)
 
-    class Config:
-        allow_population_by_field_name = True
-        arbitrary_types_allowed = True
-        json_encoders = {ObjectId: str}
+    model_config = ConfigDict(
+        populate_by_name=True,
+        arbitrary_types_allowed=True,
+        json_encoders={ObjectId: str},
+    )
 
 
 class UserRepository:
