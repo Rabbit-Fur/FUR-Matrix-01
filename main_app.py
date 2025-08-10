@@ -128,7 +128,7 @@ if __name__ == "__main__":
         # 🧠 Agenten laden (Reminder, Translation, Champion etc.)
         agents = init_agents(db=db, session=session)
 
-        scheduler = SchedulerAgent()
+        scheduler = SchedulerAgent(app, db)
         if Config.GOOGLE_CALENDAR_ID:
             scheduler.schedule_google_sync()
         if Config.DISCORD_WEBHOOK_URL:

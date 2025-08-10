@@ -15,7 +15,9 @@ from services.google.sync_task import start_google_sync
 
 
 class SchedulerAgent:
-    def __init__(self):
+    def __init__(self, app, mongo_db):
+        self.app = app
+        self.mongo_db = mongo_db
         self.jobs = []
 
     def schedule_job(self, func, interval=60):
@@ -61,10 +63,11 @@ class SchedulerAgent:
         self.jobs.append(job)
         logging.info("\U0001f4c5 Monthly champion job scheduled")
 
-    def schedule_google_sync(self, interval_minutes: int | None = 2) -> None:
+    def schedule_google_sync(self, interval_minutes: int | None = None) -> None:
         """Schedule regular Google Calendar synchronization."""
-        start_google_sync(interval_minutes)
+        minutes = interval_minutes or self.app.config.get("GOOGLE_SYNC_INTERVAL_MINUTES", 2)
+        start_google_sync(self.app, self.mongo_db)
         logging.info(
             "\U0001f4c5 Google Calendar sync every %s minutes scheduled via loop",
-            interval_minutes,
+            minutes,
         )
