@@ -1,22 +1,25 @@
 {
-  "name": "codex-fur",
-  "version": "1.0.0",
-  "description": "FUR Codex CLI",
-  "type": "module",
-  "bin": {
-    "codex-fur": "bin/index.js"
-  },
+  "name": "codex-monorepo",
+  "private": true,
+  "description": "Tools for repo-wide maintenance.",
   "scripts": {
-    "sync": "node bin/index.js sync",
-    "audit": "node bin/index.js audit",
-    "release": "node bin/index.js release",
-    "watch": "nodemon bin/index.js"
-  },
-  "dependencies": {
-    "chalk": "^5.3.0",
-    "commander": "^11.1.0"
+    "format": "prettier --check *.json *.md .github/workflows/*.yml",
+    "format:fix": "prettier --write *.json *.md .github/workflows/*.yml"
   },
   "devDependencies": {
-    "nodemon": "^3.0.0"
-  }
+    "prettier": "^3.5.3"
+  },
+  "resolutions": {
+    "braces": "^3.0.3",
+    "micromatch": "^4.0.8",
+    "semver": "^7.7.1"
+  },
+  "overrides": {
+    "punycode": "^2.3.1"
+  },
+  "engines": {
+    "node": ">=22",
+    "pnpm": ">=9.0.0"
+  },
+  "packageManager": "pnpm@10.8.1"
 }
