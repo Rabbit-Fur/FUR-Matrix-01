@@ -11,7 +11,11 @@ from motor.motor_asyncio import AsyncIOMotorClient, AsyncIOMotorCollection
 from pymongo.errors import ConfigurationError
 
 from crud import event_crud
-from services.google.calendar_sync import CalendarSettings, load_credentials
+from services.google.calendar_sync import (
+    CalendarSettings,
+    SyncTokenExpired as GoogleSyncTokenExpired,
+    load_credentials,
+)
 from schemas.event_schema import EventModel
 from utils.time_utils import parse_calendar_datetime
 
@@ -67,14 +71,20 @@ class CalendarService:
     def _build_service(self) -> None:
         if self.service:
             return
+        token_path = Path(self.token_path)
+        setup_hint = "Run services/google/oauth_setup.py to create tokens."
+        if not token_path.exists():
+            log.warning("Google credentials not found at %s. %s", token_path, setup_hint)
+            raise SyncTokenExpired(f"Google credentials not found at {token_path}. {setup_hint}")
         settings = CalendarSettings(
-            token_path=Path(self.token_path),
+            token_path=token_path,
             calendar_id=self.calendar_id,
             scopes=self.scopes,
         )
-        creds = load_credentials(settings)
-        if not creds:
-            raise SyncTokenExpired
+        try:
+            creds = load_credentials(settings)
+        except GoogleSyncTokenExpired as exc:
+            raise SyncTokenExpired(str(exc)) from None
         self.service = build(
             "calendar",
             "v3",
