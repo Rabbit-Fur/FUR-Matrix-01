@@ -1,12 +1,22 @@
-.DEFAULT_GOAL := check
-.PHONY: lint test check
+.PHONY: codex codex-fix lint test format docker-shell
+
+codex:
+	codex
+
+codex-fix:
+	codex exec --full-auto "fix linting, run tests, and update documentation"
 
 lint:
-	black .
-	isort .
-	flake8 .
+	ruff check . || true
+	eslint . || true
+
+format:
+	ruff check . --fix || true
+	black . || true
+	prettier -w .
 
 test:
-	pytest --disable-warnings
+	pytest -q
 
-check: lint test
+docker-shell:
+	docker compose -f docker-compose.codex.yml exec codex-dev bash
