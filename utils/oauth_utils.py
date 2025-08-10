@@ -76,7 +76,6 @@ def exchange_code_for_token(
     client_id: str,
     client_secret: str,
     redirect_uri: str,
-    client_secret: str,
 ) -> dict:
     """Exchange authorization ``code`` for OAuth tokens."""
     data = {

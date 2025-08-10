@@ -15,19 +15,13 @@ oauth_bp = Blueprint("oauth_web", __name__)
 
 # Constants
 SCOPES = ["https://www.googleapis.com/auth/calendar"]
-REDIRECT_URI = os.getenv(
-    "GOOGLE_REDIRECT_URI", "https://fur-martix.up.railway.app/oauth2callback"
-)
+REDIRECT_URI = os.getenv("GOOGLE_REDIRECT_URI", "https://fur-martix.up.railway.app/oauth2callback")
 CLIENT_CONFIG = {
     "web": {
         "client_id": os.getenv("GOOGLE_CLIENT_ID"),
         "project_id": os.getenv("GOOGLE_PROJECT_ID"),
-        "auth_uri": os.getenv(
-            "GOOGLE_AUTH_URI", "https://accounts.google.com/o/oauth2/auth"
-        ),
-        "token_uri": os.getenv(
-            "GOOGLE_TOKEN_URI", "https://oauth2.googleapis.com/token"
-        ),
+        "auth_uri": os.getenv("GOOGLE_AUTH_URI", "https://accounts.google.com/o/oauth2/auth"),
+        "token_uri": os.getenv("GOOGLE_TOKEN_URI", "https://oauth2.googleapis.com/token"),
         "auth_provider_x509_cert_url": os.getenv(
             "GOOGLE_AUTH_PROVIDER_CERT_URL", "https://www.googleapis.com/v1/certs"
         ),
