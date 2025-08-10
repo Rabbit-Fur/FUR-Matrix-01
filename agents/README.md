@@ -23,7 +23,7 @@ Dieses Modul enthält alle spezialisierten Agenten für das FUR SYSTEM – modul
 | `WebhookAgent`    | `webhook_agent.py`        | Versendet Discord-/CI-/Log-Webhook-Nachrichten |
 
 ---
-
+1
 ## 🔧 Initialisierung
 
 Verwende folgenden zentralen Loader:
