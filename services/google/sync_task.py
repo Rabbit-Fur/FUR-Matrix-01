@@ -3,12 +3,10 @@
 Example APScheduler setup::
 
     import asyncio
-    import os
     from apscheduler.schedulers.background import BackgroundScheduler
     from services import CalendarService
-    from web import create_app
 
-    app = create_app()
+    app = current_app
     scheduler = BackgroundScheduler()
 
     def sync_google():
@@ -19,7 +17,7 @@ Example APScheduler setup::
     scheduler.add_job(
         sync_google,
         "interval",
-        minutes=int(os.getenv("GOOGLE_SYNC_INTERVAL_MINUTES", "30")),
+        minutes=current_app.config.get("GOOGLE_SYNC_INTERVAL_MINUTES", 30),
     )
     scheduler.start()
 
@@ -32,49 +30,29 @@ from __future__ import annotations
 
 import asyncio
 import logging
-import os
 
 from discord.ext import tasks
 from flask import current_app
 
 from .calendar_sync import sync_to_mongodb
-from web import create_app
 
 log = logging.getLogger(__name__)
 
-DEFAULT_INTERVAL_MINUTES = int(os.getenv("GOOGLE_SYNC_INTERVAL_MINUTES", "30"))
 
-
-_app = None
-
-
-def _get_app():
-    """Return a Flask application instance."""
-    global _app
-    try:
-        return current_app._get_current_object()
-    except RuntimeError:
-        if _app is None:
-            _app = create_app()
-        return _app
-
-
-@tasks.loop(minutes=DEFAULT_INTERVAL_MINUTES)
+@tasks.loop(minutes=1)
 async def google_sync_loop() -> None:
     """Run ``sync_to_mongodb`` in a thread within app context."""
-    app = _get_app()
-    with app.app_context():
+    with current_app.app_context():
         await asyncio.to_thread(sync_to_mongodb)
 
 
 def start_google_sync(interval_minutes: int | None = None) -> None:
     """Start the background sync loop with the given interval."""
-    minutes = interval_minutes or DEFAULT_INTERVAL_MINUTES
+    minutes = interval_minutes or current_app.config.get("GOOGLE_SYNC_INTERVAL_MINUTES", 30)
     if google_sync_loop.is_running():
         google_sync_loop.change_interval(minutes=minutes)
     else:
-        if minutes != DEFAULT_INTERVAL_MINUTES:
-            google_sync_loop.change_interval(minutes=minutes)
+        google_sync_loop.change_interval(minutes=minutes)
         try:
             asyncio.get_running_loop()
             google_sync_loop.start()

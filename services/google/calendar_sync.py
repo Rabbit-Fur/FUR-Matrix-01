@@ -12,16 +12,15 @@ from __future__ import annotations
 
 import json
 import logging
-import os
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Optional
 
+from flask import current_app
 from google.auth.transport.requests import Request
 from google.oauth2.credentials import Credentials
 from googleapiclient.discovery import build
 
-from config import Config
 from utils.time_utils import parse_calendar_datetime
 
 # ---------------------------------------------------------------------------
@@ -54,8 +53,19 @@ init_logging()
 # ---------------------------------------------------------------------------
 # Credential loading
 # ---------------------------------------------------------------------------
-TOKEN_PATH = Path(os.getenv("GOOGLE_CREDENTIALS_FILE", "/data/google_token.json"))
 _warned_once = False
+
+
+def _token_path() -> Path:
+    """Resolve the configured path for stored OAuth tokens."""
+
+    cfg = current_app.config
+    path = (
+        cfg.get("GOOGLE_TOKEN_STORAGE_PATH")
+        or cfg.get("GOOGLE_CREDENTIALS_FILE")
+        or "/data/google_token.json"
+    )
+    return Path(path)
 
 
 class SyncTokenExpired(Exception):
@@ -77,13 +87,14 @@ def load_credentials() -> Credentials:
     """
 
     global _warned_once
-    if not TOKEN_PATH.exists():
+    token_path = _token_path()
+    if not token_path.exists():
         if not _warned_once:
-            logger.warning("No Google credentials found at %s", TOKEN_PATH)
+            logger.warning("No Google credentials found at %s", token_path)
             _warned_once = True
         raise SyncTokenExpired from None
     try:
-        info = json.loads(TOKEN_PATH.read_text())
+        info = json.loads(token_path.read_text())
     except Exception:  # noqa: BLE001
         logger.exception("Failed to read credentials JSON")
         raise SyncTokenExpired from None
@@ -94,21 +105,24 @@ def load_credentials() -> Credentials:
         if ("installed" in info or "web" in info) and not _warned_once:
             logger.warning(
                 "Credentials file %s looks like an OAuth client config, not a saved token",
-                TOKEN_PATH,
+                token_path,
             )
             _warned_once = True
         elif not _warned_once:
             missing = ", ".join(sorted(required - keys))
-            logger.warning("Credentials file %s missing required keys: %s", TOKEN_PATH, missing)
+            logger.warning("Credentials file %s missing required keys: %s", token_path, missing)
             _warned_once = True
         raise SyncTokenExpired from None
 
+    scopes = current_app.config.get(
+        "GOOGLE_CALENDAR_SCOPES", ["https://www.googleapis.com/auth/calendar.readonly"]
+    )
     try:
-        creds = Credentials.from_authorized_user_file(TOKEN_PATH, Config.GOOGLE_CALENDAR_SCOPES)
+        creds = Credentials.from_authorized_user_info(info, scopes)
         if creds.expired and creds.refresh_token:
             logger.info("Refreshing Google credentials")
             creds.refresh(Request())
-            TOKEN_PATH.write_text(creds.to_json())
+            token_path.write_text(creds.to_json())
         _warned_once = False
         return creds
     except Exception:  # noqa: BLE001
@@ -119,19 +133,26 @@ def load_credentials() -> Credentials:
 # ---------------------------------------------------------------------------
 # Public API
 # ---------------------------------------------------------------------------
-def get_service() -> Any | None:
-    """Return a Google Calendar API service instance.
+_service: Any | None = None
 
-    ``None`` is returned when building the service fails. Credential loading
-    issues raise :class:`SyncTokenExpired`.
+
+def get_service() -> Any | None:
+    """Return a cached Google Calendar API service instance.
+
+    The client is constructed on first use. Missing or invalid credentials raise
+    :class:`SyncTokenExpired` while other build errors return ``None``.
     """
 
+    global _service
+    if _service is not None:
+        return _service
     creds = load_credentials()
     try:
-        return build("calendar", "v3", credentials=creds, cache_discovery=False)
+        _service = build("calendar", "v3", credentials=creds, cache_discovery=False)
     except Exception:  # noqa: BLE001
         logger.exception("Failed to build Google Calendar service")
-        return None
+        _service = None
+    return _service
 
 
 def list_upcoming_events(
@@ -161,7 +182,7 @@ def list_upcoming_events(
     service = service or get_service()
     if not service:
         return []
-    calendar_id = calendar_id or Config.GOOGLE_CALENDAR_ID
+    calendar_id = calendar_id or current_app.config.get("GOOGLE_CALENDAR_ID")
     if not calendar_id:
         logger.warning("GOOGLE_CALENDAR_ID not configured")
         return []
