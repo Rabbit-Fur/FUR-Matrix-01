@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Changelog
 
 You can install any of these versions: `npm install -g codex@version`
@@ -209,3 +210,12 @@ You can install any of these versions: `npm install -g codex@version`
 - Check workdir before spawn (#221)
 
 <!-- generated - do not edit -->
+=======
+# Changelog
+
+## Unreleased
+- Memory Viewer added
+- TranslationAgent now syncs and auto-translates missing keys
+- Added missing environment variables to `.env.example` including
+  `ENABLE_DISCORD_BOT`, `PORT`, and `OPENAI_API_KEY`.
+>>>>>>> 15fe4b4 (feat(ci,codex): add Codex integration)

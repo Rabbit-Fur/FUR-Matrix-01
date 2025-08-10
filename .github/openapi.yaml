@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 openapi: 3.1.0
 info:
   title: GitHub Superpower API
@@ -73,3 +74,80 @@ paths:
                   content: { type: string }
                   encoding: { type: string }
                   sha: { type: string }
+=======
+openapi: 3.1.0
+info:
+  title: GitHub Superpower API
+  version: 1.0.0
+  description: Voller Zugriff auf GitHub – Dateien, Branches, PRs, Commits, Issues, Diffs, Merges via OAuth.
+servers:
+  - url: https://api.github.com
+security:
+  - githubOAuth: []
+components:
+  securitySchemes:
+    githubOAuth:
+      type: oauth2
+      description: GitHub OAuth 2.0 Zugang
+      flows:
+        authorizationCode:
+          authorizationUrl: https://github.com/login/oauth/authorize
+          tokenUrl: https://github.com/login/oauth/access_token
+          scopes:
+            repo: Vollzugriff auf Repositories
+            user: Zugriff auf Benutzerinformationen
+  schemas: {}
+
+paths:
+  /user:
+    get:
+      operationId: getUser
+      summary: Holt Infos über den authentifizierten Benutzer
+      responses:
+        '200':
+          description: Erfolgreich
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  login:
+                    type: string
+                  id:
+                    type: integer
+                  email:
+                    type: string
+
+  /repos/{owner}/{repo}/contents/{path}:
+    get:
+      operationId: getFile
+      summary: Liest eine Datei im Repository (Base64)
+      parameters:
+        - name: owner
+          in: path
+          required: true
+          schema: { type: string }
+        - name: repo
+          in: path
+          required: true
+          schema: { type: string }
+        - name: path
+          in: path
+          required: true
+          schema: { type: string }
+        - name: ref
+          in: query
+          required: false
+          schema: { type: string }
+      responses:
+        '200':
+          description: Dateiinhalt (Base64)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  content: { type: string }
+                  encoding: { type: string }
+                  sha: { type: string }
+>>>>>>> 15fe4b4 (feat(ci,codex): add Codex integration)

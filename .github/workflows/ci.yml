@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 name: ci
 
 on:
@@ -58,3 +59,62 @@ jobs:
         run: ./scripts/asciicheck.py codex-cli/README.md
       - name: Check codex-cli/README ToC
         run: python3 scripts/readme_toc.py codex-cli/README.md
+=======
+name: 🧪 CI – FUR System MongoDB + Flask
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    services:
+      mongo:
+        image: mongo:6
+        ports:
+          - 27017:27017
+        options: >-
+          --health-cmd="mongosh --eval 'db.runCommand({ ping: 1 })'"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
+
+    env:
+      MONGODB_URI: "mongodb://localhost:27017/furdb"
+      FLASK_ENV: "test"
+      SECRET_KEY: "test_key"
+
+    steps:
+      - name: 🔄 Checkout Repository
+        uses: actions/checkout@v3
+
+      - name: 🐍 Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.11"
+
+      - name: 📦 Install Dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: 🔐 Secret Scan – detect-secrets
+        run: |
+          pip install detect-secrets
+          detect-secrets-hook --baseline .secrets.baseline
+
+      - name: 🧹 Code Style – Black
+        run: black . --check
+
+      - name: 🧮 Sort Imports – isort
+        run: isort . --check-only
+
+      - name: 🔍 Static Check – flake8
+        run: flake8 .
+
+      - name: 🧪 Run Pytest
+        run: pytest -v
+>>>>>>> 15fe4b4 (feat(ci,codex): add Codex integration)
