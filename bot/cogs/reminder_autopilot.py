@@ -15,7 +15,7 @@ from services.google.calendar_sync import get_service, list_upcoming_events
 from mongo_service import get_collection
 from utils import poster_generator
 from utils.event_helpers import parse_event_time
-from bot.dm_scheduler import get_dm_image
+from bot.dm_utils import get_dm_image
 
 
 def is_opted_out(user_id: int) -> bool:

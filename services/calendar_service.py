@@ -7,7 +7,6 @@ from typing import Any, Iterable, Optional
 from flask import current_app
 from web import create_app
 
-from discord.ext import tasks
 from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
 from motor.motor_asyncio import AsyncIOMotorClient, AsyncIOMotorCollection
@@ -206,63 +205,12 @@ class CalendarService:
         end = start + timedelta(days=1)
         return await self._get_range(start, end)
 
-
-class DMReminderScheduler:
-    """Send DM reminders for upcoming events."""
-
-    def __init__(self, bot: Any, service: CalendarService) -> None:
-        self.bot = bot
-        self.service = service
-        self._sent: set[tuple[Any, Any]] = set()
-        self.reminder_loop.start()
-
-    def cog_unload(self) -> None:  # pragma: no cover - lifecycle
-        self.reminder_loop.cancel()
-
-    @tasks.loop(minutes=1)
-    async def reminder_loop(self) -> None:
-        await self.bot.wait_until_ready()
+    async def list_upcoming_events(self) -> list[dict]:
+        """Return events starting roughly 10 minutes from now."""
         now = datetime.utcnow().replace(tzinfo=timezone.utc)
-        window_start = now + timedelta(minutes=10)
-        window_end = now + timedelta(minutes=11)
-        log.debug(
-            "Checking events between %s and %s for reminders",
-            window_start,
-            window_end,
-        )
-        events = await self.service._get_range(window_start, window_end)
-        for ev in events:
-            participants = self.service.events.database["event_participants"].find(
-                {"event_id": ev.get("_id")}
-            )
-            for part in await participants.to_list(length=None):
-                key = (ev.get("_id"), part.get("user_id"))
-                if key in self._sent:
-                    continue
-                try:
-                    user = await self.bot.fetch_user(int(part["user_id"]))
-                except Exception:  # pragma: no cover - network failures
-                    log.warning(
-                        "Failed to fetch user %s for event %s",
-                        part.get("user_id"),
-                        ev.get("title"),
-                        exc_info=True,
-                    )
-                    continue
-                try:
-                    await user.send(
-                        f"Reminder: {ev['title']} at {ev['event_time'].strftime('%H:%M UTC')}"
-                    )
-                except Exception:  # pragma: no cover - network failures
-                    log.warning(
-                        "Failed to send reminder to %s for event %s",
-                        part.get("user_id"),
-                        ev.get("title"),
-                        exc_info=True,
-                    )
-                    continue
-                self._sent.add(key)
-                log.info("Sent reminder DM to %s for event %s", user.id, ev["title"])
+        start = now + timedelta(minutes=10)
+        end = start + timedelta(minutes=1)
+        return await self._get_range(start, end)
 
 
-__all__ = ["CalendarService", "DMReminderScheduler", "SyncTokenExpired"]
+__all__ = ["CalendarService", "SyncTokenExpired"]
