@@ -41,13 +41,14 @@ def test_fetch_upcoming_events_missing_credentials(monkeypatch):
     assert mod.fetch_upcoming_events(service=None, calendar_id="cal") == []
 
 
-def test_fetch_upcoming_events_missing_calendar_id(monkeypatch):
+def test_fetch_upcoming_events_missing_calendar_id(monkeypatch, app):
     service = MagicMock()
-    monkeypatch.setattr(mod.Config, "GOOGLE_CALENDAR_ID", None)
-    assert mod.fetch_upcoming_events(service=service, calendar_id=None) == []
+    with app.app_context():
+        app.config["GOOGLE_CALENDAR_ID"] = None
+        assert mod.fetch_upcoming_events(service=service, calendar_id=None) == []
 
 
-def test_sync_to_mongodb(monkeypatch):
+def test_sync_to_mongodb(monkeypatch, app):
     service = object()
     event = {
         "id": "g1",
@@ -61,12 +62,18 @@ def test_sync_to_mongodb(monkeypatch):
     collection = MagicMock()
     monkeypatch.setattr(mod, "get_collection", lambda name: collection)
 
-    count = mod.sync_to_mongodb(collection="events")
+    with app.app_context():
+        count = mod.sync_to_mongodb(collection="events")
 
     assert count == 1
     collection.update_one.assert_called_once_with({"google_id": "g1"}, ANY, upsert=True)
 
 
-def test_sync_to_mongodb_no_service(monkeypatch):
-    monkeypatch.setattr(mod, "get_calendar_service", lambda: None)
-    assert mod.sync_to_mongodb(collection="events") == 0
+def test_sync_to_mongodb_no_service(monkeypatch, app):
+    def raise_exc():
+        raise mod.SyncTokenExpired
+
+    monkeypatch.setattr(mod, "get_calendar_service", raise_exc)
+    with app.app_context():
+        with pytest.raises(mod.SyncTokenExpired):
+            mod.sync_to_mongodb(collection="events")

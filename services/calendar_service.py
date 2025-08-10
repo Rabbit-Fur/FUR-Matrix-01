@@ -4,8 +4,7 @@ import os
 from datetime import date as date_type, datetime, timedelta, timezone
 from typing import Any, Iterable, Optional
 
-from flask import current_app
-from web import create_app
+from flask import current_app, has_app_context
 
 from discord.ext import tasks
 from googleapiclient.discovery import build
@@ -13,27 +12,12 @@ from googleapiclient.errors import HttpError
 from motor.motor_asyncio import AsyncIOMotorClient, AsyncIOMotorCollection
 from pymongo.errors import ConfigurationError
 
-from config import Config
 from crud import event_crud
 from services.google.auth import load_credentials
 from schemas.event_schema import EventModel
 from utils.time_utils import parse_calendar_datetime
 
 log = logging.getLogger(__name__)
-
-
-_app = None
-
-
-def _get_app():
-    """Return a Flask application instance."""
-    global _app
-    try:
-        return current_app._get_current_object()
-    except RuntimeError:
-        if _app is None:
-            _app = create_app()
-        return _app
 
 
 class SyncTokenExpired(Exception):
@@ -51,10 +35,19 @@ class CalendarService:
         events_collection: Optional[AsyncIOMotorCollection] = None,
         tokens_collection: Optional[AsyncIOMotorCollection] = None,
     ) -> None:
-        self.calendar_id = calendar_id or Config.GOOGLE_CALENDAR_ID
+        if calendar_id is None:
+            if has_app_context():
+                calendar_id = current_app.config.get("GOOGLE_CALENDAR_ID")
+            else:
+                calendar_id = os.getenv("GOOGLE_CALENDAR_ID")
+        self.calendar_id = calendar_id
         self.service: Any | None = None
-        self.warned_missing_creds = False
-        uri = mongo_uri or Config.MONGODB_URI or "mongodb://localhost:27017/furdb"
+        uri = mongo_uri
+        if uri is None:
+            if has_app_context():
+                uri = current_app.config.get("MONGODB_URI")
+            if not uri:
+                uri = os.getenv("MONGODB_URI", "mongodb://localhost:27017/furdb")
         if events_collection is not None and tokens_collection is not None:
             self.client = None
             self.events = events_collection
@@ -75,16 +68,9 @@ class CalendarService:
     def _build_service(self) -> None:
         if self.service:
             return
-        app = _get_app()
-        with app.app_context():
-            creds = load_credentials()
+        creds = load_credentials()
         if not creds:
-            if not self.warned_missing_creds:
-                log.warning("Google credentials missing – cannot sync")
-                self.warned_missing_creds = True
-            self.service = None
-            return
-        self.warned_missing_creds = False
+            raise SyncTokenExpired("Google credentials missing or invalid")
         self.service = build(
             "calendar",
             "v3",
@@ -94,9 +80,6 @@ class CalendarService:
 
     async def _api_list(self, params: dict) -> dict:
         self._build_service()
-        if not self.service:
-            log.warning("Calendar service not initialized – skipping")
-            return {}
         return await asyncio.to_thread(self.service.events().list(**params).execute)
 
     # ------------------------------------------------------------------
