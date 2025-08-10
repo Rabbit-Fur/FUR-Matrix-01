@@ -1,5 +1,13 @@
+<<<<<<< HEAD
 packages:
   - docs
 
 ignoredBuiltDependencies:
   - esbuild
+=======
+packages:
+  - docs
+
+ignoredBuiltDependencies:
+  - esbuild
+>>>>>>> 15fe4b4 (feat(ci,codex): add Codex integration)

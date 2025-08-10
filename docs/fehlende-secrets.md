@@ -2,6 +2,7 @@
 
 Trage die folgenden Keys als **GitHub Repository Secrets** (und ggf. Railway Variables) ein:
 
+<<<<<<< HEAD
 - `DISCORD_CLIENT_SECRET`
 - `DISCORD_TOKEN`
 - `DISCORD_WEBHOOK_URL`
@@ -18,5 +19,8 @@ Trage die folgenden Keys als **GitHub Repository Secrets** (und ggf. Railway Var
 - `RAILWAY_TOKEN`
 - `SECRET_KEY`
 - `TOKEN_GITHUB_API`
+=======
+
+>>>>>>> 15fe4b4 (feat(ci,codex): add Codex integration)
 
 > Hinweis: Werte stehen in deiner lokalen `.env`. In `.env.example` sind sie absichtlich maskiert.

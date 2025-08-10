@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # deps
 # Node.js dependencies
 node_modules
@@ -81,3 +82,69 @@ CHANGELOG.ignore.md
 # nix related
 .direnv
 .envrc
+=======
+# Python Bytecode
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.pyc
+
+# Virtual Environments / Build
+*.egg-info/
+*.dist-info/
+.venv/
+env/
+venv/
+
+# Editor- und Systemdateien
+.DS_Store
+Thumbs.db
+*.bak
+*.swp
+flag/* merge=ours
+
+# IDEs / VSCode
+.vscode/
+.idea/
+
+# Umgebungsvariablen / Sicherheit
+.env
+.env.*
+!.env.example
+secrets.json
+*.sqlite3
+
+# Flask & App spezifisch
+instance/
+*.log
+*.tmp
+*.db
+.mypy_cache/
+.coverage
+
+# Google OAuth credentials
+client_secret.json
+credentials/
+token/
+
+# Node / Frontend (falls vorhanden)
+node_modules/
+
+# FUR-spezifisch (Poster, Temp-Dateien)
+static/champions/
+static/bg/*.tmp
+*.zip
+*weekly.md
+data/secrets/
+
+todo_missing_bg.md
+
+# Logfiles
+core/logs/
+
+# Lokale Assets
+attached_assets/
+docs/Fehlende_ENV_LOG.md
+/Screenshot_*.png
+>>>>>>> 15fe4b4 (feat(ci,codex): add Codex integration)
