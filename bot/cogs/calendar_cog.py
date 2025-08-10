@@ -42,16 +42,31 @@ class CalendarCog(commands.Cog):
 
     def __init__(self, bot: commands.Bot) -> None:
         self.bot = bot
-        settings = CalendarSettings()
-        self.service = CalendarService(
-            calendar_id=settings.calendar_id,
-            token_path=str(settings.token_path),
-            scopes=settings.scopes,
-            mongo_uri=os.getenv("MONGODB_URI"),
-        )
+        self.service: CalendarService | None = None
         self.sync_loop.start()
         self.daily_loop.start()
         self.weekly_loop.start()
+
+    def setup_service(self) -> None:
+        """Initialize the :class:`CalendarService` within a Flask app context."""
+
+        if self.service is not None:
+            return
+        from main_app import app
+
+        with app.app_context():
+            settings = CalendarSettings()
+            svc = CalendarService(
+                calendar_id=settings.calendar_id,
+                token_path=str(settings.token_path),
+                scopes=settings.scopes,
+                mongo_uri=os.getenv("MONGODB_URI"),
+            )
+            try:
+                svc._build_service()
+            except Exception:  # noqa: BLE001
+                log.exception("Failed to build calendar service")
+            self.service = svc
 
     def cog_unload(self) -> None:  # pragma: no cover - lifecycle
         self.daily_loop.cancel()
@@ -85,13 +100,15 @@ class CalendarCog(commands.Cog):
 
     @calendar.command(name="today", description="Show today's events")
     async def cmd_today(self, interaction: discord.Interaction) -> None:
-        events = await self.service.get_events_today()
+        self.setup_service()
+        events = await self.service.get_events_today() if self.service else []
         await interaction.response.send_message(t("calendar_check_dm"), ephemeral=True)
         await self._send_events_dm(interaction.user, events, t("calendar_today_title"))
 
     @calendar.command(name="week", description="Show events this week")
     async def cmd_week(self, interaction: discord.Interaction) -> None:
-        events = await self.service.get_events_week()
+        self.setup_service()
+        events = await self.service.get_events_week() if self.service else []
         await interaction.response.send_message(t("calendar_check_dm"), ephemeral=True)
         await self._send_events_dm(interaction.user, events, t("calendar_week_title"))
 
@@ -130,7 +147,8 @@ class CalendarCog(commands.Cog):
 
     @calendar.command(name="postevent", description="Post next calendar event")
     async def cmd_postevent(self, interaction: discord.Interaction) -> None:
-        event = await self.service.get_next_event()
+        self.setup_service()
+        event = await self.service.get_next_event() if self.service else None
         if not event:
             await interaction.response.send_message("No events found.", ephemeral=True)
             return
@@ -166,8 +184,8 @@ class CalendarCog(commands.Cog):
         """Regularly synchronize events from Google to MongoDB."""
         await self.bot.wait_until_ready()
         try:
-            self.service._build_service()
-            if self.service.service is None:
+            self.setup_service()
+            if not self.service or self.service.service is None:
                 log.warning("Calendar service not configured – skipping sync")
                 return
             await self.service.sync()
@@ -177,17 +195,19 @@ class CalendarCog(commands.Cog):
     @tasks.loop(hours=1)
     async def daily_loop(self) -> None:
         await self.bot.wait_until_ready()
+        self.setup_service()
         now = datetime.now(timezone.utc)
         if should_send_daily(now):
-            events = await self.service.get_events_today()
+            events = await self.service.get_events_today() if self.service else []
             await self._send_reminders(events, t("calendar_today_title"))
 
     @tasks.loop(hours=1)
     async def weekly_loop(self) -> None:
         await self.bot.wait_until_ready()
+        self.setup_service()
         now = datetime.now(timezone.utc)
         if should_send_weekly(now):
-            events = await self.service.get_events_week()
+            events = await self.service.get_events_week() if self.service else []
             await self._send_reminders(events, t("calendar_week_title"))
 
 
