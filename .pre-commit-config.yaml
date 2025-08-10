@@ -12,3 +12,8 @@ repos:
     rev: v7.4.3
     hooks:
       - id: pytest
+  - repo: https://github.com/Yelp/detect-secrets
+    rev: v1.5.0
+    hooks:
+      - id: detect-secrets
+        args: ['--baseline', '.secrets.baseline']
