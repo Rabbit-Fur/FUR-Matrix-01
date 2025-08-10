@@ -2,7 +2,7 @@ from datetime import datetime
 from typing import Optional
 
 from bson import ObjectId
-from pydantic import BaseModel, EmailStr, Field
+from pydantic import BaseModel, ConfigDict, EmailStr, Field
 
 
 # ➕ Custom ObjectId Type für Pydantic-Kompatibilität
@@ -32,11 +32,11 @@ class UserModel(BaseModel):
     created_at: datetime = Field(default_factory=datetime.utcnow)
     updated_at: datetime = Field(default_factory=datetime.utcnow)
 
-    class Config:
-        allow_population_by_field_name = True
-        arbitrary_types_allowed = True
-        json_encoders = {ObjectId: str}
-        schema_extra = {
+    model_config = ConfigDict(
+        populate_by_name=True,
+        arbitrary_types_allowed=True,
+        json_encoders={ObjectId: str},
+        schema_extra={
             "example": {
                 "discord_id": "123456789012345678",
                 "username": "FURUser",
@@ -44,4 +44,5 @@ class UserModel(BaseModel):
                 "email": "user@example.com",
                 "role_level": "R3",
             }
-        }
+        },
+    )
