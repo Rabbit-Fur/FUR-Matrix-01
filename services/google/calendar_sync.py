@@ -282,31 +282,21 @@ def sync_to_mongodb(
     time_max: Optional[datetime] = None,
     settings: CalendarSettings | None = None,
 ) -> int:
-    """Fetch events via :class:`CalendarService` and upsert them into MongoDB."""
-
-    from services.calendar_service import (
-        CalendarService,
-        SyncTokenExpired as ServiceSyncTokenExpired,
-    )
+    """Fetch events via the Google Calendar API and upsert them into MongoDB."""
 
     settings = settings or CalendarSettings()
-    svc = CalendarService(
-        calendar_id=settings.calendar_id,
-        token_path=str(settings.token_path),
-        scopes=settings.scopes,
-    )
     if time_min is None:
         time_min = datetime.now(timezone.utc)
 
     try:
-        events = svc.list_upcoming_events(
-            max_results=max_results,
+        events = list_upcoming_events(
+            calendar_id=settings.calendar_id,
             time_min=time_min,
             time_max=time_max,
-            single_events=True,
-            order_by="startTime",
+            max_results=max_results,
+            settings=settings,
         )
-    except ServiceSyncTokenExpired as err:
+    except SyncTokenExpired as err:
         logger.warning("Google token problem: %s", err)
         return 0
 
