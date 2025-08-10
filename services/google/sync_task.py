@@ -1,4 +1,32 @@
-"""Background task to sync Google Calendar periodically."""
+"""Background task to sync Google Calendar periodically.
+
+Example APScheduler setup::
+
+    import asyncio
+    import os
+    from apscheduler.schedulers.background import BackgroundScheduler
+    from services import CalendarService
+    from web import create_app
+
+    app = create_app()
+    scheduler = BackgroundScheduler()
+
+    def sync_google():
+        with app.app_context():
+            service = CalendarService()
+            asyncio.run(service.sync())
+
+    scheduler.add_job(
+        sync_google,
+        "interval",
+        minutes=int(os.getenv("GOOGLE_SYNC_INTERVAL_MINUTES", "30")),
+    )
+    scheduler.start()
+
+``GOOGLE_SYNC_INTERVAL_MINUTES`` controls the sync frequency in minutes.
+OAuth tokens are loaded from ``GOOGLE_TOKEN_STORAGE_PATH`` or
+``GOOGLE_CREDENTIALS_FILE``.
+"""
 
 from __future__ import annotations
 
