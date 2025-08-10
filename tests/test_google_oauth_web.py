@@ -1,6 +1,7 @@
 import json
 import logging
 
+import pytest
 from flask import Flask
 
 from web.routes import google_oauth_web as mod
@@ -51,7 +52,8 @@ def test_load_credentials_missing_file(monkeypatch, tmp_path, caplog):
     missing = tmp_path / "missing.json"
     monkeypatch.setattr(mod, "TOKEN_PATH", missing, raising=False)
     with caplog.at_level(logging.WARNING):
-        assert mod.load_credentials() is None
+        with pytest.raises(mod.SyncTokenExpired):
+            mod.load_credentials()
     assert "Token file not found" in caplog.text
 
 

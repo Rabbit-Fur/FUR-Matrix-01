@@ -58,12 +58,22 @@ TOKEN_PATH = Path(os.getenv("GOOGLE_CREDENTIALS_FILE", "/data/google_token.json"
 _warned_once = False
 
 
-def load_credentials() -> Optional[Credentials]:
+class SyncTokenExpired(Exception):
+    """Raised when stored OAuth credentials are missing or invalid."""
+
+
+def load_credentials() -> Credentials:
     """Load stored OAuth credentials from disk.
 
     The token file is expected to contain a refresh token. When the access token
     is expired it will be refreshed automatically and the new credentials are
     written back to the same file.
+
+    Raises
+    ------
+    SyncTokenExpired
+        If the token file is absent, malformed or cannot be loaded by
+        :func:`Credentials.from_authorized_user_file`.
     """
 
     global _warned_once
@@ -71,12 +81,12 @@ def load_credentials() -> Optional[Credentials]:
         if not _warned_once:
             logger.warning("No Google credentials found at %s", TOKEN_PATH)
             _warned_once = True
-        return None
+        raise SyncTokenExpired from None
     try:
         info = json.loads(TOKEN_PATH.read_text())
     except Exception:  # noqa: BLE001
         logger.exception("Failed to read credentials JSON")
-        return None
+        raise SyncTokenExpired from None
 
     required = {"client_id", "client_secret", "refresh_token"}
     keys = set(info)
@@ -91,7 +101,7 @@ def load_credentials() -> Optional[Credentials]:
             missing = ", ".join(sorted(required - keys))
             logger.warning("Credentials file %s missing required keys: %s", TOKEN_PATH, missing)
             _warned_once = True
-        return None
+        raise SyncTokenExpired from None
 
     try:
         creds = Credentials.from_authorized_user_file(TOKEN_PATH, Config.GOOGLE_CALENDAR_SCOPES)
@@ -103,7 +113,7 @@ def load_credentials() -> Optional[Credentials]:
         return creds
     except Exception:  # noqa: BLE001
         logger.exception("Failed to load or refresh credentials")
-        return None
+        raise SyncTokenExpired from None
 
 
 # ---------------------------------------------------------------------------
@@ -112,13 +122,11 @@ def load_credentials() -> Optional[Credentials]:
 def get_service() -> Any | None:
     """Return a Google Calendar API service instance.
 
-    ``None`` is returned when credentials are missing or building the service
-    fails.
+    ``None`` is returned when building the service fails. Credential loading
+    issues raise :class:`SyncTokenExpired`.
     """
 
     creds = load_credentials()
-    if not creds:
-        return None
     try:
         return build("calendar", "v3", credentials=creds, cache_discovery=False)
     except Exception:  # noqa: BLE001
@@ -195,4 +203,10 @@ def format_event(event: dict) -> str:
     return title
 
 
-__all__ = ["get_service", "list_upcoming_events", "format_event", "load_credentials"]
+__all__ = [
+    "get_service",
+    "list_upcoming_events",
+    "format_event",
+    "load_credentials",
+    "SyncTokenExpired",
+]

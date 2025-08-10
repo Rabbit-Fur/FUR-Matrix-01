@@ -2,7 +2,6 @@ import logging
 import os
 import time
 from pathlib import Path
-from typing import Optional
 
 from flask import Blueprint, Response, jsonify, redirect, request, session
 from google.auth.transport.requests import Request
@@ -36,6 +35,10 @@ if not REDIRECT_URI:
 
 # Logger setup
 log = logging.getLogger(__name__)
+
+
+class SyncTokenExpired(Exception):
+    """Raised when stored OAuth credentials are missing or invalid."""
 
 # Fallback for Railway where session can be lost
 state_map: dict[str, float] = {}
@@ -123,11 +126,18 @@ def oauth2callback() -> Response:
 # ---- Helpers ----
 
 
-def load_credentials() -> Optional[Credentials]:
-    """Load stored credentials from token file."""
+def load_credentials() -> Credentials:
+    """Load stored credentials from token file.
+
+    Raises
+    ------
+    SyncTokenExpired
+        If the token file does not exist or credentials cannot be loaded.
+    """
+
     if not TOKEN_PATH.exists():
         log.warning("Token file not found: %s", TOKEN_PATH)
-        return None
+        raise SyncTokenExpired from None
 
     try:
         creds = Credentials.from_authorized_user_file(TOKEN_PATH, SCOPES)
@@ -138,14 +148,16 @@ def load_credentials() -> Optional[Credentials]:
         return creds
     except Exception:
         log.exception("Failed to load or refresh credentials")
-        return None
+        raise SyncTokenExpired from None
 
 
 def get_calendar_service():
-    """Return Google Calendar service if credentials exist."""
+    """Return Google Calendar service if credentials are available.
+
+    Credential loading issues raise :class:`SyncTokenExpired`.
+    """
+
     creds = load_credentials()
-    if not creds:
-        return None
     try:
         return build("calendar", "v3", credentials=creds, cache_discovery=False)
     except Exception:
@@ -155,4 +167,4 @@ def get_calendar_service():
 
 # ---- Module Exports ----
 
-__all__ = ["oauth_bp", "load_credentials", "get_calendar_service"]
+__all__ = ["oauth_bp", "load_credentials", "get_calendar_service", "SyncTokenExpired"]
