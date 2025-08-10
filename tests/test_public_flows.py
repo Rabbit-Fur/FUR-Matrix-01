@@ -7,6 +7,7 @@ import requests
 import mongo_service
 
 auth_mod = importlib.import_module("web.auth_routes")
+public_mod = importlib.import_module("blueprints.public")
 
 
 def get_flashes(client):
