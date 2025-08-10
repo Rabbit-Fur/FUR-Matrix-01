@@ -106,31 +106,51 @@ def load_credentials(settings: CalendarSettings | None = None) -> Credentials:
     global _warned_once
     settings = settings or CalendarSettings()
     token_path = settings.token_path
+    setup_hint = (
+        "Run services/google/oauth_setup.py and set "
+        "GOOGLE_TOKEN_STORAGE_PATH or GOOGLE_CREDENTIALS_FILE."
+    )
     if not token_path.exists():
         if not _warned_once:
-            logger.warning("No Google credentials found at %s", token_path)
+            logger.warning(
+                "No Google credentials found at %s. %s",
+                token_path,
+                setup_hint,
+            )
             _warned_once = True
-        raise SyncTokenExpired from None
+        raise SyncTokenExpired(
+            f"No Google credentials found at {token_path}. {setup_hint}"
+        ) from None
     try:
         info = json.loads(token_path.read_text())
     except Exception:  # noqa: BLE001
-        logger.exception("Failed to read credentials JSON")
-        raise SyncTokenExpired from None
+        logger.exception("Failed to read credentials JSON. %s", setup_hint)
+        raise SyncTokenExpired(
+            f"Failed to read credentials JSON at {token_path}. {setup_hint}"
+        ) from None
 
     required = {"client_id", "client_secret", "refresh_token"}
     keys = set(info)
     if not required.issubset(keys):
         if ("installed" in info or "web" in info) and not _warned_once:
             logger.warning(
-                "Credentials file %s looks like an OAuth client config, not a saved token",
+                "Credentials file %s looks like an OAuth client config, not a saved token. %s",
                 token_path,
+                setup_hint,
             )
             _warned_once = True
         elif not _warned_once:
             missing = ", ".join(sorted(required - keys))
-            logger.warning("Credentials file %s missing required keys: %s", token_path, missing)
+            logger.warning(
+                "Credentials file %s missing required keys: %s. %s",
+                token_path,
+                missing,
+                setup_hint,
+            )
             _warned_once = True
-        raise SyncTokenExpired from None
+        raise SyncTokenExpired(
+            f"Credentials file {token_path} missing required keys. {setup_hint}"
+        ) from None
 
     scopes = settings.scopes
     try:
@@ -142,8 +162,10 @@ def load_credentials(settings: CalendarSettings | None = None) -> Credentials:
         _warned_once = False
         return creds
     except Exception:  # noqa: BLE001
-        logger.exception("Failed to load or refresh credentials")
-        raise SyncTokenExpired from None
+        logger.exception("Failed to load or refresh credentials. %s", setup_hint)
+        raise SyncTokenExpired(
+            f"Failed to load or refresh credentials from {token_path}. {setup_hint}"
+        ) from None
 
 
 # ---------------------------------------------------------------------------
