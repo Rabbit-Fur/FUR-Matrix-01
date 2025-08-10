@@ -216,3 +216,42 @@ def test_oauth2callback_invalid_state_or_token(client, monkeypatch):
     assert resp.status_code == 400
     assert resp.is_json
     assert resp.json["details"] == "fail"
+
+
+def test_oauth2callback_save_credentials_failure(client, monkeypatch):
+    client.application.config.update(
+        GOOGLE_CLIENT_ID="id",
+        GOOGLE_CLIENT_SECRET="secret",
+        GOOGLE_AUTH_URI="https://auth",
+        GOOGLE_TOKEN_URI="https://token",
+        GOOGLE_REDIRECT_URI="http://localhost:8080/oauth2callback",
+        GOOGLE_CALENDAR_SCOPES=["scope"],
+    )
+
+    class FakeCred:
+        pass
+
+    class FakeFlow:
+        def __init__(self):
+            self.credentials = FakeCred()
+
+        def fetch_token(self, authorization_response=None):
+            return None
+
+    monkeypatch.setattr(
+        mod.Flow,
+        "from_client_config",
+        lambda cfg, scopes, state=None, redirect_uri=None: FakeFlow(),
+    )
+    monkeypatch.setattr(
+        mod, "_save_credentials", lambda c: (_ for _ in ()).throw(OSError("disk full"))
+    )
+    monkeypatch.setattr(mod, "build", lambda *a, **k: None)
+
+    with client.session_transaction() as sess:
+        sess["google_oauth_state"] = "good"
+
+    resp = client.get("/oauth2callback?state=good")
+    assert resp.status_code == 500
+    assert resp.is_json
+    assert resp.json["error"] == "Failed to save credentials"
