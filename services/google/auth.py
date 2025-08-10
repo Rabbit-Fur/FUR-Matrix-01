@@ -105,6 +105,7 @@ def _save_credentials(creds: Credentials) -> None:
     if not path:
         return
     log.info("Saving Google OAuth credentials to %s", path)
+    os.makedirs(os.path.dirname(path), exist_ok=True)
     with open(path, "w", encoding="utf-8") as fh:
         fh.write(creds.to_json())
 
@@ -227,7 +228,11 @@ def oauth2callback():
         return jsonify({"error": "token_failed", "details": text}), 400
 
     creds = flow.credentials
-    _save_credentials(creds)
+    try:
+        _save_credentials(creds)
+    except OSError as exc:
+        current_app.logger.exception("Saving credentials failed")
+        return jsonify({"error": "Failed to save credentials", "details": str(exc)}), 500
     log.info("OAuth flow completed and credentials saved")
 
     try:
