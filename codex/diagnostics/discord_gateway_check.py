@@ -25,7 +25,7 @@ async def on_ready() -> None:
     log.info("✅ Bot ist online: %s", bot.user)
     await test_gateway()
     await test_permissions()
-    await analyze_check_upcoming_events()
+    await analyze_scheduler_tick()
 
 
 async def test_gateway() -> None:
@@ -47,18 +47,18 @@ async def test_permissions() -> None:
             log.error("❌ Fehler beim Rechte-Check: %s", exc)
 
 
-async def analyze_check_upcoming_events() -> None:
-    from bot.dm_scheduler import check_upcoming_events
+async def analyze_scheduler_tick() -> None:
+    from bot.dm_scheduler import DMReminderScheduler
 
-    if not asyncio.iscoroutinefunction(check_upcoming_events):
-        log.warning("❌ `check_upcoming_events` ist keine async-Funktion!")
+    if not asyncio.iscoroutinefunction(DMReminderScheduler.tick):
+        log.warning("❌ `DMReminderScheduler.tick` ist keine async-Funktion!")
         return
 
-    source = inspect.getsource(check_upcoming_events)
+    source = inspect.getsource(DMReminderScheduler.tick)
     if "time.sleep" in source:
         log.warning("⏱️ `time.sleep()` gefunden – ersetze durch `await asyncio.sleep()`!")
     else:
-        log.info("✅ Kein blockierender sleep gefunden.")
+        log.info("Kein blockierender sleep in DMReminderScheduler.tick")
 
     if "for " in source or "while " in source:
         log.info("ℹ️ Schleifen gefunden – Stelle sicher, dass sie `await` korrekt nutzen.")

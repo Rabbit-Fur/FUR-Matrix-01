@@ -8,7 +8,7 @@ import discord
 from discord import app_commands
 from discord.ext import commands
 
-from bot.dm_scheduler import get_dm_users
+from bot.dm_utils import get_dm_users
 from mongo_service import get_collection
 
 log = logging.getLogger(__name__)
