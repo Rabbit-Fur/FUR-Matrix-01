@@ -11,7 +11,12 @@ from discord.ext import commands, tasks
 
 from config import Config, is_production
 from fur_lang.i18n import t
-from services.google.calendar_sync import CalendarSettings, get_service, list_upcoming_events
+from services.google.calendar_sync import (
+    CalendarSettings,
+    SyncTokenExpired,
+    get_service,
+    list_upcoming_events,
+)
 from mongo_service import get_collection
 from utils import poster_generator
 from utils.event_helpers import parse_event_time
@@ -90,14 +95,18 @@ class ReminderAutopilot(commands.Cog):
 
         try:
             with app.app_context():
-                service = get_service(self.calendar_settings)
-                events = list_upcoming_events(
-                    service,
-                    time_min=window_start,
-                    time_max=window_end,
-                    max_results=50,
-                    settings=self.calendar_settings,
-                )
+                try:
+                    service = get_service(self.calendar_settings)
+                    events = list_upcoming_events(
+                        service,
+                        time_min=window_start,
+                        time_max=window_end,
+                        max_results=50,
+                        settings=self.calendar_settings,
+                    )
+                except SyncTokenExpired:
+                    log.warning("Google sync token expired; skipping reminder cycle")
+                    return
             mapped_events = []
             for ev in events:
                 doc = get_collection("events").find_one({"google_id": ev.get("id")})
