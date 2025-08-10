@@ -99,7 +99,7 @@ def callback():
     else:
         current_app.logger.warning("❌ Invalid Discord role")
         return t("invalid_role", default="Invalid role for access"), 403
-    session["discord_roles"] = [role_level]
+    session["discord_roles"] = list(user_roles)
     session["discord_user"] = {
         "id": user_data["id"],
         "username": user_data["username"],
