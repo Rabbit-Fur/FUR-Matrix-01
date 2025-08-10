@@ -1,12 +1,12 @@
 openapi: 3.1.0
 info:
-  title: MATRIX GPT
-  version: 1.0.0
-  description: Voller GPT-Zugriff auf GitHub – Dateien, Branches, PRs, Commits, Issues, Diffs, Merges via OAuth.
-
+  title: MATRIX GPT – GitHub Full Access
+  version: 1.1.0
+  description: Voller GPT-Zugriff auf GitHub: Dateien, Branches, PRs, Commits, Issues, Diffs, Merges via OAuth.
+externalDocs:
+  url: https://docs.github.com/rest
 servers:
   - url: https://api.github.com
-
 security:
   - githubOAuth: []
 
@@ -14,76 +14,236 @@ components:
   securitySchemes:
     githubOAuth:
       type: oauth2
-      description: GitHub OAuth 2.0 Zugang
+      description: GitHub OAuth 2.0 (Authorization Code)
       flows:
         authorizationCode:
           authorizationUrl: https://github.com/login/oauth/authorize
           tokenUrl: https://github.com/login/oauth/access_token
           scopes:
-            repo: Vollzugriff auf Repositories
-            user: Zugriff auf Benutzerinformationen
-  schemas: {}
+            public_repo: Zugriff auf öffentliche Repos
+            repo: Vollzugriff auf Repos (nur wenn nötig)
+            read:org: Leserechte für Orgs (z. B. Rollenprüfung)
+            user:email: E-Mail des Nutzers lesen
+  parameters:
+    Owner: { name: owner, in: path, required: true, schema: { type: string } }
+    Repo:  { name: repo,  in: path, required: true, schema: { type: string } }
+    Path:  { name: path,  in: path, required: true, schema: { type: string } }
+    Pull:  { name: pull_number, in: path, required: true, schema: { type: integer } }
+    Ref:   { name: ref, in: query, required: false, schema: { type: string } }
+    GHApiVersion:
+      name: X-GitHub-Api-Version
+      in: header
+      required: false
+      schema: { type: string, default: "2022-11-28" }
+    AcceptJson:
+      name: Accept
+      in: header
+      required: false
+      schema: { type: string, default: "application/vnd.github+json" }
+  responses:
+    Unauthorized: { description: Nicht autorisiert }
+    NotFound: { description: Nicht gefunden }
+    ValidationFailed:
+      description: Validierung fehlgeschlagen (422)
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message: { type: string }
+              documentation_url: { type: string }
+  headers:
+    Link:
+      description: Pagination Links
+      schema: { type: string }
+    RateRemaining:
+      description: Verbleibende Rate-Limit-Calls
+      schema: { type: integer }
+  schemas:
+    User:
+      type: object
+      properties:
+        login: { type: string }
+        id: { type: integer }
+        email: { type: string, nullable: true }
+    ContentFile:
+      type: object
+      properties:
+        type: { type: string, enum: [file, dir, symlink, submodule] }
+        encoding: { type: string, nullable: true }
+        content: { type: string, description: "Base64" }
+        sha: { type: string }
+        path: { type: string }
+    CreateOrUpdateFileRequest:
+      type: object
+      required: [message, content]
+      properties:
+        message: { type: string, description: "Commit-Message" }
+        content: { type: string, description: "Base64-kodierter Inhalt" }
+        sha: { type: string, description: "Erforderlich beim Update" }
+        branch: { type: string }
+        committer:
+          type: object
+          properties:
+            name: { type: string }
+            email: { type: string }
+    PullRequest:
+      type: object
+      properties:
+        number: { type: integer }
+        state: { type: string }
+        title: { type: string }
+        head: { type: object, properties: { ref: { type: string }, sha: { type: string } } }
+        base: { type: object, properties: { ref: { type: string }, sha: { type: string } } }
+    CreatePullRequestRequest:
+      type: object
+      required: [title, head, base]
+      properties:
+        title: { type: string }
+        head: { type: string, description: "Branch oder user:branch" }
+        base: { type: string, description: "Ziel-Branch" }
+        body: { type: string }
+        draft: { type: boolean, default: false }
 
 paths:
   /user:
     get:
       operationId: getUser
-      summary: Holt Informationen über den authentifizierten Benutzer
+      summary: Authentifizierten Nutzer laden
+      parameters: [ { $ref: '#/components/parameters/AcceptJson' }, { $ref: '#/components/parameters/GHApiVersion' } ]
       responses:
         "200":
-          description: Benutzerinfo erfolgreich geladen
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  login:
-                    type: string
-                  id:
-                    type: integer
-                  email:
-                    type: string
-        "401":
-          description: Nicht autorisiert
+          description: OK
+          headers: { Link: { $ref: '#/components/headers/Link' }, X-RateLimit-Remaining: { $ref: '#/components/headers/RateRemaining' } }
+          content: { application/json: { schema: { $ref: '#/components/schemas/User' } } }
+        "401": { $ref: '#/components/responses/Unauthorized' }
 
   /repos/{owner}/{repo}/contents/{path}:
     get:
       operationId: getFile
-      summary: Liest eine Datei im Repository (Base64-kodiert)
+      summary: Datei (Base64) lesen
+      parameters: [ { $ref: '#/components/parameters/Owner' }, { $ref: '#/components/parameters/Repo' }, { $ref: '#/components/parameters/Path' }, { $ref: '#/components/parameters/Ref' }, { $ref: '#/components/parameters/AcceptJson' }, { $ref: '#/components/parameters/GHApiVersion' } ]
+      responses:
+        "200": { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/ContentFile' } } } }
+        "404": { $ref: '#/components/responses/NotFound' }
+    put:
+      operationId: putFile
+      summary: Datei erstellen/aktualisieren
+      parameters: [ { $ref: '#/components/parameters/Owner' }, { $ref: '#/components/parameters/Repo' }, { $ref: '#/components/parameters/Path' }, { $ref: '#/components/parameters/AcceptJson' }, { $ref: '#/components/parameters/GHApiVersion' } ]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/CreateOrUpdateFileRequest' }
+      responses:
+        "201": { description: Created }
+        "200": { description: Updated }
+        "404": { $ref: '#/components/responses/NotFound' }
+        "422": { $ref: '#/components/responses/ValidationFailed' }
+
+  /repos/{owner}/{repo}/pulls:
+    get:
+      operationId: listPulls
+      summary: Pull Requests auflisten
       parameters:
-        - name: owner
-          in: path
-          required: true
-          schema:
-            type: string
-        - name: repo
-          in: path
-          required: true
-          schema:
-            type: string
-        - name: path
-          in: path
-          required: true
-          schema:
-            type: string
-        - name: ref
+        - { $ref: '#/components/parameters/Owner' }
+        - { $ref: '#/components/parameters/Repo' }
+        - name: state
           in: query
-          required: false
-          schema:
-            type: string
+          schema: { type: string, enum: [open, closed, all], default: open }
+        - { $ref: '#/components/parameters/AcceptJson' }
+        - { $ref: '#/components/parameters/GHApiVersion' }
       responses:
         "200":
-          description: Dateiinhalt erfolgreich geladen
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  content:
-                    type: string
-                  encoding:
-                    type: string
-                  sha:
-                    type: string
-        "404":
-          description: Datei nicht gefunden
+          description: OK
+          headers: { Link: { $ref: '#/components/headers/Link' } }
+          content: { application/json: { schema: { type: array, items: { $ref: '#/components/schemas/PullRequest' } } } }
+    post:
+      operationId: createPull
+      summary: Pull Request erstellen
+      parameters: [ { $ref: '#/components/parameters/Owner' }, { $ref: '#/components/parameters/Repo' }, { $ref: '#/components/parameters/AcceptJson' }, { $ref: '#/components/parameters/GHApiVersion' } ]
+      requestBody:
+        required: true
+        content:
+          application/json: { schema: { $ref: '#/components/schemas/CreatePullRequestRequest' } }
+      responses:
+        "201": { description: Created }
+        "422": { $ref: '#/components/responses/ValidationFailed' }
+
+  /repos/{owner}/{repo}/pulls/{pull_number}/merge:
+    put:
+      operationId: mergePull
+      summary: Pull Request mergen
+      parameters: [ { $ref: '#/components/parameters/Owner' }, { $ref: '#/components/parameters/Repo' }, { $ref: '#/components/parameters/Pull' }, { $ref: '#/components/parameters/AcceptJson' }, { $ref: '#/components/parameters/GHApiVersion' } ]
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                commit_title: { type: string }
+                commit_message: { type: string }
+                merge_method: { type: string, enum: [merge, squash, rebase], default: merge }
+      responses:
+        "200": { description: Merged }
+        "405": { description: Nicht mergebar }
+        "409": { description: Konflikt }
+
+  /repos/{owner}/{repo}/commits:
+    get:
+      operationId: listCommits
+      summary: Commits auflisten
+      parameters:
+        - { $ref: '#/components/parameters/Owner' }
+        - { $ref: '#/components/parameters/Repo' }
+        - name: sha
+          in: query
+          schema: { type: string }
+        - { $ref: '#/components/parameters/AcceptJson' }
+        - { $ref: '#/components/parameters/GHApiVersion' }
+      responses:
+        "200":
+          description: OK
+          headers: { Link: { $ref: '#/components/headers/Link' } }
+
+  /repos/{owner}/{repo}/compare/{base}...{head}:
+    get:
+      operationId: compareCommits
+      summary: Zwei Commits/Refs vergleichen (DIFF möglich)
+      parameters:
+        - { $ref: '#/components/parameters/Owner' }
+        - { $ref: '#/components/parameters/Repo' }
+        - { name: base, in: path, required: true, schema: { type: string } }
+        - { name: head, in: path, required: true, schema: { type: string } }
+        - { $ref: '#/components/parameters/GHApiVersion' }
+        - { name: Accept, in: header, required: false, schema: { type: string, default: "application/vnd.github+json, application/vnd.github.diff" } }
+      responses:
+        "200": { description: OK }
+        "404": { $ref: '#/components/responses/NotFound' }
+
+  /repos/{owner}/{repo}/issues:
+    get:
+      operationId: listIssues
+      summary: Issues auflisten
+      parameters: [ { $ref: '#/components/parameters/Owner' }, { $ref: '#/components/parameters/Repo' }, { $ref: '#/components/parameters/AcceptJson' }, { $ref: '#/components/parameters/GHApiVersion' } ]
+      responses:
+        "200": { description: OK }
+    post:
+      operationId: createIssue
+      summary: Issue erstellen
+      parameters: [ { $ref: '#/components/parameters/Owner' }, { $ref: '#/components/parameters/Repo' }, { $ref: '#/components/parameters/AcceptJson' }, { $ref: '#/components/parameters/GHApiVersion' } ]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [title]
+              properties:
+                title: { type: string }
+                body: { type: string }
+                assignees: { type: array, items: { type: string } }
+      responses:
+        "201": { description: Created }
+        "422": { $ref: '#/components/responses/ValidationFailed' }
