@@ -1,51 +1,42 @@
-import asyncio
-import sys
-import types
+from flask import Flask
 
 
-def test_google_sync_task_runs(monkeypatch):
-    sys.modules.setdefault("schedule", types.ModuleType("schedule"))
-
-    import agents.scheduler_agent as agent_mod
+def test_start_google_sync_runs_job_with_app_context(monkeypatch):
     import services.google.sync_task as task_mod
 
-    called = {"count": 0}
-
-    def fake_sync():
-        called["count"] += 1
-
-    monkeypatch.setattr(task_mod, "sync_to_mongodb", fake_sync)
-
-    def fake_start():
-        asyncio.run(task_mod.google_sync_loop.coro())
-
-    monkeypatch.setattr(task_mod.google_sync_loop, "start", fake_start)
-
-    agent = agent_mod.SchedulerAgent()
-    agent.schedule_google_sync(interval_minutes=1)
-
-    assert called["count"] == 1
-
-
-def test_start_google_sync_pushes_app_context(monkeypatch):
-    sys.modules.setdefault("schedule", types.ModuleType("schedule"))
-
-    import services.google.sync_task as task_mod
-
+    task_mod._scheduler = None
+    app = Flask("test_app")
+    mongo_db = object()
     called = {}
 
-    def fake_sync():
+    def fake_sync_to_mongodb(*, mongo_db: object, **kwargs):
         from flask import current_app
 
         called["app"] = current_app.name
+        called["db"] = mongo_db
+        return 1
 
-    monkeypatch.setattr(task_mod, "sync_to_mongodb", fake_sync)
+    monkeypatch.setattr(task_mod, "sync_to_mongodb", fake_sync_to_mongodb)
 
-    def fake_start():
-        asyncio.run(task_mod.google_sync_loop.coro())
+    class DummyScheduler:
+        def __init__(self):
+            self.jobs = []
+            self.running = False
 
-    monkeypatch.setattr(task_mod.google_sync_loop, "start", fake_start)
+        def add_job(self, func, trigger, minutes, id, replace_existing):
+            self.jobs.append(func)
 
-    task_mod.start_google_sync(interval_minutes=1)
+        def start(self):
+            self.running = True
 
-    assert called.get("app")
+    scheduler = DummyScheduler()
+    monkeypatch.setattr(task_mod, "BackgroundScheduler", lambda: scheduler)
+
+    task_mod.start_google_sync(app, mongo_db)
+
+    assert scheduler.running
+    assert len(scheduler.jobs) == 1
+
+    scheduler.jobs[0]()
+    assert called["app"] == app.name
+    assert called["db"] is mongo_db

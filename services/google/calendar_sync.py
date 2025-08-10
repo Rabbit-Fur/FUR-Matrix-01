@@ -22,6 +22,8 @@ from google.oauth2.credentials import Credentials
 from googleapiclient.discovery import build
 
 from utils.time_utils import parse_calendar_datetime
+from pymongo import UpdateOne
+from services.calendar_service import CalendarService, SyncTokenExpired as ServiceSyncTokenExpired
 
 # ---------------------------------------------------------------------------
 # Logging setup
@@ -224,10 +226,53 @@ def format_event(event: dict) -> str:
     return title
 
 
+def sync_to_mongodb(
+    mongo_db,
+    collection_name: str = "calendar_events",
+    max_results: int = 250,
+    time_min: Optional[datetime] = None,
+    time_max: Optional[datetime] = None,
+) -> int:
+    """Fetch events via :class:`CalendarService` and upsert them into MongoDB."""
+
+    svc = CalendarService()
+    if time_min is None:
+        time_min = datetime.now(timezone.utc)
+
+    try:
+        events = svc.list_upcoming_events(
+            max_results=max_results,
+            time_min=time_min,
+            time_max=time_max,
+            single_events=True,
+            order_by="startTime",
+        )
+    except ServiceSyncTokenExpired as err:
+        logger.warning("Google token problem: %s", err)
+        return 0
+
+    if not events:
+        return 0
+
+    cal_id = current_app.config.get("GOOGLE_CALENDAR_ID")
+    ops = []
+    for e in events:
+        e["__calendar_id"] = cal_id
+        ops.append(UpdateOne({"id": e.get("id")}, {"$set": e}, upsert=True))
+
+    if not ops:
+        return 0
+
+    res = mongo_db[collection_name].bulk_write(ops, ordered=False)
+    changed = (res.upserted_count or 0) + (res.modified_count or 0)
+    return int(changed)
+
+
 __all__ = [
     "get_service",
     "list_upcoming_events",
     "format_event",
+    "sync_to_mongodb",
     "load_credentials",
     "SyncTokenExpired",
 ]
