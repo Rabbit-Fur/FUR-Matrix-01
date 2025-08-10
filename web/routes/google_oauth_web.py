@@ -40,6 +40,7 @@ log = logging.getLogger(__name__)
 class SyncTokenExpired(Exception):
     """Raised when stored OAuth credentials are missing or invalid."""
 
+
 # Fallback for Railway where session can be lost
 state_map: dict[str, float] = {}
 
