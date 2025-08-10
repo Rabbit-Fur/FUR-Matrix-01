@@ -2,6 +2,7 @@ import logging
 from unittest.mock import MagicMock
 
 import pytest
+
 import services.google.calendar_sync as mod
 
 
@@ -23,10 +24,11 @@ def test_list_upcoming_events_missing_service(monkeypatch):
     assert mod.list_upcoming_events(service=None, calendar_id="cal") == []
 
 
-def test_list_upcoming_events_missing_calendar_id(monkeypatch):
+def test_list_upcoming_events_missing_calendar_id(monkeypatch, app):
     service = MagicMock()
-    monkeypatch.setattr(mod.Config, "GOOGLE_CALENDAR_ID", None)
-    assert mod.list_upcoming_events(service=service, calendar_id=None) == []
+    with app.app_context():
+        app.config.pop("GOOGLE_CALENDAR_ID", None)
+        assert mod.list_upcoming_events(service=service, calendar_id=None) == []
 
 
 def test_format_event():
@@ -36,29 +38,31 @@ def test_format_event():
     assert "2025-01-01" in text
 
 
-def test_load_credentials_warns_once(monkeypatch, tmp_path, caplog):
+def test_load_credentials_warns_once(monkeypatch, tmp_path, caplog, app):
     missing = tmp_path / "token.json"
-    monkeypatch.setattr(mod, "TOKEN_PATH", missing, raising=False)
+    monkeypatch.setattr(mod, "_token_path", lambda: missing, raising=False)
     mod._warned_once = False
-    with caplog.at_level(logging.WARNING):
-        with pytest.raises(mod.SyncTokenExpired):
-            mod.load_credentials()
-    assert "No Google credentials found" in caplog.text
-    caplog.clear()
-    with caplog.at_level(logging.WARNING):
-        with pytest.raises(mod.SyncTokenExpired):
-            mod.load_credentials()
-    assert caplog.text == ""
+    with app.app_context():
+        with caplog.at_level(logging.WARNING):
+            with pytest.raises(mod.SyncTokenExpired):
+                mod.load_credentials()
+        assert "No Google credentials found" in caplog.text
+        caplog.clear()
+        with caplog.at_level(logging.WARNING):
+            with pytest.raises(mod.SyncTokenExpired):
+                mod.load_credentials()
+        assert caplog.text == ""
 
 
-def test_load_credentials_client_config(monkeypatch, tmp_path, caplog):
+def test_load_credentials_client_config(monkeypatch, tmp_path, caplog, app):
     path = tmp_path / "client.json"
     path.write_text(
         "{" "installed" ": {" "client_id" ": " "id" ", " "client_secret" ": " "sec" "}}"
     )
-    monkeypatch.setattr(mod, "TOKEN_PATH", path, raising=False)
+    monkeypatch.setattr(mod, "_token_path", lambda: path, raising=False)
     mod._warned_once = False
-    with caplog.at_level(logging.WARNING):
-        with pytest.raises(mod.SyncTokenExpired):
-            mod.load_credentials()
-    assert "client config" in caplog.text
+    with app.app_context():
+        with caplog.at_level(logging.WARNING):
+            with pytest.raises(mod.SyncTokenExpired):
+                mod.load_credentials()
+        assert "client config" in caplog.text
