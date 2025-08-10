@@ -23,7 +23,6 @@ from googleapiclient.discovery import build
 
 from utils.time_utils import parse_calendar_datetime
 from pymongo import UpdateOne
-from services.calendar_service import CalendarService, SyncTokenExpired as ServiceSyncTokenExpired
 
 # ---------------------------------------------------------------------------
 # Logging setup
@@ -234,6 +233,11 @@ def sync_to_mongodb(
     time_max: Optional[datetime] = None,
 ) -> int:
     """Fetch events via :class:`CalendarService` and upsert them into MongoDB."""
+
+    from services.calendar_service import (
+        CalendarService,
+        SyncTokenExpired as ServiceSyncTokenExpired,
+    )
 
     svc = CalendarService()
     if time_min is None:
