@@ -12,7 +12,6 @@ from __future__ import annotations
 
 import json
 import logging
-import os
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from pathlib import Path
@@ -22,6 +21,7 @@ from google.auth.transport.requests import Request
 from google.oauth2.credentials import Credentials
 from googleapiclient.discovery import build
 
+from utils.env_utils import get_google_calendar_settings
 from utils.time_utils import parse_calendar_datetime
 from pymongo import UpdateOne
 
@@ -61,11 +61,7 @@ _warned_once = False
 def _default_token_path() -> Path:
     """Return the default path for stored OAuth tokens."""
 
-    return Path(
-        os.getenv("GOOGLE_TOKEN_STORAGE_PATH")
-        or os.getenv("GOOGLE_CREDENTIALS_FILE")
-        or "/data/google_token.json"
-    )
+    return Path(get_google_calendar_settings().token_path)
 
 
 @dataclass
@@ -73,10 +69,8 @@ class CalendarSettings:
     """Runtime configuration for Google Calendar access."""
 
     token_path: Path = field(default_factory=_default_token_path)
-    calendar_id: str | None = os.getenv("GOOGLE_CALENDAR_ID")
-    scopes: list[str] = field(
-        default_factory=lambda: ["https://www.googleapis.com/auth/calendar.readonly"]
-    )
+    calendar_id: str | None = get_google_calendar_settings().calendar_id
+    scopes: list[str] = field(default_factory=lambda: get_google_calendar_settings().scopes)
 
 
 class SyncTokenExpired(Exception):
