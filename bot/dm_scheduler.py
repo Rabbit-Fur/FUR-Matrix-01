@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import logging
+from datetime import datetime, timedelta, timezone
 from typing import Awaitable, Callable
 
 from services.calendar_service import CalendarService
@@ -20,7 +21,10 @@ class DMReminderScheduler:
 
     async def tick(self) -> None:
         """Check for upcoming events and send DMs via callback."""
-        events = await self.service.list_upcoming_events()
+        now = datetime.utcnow().replace(tzinfo=timezone.utc)
+        start = now + timedelta(minutes=10)
+        end = start + timedelta(minutes=1)
+        events = await self.service.list_upcoming_events(start=start, end=end, max_results=50)
         for ev in events:
             participants = self.service.events.database["event_participants"].find(
                 {"event_id": ev.get("_id")}

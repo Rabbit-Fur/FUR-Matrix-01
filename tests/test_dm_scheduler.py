@@ -68,7 +68,7 @@ async def test_tick_sends_reminders():
         def __init__(self):
             self.events = FakeEventsCollection()
 
-        async def list_upcoming_events(self):
+        async def list_upcoming_events(self, *, start=None, end=None, max_results=None):
             return [
                 {
                     "_id": 1,
@@ -107,7 +107,7 @@ async def test_tick_avoids_duplicate_dms():
         def __init__(self):
             self.events = FakeEventsCollection()
 
-        async def list_upcoming_events(self):
+        async def list_upcoming_events(self, *, start=None, end=None, max_results=None):
             return [
                 {
                     "_id": 99,

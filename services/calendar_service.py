@@ -206,12 +206,27 @@ class CalendarService:
         end = start + timedelta(days=1)
         return await self._get_range(start, end)
 
-    async def list_upcoming_events(self) -> list[dict]:
-        """Return events starting roughly 10 minutes from now."""
-        now = datetime.utcnow().replace(tzinfo=timezone.utc)
-        start = now + timedelta(minutes=10)
-        end = start + timedelta(minutes=1)
-        return await self._get_range(start, end)
+    async def list_upcoming_events(
+        self,
+        *,
+        start: datetime | None = None,
+        end: datetime | None = None,
+        max_results: int | None = None,
+    ) -> list[dict]:
+        """Return upcoming events within the given range.
+
+        Parameters are optional and default to events starting roughly
+        10 minutes from now lasting one minute.
+        """
+        if start is None:
+            now = datetime.utcnow().replace(tzinfo=timezone.utc)
+            start = now + timedelta(minutes=10)
+        if end is None:
+            end = start + timedelta(minutes=1)
+        events = await self._get_range(start, end)
+        if max_results is not None:
+            events = events[:max_results]
+        return events
 
 
 __all__ = ["CalendarService", "SyncTokenExpired"]
