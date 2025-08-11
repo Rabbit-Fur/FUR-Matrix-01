@@ -1,12 +1,3 @@
-"""
-auto_fixer.py – Automatisches Code-Fixing-Tool für Python-Projekte
-
-Formatiert Python-Dateien gemäß PEP8, entfernt ungenutzte Imports und Variablen,
-wendet Black und Isort an, und unterstützt grundlegende eigene Regex-basierte Fixes.
-
-Tools: flake8 (Check), black, isort, autoflake (müssen installiert sein).
-"""
-
 import re
 import subprocess
 from pathlib import Path
@@ -14,7 +5,6 @@ from typing import List, Set
 
 PROJECT_DIR: Path = Path(__file__).resolve().parent
 IGNORED_DIRS: Set[str] = {"venv", ".venv", "__pycache__", "migrations"}
-
 
 def fix_file(filepath: Path) -> None:
     """
@@ -32,17 +22,16 @@ def fix_file(filepath: Path) -> None:
 
     new_lines: List[str] = []
     for i, line in enumerate(lines):
-        # E302/E305: Leerzeile vor Funktionen/Klassen
-        if re.match(r"^def |^class ", line) and (i == 0 or lines[i - 1].strip()):
+        # E302/E305: Leerzeile vor Funktionen/Klassen, außer am Anfang
+        if re.match(r"^(def |class )", line) and (i == 0 or lines[i - 1].strip() != ""):
             new_lines.append("\n")
 
-        # E261: 2 Leerzeichen vor Kommentar
-        if "  #" in line and not line.lstrip().startswith("  #"):
-            line = re.sub(r"([^\s])\s?  #", r"\1  #", line)
+        # E261: 2 Leerzeichen vor Inline-Kommentar
+        line = re.sub(r"([^#])#(?! )", r"\1# ", line)
 
         # E265: Kommentar sollte mit "# " beginnen
-        if re.match(r"^\s*  #\S", line):
-            line = re.sub(r"^\s*  #", "  # ", line)
+        if re.match(r"^\s*#\S", line):
+            line = re.sub(r"^\s*#(\S)", r"# \1", line)
 
         new_lines.append(line)
 
@@ -55,7 +44,6 @@ def fix_file(filepath: Path) -> None:
         print(f"✅ Formatiert: {filepath}")
     except OSError as e:
         print(f"❌ Fehler beim Schreiben in {filepath}: {e}")
-
 
 def run_flake8_and_fix() -> None:
     """
@@ -71,7 +59,7 @@ def run_flake8_and_fix() -> None:
     print(f"🔧 Fixe {len(py_files)} Python-Dateien...")
 
     for file in py_files:
-        fix_file(file)  # Assuming `fix_file` is defined elsewhere
+        fix_file(file)
 
     print("✅ Basis-Fixes abgeschlossen. Führe black & isort aus...")
 
@@ -80,7 +68,6 @@ def run_flake8_and_fix() -> None:
         subprocess.run(["isort", "."], cwd=PROJECT_DIR, check=True)
     except FileNotFoundError as e:
         print(f"❌ Werkzeug nicht gefunden: {e}")
-
 
 def fix_unused_imports() -> None:
     """
@@ -104,7 +91,6 @@ def fix_unused_imports() -> None:
         print(
             "❌ 'autoflake' ist nicht installiert. Bitte via pip installieren: pip install autoflake"
         )
-
 
 if __name__ == "__main__":
     try:
