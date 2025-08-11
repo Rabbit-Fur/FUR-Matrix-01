@@ -1,0 +1,8 @@
+<select id="language-select">
+  {% for lang in get_supported_languages() %}
+    <option value="{{ lang }}">
+      <img src="/static/flags/{{ lang }}.png" style="height:18px;vertical-align:middle;">
+      {{ lang }}
+    </option>
+  {% endfor %}
+</select>
