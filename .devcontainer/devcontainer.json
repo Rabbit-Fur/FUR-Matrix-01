@@ -1,0 +1,56 @@
+{
+  "name": "FUR-Matrix-01 Dev",
+  "image": "mcr.microsoft.com/devcontainers/base:ubuntu-22.04",
+  "features": {
+    "ghcr.io/devcontainers/features/python:1": {
+      "version": "3.11.12"
+    },
+    "ghcr.io/devcontainers/features/node:1": {
+      "version": "20"
+    },
+    "ghcr.io/devcontainers/features/go:1": {
+      "version": "1.23.8"
+    },
+    "ghcr.io/devcontainers/features/rust:1": {
+      "version": "1.87.0"
+    },
+    "ghcr.io/devcontainers/features/swift:1": {
+      "version": "6.1"
+    }
+  },
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "ms-python.python",
+        "ms-python.vscode-pylance",
+        "ms-azuretools.vscode-docker",
+        "ms-vscode-remote.remote-containers",
+        "mongodb.mongodb-vscode",
+        "ms-vscode.js-debug-nightly",
+        "ms-vscode.vscode-typescript-next",
+        "github.vscode-github-actions",
+        "42crunch.vscode-openapi",
+        "ms-toolsai.jupyter",
+        "eamodio.gitlens"
+      ]
+    }
+  },
+  "remoteEnv": {
+    "DATABASE_URL": "${localEnv:DATABASE_URL}",
+    "MONGODB_URI": "${localEnv:MONGODB_URI}",
+    "MONGO_URL": "${localEnv:MONGO_URL}",
+    "DISCORD_TOKEN": "${localEnv:DISCORD_TOKEN}",
+    "DISCORD_CLIENT_ID": "${localEnv:DISCORD_CLIENT_ID}",
+    "DISCORD_CLIENT_SECRET": "${localEnv:DISCORD_CLIENT_SECRET}",
+    "DISCORD_GUILD_ID": "${localEnv:DISCORD_GUILD_ID}",
+    "DISCORD_REDIRECT_URI": "${localEnv:DISCORD_REDIRECT_URI}",
+    "GOOGLE_CREDENTIALS_FILE": "${localEnv:GOOGLE_CREDENTIALS_FILE}",
+    "FLASK_SECRET": "${localEnv:FLASK_SECRET}",
+    "SECRET_KEY": "${localEnv:SECRET_KEY}"
+  },
+  "runArgs": [
+    "--env-file",
+    ".env"
+  ],
+  "postCreateCommand": "pip install -r requirements.txt && npm install && cargo fetch"
+}
