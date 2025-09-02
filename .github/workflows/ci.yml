@@ -1,120 +1,71 @@
-<<<<<<< HEAD
-name: ci
+---
+name: CI
 
-on:
-  pull_request: { branches: [main] }
-  push: { branches: [main] }
-
-jobs:
-  build-test:
-    runs-on: ubuntu-latest
-    timeout-minutes: 10
-    env:
-      NODE_OPTIONS: --max-old-space-size=4096
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 22
-
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v4
-        with:
-          version: 10.8.1
-          run_install: false
-
-      - name: Get pnpm store directory
-        id: pnpm-cache
-        shell: bash
-        run: |
-          echo "store_path=$(pnpm store path --silent)" >> $GITHUB_OUTPUT
-
-      - name: Setup pnpm cache
-        uses: actions/cache@v4
-        with:
-          path: ${{ steps.pnpm-cache.outputs.store_path }}
-          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
-          restore-keys: |
-            ${{ runner.os }}-pnpm-store-
-
-      - name: Install dependencies
-        run: pnpm install
-
-      # Run all tasks using workspace filters
-
-      - name: Ensure staging a release works.
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: ./codex-cli/scripts/stage_release.sh
-
-      - name: Ensure root README.md contains only ASCII and certain Unicode code points
-        run: ./scripts/asciicheck.py README.md
-      - name: Check root README ToC
-        run: python3 scripts/readme_toc.py README.md
-
-      - name: Ensure codex-cli/README.md contains only ASCII and certain Unicode code points
-        run: ./scripts/asciicheck.py codex-cli/README.md
-      - name: Check codex-cli/README ToC
-        run: python3 scripts/readme_toc.py codex-cli/README.md
-=======
-name: 🧪 CI – FUR System MongoDB + Flask
-
-on:
+'on':
   push:
-    branches: [main]
+    branches: [main, master]
   pull_request:
+    branches: [main, master]
 
 jobs:
-  test:
+  build:
     runs-on: ubuntu-latest
-
-    services:
-      mongo:
-        image: mongo:6
-        ports:
-          - 27017:27017
-        options: >-
-          --health-cmd="mongosh --eval 'db.runCommand({ ping: 1 })'"
-          --health-interval=10s
-          --health-timeout=5s
-          --health-retries=5
-
     env:
-      MONGODB_URI: "mongodb://localhost:27017/furdb"
-      FLASK_ENV: "test"
-      SECRET_KEY: "test_key"
-
+      DISCORD_TOKEN: dummy
     steps:
-      - name: 🔄 Checkout Repository
-        uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
-      - name: 🐍 Set up Python
+      - name: Set up Python
         uses: actions/setup-python@v4
         with:
           python-version: "3.11"
 
-      - name: 📦 Install Dependencies
+      - name: Install Python dependencies
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
+          pip install black flake8 mypy pip-audit
 
-      - name: 🔐 Secret Scan – detect-secrets
-        run: |
-          pip install detect-secrets
-          detect-secrets-hook --baseline .secrets.baseline
+      - name: Run black
+        run: black --check .
 
-      - name: 🧹 Code Style – Black
-        run: black . --check
+      - name: Run flake8
+        run: flake8
 
-      - name: 🧮 Sort Imports – isort
-        run: isort . --check-only
+      - name: Run mypy
+        run: mypy .
 
-      - name: 🔍 Static Check – flake8
-        run: flake8 .
+      - name: Run pytest
+        run: pytest
 
-      - name: 🧪 Run Pytest
-        run: pytest -v
->>>>>>> 15fe4b4 (feat(ci,codex): add Codex integration)
+      - name: Run pip-audit
+        run: pip-audit
+
+      - name: Run gitleaks
+        uses: gitleaks/gitleaks-action@v2
+
+      - name: Set up Node
+        if: hashFiles('package.json') != ''
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'pnpm'
+
+      - name: Setup pnpm
+        if: hashFiles('package.json') != ''
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9
+          run_install: false
+
+      - name: Install Node dependencies
+        if: hashFiles('package.json') != ''
+        run: pnpm install --frozen-lockfile
+
+      - name: pnpm lint
+        if: hashFiles('package.json') != ''
+        run: pnpm lint
+
+      - name: pnpm build
+        if: hashFiles('package.json') != ''
+        run: pnpm build
