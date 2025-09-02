@@ -1,20 +1,40 @@
-# 🐍 Verwende ein minimales Python-Image
-FROM python:3.11-slim
+# syntax=docker/dockerfile:1
 
-# 📁 Setze Arbeitsverzeichnis
+# ⛏️ Builder stage
+FROM python:3.11-slim AS builder
 WORKDIR /app
 
-# 🛠️ Installiere System-Abhängigkeiten (inkl. git für flask-babel Installation)
+# 🛠️ Install build tools and create wheels
 RUN apt-get update && \
-    apt-get install -y --no-install-recommends git && \
+    apt-get install -y --no-install-recommends build-essential git && \
+    rm -rf /var/lib/apt/lists/*
+COPY requirements.txt .
+RUN pip wheel --no-cache-dir --no-deps -r requirements.txt -w /wheels
+
+# 🔧 Runtime stage
+FROM python:3.11-slim AS runtime
+WORKDIR /app
+
+# 🔍 Install runtime dependencies for health checks
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends curl && \
     rm -rf /var/lib/apt/lists/*
 
-# 📦 Installiere Python-Abhängigkeiten
-COPY requirements.txt ./
-RUN pip install --no-cache-dir -r requirements.txt
+# 📦 Install prebuilt wheels
+COPY --from=builder /wheels /wheels
+RUN pip install --no-cache-dir /wheels/*
 
-# 🧩 Kopiere restliche App-Dateien
+# 📝 Copy application code
 COPY . .
 
-# 🚀 Starte die Anwendung
+# 👤 Create non-root user
+RUN useradd --create-home --uid 10001 appuser
+USER 10001
+
+# 🌐 Expose application port and define healthcheck
+EXPOSE 8080
+HEALTHCHECK --interval=30s --timeout=5s --start-period=5s --retries=3 CMD curl --fail http://127.0.0.1:8080/health || exit 1
+
+# ⏰ Default command
 CMD ["python", "main_app.py"]
+
