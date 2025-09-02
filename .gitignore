@@ -1,38 +1,11 @@
-<<<<<<< HEAD
-# deps
-# Node.js dependencies
-node_modules
-.pnpm-store
+# Node / Frontend artefacts
+node_modules/
+.pnpm-store/
 .pnpm-debug.log
-
-# Keep pnpm-lock.yaml
-!pnpm-lock.yaml
-
-# build
 dist/
 build/
 out/
 storybook-static/
-
-# ignore README for publishing
-codex-cli/README.md
-
-# ignore Nix derivation results
-result
-
-# editor
-.vscode/
-.idea/
-.history/
-.zed/
-*.swp
-*~
-
-# cli tools
-CLAUDE.md
-.claude/
-
-# caches
 .cache/
 .turbo/
 .parcel-cache/
@@ -41,110 +14,47 @@ CLAUDE.md
 .jest/
 *.tsbuildinfo
 
-# logs
+# Python caches and virtual environments
+__pycache__/
+*.py[cod]
+.mypy_cache/
+.venv/
+venv/
+env/
+*.egg-info/
+*.dist-info/
+
+# Logs
+logs/
 *.log
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
-# env
-.env*
-!.env.example
+# Editor folders
+.vscode/
+.idea/
+.history/
+.zed/
+*.swp
+*~
 
-# package
-*.tgz
-
-# ci
-.vercel/
-.netlify/
-
-# patches
-apply_patch/
-
-# coverage
-coverage/
-
-# os
+# OS files
 .DS_Store
 Thumbs.db
 Icon?
 .Spotlight-V100/
 
-# Unwanted package managers
-.yarn/
-yarn.lock
-
-# release
-package.json-e
-session.ts-e
-CHANGELOG.ignore.md
-
-# nix related
-.direnv
-.envrc
-=======
-# Python Bytecode
-__pycache__/
-*.py[cod]
-*.pyo
-*.pyd
-*.pyc
-
-# Virtual Environments / Build
-*.egg-info/
-*.dist-info/
-.venv/
-env/
-venv/
-
-# Editor- und Systemdateien
-.DS_Store
-Thumbs.db
-*.bak
-*.swp
-flag/* merge=ours
-
-# IDEs / VSCode
-.vscode/
-.idea/
-
-# Umgebungsvariablen / Sicherheit
-.env
-.env.*
+# Secret and environment files
+.env*
 !.env.example
 secrets.json
+secrets/
 *.sqlite3
 
-# Flask & App spezifisch
-instance/
-*.log
-*.tmp
-*.db
-.mypy_cache/
+# Coverage reports
 .coverage
+coverage/
 
-# Google OAuth credentials
-client_secret.json
-credentials/
-token/
-
-# Node / Frontend (falls vorhanden)
-node_modules/
-
-# FUR-spezifisch (Poster, Temp-Dateien)
-static/champions/
-static/bg/*.tmp
-*.zip
-*weekly.md
-data/secrets/
-
-todo_missing_bg.md
-
-# Logfiles
-core/logs/
-
-# Lokale Assets
-attached_assets/
-docs/Fehlende_ENV_LOG.md
-/Screenshot_*.png
->>>>>>> 15fe4b4 (feat(ci,codex): add Codex integration)
+# Dependency lockfiles
+!pnpm-lock.yaml
