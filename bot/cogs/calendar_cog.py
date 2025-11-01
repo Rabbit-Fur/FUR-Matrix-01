@@ -25,14 +25,30 @@ from utils.timezone import convert_datetime, get_user_timezone
 log = logging.getLogger(__name__)
 
 
+def _convert_to_reminder_timezone(dt: datetime) -> datetime:
+    """Convert *dt* to the configured reminder timezone."""
+
+    tz = ZoneInfo(Config.CALENDAR_DM_TIMEZONE)
+    if dt.tzinfo is None:
+        dt = dt.replace(tzinfo=timezone.utc)
+    return dt.astimezone(tz)
+
+
 def should_send_daily(dt: datetime) -> bool:
     """Return True when a daily reminder should be sent."""
-    return dt.hour == 8
+
+    local_dt = _convert_to_reminder_timezone(dt)
+    return local_dt.hour == Config.CALENDAR_DM_DAILY_HOUR
 
 
 def should_send_weekly(dt: datetime) -> bool:
     """Return True when a weekly reminder should be sent."""
-    return dt.weekday() == 6 and dt.hour == 12
+
+    local_dt = _convert_to_reminder_timezone(dt)
+    return (
+        local_dt.weekday() == Config.CALENDAR_DM_WEEKLY_DAY
+        and local_dt.hour == Config.CALENDAR_DM_WEEKLY_HOUR
+    )
 
 
 class CalendarCog(commands.Cog):
