@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 Angebot Weinverkostung  Taenzer – Belohnungsuebersicht
 
 Item                           Menge  Bemerkung
@@ -21,28 +20,4 @@ Diamanten                      100x   Direkt einsetzbar
 Bewertung
 - Staerke Sehr vielseitiges Angebot - Kombination aus Enforcer-Shards, Awakening-Material, Boosts und kosmetischem Rahmen.
 - Highlight Der Erwachen-Stein ist sehr wertvoll, jedoch nur nutzbar bei stark entwickelten Enforcern.
-=======
-Angebot Weinverkostung  Taenzer – Belohnungsuebersicht
-
-Item                           Menge  Bemerkung
----------------------------------------------------------------
-Enforcer Splitter (rot)        48x    Selten  fuer Vollstrecker benoetigt
-Rangbuch (Mythisch)            15x    Staerker als normale Rangbuecher
-Belohnungskisten (braun)       14x    Standard Belohnungen
-Erwachen-Stein                 14x    Nur bei 6 Sterne + Exkl. Waffe Lvl 2+ nutzbar
-Kommunikationsgeraet           18x    Vermutlich fuer Upgrades  Events
-Gebaeude-Upgradekarte          1x     Eventuell limitierter Effekt
-Rangbuch (Standard)            14x    Normale Buecher zur Enforcer-Staerkung
-Goldkiste                      2x     Seltener Inhalt
-Exklusiver Rahmen              1x     Kosmetischer Effekt
-Belohnungskiste (lila)         4x     Hochwertige Rewards
-60 Min Bau-Beschleunigung      3x     Gebaeude-Upgrades beschleunigen
-1 Std Bargeld-Ertrag           26x    Sofort Bargeld erhalten
-Belohnungskiste (blau)         1x     Einfache Reward-Box
-Diamanten                      100x   Direkt einsetzbar
-
-Bewertung
-- Staerke Sehr vielseitiges Angebot - Kombination aus Enforcer-Shards, Awakening-Material, Boosts und kosmetischem Rahmen.
-- Highlight Der Erwachen-Stein ist sehr wertvoll, jedoch nur nutzbar bei stark entwickelten Enforcern.
->>>>>>> 15fe4b4 (feat(ci,codex): add Codex integration)
 - Diamantenwert Maessig (100), Fokus liegt auf Upgrades und Boosts.

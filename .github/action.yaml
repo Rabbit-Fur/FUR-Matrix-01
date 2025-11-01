@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 schema_version: 1.0
 name_for_human: GitHub Superpower
 name_for_model: githubSuperpower
@@ -17,23 +16,3 @@ api:
 logo_url: https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png
 contact_email: support@rabbitfur.dev
 legal_info_url: https://github.com/Rabbit-Fur/matrix-gpt
-=======
-schema_version: 1.0
-name_for_human: GitHub Superpower
-name_for_model: githubSuperpower
-description_for_human: Voller Zugriff auf GitHub: PRs, Commits, Branches, Dateien, Diffs uvm.
-description_for_model: Zugriff auf GitHub-API mit OAuth für Repositories, Branches, Pull Requests, Commits und mehr.
-auth:
-  type: oauth
-  client_url: https://github.com/login/oauth/authorize
-  scope: repo user
-  authorization_url: https://github.com/login/oauth/authorize
-  token_url: https://github.com/login/oauth/access_token
-  redirect_uri: https://chat.openai.com/aip/oauth/callback
-api:
-  type: openapi
-  url: ./openapi.yaml
-logo_url: https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png
-contact_email: support@rabbitfur.dev
-legal_info_url: https://github.com/Rabbit-Fur/matrix-gpt
->>>>>>> 15fe4b4 (feat(ci,codex): add Codex integration)
