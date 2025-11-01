@@ -50,6 +50,24 @@ class Config:
     DISCORD_CLIENT_SECRET: str = get_env_str("DISCORD_CLIENT_SECRET", required=True)
     DISCORD_REDIRECT_URI: str = get_env_str("DISCORD_REDIRECT_URI", required=True)
 
+    # --- Calendar Reminder Scheduling ---
+    CALENDAR_DM_TIMEZONE: str = get_env_str("CALENDAR_DM_TIMEZONE", default="Europe/Berlin")
+
+    _daily_hour = get_env_int("CALENDAR_DM_DAILY_HOUR", default=8)
+    if not 0 <= _daily_hour <= 23:
+        raise ValueError("CALENDAR_DM_DAILY_HOUR must be between 0 and 23")
+    CALENDAR_DM_DAILY_HOUR: int = _daily_hour
+
+    _weekly_hour = get_env_int("CALENDAR_DM_WEEKLY_HOUR", default=12)
+    if not 0 <= _weekly_hour <= 23:
+        raise ValueError("CALENDAR_DM_WEEKLY_HOUR must be between 0 and 23")
+    CALENDAR_DM_WEEKLY_HOUR: int = _weekly_hour
+
+    _weekly_day = get_env_int("CALENDAR_DM_WEEKLY_DAY", default=6)
+    if not 0 <= _weekly_day <= 6:
+        raise ValueError("CALENDAR_DM_WEEKLY_DAY must be between 0 (Monday) and 6 (Sunday)")
+    CALENDAR_DM_WEEKLY_DAY: int = _weekly_day
+
     R3_ROLE_IDS: set[str] = set(filter(None, get_env_str("R3_ROLE_IDS", default="").split(",")))
     R4_ROLE_IDS: set[str] = set(filter(None, get_env_str("R4_ROLE_IDS", default="").split(",")))
     ADMIN_ROLE_IDS: set[str] = set(

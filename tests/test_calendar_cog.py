@@ -9,6 +9,8 @@ from zoneinfo import ZoneInfo
 import discord
 import pytest
 
+from config import Config
+
 services_pkg = types.ModuleType("services")
 services_pkg.__path__ = [str(pathlib.Path(__file__).resolve().parents[1] / "services")]
 sys.modules["services"] = services_pkg
@@ -39,14 +41,40 @@ async def test_send_events_dm_builds_embed():
     assert user.embed.fields[0].name == "Ping"
 
 
-def test_should_send_daily_weekly():
-    morning = datetime(2025, 1, 1, 8, 0, tzinfo=timezone.utc)
+def test_should_send_daily_weekly_defaults(monkeypatch):
+    monkeypatch.setattr(Config, "CALENDAR_DM_TIMEZONE", "Europe/Berlin", raising=False)
+    monkeypatch.setattr(Config, "CALENDAR_DM_DAILY_HOUR", 8, raising=False)
+    monkeypatch.setattr(Config, "CALENDAR_DM_WEEKLY_HOUR", 12, raising=False)
+    monkeypatch.setattr(Config, "CALENDAR_DM_WEEKLY_DAY", 6, raising=False)
+
+    berlin = ZoneInfo("Europe/Berlin")
+    morning = datetime(2025, 1, 1, 8, 0, tzinfo=berlin)
     assert should_send_daily(morning)
     assert not should_send_daily(morning - timedelta(hours=1))
 
-    sunday = datetime(2025, 1, 5, 12, 0, tzinfo=timezone.utc)
+    sunday = datetime(2025, 1, 5, 12, 0, tzinfo=berlin)
     assert should_send_weekly(sunday)
     assert not should_send_weekly(sunday + timedelta(days=1))
+
+
+def test_should_send_daily_weekly_custom_schedule(monkeypatch):
+    monkeypatch.setattr(Config, "CALENDAR_DM_TIMEZONE", "America/New_York", raising=False)
+    monkeypatch.setattr(Config, "CALENDAR_DM_DAILY_HOUR", 9, raising=False)
+    monkeypatch.setattr(Config, "CALENDAR_DM_WEEKLY_HOUR", 15, raising=False)
+    monkeypatch.setattr(Config, "CALENDAR_DM_WEEKLY_DAY", 2, raising=False)
+
+    new_york = ZoneInfo("America/New_York")
+    morning = datetime(2025, 1, 1, 9, 0, tzinfo=new_york)
+    assert should_send_daily(morning.astimezone(timezone.utc))
+
+    off_hour = datetime(2025, 1, 1, 8, 0, tzinfo=new_york)
+    assert not should_send_daily(off_hour)
+
+    weekly_time = datetime(2025, 1, 1, 15, 0, tzinfo=new_york)
+    assert should_send_weekly(weekly_time)
+
+    wrong_day = weekly_time + timedelta(days=1)
+    assert not should_send_weekly(wrong_day)
 
 
 @pytest.mark.asyncio
