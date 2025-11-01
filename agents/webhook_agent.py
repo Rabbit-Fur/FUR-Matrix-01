@@ -39,7 +39,11 @@ class WebhookAgent:
 
         if event_channel and Config.EVENT_CHANNEL_ID:
             try:
-                send_discord_message(Config.EVENT_CHANNEL_ID, content, image_url)
+                success = send_discord_message(Config.EVENT_CHANNEL_ID, content, image_url)
+                if success is False:
+                    logging.warning("⚠️ Event-Channel Nachricht übersprungen oder fehlgeschlagen")
+                    return False
+
                 logging.info("📤 Event-Channel Nachricht gesendet")
                 return True
             except Exception as e:  # pragma: no cover - network failure
