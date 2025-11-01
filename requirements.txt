@@ -1,7 +1,7 @@
 # 🔧 Core Frameworks
 flask==2.3.3
 Flask-Session==0.8.0
-flask-babel @ git+https://github.com/python-babel/flask-babel.git
+Flask-Babel==4.0.0
 flask-wtf
 pymongo==4.13.2
 motor>=3.2.0
