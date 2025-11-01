@@ -42,19 +42,26 @@ else:
 
     DISCORD_WEBHOOK_URL = os.getenv("DISCORD_WEBHOOK_URL")
 
-    def send_discord_message(channel_id: int, content: str, image_url: str | None = None) -> None:
+    def send_discord_message(channel_id: int, content: str, image_url: str | None = None) -> bool:
         """Sendet eine Nachricht via Discord Webhook (ohne Bot)."""
+        if not DISCORD_WEBHOOK_URL:
+            logging.warning(
+                "⚠️ DISCORD_WEBHOOK_URL fehlt – Fallback-Benachrichtigung wird übersprungen."
+            )
+            return False
+
         data = {"content": content}
         if image_url:
             data["embeds"] = [{"image": {"url": image_url}}]
-            response = requests.post(DISCORD_WEBHOOK_URL, json=data)
-        else:
-            response = requests.post(DISCORD_WEBHOOK_URL, json=data)
+
+        response = requests.post(DISCORD_WEBHOOK_URL, json=data)
 
         if response.status_code not in [200, 204]:
             logging.error(f"❌ Webhook fehlgeschlagen: {response.status_code} – {response.text}")
-        else:
-            logging.info("✅ Webhook erfolgreich gesendet.")
+            return False
+
+        logging.info("✅ Webhook erfolgreich gesendet.")
+        return True
 
     # Dummy für Kompatibilität
     bot = None
