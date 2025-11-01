@@ -109,6 +109,10 @@ class CalendarService:
         start_dt = parse_calendar_datetime(event.get("start"))
         end_dt = parse_calendar_datetime(event.get("end"))
         event_time = start_dt
+        if start_dt is not None:
+            date_value = start_dt.isoformat()
+        else:
+            date_value = event.get("updated") or datetime.utcnow().replace(tzinfo=timezone.utc).isoformat()
         return {
             "google_id": event.get("id"),
             "title": event.get("summary", "No Title"),
@@ -120,6 +124,7 @@ class CalendarService:
             "event_time": event_time,
             "source": "google",
             "status": event.get("status"),
+            "date": date_value,
         }
 
     async def _store_events(self, events: Iterable[dict]) -> None:
